@@ -1,0 +1,211 @@
+set -e
+set -o pipefail
+# set -x
+
+MASON_ROOT=/usr/local/mason
+MASON_BUCKET=mason-binaries
+
+MASON_UNAME=`uname -s`
+if [ ${MASON_UNAME} = 'Darwin' ]; then
+    MASON_PLATFORM=${MASON_PLATFORM:-osx}
+    MASON_CONCURRENCY=`sysctl -n hw.ncpu`
+    MASON_XCODE_ROOT=`"xcode-select" -p`
+fi
+
+
+function mason_step { >&2 echo -e "\033[1m\033[31m* $1\033[0m"; }
+function mason_substep { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }
+function mason_success { >&2 echo -e "\033[1m\033[32m* $1\033[0m"; }
+function mason_error { >&2 echo -e "\033[1m\033[31m$1\033[0m"; }
+
+
+if [ ${MASON_PLATFORM} = 'osx' ]; then
+    export MASON_HOST_ARG="--host=x86_64-apple-darwin"
+    export MASON_PLATFORM_VERSION=`xcrun --sdk macosx --show-sdk-version`
+
+    MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
+    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_PLATFORM_VERSION}.sdk"
+    export MASON_CFLAGS="-mmacosx-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
+
+
+elif [ ${MASON_PLATFORM} = 'ios' ]; then
+    export MASON_HOST_ARG="--host=arm-apple-darwin"
+    export MASON_PLATFORM_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
+
+    MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer
+    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneOS${MASON_PLATFORM_VERSION}.sdk"
+    export MASON_IOS_CFLAGS="-miphoneos-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch armv7 -arch armv7s -arch arm64"
+
+    if [ `xcrun --sdk iphonesimulator --show-sdk-version` != ${MASON_PLATFORM_VERSION} ]; then
+        mason_error "iPhone Simulator SDK version doesn't match iPhone SDK version"
+        exit
+    fi
+
+    MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneSimulator.platform/Developer
+    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneSimulator${MASON_PLATFORM_VERSION}.sdk"
+    export MASON_ISIM_CFLAGS="-miphoneos-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
+fi
+
+
+# Variable defaults
+MASON_HOST_ARG=${MASON_HOST_ARG:-}
+MASON_PLATFORM_VERSION=${MASON_PLATFORM_VERSION:-0}
+MASON_SLUG=${MASON_NAME}-${MASON_VERSION}
+MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}/${MASON_NAME}/${MASON_VERSION}
+MASON_BINARIES=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}/${MASON_NAME}/${MASON_VERSION}.tar.gz
+MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
+
+
+
+
+function mason_check_existing {
+    # skip installing if it already exists
+    if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
+        mason_success "Already installed at ${MASON_PREFIX}"
+        exit
+    fi
+
+    rm -rf ${MASON_PREFIX}
+}
+
+
+function mason_download {
+    mkdir -p ${MASON_ROOT}/.cache
+    cd ${MASON_ROOT}/.cache
+    if [ ! -f ${MASON_SLUG} ] ; then
+        mason_step "Downloading $1..."
+        curl -f -# -L "$1" -o ${MASON_SLUG}
+    fi
+
+    MASON_HASH=`git hash-object ${MASON_SLUG}`
+    if [ "$2" != "${MASON_HASH}" ] ; then
+        mason_error "Hash ${MASON_HASH} of file ${MASON_ROOT}/.cache/${MASON_SLUG} doesn't match $2"
+        exit 1
+    fi
+}
+
+function mason_extract_tar_gz {
+    rm -rf ${MASON_ROOT}/.build
+    mkdir -p ${MASON_ROOT}/.build
+    cd ${MASON_ROOT}/.build
+
+    tar xzf ../.cache/${MASON_SLUG}
+}
+
+
+
+function mason_prepare_compile {
+    :
+}
+
+function mason_compile {
+    mason_error "COMPILE FUNCTION MISSING"
+    exit
+}
+
+function mason_clean {
+    :
+}
+
+
+function mason_build {
+    mason_load_source
+
+    mason_step "Building for Platform '${MASON_PLATFORM}/${MASON_PLATFORM_VERSION}'..."
+    cd ${MASON_BUILD_PATH}
+    mason_prepare_compile
+
+    if [ ${MASON_PLATFORM} = 'ios' ]; then
+        mason_substep "Building for Simulator..."
+        export CFLAGS="${MASON_ISIM_CFLAGS}"
+        cd ${MASON_BUILD_PATH}
+        mason_compile
+        cd ${MASON_PREFIX}
+        mv lib lib-isim
+        for i in lib-isim/*.a ; do lipo -info $i ; done
+
+        mason_substep "Building for iOS..."
+        export CFLAGS="${MASON_IOS_CFLAGS}"
+        cd ${MASON_BUILD_PATH}
+        mason_clean
+        cd ${MASON_BUILD_PATH}
+        mason_compile
+        cd ${MASON_PREFIX}
+        cp -r lib lib-ios
+        for i in lib-ios/*.a ; do lipo -info $i ; done
+
+        # Create universal binary
+        mason_substep "Creating Universal Binary..."
+        cd ${MASON_PREFIX}/lib-ios
+        for i in *.a ; do
+            lipo -create ../lib-ios/$i ../lib-isim/$i -output ../lib/$i
+            lipo -info ../lib/$i
+        done
+        cd ${MASON_PREFIX}
+        rm -rf lib-isim lib-ios
+    else
+        cd ${MASON_BUILD_PATH}
+        mason_compile
+    fi
+
+    mason_success "Installed at ${MASON_PREFIX}"
+
+    rm -rf ${MASON_ROOT}/.build
+}
+
+
+function mason_try_binary {
+    mkdir -p ${MASON_ROOT}/.binaries/`dirname "${MASON_BINARIES}"`
+
+    # try downloading from S3
+    if [ ! -f ${MASON_BINARIES_PATH} ] ; then
+        mason_step "Downloading binary package ${MASON_BINARIES}..."
+        curl -f -# -L \
+            https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
+            -o ${MASON_BINARIES_PATH} || true
+    else
+        mason_step "Updating binary package ${MASON_BINARIES}..."
+        curl -f -# -L -z ${MASON_BINARIES_PATH} \
+            https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
+            -o ${MASON_BINARIES_PATH} || true
+    fi
+
+    # unzip the file if it exists
+    if [ -f ${MASON_BINARIES_PATH} ] ; then
+        mkdir -p ${MASON_PREFIX}
+        cd ${MASON_PREFIX}
+        tar xzf ${MASON_BINARIES_PATH}
+        mason_success "Installed binary package at ${MASON_PREFIX}"
+        exit 0
+    fi
+}
+
+
+function mason_publish {
+    if [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
+        mason_error "Required library file ${MASON_PREFIX}/${MASON_LIB_FILE} doesn't exist."
+        exit 1
+    fi
+
+    mkdir -p `dirname ${MASON_BINARIES_PATH}`
+    cd ${MASON_PREFIX}
+    rm -rf ${MASON_BINARIES_PATH}
+    tar czf ${MASON_BINARIES_PATH} .
+    ls -lh ${MASON_BINARIES_PATH}
+    mason_step "Uploading binary package..."
+    aws s3 cp --acl public-read ${MASON_BINARIES_PATH} s3://${MASON_BUCKET}/${MASON_BINARIES}
+}
+
+
+function mason_run {
+    if [ "$1" == "publish" ] ; then
+        mason_publish
+    elif [ "$1" == "build" ] ; then
+        mason_build
+    else
+        mason_check_existing
+        mason_try_binary
+        mason_build
+    fi
+}
+

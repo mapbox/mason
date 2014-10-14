@@ -2,8 +2,8 @@ set -e
 set -o pipefail
 # set -x
 
-MASON_ROOT=/usr/local/mason
-MASON_BUCKET=mason-binaries
+MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
+MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
 
 MASON_UNAME=`uname -s`
 if [ ${MASON_UNAME} = 'Darwin' ]; then
@@ -18,6 +18,10 @@ function mason_substep { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }
 function mason_success { >&2 echo -e "\033[1m\033[32m* $1\033[0m"; }
 function mason_error { >&2 echo -e "\033[1m\033[31m$1\033[0m"; }
 
+
+case ${MASON_ROOT} in
+    *\ * ) mason_error "Directory '${MASON_ROOT} contains spaces."; exit ;;
+esac
 
 if [ ${MASON_PLATFORM} = 'osx' ]; then
     export MASON_HOST_ARG="--host=x86_64-apple-darwin"
@@ -70,8 +74,8 @@ function mason_check_existing {
 
 
 function mason_download {
-    mkdir -p ${MASON_ROOT}/.cache
-    cd ${MASON_ROOT}/.cache
+    mkdir -p "${MASON_ROOT}/.cache"
+    cd "${MASON_ROOT}/.cache"
     if [ ! -f ${MASON_SLUG} ] ; then
         mason_step "Downloading $1..."
         curl -f -# -L "$1" -o ${MASON_SLUG}
@@ -85,9 +89,9 @@ function mason_download {
 }
 
 function mason_extract_tar_gz {
-    rm -rf ${MASON_ROOT}/.build
-    mkdir -p ${MASON_ROOT}/.build
-    cd ${MASON_ROOT}/.build
+    rm -rf "${MASON_ROOT}/.build"
+    mkdir -p "${MASON_ROOT}/.build"
+    cd "${MASON_ROOT}/.build"
 
     tar xzf ../.cache/${MASON_SLUG}
 }
@@ -112,39 +116,39 @@ function mason_build {
     mason_load_source
 
     mason_step "Building for Platform '${MASON_PLATFORM}/${MASON_PLATFORM_VERSION}'..."
-    cd ${MASON_BUILD_PATH}
+    cd "${MASON_BUILD_PATH}"
     mason_prepare_compile
 
     if [ ${MASON_PLATFORM} = 'ios' ]; then
         mason_substep "Building for Simulator..."
         export CFLAGS="${MASON_ISIM_CFLAGS}"
-        cd ${MASON_BUILD_PATH}
+        cd "${MASON_BUILD_PATH}"
         mason_compile
-        cd ${MASON_PREFIX}
+        cd "${MASON_PREFIX}"
         mv lib lib-isim
         for i in lib-isim/*.a ; do lipo -info $i ; done
 
         mason_substep "Building for iOS..."
         export CFLAGS="${MASON_IOS_CFLAGS}"
-        cd ${MASON_BUILD_PATH}
+        cd "${MASON_BUILD_PATH}"
         mason_clean
-        cd ${MASON_BUILD_PATH}
+        cd "${MASON_BUILD_PATH}"
         mason_compile
-        cd ${MASON_PREFIX}
+        cd "${MASON_PREFIX}"
         cp -r lib lib-ios
         for i in lib-ios/*.a ; do lipo -info $i ; done
 
         # Create universal binary
         mason_substep "Creating Universal Binary..."
-        cd ${MASON_PREFIX}/lib-ios
+        cd "${MASON_PREFIX}/lib-ios"
         for i in *.a ; do
             lipo -create ../lib-ios/$i ../lib-isim/$i -output ../lib/$i
             lipo -info ../lib/$i
         done
-        cd ${MASON_PREFIX}
+        cd "${MASON_PREFIX}"
         rm -rf lib-isim lib-ios
     else
-        cd ${MASON_BUILD_PATH}
+        cd "${MASON_BUILD_PATH}"
         mason_compile
     fi
 
@@ -155,29 +159,38 @@ function mason_build {
 
 
 function mason_try_binary {
-    mkdir -p ${MASON_ROOT}/.binaries/`dirname "${MASON_BINARIES}"`
+    MASON_BINARIES_DIR=`dirname "${MASON_BINARIES}"`
+    mkdir -p "${MASON_ROOT}/.binaries/${MASON_BINARIES_DIR}"
 
     # try downloading from S3
-    if [ ! -f ${MASON_BINARIES_PATH} ] ; then
+    if [ ! -f "${MASON_BINARIES_PATH}" ] ; then
         mason_step "Downloading binary package ${MASON_BINARIES}..."
         curl -f -# -L \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
-            -o ${MASON_BINARIES_PATH} || true
+            -o "${MASON_BINARIES_PATH}" || true
     else
         mason_step "Updating binary package ${MASON_BINARIES}..."
-        curl -f -# -L -z ${MASON_BINARIES_PATH} \
+        curl -f -# -L -z "${MASON_BINARIES_PATH}" \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
-            -o ${MASON_BINARIES_PATH} || true
+            -o "${MASON_BINARIES_PATH}" || true
     fi
 
     # unzip the file if it exists
-    if [ -f ${MASON_BINARIES_PATH} ] ; then
-        mkdir -p ${MASON_PREFIX}
-        cd ${MASON_PREFIX}
-        tar xzf ${MASON_BINARIES_PATH}
+    if [ -f "${MASON_BINARIES_PATH}" ] ; then
+        mkdir -p "${MASON_PREFIX}"
+        cd "${MASON_PREFIX}"
+        tar xzf "${MASON_BINARIES_PATH}"
         mason_success "Installed binary package at ${MASON_PREFIX}"
         exit 0
     fi
+}
+
+
+function mason_pkgconfig {
+    echo pkg-config \
+        ${MASON_PREFIX}/${MASON_PKGCONFIG_FILE} \
+        --define-variable=prefix=${MASON_PREFIX} \
+        --define-variable=exec_prefix=${MASON_PREFIX}
 }
 
 
@@ -188,12 +201,12 @@ function mason_publish {
     fi
 
     mkdir -p `dirname ${MASON_BINARIES_PATH}`
-    cd ${MASON_PREFIX}
-    rm -rf ${MASON_BINARIES_PATH}
-    tar czf ${MASON_BINARIES_PATH} .
-    ls -lh ${MASON_BINARIES_PATH}
+    cd "${MASON_PREFIX}"
+    rm -rf "${MASON_BINARIES_PATH}"
+    tar czf "${MASON_BINARIES_PATH}" .
+    ls -lh "${MASON_BINARIES_PATH}"
     mason_step "Uploading binary package..."
-    aws s3 cp --acl public-read ${MASON_BINARIES_PATH} s3://${MASON_BUCKET}/${MASON_BINARIES}
+    aws s3 cp --acl public-read "${MASON_BINARIES_PATH}" s3://${MASON_BUCKET}/${MASON_BINARIES}
 }
 
 
@@ -202,6 +215,8 @@ function mason_run {
         mason_publish
     elif [ "$1" == "build" ] ; then
         mason_build
+    elif [ "$1" == "pkgconfig" ]; then
+        mason_pkgconfig
     else
         mason_check_existing
         mason_try_binary

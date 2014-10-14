@@ -2,8 +2,8 @@ language: cpp
 sudo: false
 
 before_install:
-    git clone --depth=1 https://github.com/mapbox/mason.git /usr/local/share/mason
-    ln -s /usr/local/share/mason/mason /usr/local/bin/mason
+- git clone --depth=1 https://github.com/mapbox/mason.git /usr/local/share/mason
+- ln -s /usr/local/share/mason/mason /usr/local/bin/mason
 
 script:
-    ./script.sh build
+- ./script.sh build

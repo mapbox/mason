@@ -6,7 +6,6 @@ MASON_VERSION=$3
 
 function usage {
     echo "Usage: $0 <command> <lib> <version>"
-    echo "Commands: install, remove, prefix"
 }
 
 if [ -z "${MASON_COMMAND}" ]; then
@@ -15,8 +14,8 @@ if [ -z "${MASON_COMMAND}" ]; then
 fi
 
 if [ "${MASON_COMMAND}" = "selfupdate" ]; then
-    cd /usr/local/share/mason
-    git pull
+    cd ~/.mason
+    git pull origin master
     exit
 fi
 
@@ -30,24 +29,16 @@ elif [ -z "${MASON_VERSION}" ]; then
     exit 1
 fi
 
-. /usr/local/share/mason/mason.sh
+. ~/.mason/mason.sh
 
 
-if [ "${MASON_COMMAND}" = "install" ]; then
+# Load script if it doesn't exist yet
+MASON_SCRIPT="${MASON_ROOT}/.scripts/${MASON_SLUG}.sh"
+
+if [ ! -f "${MASON_SCRIPT}" ]; then
     mason_step "Loading install script 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/script.sh'..."
-    curl -f -# -L https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/script.sh | bash
-elif [ "${MASON_COMMAND}" = "remove" ]; then
-    mason_step "Removing installation..."
-    rm -rfv ${MASON_PREFIX}
-elif [ "${MASON_COMMAND}" = "prefix" ]; then
-    if [ ! -d "${MASON_PREFIX}" ]; then
-        mason_error "Version '${MASON_VERSION}' of package '${MASON_NAME}' does not exist"
-        exit 1
-    fi
-
-    echo ${MASON_PREFIX}
-else
-    usage
-    mason_error "Unknown command '${MASON_COMMAND}'"
-    exit 1
+    mkdir -p "${MASON_ROOT}/.scripts"
+    curl -f -# -L https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/script.sh -o "${MASON_ROOT}/.scripts/${MASON_SLUG}.sh"
 fi
+
+bash "${MASON_SCRIPT}" "${MASON_COMMAND}"

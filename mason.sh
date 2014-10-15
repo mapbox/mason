@@ -68,8 +68,14 @@ function mason_check_existing {
         mason_success "Already installed at ${MASON_PREFIX}"
         exit
     fi
+}
 
-    rm -rf ${MASON_PREFIX}
+
+function mason_clear_existing {
+    if [ -d "${MASON_PREFIX}" ]; then
+        mason_step "Removing existing package..."
+        rm -rfv "${MASON_PREFIX}"
+    fi
 }
 
 
@@ -193,6 +199,14 @@ function mason_pkgconfig {
         --define-variable=exec_prefix=${MASON_PREFIX}
 }
 
+function mason_cflags {
+    `mason_pkgconfig` --static --cflags
+}
+
+function mason_ldflags {
+    `mason_pkgconfig` --static --libs
+}
+
 
 function mason_publish {
     if [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
@@ -211,16 +225,29 @@ function mason_publish {
 
 
 function mason_run {
-    if [ "$1" == "publish" ] ; then
+    if [ "$1" == "install" ]; then
+        mason_check_existing
+        mason_clear_existing
+        mason_try_binary
+        mason_build
+    elif [ "$1" == "remove" ]; then
+        mason_clear_existing
+    elif [ "$1" == "publish" ] ; then
         mason_publish
     elif [ "$1" == "build" ] ; then
         mason_build
-    elif [ "$1" == "pkgconfig" ]; then
-        mason_pkgconfig
+    elif [ "$1" == "cflags" ]; then
+        mason_cflags
+    elif [ "$1" == "ldflags" ]; then
+        mason_ldflags
+    elif [ "$1" == "prefix" ]; then
+        if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
+            echo ${MASON_PREFIX}
+        else
+            mason_error "Cannot find required library file '${MASON_PREFIX}/${MASON_LIB_FILE}'"
+        fi
     else
-        mason_check_existing
-        mason_try_binary
-        mason_build
+        mason_error "Unknown command '$1'"
     fi
 }
 

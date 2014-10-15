@@ -1,8 +1,8 @@
 #!/bin/bash
 
-MASON_COMMAND=$1
-MASON_NAME=$2
-MASON_VERSION=$3
+MASON_COMMAND=$1 ; shift
+MASON_NAME=$1 ; shift
+MASON_VERSION=$1 ; shift
 
 function usage {
     echo "Usage: $0 <command> <lib> <version>"
@@ -41,4 +41,4 @@ if [ ! -f "${MASON_SCRIPT}" ]; then
     curl -f -# -L https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/script.sh -o "${MASON_ROOT}/.scripts/${MASON_SLUG}.sh"
 fi
 
-bash "${MASON_SCRIPT}" "${MASON_COMMAND}"
+bash "${MASON_SCRIPT}" "${MASON_COMMAND}" "$@"

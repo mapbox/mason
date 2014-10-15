@@ -8,9 +8,18 @@ MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
 MASON_UNAME=`uname -s`
 if [ ${MASON_UNAME} = 'Darwin' ]; then
     MASON_PLATFORM=${MASON_PLATFORM:-osx}
-    MASON_CONCURRENCY=`sysctl -n hw.ncpu`
     MASON_XCODE_ROOT=`"xcode-select" -p`
+elif [ ${MASON_UNAME} = 'Linux' ]; then
+    MASON_PLATFORM=${MASON_PLATFORM:-linux}
 fi
+
+
+case ${MASON_PLATFORM} in
+    'osx')
+    'ios')   MASON_CONCURRENCY=`sysctl -n hw.ncpu` ;;
+    'linux') MASON_CONCURRENCY=`nproc` ;;
+    *)       MASON_CONCURRENCY=1 ;;
+esac
 
 
 function mason_step { >&2 echo -e "\033[1m\033[31m* $1\033[0m"; }

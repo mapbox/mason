@@ -15,10 +15,9 @@ fi
 
 
 case ${MASON_PLATFORM} in
-    'osx')
-    'ios')   MASON_CONCURRENCY=`sysctl -n hw.ncpu` ;;
-    'linux') MASON_CONCURRENCY=`nproc` ;;
-    *)       MASON_CONCURRENCY=1 ;;
+    'osx'|'ios')    MASON_CONCURRENCY=`sysctl -n hw.ncpu` ;;
+    'linux')        MASON_CONCURRENCY=`nproc` ;;
+    *)              MASON_CONCURRENCY=1 ;;
 esac
 
 

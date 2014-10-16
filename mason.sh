@@ -61,7 +61,6 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     . /etc/os-release
     export MASON_PLATFORM_VERSION=${ID}-${VERSION_ID}-`uname -m`
     echo "${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}"
-    exit
 fi
 
 
@@ -225,6 +224,16 @@ function mason_ldflags {
 function mason_publish {
     if [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
         mason_error "Required library file ${MASON_PREFIX}/${MASON_LIB_FILE} doesn't exist."
+        exit 1
+    fi
+
+    if [ -z "${AWS_ACCESS_KEY_ID}" ]; then
+        mason_error "AWS_ACCESS_KEY_ID is not set."
+        exit 1
+    fi
+
+    if [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
+        mason_error "AWS_SECRET_ACCESS_KEY is not set."
         exit 1
     fi
 

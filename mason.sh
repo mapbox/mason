@@ -232,11 +232,24 @@ function mason_publish {
     cd "${MASON_PREFIX}"
     rm -rf "${MASON_BINARIES_PATH}"
     tar czf "${MASON_BINARIES_PATH}" .
-    ls -lh "${MASON_BINARIES_PATH}"
+    (cd "${MASON_ROOT}/.binaries" && ls -lh "${MASON_BINARIES}")
     mason_step "Uploading binary package..."
-    aws s3 cp --acl public-read "${MASON_BINARIES_PATH}" s3://${MASON_BUCKET}/${MASON_BINARIES}
-}
 
+    local CONTENT_TYPE="application/octet-stream"
+    local DATE="$(LC_ALL=C date -u +"%a, %d %b %Y %X %z")"
+    local MD5="$(openssl md5 -binary < "${MASON_BINARIES_PATH}" | base64)"
+    local SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\nx-amz-acl:public-read\n/${MASON_BUCKET}/${MASON_BINARIES}" | openssl sha1 -binary -hmac "$AWS_SECRET_ACCESS_KEY" | base64)"
+
+    curl -S -T "${MASON_BINARIES_PATH}" https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
+        -H "Date: $DATE" \
+        -H "Authorization: AWS $AWS_ACCESS_KEY_ID:$SIGNATURE" \
+        -H "Content-Type: $CONTENT_TYPE" \
+        -H "Content-MD5: $MD5" \
+        -H "x-amz-acl: public-read"
+
+    echo https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}
+    curl -f -I https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}
+}
 
 function mason_run {
     if [ "$1" == "install" ]; then

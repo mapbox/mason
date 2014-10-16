@@ -12,7 +12,7 @@ The future home of the scripts from:
 ## Mac OS X
 
 ```
-(git clone https://github.com/mapbox/mason.git /usr/local/share/mason ; ln -s /usr/local/share/mason/mason /usr/local/bin/mason)
+(git clone https://github.com/mapbox/mason.git ~/.mason ; sudo ln -s ~/.mason/mason /usr/local/bin/mason)
 ```
 
 Usage:
@@ -20,7 +20,7 @@ Usage:
 $ mason install libuv 0.11.29
 ...
 $ mason prefix libuv 0.11.29
-/usr/local/mason/osx-10.9/libuv/0.11.29
+.../mason_packages/osx-10.9/libuv/0.11.29
 ```
 
 ### Goal

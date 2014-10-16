@@ -26,7 +26,7 @@ function mason_compile {
         LIBUV_LIBS="-lpthread -ldl"
     elif [ ${MASON_PLATFORM} = 'ios' ]; then
         LIBUV_LIBS="-lpthread -ldl"
-    elif [ ${MASON_PLATFORM} = 'linux']; then
+    elif [ ${MASON_PLATFORM} = 'linux' ]; then
         LIBUV_LIBS="-pthread -ldl -lrt"
     fi
 

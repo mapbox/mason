@@ -1,5 +1,4 @@
 language: cpp
-sudo: false
 
 os:
   - linux
@@ -12,6 +11,9 @@ env:
 
 before_install:
 - git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
+- "if [[ `lsb_release -r` =~ '12.04' ]]; then sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test ; fi"
+- "if [[ ${TRAVIS_OS_NAME:-linux} = 'linux' ]]; then sudo apt-get update -y ; fi"
+- "if [[ ${TRAVIS_OS_NAME:-linux} = 'linux' ]]; then sudo apt-get -y install build-essential zlib1g-dev ; fi"
 
 script:
 - ./script.sh build

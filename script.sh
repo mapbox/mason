@@ -7,8 +7,6 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libcurl.pc
 
 . ~/.mason/mason.sh
 
-~/.mason/mason install openssl 1.0.1i
-MASON_OPENSSL=`~/.mason/mason prefix openssl 1.0.1i`
 
 function mason_load_source {
     mason_download \
@@ -21,6 +19,9 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
+    ~/.mason/mason install openssl 1.0.1i
+    MASON_OPENSSL=`~/.mason/mason prefix openssl 1.0.1i`
+
     if [ ${MASON_PLATFORM} = 'linux' ]; then
         LIBS="-ldl ${LIBS=}"
     fi

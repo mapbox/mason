@@ -43,16 +43,17 @@ function mason_compile {
         -no-ssl2 \
         -no-ssl3 \
         -no-krb5 \
+        -fPIC \
+        -DOPENSSL_PIC \
         -DOPENSSL_NO_DEPRECATED \
         -DOPENSSL_NO_COMP \
         -DOPENSSL_NO_HEARTBEATS \
-        -fPIC \
         --openssldir=${MASON_PREFIX}/etc/openssl \
         ${MASON_OS_COMPILER}
 
     make depend MAKEDEPPROG=${MASON_MAKEDEPEND}
 
-    make -j${MASON_CONCURRENCY}
+    make
 
     # https://github.com/openssl/openssl/issues/57
     make install_sw

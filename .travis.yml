@@ -16,7 +16,7 @@ before_install:
 - "if [[ ${TRAVIS_OS_NAME:-linux} = 'linux' ]]; then sudo apt-get -y install xutils-dev ; fi"
 
 script:
-- ./script.sh build
+- bash -x ./script.sh build
 
 after_success:
 - ./script.sh publish

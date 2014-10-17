@@ -58,7 +58,7 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_ISIM_CFLAGS="-miphoneos-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
 
 elif [ ${MASON_PLATFORM} = 'linux' ]; then
-    source /etc/*-release
+    for i in /etc/*-release ; do . $i ; done
     export MASON_PLATFORM_VERSION=${ID}-${VERSION_ID}-`uname -m`
 fi
 

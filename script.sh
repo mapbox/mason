@@ -50,4 +50,4 @@ function mason_clean {
     make clean
 }
 
-mason_run $1
+mason_run "$@"

@@ -60,7 +60,6 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
 elif [ ${MASON_PLATFORM} = 'linux' ]; then
     . /etc/os-release
     export MASON_PLATFORM_VERSION=${ID}-${VERSION_ID}-`uname -m`
-    echo "${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}"
 fi
 
 

@@ -17,6 +17,18 @@ if [ "${MASON_COMMAND}" = "selfupdate" ]; then
     cd ~/.mason
     git pull origin master
     exit
+elif [ "${MASON_COMMAND}" = "init" ]; then
+    MASON_DIR_NAME=`basename $(pwd)`
+    MASON_SLUG=`read -p "Package name [${MASON_DIR_NAME}]: "`
+    if [ -z "${MASON_SLUG}" ]; then MASON_SLUG="${MASON_DIR_NAME}"; fi
+    git init
+    git checkout -b ${MASON_SLUG}
+    git add script.sh
+    git add .travis.yml
+    git commit -m "initial version of ${MASON_SLUG}"
+    git remote set-url origin git@github.com:mapbox/mason.git
+    git push --set-upstream origin ${MASON_SLUG}
+    exit
 fi
 
 if [ -z "${MASON_NAME}" ]; then

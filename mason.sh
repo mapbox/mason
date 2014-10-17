@@ -279,9 +279,9 @@ function mason_run {
         mason_build
     elif [ "$1" == "remove" ]; then
         mason_clear_existing
-    elif [ "$1" == "publish" ] ; then
+    elif [ "$1" == "publish" ]; then
         mason_publish
-    elif [ "$1" == "build" ] ; then
+    elif [ "$1" == "build" ]; then
         mason_build
     elif [ "$1" == "cflags" ]; then
         mason_cflags

@@ -3,8 +3,9 @@
 MASON_NAME=libuv
 MASON_VERSION=0.11.29
 MASON_LIB_FILE=lib/libuv.a
+MASON_PKGCONFIG_FILE=lib/pkgconfig/libuv.pc
 
-. /usr/local/share/mason/mason.sh
+. ~/.mason/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -35,4 +36,4 @@ function mason_clean {
     make clean
 }
 
-mason_run $1
+mason_run "$@"

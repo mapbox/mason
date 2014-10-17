@@ -11,8 +11,8 @@ env:
 
 before_install:
 - git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
-- [ ${TRAVIS_OS_NAME} = 'linux' ] && sudo apt-get update -y
-- [ ${TRAVIS_OS_NAME} = 'linux' ] && sudo apt-get -y install cmake libxi-dev libglu1-mesa-dev x11proto-randr-dev x11proto-xext-dev libxrandr-dev x11proto-xf86vidmode-dev libxxf86vm-dev libxcursor-dev libxinerama-dev
+- "[ ${TRAVIS_OS_NAME} = 'linux' ] && sudo apt-get update -y"
+- "[ ${TRAVIS_OS_NAME} = 'linux' ] && sudo apt-get -y install cmake libxi-dev libglu1-mesa-dev x11proto-randr-dev x11proto-xext-dev libxrandr-dev x11proto-xf86vidmode-dev libxxf86vm-dev libxcursor-dev libxinerama-dev"
 
 script:
 - ./script.sh build

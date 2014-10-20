@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MASON_NAME=boost
+MASON_NAME=libcurl
 MASON_VERSION=system
 MASON_CACHABLE=false
 

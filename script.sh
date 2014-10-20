@@ -27,17 +27,18 @@ else
 fi
 
 function mason_system_version {
-    mkdir -p "${MASON_ROOT}"
-    cd "${MASON_ROOT}"
-    VERSION=`echo "#include <sqlite3.h>
+    mkdir -p "${MASON_PREFIX}"
+    cd "${MASON_PREFIX}"
+    if [ ! -f version ]; then
+        echo "#include <sqlite3.h>
 #include <stdio.h>
 int main() {
     printf(\"%s\", sqlite3_libversion());
     return 0;
 }
-" > version.c && clang version.c $(mason_cflags) $(mason_ldflags) -o version && ./version`
-    rm version.c version
-    echo ${VERSION}
+" > version.c && ${CC:-cc} version.c $(mason_cflags) $(mason_ldflags) -o version
+    fi
+    ./version
 }
 
 function mason_compile {

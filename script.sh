@@ -2,7 +2,7 @@
 
 MASON_NAME=sqlite
 MASON_VERSION=system
-MASON_CACHABLE=false
+MASON_SYSTEM_PACKAGE=true
 
 . ~/.mason/mason.sh
 
@@ -25,6 +25,20 @@ else
     MASON_CFLAGS=`pkg-config sqlite3 --cflags`
     MASON_LDFLAGS=`pkg-config sqlite3 --libs`
 fi
+
+function mason_system_version {
+    mkdir -p "${MASON_ROOT}"
+    cd "${MASON_ROOT}"
+    VERSION=`echo "#include <sqlite3.h>
+#include <stdio.h>
+int main() {
+    printf(\"%s\", sqlite3_libversion());
+    return 0;
+}
+" > version.c && clang version.c $(mason_cflags) $(mason_ldflags) -o version && ./version`
+    rm version.c version
+    echo ${VERSION}
+}
 
 function mason_compile {
     :

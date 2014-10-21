@@ -239,6 +239,21 @@ function mason_ldflags {
     `mason_pkgconfig` --static --libs
 }
 
+function mason_prefix {
+    if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
+        echo ${MASON_PREFIX}
+    else
+        mason_error "Cannot find required library file '${MASON_PREFIX}/${MASON_LIB_FILE}'"
+    fi
+}
+
+function mason_version {
+    if [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+        mason_system_version
+    else
+        echo ${MASON_VERSION}
+    fi
+}
 
 function mason_publish {
     if [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
@@ -299,12 +314,10 @@ function mason_run {
         mason_cflags
     elif [ "$1" == "ldflags" ]; then
         mason_ldflags
+    elif [ "$1" == "version" ]; then
+        mason_version
     elif [ "$1" == "prefix" ]; then
-        if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
-            echo ${MASON_PREFIX}
-        else
-            mason_error "Cannot find required library file '${MASON_PREFIX}/${MASON_LIB_FILE}'"
-        fi
+        mason_prefix
     else
         mason_error "Unknown command '$1'"
     fi

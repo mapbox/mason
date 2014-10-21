@@ -126,6 +126,14 @@ function mason_extract_tar_gz {
     tar xzf ../.cache/${MASON_SLUG}
 }
 
+function mason_extract_tar_bz2 {
+    rm -rf "${MASON_ROOT}/.build"
+    mkdir -p "${MASON_ROOT}/.build"
+    cd "${MASON_ROOT}/.build"
+
+    tar xjf ../.cache/${MASON_SLUG}
+}
+
 
 
 function mason_prepare_compile {

@@ -23,7 +23,7 @@ function mason_compile {
     mv libuv.a lib
 
     if [ ${MASON_PLATFORM} = 'osx' ]; then
-        LIBUV_LIBS="-lpthread -ldl"
+        LIBUV_LIBS="-lpthread -ldl -framework CoreFoundation -framework CoreServices"
     elif [ ${MASON_PLATFORM} = 'ios' ]; then
         LIBUV_LIBS="-lpthread -ldl"
     elif [ ${MASON_PLATFORM} = 'linux' ]; then

@@ -239,6 +239,17 @@ function mason_ldflags {
     `mason_pkgconfig` --static --libs
 }
 
+function mason_static {
+    if [ -z "${MASON_LIB_FILE}" ]; then
+        mason_substep "Linking ${MASON_NAME} ${MASON_VERSION} dynamically"
+    elif [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
+        echo "${MASON_PREFIX}/${MASON_LIB_FILE}"
+    else
+        mason_error "No static library file '${MASON_PREFIX}/${MASON_LIB_FILE}'"
+        exit 1
+    fi
+}
+
 function mason_prefix {
     if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
         echo ${MASON_PREFIX}
@@ -309,11 +320,14 @@ function mason_run {
     elif [ "$1" == "publish" ]; then
         mason_publish
     elif [ "$1" == "build" ]; then
+        mason_clear_existing
         mason_build
     elif [ "$1" == "cflags" ]; then
         mason_cflags
     elif [ "$1" == "ldflags" ]; then
         mason_ldflags
+    elif [ "$1" == "static" ]; then
+        mason_static
     elif [ "$1" == "version" ]; then
         mason_version
     elif [ "$1" == "prefix" ]; then

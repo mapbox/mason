@@ -19,31 +19,23 @@ function mason_load_source {
 
 function mason_compile {
     CFLAGS="-fPIC" make libuv.a -j${MASON_CONCURRENCY}
-    mkdir -p lib/pkgconfig
     mv libuv.a lib
-
-    if [ ${MASON_PLATFORM} = 'osx' ]; then
-        LIBUV_LIBS="-lpthread -ldl -framework CoreFoundation -framework CoreServices"
-    elif [ ${MASON_PLATFORM} = 'ios' ]; then
-        LIBUV_LIBS="-lpthread -ldl"
-    elif [ ${MASON_PLATFORM} = 'linux' ]; then
-        LIBUV_LIBS="-pthread -ldl -lrt"
-    fi
-
-    echo 'prefix='${MASON_PREFIX}'
-exec_prefix=${prefix}
-libdir=${exec_prefix}/lib
-includedir=${prefix}/include
-
-Name: '${MASON_NAME}'
-Version: '${MASON_VERSION}'
-Description: multi-platform support library with a focus on asynchronous I/O.
-
-Libs: -L${libdir} -luv '${LIBUV_LIBS}'
-Cflags: -I${includedir}' > lib/pkgconfig/libuv.pc
-
     mkdir -p "${MASON_PREFIX}"
     cp -rv lib include "${MASON_PREFIX}"
+}
+
+function mason_cflags {
+    echo "-I${MASON_PREFIX}/include"
+}
+
+function mason_ldflags {
+    if [ ${MASON_PLATFORM} = 'osx' ]; then
+        echo "-lpthread -ldl -framework CoreFoundation -framework CoreServices"
+    elif [ ${MASON_PLATFORM} = 'ios' ]; then
+        echo "-lpthread -ldl"
+    elif [ ${MASON_PLATFORM} = 'linux' ]; then
+        echo "-lpthread -ldl -lrt"
+    fi
 }
 
 function mason_clean {

@@ -34,14 +34,9 @@ function mason_compile {
     make install -j${MASON_CONCURRENCY}
 }
 
-function mason_strip_ldflags {
-    shift # -L...
-    shift # -lglfw3
-    echo "$@"
-}
-
 function mason_ldflags {
-    mason_strip_ldflags $(`mason_pkgconfig` --static --libs)
+    LIBS=$(`mason_pkgconfig` --static --libs-only-l --libs-only-other)
+    echo ${LIBS//-lglfw3/}
 }
 
 mason_run "$@"

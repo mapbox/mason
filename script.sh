@@ -24,7 +24,7 @@ if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
     MASON_LDFLAGS=-lsqlite3
 else
     MASON_INCLUDE_PATHS=`pkg-config sqlite3 --cflags-only-I`
-    MASON_CFLAGS=`pkg-config sqlite3 --cflags`
+    MASON_CFLAGS=`pkg-config sqlite3 --cflags-only-other`
     MASON_LDFLAGS=`pkg-config sqlite3 --libs`
 fi
 

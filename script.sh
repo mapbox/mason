@@ -32,12 +32,8 @@ function mason_compile {
     :
 }
 
-function mason_cflags {
-    pkg-config libpng --cflags
-}
-
-function mason_ldflags {
-    pkg-config libpng --libs
+function mason_pkgconfig {
+    echo 'pkg-config libpng'
 }
 
 mason_run "$@"

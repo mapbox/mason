@@ -19,12 +19,10 @@ if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
         exit 1
     fi
 
-    MASON_INCLUDE_PATHS=
     MASON_CFLAGS=
     MASON_LDFLAGS=-lcurl
 else
-    MASON_INCLUDE_PATHS=`pkg-config libcurl --cflags-only-I`
-    MASON_CFLAGS=`pkg-config libcurl --cflags-only-other`
+    MASON_CFLAGS=`pkg-config libcurl --cflags`
     MASON_LDFLAGS=`pkg-config libcurl --libs`
 fi
 
@@ -45,10 +43,6 @@ int main() {
 
 function mason_compile {
     :
-}
-
-function mason_include_paths {
-    echo ${MASON_INCLUDE_PATHS}
 }
 
 function mason_cflags {

@@ -218,6 +218,14 @@ function mason_try_binary {
         mkdir -p "${MASON_PREFIX}"
         cd "${MASON_PREFIX}"
         tar xzf "${MASON_BINARIES_PATH}"
+
+        if [ -f "${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}" ] ; then
+            # Change the prefix
+            MASON_ESCAPED_PREFIX=$(echo "${MASON_PREFIX}" | sed -e 's/[\/&]/\\&/g')
+            sed -i.bak "s/prefix=.*/prefix=${MASON_ESCAPED_PREFIX}/" \
+                "${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}"
+        fi
+
         mason_success "Installed binary package at ${MASON_PREFIX}"
         exit 0
     fi
@@ -226,9 +234,7 @@ function mason_try_binary {
 
 function mason_pkgconfig {
     echo pkg-config \
-        ${MASON_PREFIX}/${MASON_PKGCONFIG_FILE} \
-        --define-variable=prefix=${MASON_PREFIX} \
-        --define-variable=exec_prefix=${MASON_PREFIX}
+        ${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}
 }
 
 function mason_cflags {

@@ -231,15 +231,31 @@ function mason_pkgconfig {
         --define-variable=exec_prefix=${MASON_PREFIX}
 }
 
+function mason_include_paths {
+    if [ $(`mason_pkgconfig` --exists; echo $?) = 0 ]; then
+        # Use pkg-config if available
+        PATHS="$(`mason_pkgconfig` --static --cflags-only-I)"
+        for PATH in ${PATHS}; do
+            # Strip '-I' from the front
+            echo ${PATH:2}
+        done
+    elif [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+        mason_error "System packages must override mason_include_paths()"
+        exit 1
+    else
+        echo "${MASON_PREFIX}/include"
+    fi
+}
+
 function mason_cflags {
-    `mason_pkgconfig` --static --cflags
+    `mason_pkgconfig` --static --cflags-only-other
 }
 
 function mason_ldflags {
     `mason_pkgconfig` --static --libs
 }
 
-function mason_static {
+function mason_static_libs {
     if [ -z "${MASON_LIB_FILE}" ]; then
         mason_substep "Linking ${MASON_NAME} ${MASON_VERSION} dynamically"
     elif [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
@@ -326,8 +342,10 @@ function mason_run {
         mason_cflags
     elif [ "$1" == "ldflags" ]; then
         mason_ldflags
-    elif [ "$1" == "static" ]; then
-        mason_static
+    elif [ "$1" == "static_libs" ]; then
+        mason_static_libs
+    elif [ "$1" == "include_paths" ]; then
+        mason_include_paths
     elif [ "$1" == "version" ]; then
         mason_version
     elif [ "$1" == "prefix" ]; then

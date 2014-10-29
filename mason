@@ -50,7 +50,7 @@ MASON_SCRIPT="${MASON_ROOT}/.scripts/${MASON_SLUG}.sh"
 if [ ! -f "${MASON_SCRIPT}" ]; then
     mason_step "Loading install script 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/script.sh'..."
     mkdir -p "${MASON_ROOT}/.scripts"
-    curl -f -# -L https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/script.sh -o "${MASON_ROOT}/.scripts/${MASON_SLUG}.sh"
+    curl --retry 3 -f -# -L https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/script.sh -o "${MASON_ROOT}/.scripts/${MASON_SLUG}.sh"
 fi
 
 bash "${MASON_SCRIPT}" "${MASON_COMMAND}" "$@"

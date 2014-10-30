@@ -131,7 +131,7 @@ function mason_download {
     cd "${MASON_ROOT}/.cache"
     if [ ! -f ${MASON_SLUG} ] ; then
         mason_step "Downloading $1..."
-        curl -f -# -L "$1" -o ${MASON_SLUG}
+        curl --retry 3 -f -# -L "$1" -o ${MASON_SLUG}
     fi
 
     MASON_HASH=`git hash-object ${MASON_SLUG}`
@@ -240,12 +240,12 @@ function mason_try_binary {
     # try downloading from S3
     if [ ! -f "${MASON_BINARIES_PATH}" ] ; then
         mason_step "Downloading binary package ${MASON_BINARIES}..."
-        curl -f -# -L \
+        curl --retry 3 -f -# -L \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
             -o "${MASON_BINARIES_PATH}" || true
     else
         mason_step "Updating binary package ${MASON_BINARIES}..."
-        curl -f -# -L -z "${MASON_BINARIES_PATH}" \
+        curl --retry 3 -f -# -L -z "${MASON_BINARIES_PATH}" \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
             -o "${MASON_BINARIES_PATH}" || true
     fi
@@ -337,7 +337,7 @@ function mason_publish {
     local MD5="$(openssl md5 -binary < "${MASON_BINARIES_PATH}" | base64)"
     local SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\nx-amz-acl:public-read\n/${MASON_BUCKET}/${MASON_BINARIES}" | openssl sha1 -binary -hmac "$AWS_SECRET_ACCESS_KEY" | base64)"
 
-    curl -S -T "${MASON_BINARIES_PATH}" https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
+    curl --retry 3 -S -T "${MASON_BINARIES_PATH}" https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
         -H "Date: $DATE" \
         -H "Authorization: AWS $AWS_ACCESS_KEY_ID:$SIGNATURE" \
         -H "Content-Type: $CONTENT_TYPE" \
@@ -345,7 +345,7 @@ function mason_publish {
         -H "x-amz-acl: public-read"
 
     echo https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}
-    curl -f -I https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}
+    curl --retry 3 -f -I https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}
 }
 
 function mason_run {

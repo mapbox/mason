@@ -14,9 +14,9 @@ elif [ ${MASON_UNAME} = 'Linux' ]; then
 fi
 
 
-case ${MASON_PLATFORM} in
-    'osx'|'ios')    MASON_CONCURRENCY=`sysctl -n hw.ncpu` ;;
-    'linux')        MASON_CONCURRENCY=`nproc` ;;
+case ${MASON_UNAME} in
+    'Darwin')    MASON_CONCURRENCY=`sysctl -n hw.ncpu` ;;
+    'Linux')        MASON_CONCURRENCY=`nproc` ;;
     *)              MASON_CONCURRENCY=1 ;;
 esac
 
@@ -72,6 +72,29 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     fi
 
     export MASON_PLATFORM_VERSION=${MASON_PLATFORM_DISTRIBUTION}-${MASON_PLATFORM_DISTRIBUTION_VERSION}-`uname -m`
+elif [ ${MASON_PLATFORM} = 'android' ]; then
+    if [ ${ANDROID_NDK_PATH:-false} = false ]; then
+        mason_error "ANDROID_NDK_PATH variable must be set with an active-platform built"
+        exit
+    fi
+
+    MASON_ANDROID_ARCH="arm"
+    MASON_API_LEVEL="android-21"
+    MASON_ANDROID_TARGET="arm"
+    MASON_ANDROID_TOOLCHAIN="${MASON_ANDROID_TARGET}-linux-androideabi"
+    MASON_ANDROID_CROSS_COMPILER="${MASON_ANDROID_TOOLCHAIN}-4.9"
+    export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
+    export MASON_PLATFORM_VERSION="r10c"
+
+    MASON_SDK_ROOT="${ANDROID_NDK_PATH}/active-platform/"
+    export PATH=${MASON_SDK_ROOT}/bin:${PATH}
+    export CFLAGS="-march=armv7-a -mfloat-abi=hard -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -fPIC -D_LITTLE_ENDIAN"
+    export CPPFLAGS="-D__ANDROID__"
+    export LDFLAGS="-Wl,--fix-cortex-a8 -Wl,--no-warn-mismatch -lm_hard"
+    export LD="${MASON_ANDROID_TOOLCHAIN}-ld"
+    export AR="${MASON_ANDROID_TOOLCHAIN}-ar"
+    export RANLIB="${MASON_ANDROID_TOOLCHAIN}-ranlib"
+    export NM="${MASON_ANDROID_TOOLCHAIN}-nm"
 fi
 
 

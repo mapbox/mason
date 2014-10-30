@@ -16,8 +16,8 @@ before_install:
 
 script:
 - ./script.sh build
-- if [ $(uname -s) = 'Linux' ]; then MASON_PLATFORM=android ./script.sh build fi;
+- if [ $(uname -s) = 'Linux' ]; then MASON_PLATFORM=android ./script.sh build; fi;
 
 after_success:
 - ./script.sh publish
-- if [ $(uname -s) = 'Linux' ]; then MASON_PLATFORM=android ./script.sh publish fi;
+- if [ $(uname -s) = 'Linux' ]; then MASON_PLATFORM=android ./script.sh publish; fi;

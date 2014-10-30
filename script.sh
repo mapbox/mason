@@ -27,7 +27,8 @@ function mason_compile {
         ${MASON_HOST_ARG} \
         --enable-static \
         --disable-shared \
-        --disable-dependency-tracking
+        --disable-dependency-tracking \
+        --disable-dtrace
 
     make install -j${MASON_CONCURRENCY}
 }

@@ -12,7 +12,8 @@ env:
 
 before_install:
 - git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
-- if [ $(uname -s) = 'Linux' ]; then wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86_64.bin; chmod a+x ./android-ndk-r10c-linux-x86_64.bin; ls -l;./android-ndk-r10c-linux-x86_64.bin; export ANDROID_NDK_PATH=$(pwd)/android-ndk-r10c; fi;
+- if [ $(uname -s) = 'Linux' ]; then wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86_64.bin; chmod a+x ./android-ndk-r10c-linux-x86_64.bin; ls -l; sh -c ./android-ndk-r10c-linux-x86_64.bin; export ANDROID_NDK_PATH=$(pwd)/android-ndk-r10c; fi;
+- sh -c ./android-ndk-r10c-linux-x86_64.bin;
 
 script:
 - ./script.sh build

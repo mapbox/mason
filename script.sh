@@ -19,7 +19,8 @@ function mason_load_source {
 
 function mason_compile {
     CFLAGS="-fPIC" make libuv.a -j${MASON_CONCURRENCY}
-    mv libuv.a lib
+    mkdir -p lib
+    mv libuv.a "${MASON_LIB_FILE}"
     mkdir -p "${MASON_PREFIX}"
     cp -rv lib include "${MASON_PREFIX}"
 }

@@ -26,7 +26,7 @@ elif [ "${MASON_COMMAND}" = "init" ]; then
     git add script.sh
     git add .travis.yml
     git commit -m "initial version of ${MASON_SLUG}"
-    git remote set-url origin git@github.com:mapbox/mason.git
+    git remote add origin git@github.com:mapbox/mason.git || git remote set-url origin git@github.com:mapbox/mason.git
     git push --set-upstream origin ${MASON_SLUG}
     exit
 fi

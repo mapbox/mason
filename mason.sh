@@ -86,7 +86,20 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
     export MASON_PLATFORM_VERSION="r10c"
 
-    MASON_SDK_ROOT="${ANDROID_NDK_PATH}/active-platform/"
+    MASON_SDK_ROOT="${MASON_ROOT}/.android-platform/"
+    if [ ! -d ${MASON_SDK_ROOT} ]; then
+        echo "creating android toolchain with ${MASON_ANDROID_CROSS_COMPILER}/${MASON_API_LEVEL} at ${MASON_SDK_ROOT}"
+        "${ANDROID_NDK_PATH}/build/tools/make-standalone-toolchain.sh"  \
+          --toolchain="${MASON_ANDROID_CROSS_COMPILER}" \
+          --llvm-version=3.4 \
+          --package-dir="${ANDROID_NDK_PATH}/package-dir/" \
+          --install-dir="${MASON_SDK_ROOT}" \
+          --stl="libcxx" \
+          --arch="${MASON_ANDROID_ARCH}" \
+          --platform="${MASON_API_LEVEL}"
+    else
+        echo "using ${MASON_ANDROID_CROSS_COMPILER}/${MASON_API_LEVEL} at ${MASON_SDK_ROOT}"
+    fi
     export PATH=${MASON_SDK_ROOT}/bin:${PATH}
     export CFLAGS="-march=armv7-a -mfloat-abi=hard -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -fPIC -D_LITTLE_ENDIAN"
     export CPPFLAGS="-D__ANDROID__"

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -o pipefail
+
 MASON_COMMAND=$1 ; shift
 MASON_NAME=$1 ; shift
 MASON_VERSION=$1 ; shift
@@ -41,7 +44,7 @@ elif [ -z "${MASON_VERSION}" ]; then
     exit 1
 fi
 
-. ~/.mason/mason.sh
+. ${MASON_DIR:-~/.mason}/mason.sh
 
 
 # Load script if it doesn't exist yet

@@ -240,14 +240,14 @@ function mason_try_binary {
     # try downloading from S3
     if [ ! -f "${MASON_BINARIES_PATH}" ] ; then
         mason_step "Downloading binary package ${MASON_BINARIES}..."
-        curl -f -# -L \
+        curl -s -f -# -L \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
-            -o "${MASON_BINARIES_PATH}" || true
+            -o "${MASON_BINARIES_PATH}" || mason_step "Binary not available yet for ${MASON_BINARIES}"
     else
         mason_step "Updating binary package ${MASON_BINARIES}..."
-        curl -f -# -L -z "${MASON_BINARIES_PATH}" \
+        curl -s -f -# -L -z "${MASON_BINARIES_PATH}" \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
-            -o "${MASON_BINARIES_PATH}" || true
+            -o "${MASON_BINARIES_PATH}" || mason_step "Binary not available yet for ${MASON_BINARIES}"
     fi
 
     # unzip the file if it exists

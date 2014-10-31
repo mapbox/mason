@@ -375,8 +375,10 @@ function mason_run {
         mason_version
     elif [ "$1" == "prefix" ]; then
         mason_prefix
-    else
+    elif [ $1 ]; then
         mason_error "Unknown command '$1'"
+    else
+        mason_error "Usage: $0 <command> <lib> <version>"
     fi
 }
 

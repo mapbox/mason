@@ -4,7 +4,7 @@ MASON_NAME=7z
 MASON_VERSION=9.20.1
 MASON_LIB_FILE=TODO
 
-. ~/.mason/mason.sh
+. ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \

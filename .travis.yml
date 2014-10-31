@@ -12,6 +12,7 @@ env:
 
 before_install:
 - git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
+- alias mason='~/.mason/mason'
 - mason install 7z 9.20
 - CURRENT_PATH=$(pwd)
 - cd ./mason_packages/*/7z/*/bin/

@@ -5,7 +5,7 @@ MASON_VERSION=0.10.28
 MASON_LIB_FILE=lib/libuv.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libuv.pc
 
-. ~/.mason/mason.sh
+. ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \

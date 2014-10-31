@@ -5,7 +5,7 @@ MASON_VERSION=a21f2377
 MASON_LIB_FILE=lib/libglfw3.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/glfw3.pc
 
-. ~/.mason/mason.sh
+. ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \

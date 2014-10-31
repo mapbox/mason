@@ -2,7 +2,7 @@
 
 MASON_NAME=mesa
 MASON_VERSION=10.3.1
-MASON_LIB_FILE=lib/libGL.a
+MASON_LIB_FILE=lib/libGL.so
 MASON_PKGCONFIG_FILE=lib/pkgconfig/gl.pc
 
 . ~/.mason/mason.sh
@@ -21,7 +21,6 @@ function mason_compile {
     ./autogen.sh \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
-        --enable-static \
         --enable-shared \
         --with-gallium-drivers=svga,swrast \
         --disable-dri \

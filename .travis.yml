@@ -12,12 +12,8 @@ env:
 
 before_install:
 - git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
-- alias mason='~/.mason/mason'
 - mason install 7z 9.20
-- CURRENT_PATH=$(pwd)
-- cd ./mason_packages/*/7z/*/bin/
-- export PATH=$(pwd)
-- cd $CURRENT_PATH
+- export PATH=$(~/.mason/mason prefix 7z 9.20)/bin:$PATH
 - if [ $(uname -s) = 'Linux' ]; then wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86_64.bin; chmod a+x ./android-ndk-r10c-linux-x86_64.bin; 7z x ./android-ndk-r10c-linux-x86_64.bin > /dev/null; export ANDROID_NDK_PATH=$(pwd)/android-ndk-r10c; fi;
 
 script:

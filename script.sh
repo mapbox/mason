@@ -2,7 +2,7 @@
 
 MASON_NAME=7z
 MASON_VERSION=9.20.1
-MASON_LIB_FILE=TODO
+MASON_LIB_FILE=bin/7z
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 

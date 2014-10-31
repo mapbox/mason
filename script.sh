@@ -4,7 +4,7 @@ MASON_NAME=libcurl
 MASON_VERSION=system
 MASON_SYSTEM_PACKAGE=true
 
-. ~/.mason/mason.sh
+. ${MASON_DIR:-~/.mason}/mason.sh
 
 if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
     MASON_HEADER_FILE="${MASON_SDK_PATH}/usr/include/curl/curl.h"

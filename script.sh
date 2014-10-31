@@ -5,7 +5,7 @@ MASON_VERSION=7.38.0
 MASON_LIB_FILE=lib/libcurl.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libcurl.pc
 
-. ~/.mason/mason.sh
+. ${MASON_DIR:-~/.mason}/mason.sh
 
 
 function mason_load_source {

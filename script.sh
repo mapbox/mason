@@ -12,7 +12,6 @@ function mason_load_source {
     https://bitbucket.org/alekseyt/nunicode/get/1.4.tar.bz2 \
     0874ecc1e600f2ee29d689c9f32f92558610acee
 
-    export MASON_SLUG=1.4.tar.bz2
     mason_extract_tar_bz2
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/alekseyt-nunicode-4a0e4773e91a

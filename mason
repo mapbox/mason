@@ -1,11 +1,11 @@
 #!/bin/bash
 
-set -e
-set -o pipefail
-
 MASON_COMMAND=$1 ; shift
 MASON_NAME=$1 ; shift
 MASON_VERSION=$1 ; shift
+
+set -e
+set -o pipefail
 
 function usage {
     echo "Usage: $0 <command> <lib> <version>"

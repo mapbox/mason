@@ -20,7 +20,7 @@ function mason_prepare_compile {
     if [ $(uname -s) = 'Darwin' ]; then
         cp makefile.macosx_64bits makefile.machine
     elif [ $(uname -s) = 'Linux' ]; then
-        cp makefile.linux_x86_asm_gcc_4 makefile.linux
+        cp makefile.linux_clang_amd64 makefile.linux
     fi
 }
 

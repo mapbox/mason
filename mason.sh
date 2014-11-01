@@ -222,6 +222,8 @@ function mason_build {
         else
             echo "using ${MASON_ANDROID_CROSS_COMPILER}/${MASON_API_LEVEL} at ${MASON_SDK_ROOT}"
         fi
+        cd "${MASON_BUILD_PATH}"
+        mason_compile
     else
         cd "${MASON_BUILD_PATH}"
         mason_compile

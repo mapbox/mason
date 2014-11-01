@@ -131,7 +131,7 @@ function mason_download {
     cd "${MASON_ROOT}/.cache"
     if [ ! -f ${MASON_SLUG} ] ; then
         mason_step "Downloading $1..."
-        curl -f -# -L "$1" -o ${MASON_SLUG}
+        curl --retry 3 -f -# -L "$1" -o ${MASON_SLUG}
     fi
 
     MASON_HASH=`git hash-object ${MASON_SLUG}`
@@ -242,12 +242,12 @@ function mason_try_binary {
     # try downloading from S3
     if [ ! -f "${MASON_BINARIES_PATH}" ] ; then
         mason_step "Downloading binary package ${MASON_BINARIES}..."
-        curl -s -f -# -L \
+        curl --retry 3 -s -f -# -L \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
             -o "${MASON_BINARIES_PATH}" || mason_step "Binary not available yet for ${MASON_BINARIES}"
     else
         mason_step "Updating binary package ${MASON_BINARIES}..."
-        curl -s -f -# -L -z "${MASON_BINARIES_PATH}" \
+        curl --retry 3 -s -f -# -L -z "${MASON_BINARIES_PATH}" \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
             -o "${MASON_BINARIES_PATH}" || mason_step "Binary not available yet for ${MASON_BINARIES}"
     fi

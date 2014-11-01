@@ -1,4 +1,5 @@
 language: cpp
+sudo: false
 
 os:
   - linux
@@ -8,15 +9,16 @@ env:
   global:
    - secure: "clCFM3prHnDocZ8lXlimPxAogvFirD1Zx8cMcFJ/XpkTA/0pCgnhpArM4y/NzLHR57pNZTSCr3p6XZI1c1iTG4Zm8x0sK2A4aTFRahypXNy/e+LzAbtd1y1+dEEDwlJvNNGxizQX4frhOgSNQFDFnWLtmF3stlft5YWyc2kI+FI="
    - secure: "jKJErCng8Sk8YJ0IN2FX3lhv7G1LeudMfFBAXViZaXn8w/gWPs+SlfXQmIJ5SruU7U2GQKnAhzbjwXjVAgAh8OAblzny0DDm5Lh5WmwkgAP8JH1LpsBwCYx2S/v8qyR4DX1RVhHS8mQu298180ZDVgGccw+hd8xrE/S5TEQcNfQ="
+  matrix:
+   - MASON_PLATFORM=android
+   - MASON_PLATFORM=linux
 
 before_install:
 - git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
-- if [ $(uname -s) = 'Linux' ]; then sudo apt-get install -y p7zip-full; wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86_64.bin; chmod a+x ./android-ndk-r10c-linux-x86_64.bin; 7z x ./android-ndk-r10c-linux-x86_64.bin > /dev/null; export ANDROID_NDK_PATH=$(pwd)/android-ndk-r10c; fi;
+- if [ ${MASON_PLATFORM} = "android" ]; then ~/.mason/mason install 7z 9.20; wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86_64.bin; chmod a+x ./android-ndk-r10c-linux-x86_64.bin; 7z x ./android-ndk-r10c-linux-x86_64.bin > /dev/null; export ANDROID_NDK_PATH=$(pwd)/android-ndk-r10c; ls *;ls $ANDROID_NDK_PATH fi;
 
 script:
 - ./script.sh build
-- if [ $(uname -s) = 'Linux' ]; then MASON_PLATFORM=android ./script.sh build; fi;
 
 after_success:
 - ./script.sh publish
-- if [ $(uname -s) = 'Linux' ]; then MASON_PLATFORM=android ./script.sh publish; fi;

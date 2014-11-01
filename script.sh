@@ -2,7 +2,7 @@
 
 MASON_NAME=jpeg
 MASON_VERSION=v8d
-MASON_LIB_FILE=libjpeg.a
+MASON_LIB_FILE=lib/libjpeg.a
 
 . ~/.mason/mason.sh
 
@@ -29,11 +29,11 @@ function mason_compile {
 }
 
 function mason_cflags {
-    echo $(`mason_pkgconfig` --static --libs)
+    echo -I${MASON_PREFIX}/include
 }
 
 function mason_ldflags {
-    echo $(`mason_pkgconfig` --static --libs)
+    echo -L${MASON_PREFIX}/lib -ljpeg
 }
 
 function mason_clean {

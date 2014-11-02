@@ -21,6 +21,21 @@ if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
 
     MASON_CFLAGS=
     MASON_LDFLAGS=-lz
+elif [[ ${MASON_PLATFORM} = 'android' ]]; then
+    MASON_HEADER_FILE="${MASON_SDK_PATH}/usr/include/zlib.h"
+    if [ ! -f "${MASON_HEADER_FILE}" ]; then
+        mason_error "Can't find header file ${MASON_HEADER_FILE}"
+        exit 1
+    fi
+
+    MASON_LIBRARY_FILE="${MASON_SDK_PATH}/usr/lib/libz.so"
+    if [ ! -f "${MASON_LIBRARY_FILE}" ]; then
+        mason_error "Can't find library file ${MASON_LIBRARY_FILE}"
+        exit 1
+    fi
+
+    MASON_CFLAGS=
+    MASON_LDFLAGS=-lz
 else
     MASON_CFLAGS=`pkg-config zlib --cflags`
     MASON_LDFLAGS=`pkg-config zlib --libs`

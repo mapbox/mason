@@ -86,6 +86,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
     MASON_SDK_ROOT="${MASON_ROOT}/.android-platform/"
+    MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
     export PATH=${MASON_SDK_ROOT}/bin:${PATH}
     export CFLAGS="-march=armv7-a -mfloat-abi=hard -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -fPIC -D_LITTLE_ENDIAN"
     export CPPFLAGS="-D__ANDROID__"
@@ -95,7 +96,17 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     export LD="${MASON_ANDROID_TOOLCHAIN}-ld"
     export AR="${MASON_ANDROID_TOOLCHAIN}-ar"
     export RANLIB="${MASON_ANDROID_TOOLCHAIN}-ranlib"
-    export NM="${MASON_ANDROID_TOOLCHAIN}-nm"
+    if [ ! -d ${MASON_SDK_ROOT} ]; then
+        echo "creating android toolchain with ${MASON_ANDROID_CROSS_COMPILER}/${MASON_API_LEVEL} at ${MASON_SDK_ROOT}"
+        "${ANDROID_NDK_PATH}/build/tools/make-standalone-toolchain.sh"  \
+          --toolchain="${MASON_ANDROID_CROSS_COMPILER}" \
+          --llvm-version=3.4 \
+          --package-dir="${ANDROID_NDK_PATH}/package-dir/" \
+          --install-dir="${MASON_SDK_ROOT}" \
+          --stl="libcxx" \
+          --arch="${MASON_ANDROID_ARCH}" \
+          --platform="${MASON_API_LEVEL}"
+    fi
 fi
 
 
@@ -210,19 +221,6 @@ function mason_build {
         cd "${MASON_PREFIX}"
         rm -rf lib-isim lib-ios
     elif [ ${MASON_PLATFORM} = 'android' ]; then
-        if [ ! -d ${MASON_SDK_ROOT} ]; then
-            echo "creating android toolchain with ${MASON_ANDROID_CROSS_COMPILER}/${MASON_API_LEVEL} at ${MASON_SDK_ROOT}"
-            "${ANDROID_NDK_PATH}/build/tools/make-standalone-toolchain.sh"  \
-              --toolchain="${MASON_ANDROID_CROSS_COMPILER}" \
-              --llvm-version=3.4 \
-              --package-dir="${ANDROID_NDK_PATH}/package-dir/" \
-              --install-dir="${MASON_SDK_ROOT}" \
-              --stl="libcxx" \
-              --arch="${MASON_ANDROID_ARCH}" \
-              --platform="${MASON_API_LEVEL}"
-        else
-            echo "using ${MASON_ANDROID_CROSS_COMPILER}/${MASON_API_LEVEL} at ${MASON_SDK_ROOT}"
-        fi
         cd "${MASON_BUILD_PATH}"
         mason_compile
     else

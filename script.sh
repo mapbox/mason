@@ -3,7 +3,6 @@
 MASON_NAME=libuv
 MASON_VERSION=0.10.28
 MASON_LIB_FILE=lib/libuv.a
-MASON_PKGCONFIG_FILE=lib/pkgconfig/libuv.pc
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 

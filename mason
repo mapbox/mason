@@ -32,6 +32,10 @@ elif [ "${MASON_COMMAND}" = "init" ]; then
     git remote add origin git@github.com:mapbox/mason.git || git remote set-url origin git@github.com:mapbox/mason.git
     git push --set-upstream origin ${MASON_SLUG}
     exit
+elif [ "${MASON_COMMAND}" = "env" ]; then
+    . ${MASON_DIR:-~/.mason}/mason.sh
+    echo ${!MASON_NAME}
+    exit
 fi
 
 if [ -z "${MASON_NAME}" ]; then

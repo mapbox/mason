@@ -53,7 +53,7 @@ int main() {
     printf(\"%s\", ZLIB_VERSION);
     return 0;
 }
-" > version.c && ${CC:-cc} version.c $(mason_cflags) $(mason_ldflags) -o version
+" > version.c && cc version.c $(mason_cflags) $(mason_ldflags) -o version
     fi
     ./version
 }

@@ -25,7 +25,7 @@ int main() {
     printf(\"%d.%d.%d\", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
     return 0;
 }
-" > version.c && ${CC:-cc} version.c $(mason_cflags) $(mason_ldflags) -o version
+" > version.c && cc version.c $(mason_cflags) $(mason_ldflags) -o version
     fi
     ./version
 }

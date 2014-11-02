@@ -55,7 +55,7 @@ if [ ! -f "${MASON_SCRIPT}" ]; then
     mkdir -p "${MASON_ROOT}/.scripts"
     curl --retry 3 -s -f -# -L \
       https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/script.sh \
-      -o "${MASON_ROOT}/.scripts/${MASON_SLUG}.sh" || mason_error "Could not find install script for ${MASON_SLUG}" && exit 1
+      -o "${MASON_ROOT}/.scripts/${MASON_SLUG}.sh" || (mason_error "Could not find install script for ${MASON_SLUG}" && exit 1)
 fi
 
 bash "${MASON_SCRIPT}" "${MASON_COMMAND}" "$@"

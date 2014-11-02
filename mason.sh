@@ -90,6 +90,8 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     export CFLAGS="-march=armv7-a -mfloat-abi=hard -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -fPIC -D_LITTLE_ENDIAN"
     export CPPFLAGS="-D__ANDROID__"
     export LDFLAGS="-Wl,--fix-cortex-a8 -Wl,--no-warn-mismatch -lm_hard"
+    export CXX="${MASON_ANDROID_TOOLCHAIN}-clang++"
+    export CC="${MASON_ANDROID_TOOLCHAIN}-clang"
     export LD="${MASON_ANDROID_TOOLCHAIN}-ld"
     export AR="${MASON_ANDROID_TOOLCHAIN}-ar"
     export RANLIB="${MASON_ANDROID_TOOLCHAIN}-ranlib"

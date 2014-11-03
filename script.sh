@@ -5,7 +5,7 @@ MASON_VERSION=1.4
 MASON_LIB_FILE=lib/libnu.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/nu.pc
 
-. ~/.mason/mason.sh
+. ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \

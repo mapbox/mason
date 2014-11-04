@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 MASON_NAME=boost
-MASON_VERSION=1.57.07
+MASON_VERSION=1.57.0
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \
         http://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.tar.bz2 \
-        a97bbc05eeae7a7a6384b3f8c9ff551cf381f041
+        397306fa6d0858c4885fbba7d43a0164dcb7f53e
 
     mason_extract_tar_bz2
 

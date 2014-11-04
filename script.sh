@@ -5,7 +5,7 @@ MASON_VERSION=1.57.0
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
-BOOST_ROOT='${MASON_PREFIX}'
+BOOST_ROOT=${MASON_PREFIX}
 
 function mason_load_source {
     mason_download \

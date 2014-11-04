@@ -12,7 +12,7 @@ function mason_load_source {
 
     mason_extract_tar_bz2
 
-    mkdir ${MASON_PREFIX}/include
+    mkdir -p ${MASON_PREFIX}/include
     cp -r ${MASON_ROOT}/.build/boost_1_57_0/boost ${MASON_PREFIX}/include/boost
 }
 

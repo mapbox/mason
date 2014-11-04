@@ -1,33 +1,21 @@
 #!/usr/bin/env bash
 
 MASON_NAME=boost
-MASON_VERSION=system
-MASON_SYSTEM_PACKAGE=true
+MASON_VERSION=1.57.0
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
-if [ -d '/usr/local/include/boost' ]; then
-    BOOST_ROOT='/usr/local'
-elif [ -d '/usr/include/boost' ]; then
-    BOOST_ROOT='/usr'
-else
-    mason_error "Cannot find Boost"
-    exit 1
-fi
+BOOST_ROOT=${MASON_PREFIX}
 
-function mason_system_version {
-    mkdir -p "${MASON_PREFIX}"
-    cd "${MASON_PREFIX}"
-    if [ ! -f version ]; then
-        echo "#include <boost/version.hpp>
-#include <stdio.h>
-int main() {
-    printf(\"%d.%d.%d\", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
-    return 0;
-}
-" > version.c && cc version.c $(mason_cflags) $(mason_ldflags) -o version
-    fi
-    ./version
+function mason_load_source {
+    mason_download \
+        http://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.tar.bz2 \
+        397306fa6d0858c4885fbba7d43a0164dcb7f53e
+
+    mason_extract_tar_bz2
+
+    mkdir -p ${BOOST_ROOT}/include
+    cp -r ${MASON_ROOT}/.build/boost_1_57_0/boost ${BOOST_ROOT}/include/boost
 }
 
 function mason_prefix {
@@ -36,10 +24,6 @@ function mason_prefix {
 
 function mason_cflags {
     echo "-I${BOOST_ROOT}/include"
-}
-
-function mason_ldflags {
-    echo "-L${BOOST_ROOT}/lib"
 }
 
 mason_run "$@"

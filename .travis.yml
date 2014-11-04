@@ -1,0 +1,18 @@
+language: cpp
+sudo: false
+
+os:
+  - linux
+  - osx
+
+before_install:
+- true
+
+install:
+- true
+
+before_script:
+- true
+
+script:
+- ./mason env MASON_PLATFORM_VERSION

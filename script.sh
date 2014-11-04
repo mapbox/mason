@@ -5,6 +5,8 @@ MASON_VERSION=1.57.0
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
+BOOST_ROOT='${MASON_PREFIX}'
+
 function mason_load_source {
     mason_download \
         http://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.tar.bz2 \
@@ -12,12 +14,16 @@ function mason_load_source {
 
     mason_extract_tar_bz2
 
-    mkdir -p ${MASON_PREFIX}/include
-    cp -r ${MASON_ROOT}/.build/boost_1_57_0/boost ${MASON_PREFIX}/include/boost
+    mkdir -p ${BOOST_ROOT}/include
+    cp -r ${MASON_ROOT}/.build/boost_1_57_0/boost ${BOOST_ROOT}/include/boost
+}
+
+function mason_prefix {
+    echo "${BOOST_ROOT}"
 }
 
 function mason_cflags {
-    echo "-I${MASON_PREFIX}/include"
+    echo "-I${BOOST_ROOT}/include"
 }
 
 mason_run "$@"

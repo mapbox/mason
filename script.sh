@@ -16,4 +16,8 @@ function mason_load_source {
     cp -r ${MASON_ROOT}/.build/boost_1_57_0/boost ${MASON_PREFIX}/include/boost
 }
 
+function mason_cflags {
+    echo "-I${MASON_PREFIX}/include"
+}
+
 mason_run "$@"

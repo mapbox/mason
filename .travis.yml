@@ -5,8 +5,14 @@ os:
   - linux
   - osx
 
+env:
+  matrix:
+   - MASON_PLATFORM=android
+   # default to host platform
+   - MASON_PLATFORM=
+
 before_install:
-- true
+- if [ "${MASON_PLATFORM}" = "android" ]; then MASON_PLATFORM= ~/.mason/mason install 7z 9.20; export PATH=$(MASON_PLATFORM= ~/.mason/mason prefix 7z 9.20)/bin:${PATH}; wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86_64.bin; chmod a+x ./android-ndk-r10c-linux-x86_64.bin; 7za x ./android-ndk-r10c-linux-x86_64.bin > /dev/null; export ANDROID_NDK_PATH=$(pwd)/android-ndk-r10c; fi;
 
 install:
 - true

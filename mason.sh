@@ -50,7 +50,7 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
 
     if [ `xcrun --sdk iphonesimulator --show-sdk-version` != ${MASON_PLATFORM_VERSION} ]; then
         mason_error "iPhone Simulator SDK version doesn't match iPhone SDK version"
-        exit
+        exit 1
     fi
 
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneSimulator.platform/Developer
@@ -62,20 +62,20 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     MASON_PLATFORM_DISTRIBUTION=`echo ${ID:-${DISTRIB_ID}} | tr '[:upper:]' '[:lower:]'`
     if [ -z "${MASON_PLATFORM_DISTRIBUTION}" ]; then
         mason_error "Cannot determine distribution name"
-        exit
+        exit 1
     fi
 
     MASON_PLATFORM_DISTRIBUTION_VERSION=${DISTRIB_RELEASE:-${VERSION_ID}}
     if [ -z "${MASON_PLATFORM_DISTRIBUTION_VERSION}" ]; then
         mason_error "Cannot determine distribution version"
-        exit
+        exit 1
     fi
 
     export MASON_PLATFORM_VERSION=${MASON_PLATFORM_DISTRIBUTION}-${MASON_PLATFORM_DISTRIBUTION_VERSION}-`uname -m`
 elif [ ${MASON_PLATFORM} = 'android' ]; then
     if [ ${ANDROID_NDK_PATH:-false} = false ]; then
         mason_error "ANDROID_NDK_PATH variable must be set with an active-platform built"
-        exit
+        exit 1
     fi
 
     MASON_ANDROID_ARCH="arm"
@@ -125,7 +125,7 @@ function mason_check_existing {
     # skip installing if it already exists
     if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
         mason_success "Already installed at ${MASON_PREFIX}"
-        exit
+        exit 0
     fi
 }
 
@@ -177,7 +177,7 @@ function mason_prepare_compile {
 
 function mason_compile {
     mason_error "COMPILE FUNCTION MISSING"
-    exit
+    exit 1
 }
 
 function mason_clean {
@@ -299,6 +299,7 @@ function mason_prefix {
         echo ${MASON_PREFIX}
     else
         mason_error "Cannot find required library file '${MASON_PREFIX}/${MASON_LIB_FILE}'"
+        exit 1
     fi
 }
 
@@ -378,8 +379,10 @@ function mason_run {
         mason_prefix
     elif [ $1 ]; then
         mason_error "Unknown command '$1'"
+        exit 1
     else
         mason_error "Usage: $0 <command> <lib> <version>"
+        exit 1
     fi
 }
 

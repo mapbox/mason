@@ -16,6 +16,9 @@ if [ -z "${MASON_COMMAND}" ]; then
     exit 1
 fi
 
+ROOTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+MASON_DIR=${MASON_DIR:-$ROOTDIR}
+
 if [ "${MASON_COMMAND}" = "selfupdate" ]; then
     cd ~/.mason
     git pull origin master
@@ -33,7 +36,7 @@ elif [ "${MASON_COMMAND}" = "init" ]; then
     git push --set-upstream origin ${MASON_SLUG}
     exit
 elif [ "${MASON_COMMAND}" = "env" ]; then
-    . ${MASON_DIR:-~/.mason}/mason.sh
+    . ${MASON_DIR}/mason.sh
     echo ${!MASON_NAME}
     exit
 fi
@@ -48,7 +51,7 @@ elif [ -z "${MASON_VERSION}" ]; then
     exit 1
 fi
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 
 # Load script if it doesn't exist yet

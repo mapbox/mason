@@ -128,9 +128,16 @@ MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
 
 function mason_check_existing {
     # skip installing if it already exists
-    if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
-        mason_success "Already installed at ${MASON_PREFIX}"
-        exit 0
+    if [ ${MASON_HEADER_ONLY:-false} = true ] ; then
+        if [ -d "${MASON_PREFIX}" ] ; then
+            mason_success "Already installed at ${MASON_PREFIX}"
+            exit 0
+        fi
+    else
+        if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
+            mason_success "Already installed at ${MASON_PREFIX}"
+            exit 0
+        fi
     fi
 }
 
@@ -317,7 +324,7 @@ function mason_version {
 }
 
 function mason_publish {
-    if [ [ ! ${MASON_HEADER_ONLY} = true ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ] ; then
+    if [ [ ! ${MASON_HEADER_ONLY:-false} = true ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ] ; then
         mason_error "Required library file ${MASON_PREFIX}/${MASON_LIB_FILE} doesn't exist."
         exit 1
     fi

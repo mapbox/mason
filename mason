@@ -37,7 +37,7 @@ elif [ "${MASON_COMMAND}" = "init" ]; then
     exit
 elif [ "${MASON_COMMAND}" = "env" ]; then
     . ${MASON_DIR}/mason.sh
-    echo ${!MASON_NAME}
+    eval echo \$${MASON_NAME}
     exit
 fi
 

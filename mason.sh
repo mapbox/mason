@@ -114,8 +114,13 @@ fi
 MASON_HOST_ARG=${MASON_HOST_ARG:-}
 MASON_PLATFORM_VERSION=${MASON_PLATFORM_VERSION:-0}
 MASON_SLUG=${MASON_NAME}-${MASON_VERSION}
-MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}/${MASON_NAME}/${MASON_VERSION}
-MASON_BINARIES=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}/${MASON_NAME}/${MASON_VERSION}.tar.gz
+if [ ${MASON_HEADER_ONLY} ]; then
+    MASON_PLATFORM_ID=headers
+else
+    MASON_PLATFORM_ID=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}
+fi
+MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}
+MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}.tar.gz
 MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
 
 
@@ -158,7 +163,7 @@ function mason_extract_tar_gz {
     mkdir -p "${MASON_ROOT}/.build"
     cd "${MASON_ROOT}/.build"
 
-    tar xzf ../.cache/${MASON_SLUG}
+    tar xzf ../.cache/${MASON_SLUG} $@
 }
 
 function mason_extract_tar_bz2 {
@@ -166,7 +171,7 @@ function mason_extract_tar_bz2 {
     mkdir -p "${MASON_ROOT}/.build"
     cd "${MASON_ROOT}/.build"
 
-    tar xjf ../.cache/${MASON_SLUG}
+    tar xjf ../.cache/${MASON_SLUG} $@
 }
 
 
@@ -312,7 +317,7 @@ function mason_version {
 }
 
 function mason_publish {
-    if [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
+    if [ [ ! ${MASON_HEADER_ONLY} = true ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ] ; then
         mason_error "Required library file ${MASON_PREFIX}/${MASON_LIB_FILE} doesn't exist."
         exit 1
     fi

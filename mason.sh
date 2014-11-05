@@ -144,8 +144,8 @@ function mason_check_existing {
 
 function mason_clear_existing {
     if [ -d "${MASON_PREFIX}" ]; then
-        mason_step "Removing existing package..."
-        rm -rfv "${MASON_PREFIX}"
+        mason_step "Removing existing package... ${MASON_PREFIX}"
+        rm -rf "${MASON_PREFIX}"
     fi
 }
 

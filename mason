@@ -36,7 +36,7 @@ elif [ "${MASON_COMMAND}" = "init" ]; then
     git push --set-upstream origin ${MASON_SLUG}
     exit
 elif [ "${MASON_COMMAND}" = "env" ]; then
-    . ${MASON_DIR}/mason.sh
+    . ${MASON_DIR}/mason.sh > /dev/null
     eval echo \$${MASON_NAME}
     exit
 fi

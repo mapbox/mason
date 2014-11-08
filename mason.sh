@@ -100,7 +100,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         echo "creating android toolchain with ${MASON_ANDROID_CROSS_COMPILER}/${MASON_API_LEVEL} at ${MASON_SDK_ROOT}"
         "${ANDROID_NDK_PATH}/build/tools/make-standalone-toolchain.sh"  \
           --toolchain="${MASON_ANDROID_CROSS_COMPILER}" \
-          --llvm-version=3.4 \
+          --llvm-version=3.5 \
           --package-dir="${ANDROID_NDK_PATH}/package-dir/" \
           --install-dir="${MASON_SDK_ROOT}" \
           --stl="libcxx" \

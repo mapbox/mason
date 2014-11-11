@@ -324,7 +324,7 @@ function mason_version {
 }
 
 function mason_publish {
-    if [ [ ! ${MASON_HEADER_ONLY:-false} = true ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ] ; then
+    if [ ! ${MASON_HEADER_ONLY:-false} = true ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
         mason_error "Required library file ${MASON_PREFIX}/${MASON_LIB_FILE} doesn't exist."
         exit 1
     fi

@@ -26,7 +26,11 @@ function mason_prepare_compile {
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         MASON_OS_COMPILER="linux-x86_64 enable-ec_nistp_64_gcc_128"
     elif [[ ${MASON_PLATFORM} == 'android' ]]; then
-        MASON_OS_COMPILER="android-armv7"
+        if [ ${MASON_ANDROID_ARCH} = 'arm' ]; then
+            MASON_OS_COMPILER="android-armv7"
+        elif [ ${MASON_ANDROID_ARCH} = 'x86' ]; then
+            MASON_OS_COMPILER="android-x86"
+        fi
     fi
 }
 

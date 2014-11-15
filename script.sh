@@ -25,6 +25,17 @@ function mason_prefix {
 function mason_compile {
     mkdir -p ${BOOST_ROOT}/include
     mv ${MASON_ROOT}/.build/boost_1_57_0/boost ${BOOST_ROOT}/include
+    
+    # work around NDK bug https://code.google.com/p/android/issues/detail?id=79483
+    
+    patch ${BOOST_ROOT}/include/boost/core/demangle.hpp <<< "19a20,21
+> #if !defined(__ANDROID__)
+> 
+25a28,29
+> #endif
+> 
+"
+
 }
 
 function mason_cflags {

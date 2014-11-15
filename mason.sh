@@ -77,25 +77,46 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         mason_error "ANDROID_NDK_PATH variable must be set with an active-platform built"
         exit 1
     fi
-
-    MASON_ANDROID_ARCH="arm"
-    export MASON_PLATFORM_VERSION="9"
-    MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_PLATFORM_VERSION}
-    MASON_ANDROID_TOOLCHAIN="${MASON_ANDROID_ARCH}-linux-androideabi"
-    MASON_ANDROID_CROSS_COMPILER="${MASON_ANDROID_TOOLCHAIN}-4.9"
-    export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
-
+    
+    #MASON_ANDROID_ARCH=${MASON_ANDROID_ARCH:arm}
+    #export MASON_ANDROID_ARCH="arm"
+    export MASON_ANDROID_ARCH="x86"
+    
+    MASON_ANDROID_PLATFORM="9"
+    export MASON_PLATFORM_VERSION="${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}"
+    MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
+    
     MASON_SDK_ROOT="${MASON_ROOT}/.android-platform/"
     MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
     export PATH=${MASON_SDK_ROOT}/bin:${PATH}
-    export CFLAGS="-march=armv7-a -mfloat-abi=hard -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -fPIC -D_LITTLE_ENDIAN"
+    
+    CFLAGS="-fPIC"
+    LDFLAGS=""
     export CPPFLAGS="-D__ANDROID__"
-    export LDFLAGS="-Wl,--fix-cortex-a8 -Wl,--no-warn-mismatch -lm_hard"
+
+    if [ ${MASON_ANDROID_ARCH} = 'arm' ]; then
+        MASON_ANDROID_TOOLCHAIN="arm-linux-androideabi"
+        MASON_ANDROID_CROSS_COMPILER="${MASON_ANDROID_TOOLCHAIN}-4.9"
+        export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
+
+        export CFLAGS="-march=armv7-a -mfloat-abi=hard -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -D_LITTLE_ENDIAN ${CFLAGS}"
+        export LDFLAGS="-Wl,--fix-cortex-a8 -Wl,--no-warn-mismatch -lm_hard ${LDFLAGS}"
+        
+    elif [ ${MASON_ANDROID_ARCH} = 'x86' ]; then
+        MASON_ANDROID_TOOLCHAIN="i686-linux-android"
+        MASON_ANDROID_CROSS_COMPILER="${MASON_ANDROID_TOOLCHAIN}-4.9"
+        export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
+
+        export CFLAGS="-march=i686 -msse3 -mstackrealign -mfpmath=sse ${CFLAGS}"
+        export LDFLAGS="${LDFLAGS}"
+    fi
+    
     export CXX="${MASON_ANDROID_TOOLCHAIN}-clang++"
     export CC="${MASON_ANDROID_TOOLCHAIN}-clang"
     export LD="${MASON_ANDROID_TOOLCHAIN}-ld"
     export AR="${MASON_ANDROID_TOOLCHAIN}-ar"
     export RANLIB="${MASON_ANDROID_TOOLCHAIN}-ranlib"
+    
     if [ ! -d ${MASON_SDK_ROOT} ]; then
         echo "creating android toolchain with ${MASON_ANDROID_CROSS_COMPILER}/${MASON_API_LEVEL} at ${MASON_SDK_ROOT}"
         "${ANDROID_NDK_PATH}/build/tools/make-standalone-toolchain.sh"  \

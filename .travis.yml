@@ -7,7 +7,8 @@ os:
 
 env:
   matrix:
-   - MASON_PLATFORM=android
+   - MASON_PLATFORM=android MASON_ANDROID_ARCH=arm
+   - MASON_PLATFORM=android MASON_ANDROID_ARCH=x86
    # default to host platform
    - MASON_PLATFORM=
 

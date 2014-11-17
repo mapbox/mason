@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 
-MASON_NAME=sqlite
-MASON_VERSION=3.8.6
-MASON_LIB_FILE=lib/libsqlite3.a
-MASON_PKGCONFIG_FILE=lib/pkgconfig/sqlite3.pc
+MASON_NAME=libzip
+MASON_VERSION=0.11.2
+MASON_LIB_FILE=lib/libzip.a
+MASON_PKGCONFIG_FILE=lib/pkgconfig/libzip.pc
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \
-        http://www.sqlite.org/2014/sqlite-autoconf-3080600.tar.gz \
-        a97bbc05eeae7a7a6384b3f8c9ff551cf381f041
+        http://www.nih.at/libzip/libzip-0.11.2.tar.gz \
+        5e2407b231390e1cb8234541e89693ae57487170
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/sqlite-autoconf-3080600
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/libzip-${MASON_VERSION}
 }
 
 function mason_compile {
@@ -30,7 +30,7 @@ function mason_compile {
 
 function mason_strip_ldflags {
     shift # -L...
-    shift # -lsqlite3
+    shift # -lzip
     echo "$@"
 }
 

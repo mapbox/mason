@@ -10,7 +10,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/gl.pc
 function mason_load_source {
     mason_download \
         ftp://ftp.freedesktop.org/pub/mesa/10.3.3/MesaLib-10.3.3.tar.gz \
-        8e3b99d5970287f4f9671b6b9cad127fc6e7c922
+        4e17d9e024fc7870a8d516666a40c346beb27c05
 
     mason_extract_tar_gz
 

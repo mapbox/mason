@@ -15,7 +15,7 @@ before_install:
 - sudo apt-get -y install gcc-4.8 g++-4.8 automake pkg-config libtool
 - export CXX="g++-4.8"
 - export CC="gcc-4.8"
-- sudo apt-get install -y libpthread-stubs0-dev xserver-xorg-dev x11proto-xinerama-dev libx11-xcb-dev libxcb-glx0-dev libxrender-dev llvm-3.4 mesa-utils
+- sudo apt-get install -y libpthread-stubs0-dev xserver-xorg-dev x11proto-xinerama-dev libx11-xcb-dev libxcb-glx0-dev libxrender-dev llvm-3.5 mesa-utils
 - sudo apt-get build-dep -y libgl1-mesa-dri libxcb-glx0-dev
 
 script:

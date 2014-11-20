@@ -26,7 +26,7 @@ function mason_compile {
         --disable-dri \
         --enable-xlib-glx \
         --enable-glx-tls \
-        --with-llvm-prefix=/usr/lib/llvm-3.4 \
+        --with-llvm-prefix=/usr/lib/llvm-3.5 \
         --without-va
 
     make install

@@ -10,7 +10,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/nu.pc
 function mason_load_source {
     mason_download \
     https://bitbucket.org/alekseyt/nunicode/get/condtransform.tar.bz2 \
-    0874ecc1e600f2ee29d689c9f32f92558610acee
+    e80c9bbdf5cf6b1a933b7b3a8289fd28a7a92885
 
     mason_extract_tar_bz2
 

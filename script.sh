@@ -18,7 +18,7 @@ function mason_load_source {
 }
 
 function mason_compile {
-    ./autogen.sh \
+    CXXFLAGS=-std=c++11 ./autogen.sh \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
         --enable-shared \

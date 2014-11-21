@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=nunicode
-MASON_VERSION=1.4
+MASON_VERSION=1.5-dev
 MASON_LIB_FILE=lib/libnu.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/nu.pc
 
@@ -9,12 +9,12 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/nu.pc
 
 function mason_load_source {
     mason_download \
-    https://bitbucket.org/alekseyt/nunicode/get/1.4.tar.bz2 \
+    https://bitbucket.org/alekseyt/nunicode/get/condtransform.tar.bz2 \
     0874ecc1e600f2ee29d689c9f32f92558610acee
 
     mason_extract_tar_bz2
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/alekseyt-nunicode-4a0e4773e91a
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/alekseyt-nunicode-9c2a45c85b65
 }
 
 function mason_compile {

@@ -68,7 +68,6 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     MASON_PLATFORM_DISTRIBUTION_VERSION=${DISTRIB_RELEASE:-${VERSION_ID}}
     if [ -z "${MASON_PLATFORM_DISTRIBUTION_VERSION}" ]; then
         mason_error "Cannot determine distribution version"
-        exit 1
     fi
 
     export MASON_PLATFORM_VERSION=${MASON_PLATFORM_DISTRIBUTION}-${MASON_PLATFORM_DISTRIBUTION_VERSION}-`uname -m`

@@ -18,10 +18,11 @@ function mason_load_source {
 
 
 function mason_compile {
-    ./configure \
+    CFLAGS="-fPIC" ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
         --enable-static \
+        --with-pic \
         --disable-shared \
         --disable-dependency-tracking
 

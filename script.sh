@@ -18,7 +18,7 @@ function mason_load_source {
 
 
 function mason_compile {
-    CFLAGS="-fPIC" ./configure \
+    CXXFLAGS="-fPIC" ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
         --enable-static \
@@ -26,7 +26,7 @@ function mason_compile {
         --disable-shared \
         --disable-dependency-tracking
 
-    make install -j${MASON_CONCURRENCY}
+    V=1 make install -j${MASON_CONCURRENCY}
 }
 
 function mason_cflags {

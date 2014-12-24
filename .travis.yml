@@ -8,7 +8,6 @@ matrix:
       env: MASON_PLATFORM=android MASON_ANDROID_ARCH=arm
     - os: linux
       env: MASON_PLATFORM=android MASON_ANDROID_ARCH=x86
-
 env:
   global:
    - secure: "clCFM3prHnDocZ8lXlimPxAogvFirD1Zx8cMcFJ/XpkTA/0pCgnhpArM4y/NzLHR57pNZTSCr3p6XZI1c1iTG4Zm8x0sK2A4aTFRahypXNy/e+LzAbtd1y1+dEEDwlJvNNGxizQX4frhOgSNQFDFnWLtmF3stlft5YWyc2kI+FI="
@@ -19,8 +18,6 @@ before_install:
 - if [[ "${MASON_PLATFORM}" == "android" ]]; then MASON_PLATFORM= ~/.mason/mason install 7z 9.20; export PATH=$(MASON_PLATFORM= ~/.mason/mason prefix 7z 9.20)/bin:${PATH}; wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86_64.bin; chmod a+x ./android-ndk-r10c-linux-x86_64.bin; 7za x ./android-ndk-r10c-linux-x86_64.bin > /dev/null; export ANDROID_NDK_PATH=$(pwd)/android-ndk-r10c; fi;
 
 script:
-- if [[ $(uname -s) == 'Linux' ]]; then sudo apt-get install -y cmake; fi
-- if [[ $(uname -s) == 'Darwin' ]]; then brew install cmake; fi
 - ./script.sh build
 
 after_success:

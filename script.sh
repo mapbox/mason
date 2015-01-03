@@ -17,6 +17,8 @@ function mason_load_source {
 
     mason_extract_tar_gz
 
+    patch ${MASON_ROOT}/.build/curl-7.38.0/lib/vtls/openssl.c < ${MASON_PWD}/openssl.patch
+
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/curl-7.38.0
 }
 

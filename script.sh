@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
 MASON_NAME=libcurl
-MASON_VERSION=7.38.0
+MASON_VERSION=7.38.0-boringssl
 MASON_LIB_FILE=lib/libcurl.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libcurl.pc
+
+MASON_PWD=`pwd`
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
@@ -15,12 +17,12 @@ function mason_load_source {
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/curl-${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/curl-7.38.0
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR:-~/.mason}/mason install openssl 1.0.1i
-    MASON_OPENSSL=`~/.mason/mason prefix openssl 1.0.1i`
+    ${MASON_DIR:-~/.mason}/mason install boringssl d3bcf13
+    MASON_OPENSSL=`~/.mason/mason prefix boringssl d3bcf13`
 
     if [ ${MASON_PLATFORM} = 'linux' ]; then
         LIBS="-ldl ${LIBS=}"
@@ -28,6 +30,12 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    mason_step "Loading install script 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/openssl.patch'..."
+    curl --retry 3 -s -f -# -L \
+      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/openssl.patch \
+      -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
+    patch ${MASON_ROOT}/.build/curl-7.38.0/lib/vtls/openssl.c < ${MASON_PWD}/openssl.patch
+
     LIBS="${LIBS=}" ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \

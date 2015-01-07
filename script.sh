@@ -29,11 +29,11 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    FREETYPE_CFLAGS="-I${MASON_FREETYPE}/include/freetype2"
-    FREETYPE_LIBS="-L${MASON_FREETYPE}/lib -lfreetype -lz"
-    CXXFLAGS="${CXXFLAGS} -DHB_NO_MT ${FREETYPE_CFLAGS}"
-    CFLAGS="${CFLAGS} -DHB_NO_MT ${FREETYPE_CFLAGS}"
-    LDFLAGS="${LDFLAGS} ${FREETYPE_LIBS}"
+    export FREETYPE_CFLAGS="-I${MASON_FREETYPE}/include/freetype2"
+    export FREETYPE_LIBS="-L${MASON_FREETYPE}/lib -lfreetype -lz"
+    export CXXFLAGS="${CXXFLAGS} -DHB_NO_MT ${FREETYPE_CFLAGS}"
+    export CFLAGS="${CFLAGS} -DHB_NO_MT ${FREETYPE_CFLAGS}"
+    export LDFLAGS="${LDFLAGS} ${FREETYPE_LIBS}"
 
     NOCONFIGURE=1 ./autogen.sh ${HOST_ARG}
     ./configure --prefix=${MASON_PREFIX} ${MASON_HOST_ARG} \

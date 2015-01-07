@@ -43,7 +43,7 @@ function mason_compile {
      --with-uniscribe=no \
      --with-coretext=no
 
-    make -j${MASON_CONCURRENCY}
+    make -j${MASON_CONCURRENCY} V=1
     make install
 }
 

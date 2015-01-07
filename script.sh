@@ -29,7 +29,7 @@ function mason_compile {
     FREETYPE_LIBS="-L${MASON_FREETYPE}/lib -lfreetype -lz"
     CXXFLAGS="${CXXFLAGS} -DHB_NO_MT ${FREETYPE_CFLAGS}"
     CFLAGS="${CFLAGS} -DHB_NO_MT ${FREETYPE_CFLAGS}"
-    LDFLAGS="${STDLIB_LDFLAGS} ${LDFLAGS} ${FREETYPE_LIBS}"
+    LDFLAGS="${LDFLAGS} ${FREETYPE_LIBS}"
 
     NOCONFIGURE=1 ./autogen.sh ${HOST_ARG}
     ./configure --prefix=${MASON_PREFIX} ${MASON_HOST_ARG} \
@@ -43,7 +43,7 @@ function mason_compile {
      --with-graphite2=no \
      --with-freetype \
      --with-uniscribe=no \
-     --with-coretext=no
+     --with-coretext=no || cat config.log
 
     make -j${MASON_CONCURRENCY} V=1
     make install

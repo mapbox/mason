@@ -20,6 +20,8 @@ function mason_load_source {
 function mason_prepare_compile {
     ${MASON_DIR:-~/.mason}/mason install freetype 2.5.4
     MASON_FREETYPE=$(${MASON_DIR:-~/.mason}/mason prefix freetype 2.5.4)
+    ${MASON_DIR:-~/.mason}/mason install ragel 6.9
+    export PATH=$(${MASON_DIR:-~/.mason}/mason prefix ragel 6.9)/bin:$PATH
 }
 
 function mason_compile {

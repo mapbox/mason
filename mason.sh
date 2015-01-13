@@ -219,6 +219,60 @@ function mason_clean {
     :
 }
 
+function link_files {
+    if [[ -d "${MASON_PREFIX}/$1/" ]] ; then
+        for i in $(find -H ${MASON_PREFIX}/$1/ -name "*" ! -type d -print); do
+            echo $i
+            common_part=$(python -c "import os;print os.path.relpath('$i','${MASON_PREFIX}')")
+            if [[ $common_part != '.' ]] && [[ ! -e "${MASON_ROOT}/.link/$common_part" ]]; then
+                mason_step "linking ${MASON_ROOT}/.link/$common_part"
+                mkdir -p $(dirname ${MASON_ROOT}/.link/$common_part)
+                ln -s ${MASON_PREFIX}/$common_part ${MASON_ROOT}/.link/$common_part
+            else
+                mason_success "Already linked file ${MASON_ROOT}/.link/$common_part"
+            fi
+        done
+    fi
+}
+
+function link_dir {
+    if [[ -d ${MASON_PREFIX}/$1 ]]; then
+        FOUND_SUBDIR=$(find ${MASON_PREFIX}/$1 -name "*" -maxdepth 1 -mindepth 1 -type d -print)
+        # for headers like boost that use include/boost it is most efficient to symlink just the directory
+        if [[ ${FOUND_SUBDIR} ]]; then
+            for dir in ${FOUND_SUBDIR}; do
+                local SUBDIR_BASENAME=$(basename $dir)
+                # skip man entries to avoid conflicts
+                if [[ $SUBDIR_BASENAME == "man" || $SUBDIR_BASENAME == "aclocal" || $SUBDIR_BASENAME == "doc" ]]; then
+                    continue;
+                else
+                    local TARGET_SUBDIR="${MASON_ROOT}/.link/$1/${SUBDIR_BASENAME}"
+                    if [[ ! -d ${TARGET_SUBDIR} && ! -L ${TARGET_SUBDIR} ]]; then
+                        mason_step "linking directory ${TARGET_SUBDIR}"
+                        mkdir -p $(dirname ${TARGET_SUBDIR})
+                        ln -s ${MASON_PREFIX}/$1/${SUBDIR_BASENAME} ${TARGET_SUBDIR}
+                    else
+                        mason_success "Already linked directory ${TARGET_SUBDIR}"
+                    fi
+                fi
+            done
+        else
+            link_files include
+        fi
+    fi
+}
+
+function mason_link {
+    if [ ! -d "${MASON_PREFIX}" ] ; then
+        mason_error "${MASON_PREFIX} not found, please install first"
+        exit 0
+    fi
+    link_files lib
+    link_files bin
+    link_dir include
+    link_dir share
+}
+
 
 function mason_build {
     mason_load_source
@@ -395,6 +449,8 @@ function mason_run {
             mason_try_binary
             mason_build
         fi
+    elif [ "$1" == "link" ]; then
+        mason_link
     elif [ "$1" == "remove" ]; then
         mason_clear_existing
     elif [ "$1" == "publish" ]; then

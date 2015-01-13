@@ -36,6 +36,12 @@ function gen_config() {
   echo ' ;' >> user-config.jam
 }
 
+function mason_prepare_compile {
+    ${MASON_DIR:-~/.mason}/mason install icu 54.1
+    MASON_ICU=$(${MASON_DIR:-~/.mason}/mason prefix icu 54.1)
+    BOOST_LDFLAGS="-L${MASON_ICU}/lib -licuuc -licui18n -licudata"
+}
+
 function mason_compile {
     gen_config ${BOOST_TOOLSET} clang++
     if [[ ! -f ./b2 ]] ; then
@@ -45,7 +51,9 @@ function mason_compile {
         --with-${BOOST_LIBRARY} \
         --prefix=${MASON_PREFIX} \
         -j${MASON_CONCURRENCY} \
-        -d0 \
+        -sHAVE_ICU=1 -sICU_PATH=${MASON_ICU} \
+        linkflags="${BOOST_LDFLAGS}" \
+        -d2 \
         --ignore-site-config --user-config=user-config.jam \
         architecture="${BOOST_ARCH}" \
         toolset="${BOOST_TOOLSET}" \

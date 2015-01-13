@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
-MASON_NAME=boost_libsystem
-BOOST_VERSION1=1.57.0
-BOOST_VERSION2=1_57_0
+BOOST_VERSION1="1.57.0"
+BOOST_VERSION2="1_57_0"
+BOOST_LIBRARY="system"
+BOOST_TOOLSET="clang"
+BOOST_ARCH="x86"
+
+MASON_NAME=boost_lib${BOOST_LIBRARY}
 MASON_VERSION=1.57.0
-MASON_LIB_FILE=lib/libboost_system.a
+MASON_LIB_FILE=lib/libboost_${BOOST_LIBRARY.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
@@ -33,10 +37,7 @@ function gen_config() {
 }
 
 function mason_compile {
-    BOOST_TOOLSET="clang"
-    BOOST_LIBRARY="system"
     gen_config ${BOOST_TOOLSET} clang++
-    BOOST_ARCH="x86"
     if [[ ! -f ./b2 ]] ; then
         ./bootstrap.sh
     fi
@@ -56,7 +57,7 @@ function mason_compile {
 }
 
 function mason_ldflags {
-    echo "-lboost_system"
+    echo "-lboost_${BOOST_LIBRARY}"
 }
 
 function mason_clean {

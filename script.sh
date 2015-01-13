@@ -2,9 +2,7 @@
 
 MASON_NAME=gdal
 MASON_VERSION=1.11.1
-#MASON_VERSION=0334c2bed93f2eec13e1aa09b412f1b7664211d8
 MASON_LIB_FILE=lib/libgdal.a
-#MASON_PKGCONFIG_FILE=lib/pkgconfig/libxml-2.0.pc
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
@@ -12,10 +10,6 @@ function mason_load_source {
     mason_download \
         http://download.osgeo.org/gdal/CURRENT/gdal-${MASON_VERSION}.tar.gz \
         6a06e527e6a5abd565a67f84caadf9f891e5f49b
-
-    #mason_download \
-    #    https://github.com/OSGeo/gdal/archive/${MASON_VERSION}.tar.gz \
-    #    671c4cd7d31013de720e98c7e1f4bbfa06871fce
 
     mason_extract_tar_gz
 
@@ -74,6 +68,10 @@ function mason_compile {
         --with-sse=no
     make -j${MASON_CONCURRENCY}
     make install
+
+    # attempt to make paths relative in gdal-config
+    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('include','include/gdal').replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \"\$0\" ))\" && pwd )'))"
+    cat $MASON_PREFIX/bin/gdal-config
 }
 
 function mason_cflags {

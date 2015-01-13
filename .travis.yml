@@ -1,17 +1,13 @@
 language: cpp
 
-compiler: clang
-
 sudo: false
 
 matrix:
   include:
     - os: osx
+      compiler: clang
     - os: linux
-    - os: linux
-      env: MASON_PLATFORM=android MASON_ANDROID_ARCH=arm
-    - os: linux
-      env: MASON_PLATFORM=android MASON_ANDROID_ARCH=x86
+      compiler: clang
 
 env:
   global:
@@ -20,8 +16,6 @@ env:
 
 before_install:
 - git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
-- if [[ "${MASON_PLATFORM}" == "android" ]]; then MASON_PLATFORM= ~/.mason/mason install 7z 9.20; export PATH=$(MASON_PLATFORM= ~/.mason/mason prefix 7z 9.20)/bin:${PATH}; wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86_64.bin; chmod a+x ./android-ndk-r10c-linux-x86_64.bin; 7za x ./android-ndk-r10c-linux-x86_64.bin > /dev/null; export ANDROID_NDK_PATH=$(pwd)/android-ndk-r10c; fi;
-- if [[ $(uname -s) == 'Darwin' ]]; then brew rm freetype || true; fi
 
 script:
 - ./script.sh build

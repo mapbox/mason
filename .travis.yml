@@ -8,7 +8,6 @@ matrix:
       compiler: clang
     - os: linux
       compiler: clang
-    - os: linux
 
 env:
   global:

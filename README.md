@@ -31,6 +31,7 @@ The `command` can be one of the following
 * `version`: Prints the actual version of the library (only useful when version is `system`)
 * `cflags`: Prints C/C++ compiler flags
 * `ldflags`: Prints linker flags
+* `link`: Creates symlinks for packages in `mason_packages/.link`
 
 Apart from library/version specific actions, you can also run these commands without library/version:
 
@@ -105,6 +106,14 @@ Prints the C/C++ compiler flags that are required to compile source code with th
 ```
 
 Prints the linker flags that are required to link against this library.
+
+### `link`
+
+```bash
+~ $ mason link libuv 0.11.29
+```
+
+This command only works if the package has already been installed. When run it symlinks the versioned `lib`, `include`, `share`, and `bin` folders of the package into a shared structure that is unversioned. For example if `mason prefix libuv 0.11.29` was `./mason_packages/osx-10.10/libuv/0.11.29` then the library would become available at `./mason_packages/.link/lib/libuv.a`
 
 
 ## Writing build scripts

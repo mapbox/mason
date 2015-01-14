@@ -24,4 +24,4 @@ before_script:
 - true
 
 script:
-- ./mason env MASON_PLATFORM_VERSION
+- true

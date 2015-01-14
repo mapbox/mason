@@ -109,7 +109,15 @@ Prints the linker flags that are required to link against this library.
 
 ## Writing build scripts
 
-Every build script has its own branch on https://github.com/mapbox/mason. The branches are named `library-version`, e.g. [`libuv-0.11.29`](https://github.com/mapbox/mason/tree/libuv-0.11.29). The repository must contain a file called `script.sh`, which is structured like this:
+Every build script has its own branch on https://github.com/mapbox/mason.
+
+### Branch naming
+
+The branches are named `library-version`, e.g. [`libuv-0.11.29`](https://github.com/mapbox/mason/tree/libuv-0.11.29). The `-` is important since it is used to separate the package name from the version. If you wish to make a package name more readable without using a dash you can use an underscore like `boost_libfilesystem`.
+
+### Branch files
+
+The repository must contain a file called `script.sh`, which is structured like this:
 
 ```bash
 #!/usr/bin/env bash

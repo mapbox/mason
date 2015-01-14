@@ -2,6 +2,8 @@
 
 Build automation for the Mapbox C++ core
 
+[![Build Status](https://travis-ci.org/mapbox/mason.svg?branch=master)](https://travis-ci.org/mapbox/mason)
+
 ## Installation
 
 You need to install Mason to your user directory into `~/.mason`.

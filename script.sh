@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -x
-
 MASON_NAME=boringssl
 MASON_VERSION=d3bcf13
 MASON_LIB_FILE=lib/libssl.a

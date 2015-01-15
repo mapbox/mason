@@ -13,8 +13,8 @@ env:
    - MASON_PLATFORM=linux
 
 before_install:
-- git clone --depth=1 --branch android-debug https://github.com/mapbox/mason.git ~/.mason
-- if [ "${MASON_PLATFORM}" = "android" ]; then MASON_PLATFORM= ~/.mason/mason install 7z 9.20; export PATH=$(MASON_PLATFORM= ~/.mason/mason prefix 7z 9.20)/bin:${PATH}; wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86_64.bin; chmod a+x ./android-ndk-r10c-linux-x86_64.bin; 7za x ./android-ndk-r10c-linux-x86_64.bin > /dev/null; export ANDROID_NDK_PATH=$(pwd)/android-ndk-r10c; fi;
+- git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
+- if [ "${MASON_PLATFORM}" = "android" ]; then MASON_PLATFORM= ~/.mason/mason install 7z 9.20; export PATH=$(MASON_PLATFORM= ~/.mason/mason prefix 7z 9.20)/bin:${PATH}; wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin; chmod a+x ./android-ndk-r10d-linux-x86_64.bin; 7za x ./android-ndk-r10d-linux-x86_64.bin > /dev/null; export ANDROID_NDK_PATH=$(pwd)/android-ndk-r10d; fi;
 - if [[ ${TRAVIS_OS_NAME:-linux} = 'linux' ]]; then sudo apt-get -y install xutils-dev ; fi
 
 script:

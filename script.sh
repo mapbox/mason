@@ -17,8 +17,6 @@ function mason_load_source {
 
     mason_extract_tar_gz
 
-    patch ${MASON_ROOT}/.build/curl-7.38.0/lib/vtls/openssl.c < ${MASON_PWD}/openssl.patch
-
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/curl-7.38.0
 }
 
@@ -32,10 +30,6 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    mason_step "Loading install script 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/openssl.patch'..."
-    curl --retry 3 -s -f -# -L \
-      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/openssl.patch \
-      -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
     patch ${MASON_ROOT}/.build/curl-7.38.0/lib/vtls/openssl.c < ${MASON_PWD}/openssl.patch
 
     LIBS="${LIBS=}" ./configure \

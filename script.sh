@@ -8,10 +8,12 @@ MASON_LIB_FILE=lib/libssl.a
 
 function mason_load_source {
     # get gyp build scripts
-    mason_download \
-        https://chromium.googlesource.com/experimental/chromium/src/+archive/master/third_party/boringssl.tar.gz \
-        986ac9210dad3e586c8e1d211276d4ded96b02d4
-
+    URL=https://chromium.googlesource.com/experimental/chromium/src/+archive/master/third_party/boringssl.tar.gz
+    # we don't use `mason_download` here because the hash changes every download (google must be generating on the fly)
+    if [ ! -f ${MASON_SLUG} ] ; then
+        mason_step "Downloading ${URL}..."
+        curl --retry 3 -f -# -L "${URL}" -o ${MASON_SLUG}
+    fi
     mason_extract_tar_gz
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/

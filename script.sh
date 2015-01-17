@@ -10,6 +10,8 @@ function mason_load_source {
     # get gyp build scripts
     URL=https://chromium.googlesource.com/experimental/chromium/src/+archive/master/third_party/boringssl.tar.gz
     # we don't use `mason_download` here because the hash changes every download (google must be generating on the fly)
+    mkdir -p "${MASON_ROOT}/.cache"
+    cd "${MASON_ROOT}/.cache"
     if [ ! -f ${MASON_SLUG} ] ; then
         mason_step "Downloading ${URL}..."
         curl --retry 3 -f -# -L "${URL}" -o ${MASON_SLUG}

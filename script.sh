@@ -1,23 +1,30 @@
 #!/usr/bin/env bash
 
 MASON_NAME=boringssl
-MASON_VERSION=d3bcf13
+MASON_VERSION=a6aabff2e6e95a71b2f966447eebd53e57d8bf83
 MASON_LIB_FILE=lib/libssl.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
-    git clone https://github.com/ljbade/boringssl.git ${MASON_ROOT}/.build/boringssl/src
-    pushd ${MASON_ROOT}/.build/boringssl/src
-    git checkout a6aabff2e6e95a71b2f966447eebd53e57d8bf83
-    popd
-    
-    cp -r gyp/* ${MASON_ROOT}/.build/boringssl
+    # get gyp build scripts
+    mason_download \
+        https://chromium.googlesource.com/experimental/chromium/src/+archive/master/third_party/boringssl.tar.gz \
+        986ac9210dad3e586c8e1d211276d4ded96b02d4
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/boringssl
+    mason_extract_tar_gz
+
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/
 }
 
 function mason_compile {
+    # get code
+    git clone --depth 1 https://boringssl.googlesource.com/boringssl src
+    # get gyp
+    git clone --depth 1 https://chromium.googlesource.com/external/gyp.git
+    # regenerate gyp configs
+    python update_gypi_and_asm.py
+
     if [[ "${MASON_PLATFORM}" == "android" ]]; then
         if [[ "${MASON_ANDROID_ARCH}" == "arm" ]]; then
             export GYP_DEFINES="component=static_library OS=android target_arch=arm"
@@ -30,26 +37,17 @@ function mason_compile {
     else
         export GYP_DEFINES="component=static_library target_arch=`uname -m | sed -e "s/i.86/ia32/;s/x86_64/x64/;s/amd64/x64/;s/arm.*/arm/;s/i86pc/ia32/"`"
     fi
-    
-    export CXX="${MASON_ANDROID_TOOLCHAIN}-g++"
-    export CC="${MASON_ANDROID_TOOLCHAIN}-gcc"
 
-    mkdir -p build
-    # TODO: this probably doesn't work outside of travis
-    ${MASON_DIR:-~/build/mapbox/mason}/deps/run_gyp boringssl.gyp --depth=. --generator-output=./build --format=make
+    # generate makefiles
+    ./gyp/gyp boringssl.gyp --depth=. --generator-output=./build --format=make -Dcomponent=static_library -Dtarget_arch=x64
     
-    pushd build
-    make V=1
-    popd
-    
+    # compile
+    make -j${MASON_CONCURRENCY} -C build
+
+    # install
     mkdir -p ${MASON_PREFIX}/lib
-    if [[ "${MASON_PLATFORM}" == "osx" ]]; then
-        cp build/out/Default/libboringssl.a ${MASON_PREFIX}/lib/libssl.a
-        cp build/out/Default/libboringssl.a ${MASON_PREFIX}/lib/libcrypto.a
-    else
-        cp build/out/Default/obj.target/libboringssl.a ${MASON_PREFIX}/lib/libssl.a
-        cp build/out/Default/obj.target/libboringssl.a ${MASON_PREFIX}/lib/libcrypto.a
-    fi
+    cp build/out/Default/libboringssl.a ${MASON_PREFIX}/lib/libssl.a
+    cp build/out/Default/libboringssl.a ${MASON_PREFIX}/lib/libcrypto.a
     cp -r src/include ${MASON_PREFIX}/include
 }
 

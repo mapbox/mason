@@ -50,8 +50,13 @@ function mason_compile {
 
     # install
     mkdir -p ${MASON_PREFIX}/lib
-    cp build/out/Default/libboringssl.a ${MASON_PREFIX}/lib/libssl.a
-    cp build/out/Default/libboringssl.a ${MASON_PREFIX}/lib/libcrypto.a
+    if [[ "${MASON_PLATFORM}" == "osx" ]]; then
+        cp build/out/Default/libboringssl.a ${MASON_PREFIX}/lib/libssl.a
+        cp build/out/Default/libboringssl.a ${MASON_PREFIX}/lib/libcrypto.a
+    else
+        cp build/out/Default/obj.target/libboringssl.a ${MASON_PREFIX}/lib/libssl.a
+        cp build/out/Default/obj.target/libboringssl.a ${MASON_PREFIX}/lib/libcrypto.a
+    fi
     cp -r src/include ${MASON_PREFIX}/include
 }
 

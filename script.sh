@@ -18,7 +18,7 @@ function mason_load_source {
 }
 
 function mason_compile {
-    CFLAGS="-fPIC" ./configure \
+    ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
         --enable-static \

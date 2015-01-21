@@ -2,7 +2,7 @@
 
 MASON_NAME=boringssl
 MASON_VERSION=a6aabff2e6e95a71b2f966447eebd53e57d8bf83
-MASON_LIB_FILE=lib/libssl.a
+MASON_LIB_FILE=lib/libboringssl.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
@@ -52,12 +52,11 @@ function mason_compile {
     # install
     mkdir -p ${MASON_PREFIX}/lib
     if [[ "${MASON_PLATFORM}" == "osx" ]]; then
-        cp build/out/Default/libboringssl.a ${MASON_PREFIX}/lib/libssl.a
-        cp build/out/Default/libboringssl.a ${MASON_PREFIX}/lib/libcrypto.a
+        cp build/out/Default/libboringssl.a ${MASON_PREFIX}/lib/libboringssl.a
     else
-        cp build/out/Default/obj.target/libboringssl.a ${MASON_PREFIX}/lib/libssl.a
-        cp build/out/Default/obj.target/libboringssl.a ${MASON_PREFIX}/lib/libcrypto.a
+        cp build/out/Default/obj.target/libboringssl.a ${MASON_PREFIX}/lib/libboringssl.a
     fi
+    (cd ${MASON_PREFIX}/lib/ && ln -s libboringssl.a libssl.a && ln -s libboringssl.a libcrypto.a)
     cp -r src/include ${MASON_PREFIX}/include
 }
 
@@ -66,7 +65,7 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    echo -L${MASON_PREFIX}/lib -lssl -lcrypto
+    echo -L${MASON_PREFIX}/lib -lboringssl
 }
 
 function mason_clean {

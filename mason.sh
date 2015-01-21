@@ -72,6 +72,8 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     fi
 
     export MASON_PLATFORM_VERSION=linux-`uname -m`
+    export CFLAGS="-fPIC"
+    export CXXFLAGS="${CFLAGS}"
 
 elif [ ${MASON_PLATFORM} = 'android' ]; then
     if [ ${ANDROID_NDK_PATH:-false} = false ]; then

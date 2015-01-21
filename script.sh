@@ -79,6 +79,10 @@ function mason_compile {
     make install
 }
 
+function mason_ldflags {
+    echo -L${MASON_PREFIX}/lib -lcurl
+}
+
 function mason_clean {
     make clean
 }

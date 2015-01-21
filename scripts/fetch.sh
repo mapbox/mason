@@ -16,6 +16,6 @@ for b in $(git for-each-ref --sort=-committerdate refs/remotes --format='%(refna
         git clone git@github.com:mapbox/mason.git -b $NAME $NAME
     else
         mason_step "Pulling and rebasing $NAME"
-        (cd $NAME && git pull --rebase && mason_success "rebased $NAME")
+        (cd $NAME && git pull -q --rebase && mason_success "rebased $NAME")
     fi
 done

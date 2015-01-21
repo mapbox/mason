@@ -73,7 +73,7 @@ function mason_compile {
         --disable-crypto-auth \
         --disable-ntlm-wb \
         --disable-tls-srp \
-        --disable-cookies
+        --disable-cookies || cat config.log
 
     make -j${MASON_CONCURRENCY}
     make install

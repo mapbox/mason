@@ -6,6 +6,8 @@ MASON_LIB_FILE=lib/libboringssl.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
+MASON_PWD=$(pwd)
+
 function mason_load_source {
     # get gyp build scripts
     URL=https://chromium.googlesource.com/experimental/chromium/src/+archive/master/third_party/boringssl.tar.gz
@@ -26,6 +28,9 @@ function mason_compile {
     git clone --depth 1 https://boringssl.googlesource.com/boringssl src
     # get gyp
     git clone --depth 1 https://chromium.googlesource.com/external/gyp.git
+
+    # TODO - download this patch from remote to be able to work non-locally
+    patch ./update_gypi_and_asm.py < ${MASON_PWD}/boringssl_asm_x86_64_fPIC.diff
     # regenerate gyp configs
     python update_gypi_and_asm.py
 

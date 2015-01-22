@@ -47,7 +47,7 @@ function mason_compile {
     ./gyp/gyp boringssl.gyp --depth=. -Iconfig.gypi --generator-output=./build --format=make -Dcomponent=static_library -Dtarget_arch=x64
     
     # compile
-    make -j${MASON_CONCURRENCY} -C build
+    make -j${MASON_CONCURRENCY} -C build V=1
 
     # install
     mkdir -p ${MASON_PREFIX}/lib

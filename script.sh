@@ -30,7 +30,8 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    patch ${MASON_ROOT}/.build/curl-7.38.0/lib/vtls/openssl.c < ${MASON_PWD}/openssl.patch
+    curl --retry 3 -f -# -L "https://raw.githubusercontent.com/mapbox/mason/libcurl-7.38.0-boringssl/openssl.patch" -o ${MASON_BUILD_PATH}/openssl.patch
+    patch ${MASON_BUILD_PATH}/lib/vtls/openssl.c < ${MASON_BUILD_PATH}/openssl.patch
 
     LIBS="${LIBS=}" ./configure \
         --prefix=${MASON_PREFIX} \

@@ -71,7 +71,10 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
         exit 1
     fi
 
-    export MASON_PLATFORM_VERSION=${MASON_PLATFORM_DISTRIBUTION}-${MASON_PLATFORM_DISTRIBUTION_VERSION}-`uname -m`
+    export MASON_PLATFORM_VERSION=linux-`uname -m`
+    export CFLAGS="-fPIC"
+    export CXXFLAGS="${CFLAGS}"
+
 elif [ ${MASON_PLATFORM} = 'android' ]; then
     if [ ${ANDROID_NDK_PATH:-false} = false ]; then
         mason_error "ANDROID_NDK_PATH variable must be set with an active-platform built"

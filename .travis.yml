@@ -1,13 +1,13 @@
 language: cpp
 
-compiler: clang
-
 sudo: false
 
 matrix:
   include:
     - os: osx
+      compiler: clang
     - os: linux
+      compiler: clang
     - os: linux
       env: MASON_PLATFORM=android MASON_ANDROID_ARCH=arm
     - os: linux

@@ -225,12 +225,11 @@ function mason_clean {
 function link_files {
     if [[ -d "${MASON_PREFIX}/$1/" ]] ; then
         for i in $(find -H ${MASON_PREFIX}/$1/ -name "*" ! -type d -print); do
-            echo $i
             common_part=$(python -c "import os;print os.path.relpath('$i','${MASON_PREFIX}')")
             if [[ $common_part != '.' ]] && [[ ! -e "${MASON_ROOT}/.link/$common_part" ]]; then
                 mason_step "linking ${MASON_ROOT}/.link/$common_part"
                 mkdir -p $(dirname ${MASON_ROOT}/.link/$common_part)
-                ln -s ${MASON_PREFIX}/$common_part ${MASON_ROOT}/.link/$common_part
+                ln -sf ${MASON_PREFIX}/$common_part ${MASON_ROOT}/.link/$common_part
             else
                 mason_success "Already linked file ${MASON_ROOT}/.link/$common_part"
             fi

@@ -100,6 +100,8 @@ function mason_compile {
         toolset="${BOOST_TOOLSET}" \
         link=static \
         variant=release \
+        linkflags="${LDFLAGS:-" "}" \
+        cxxflags="${CXXFLAGS:-" "}" \
         stage
     mkdir -p $(dirname ${MASON_PREFIX}/${MASON_LIB_FILE})
     mv stage/${MASON_LIB_FILE} ${MASON_PREFIX}/${MASON_LIB_FILE}

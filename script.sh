@@ -26,6 +26,8 @@ function mason_prepare_compile {
     MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg v8d)
     ${MASON_DIR:-~/.mason}/mason install libpng 1.6.13
     MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.13)
+    ${MASON_DIR:-~/.mason}/mason install expat 2.1.0
+    MASON_EXPAT=$(${MASON_DIR:-~/.mason}/mason prefix expat 2.1.0)
 }
 
 function mason_compile {
@@ -43,8 +45,15 @@ function mason_compile {
         --enable-static --disable-shared \
         ${MASON_HOST_ARG} \
         --prefix=${MASON_PREFIX} \
+        --with-libz=/usr/ \
+        --disable-rpath \
+        --with-libjson-c=internal \
+        --with-geotiff=internal \
+        --with-expat=${MASON_EXPAT} \
         --with-threads=yes \
         --with-fgdb=no \
+        --with-rename-internal-libtiff-symbols=no \
+        --with-rename-internal-libgeotiff-symbols=no \
         --with-hide-internal-symbols=yes \
         --with-libtiff=${MASON_TIFF} \
         --with-jpeg=${MASON_JPEG} \
@@ -54,6 +63,7 @@ function mason_compile {
         --with-geos=no \
         --with-sqlite3=no \
         --with-curl=no \
+        --with-xml2=no \
         --with-pcraster=no \
         --with-cfitsio=no \
         --with-odbc=no \
@@ -65,7 +75,17 @@ function mason_compile {
         --with-grib=no \
         --with-freexl=no \
         --with-avx=no \
-        --with-sse=no
+        --with-sse=no \
+        --with-perl=no \
+        --with-ruby=no \
+        --with-python=no \
+        --with-java=no \
+        --with-podofo=no \
+        --without-pam \
+        --with-webp=no \
+        --with-pcre-no \
+        --with-lzma=no
+
     make -j${MASON_CONCURRENCY}
     make install
 
@@ -75,7 +95,7 @@ function mason_compile {
 }
 
 function mason_cflags {
-    echo "-I${MASON_PREFIX}/include/libxml2"
+    echo "-I${MASON_PREFIX}/include/gdal"
 }
 
 function mason_ldflags {

@@ -242,7 +242,7 @@ function link_files {
 
 function link_dir {
     if [[ -d ${MASON_PREFIX}/$1 ]]; then
-        FOUND_SUBDIR=$(find ${MASON_PREFIX}/$1 -name "*" -maxdepth 1 -mindepth 1 -type d -print)
+        FOUND_SUBDIR=$(find -maxdepth 1 -mindepth 1 ${MASON_PREFIX}/$1 -name "*" -type d -print)
         # for headers like boost that use include/boost it is most efficient to symlink just the directory
         if [[ ${FOUND_SUBDIR} ]]; then
             for dir in ${FOUND_SUBDIR}; do

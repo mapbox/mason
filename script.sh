@@ -2,7 +2,7 @@
 
 MASON_NAME=expat
 MASON_VERSION=2.1.0
-MASON_LIB_FILE=lib/libsexpat.a
+MASON_LIB_FILE=lib/libexpat.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/expat.pc
 
 . ${MASON_DIR:-~/.mason}/mason.sh

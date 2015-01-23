@@ -1,12 +1,13 @@
 language: cpp
 
-compiler: clang
-
 sudo: false
 
-os:
- - osx
- - linux
+matrix:
+  include:
+    - os: osx
+      compiler: clang
+    - os: linux
+      compiler: clang
 
 env:
   global:

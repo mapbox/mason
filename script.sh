@@ -31,17 +31,18 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    mason_step "Loading install script 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
+    mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
     curl --retry 3 -s -f -# -L \
       https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
       -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
     patch -N -p1 < ./patch.diff
-    CUSTOM_LIBS="-L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj"
+    CUSTOM_LIBS="-L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj -L${MASON_PNG}/lib -lpng -L${MASON_EXPAT}/lib -lexpat"
+    CUSTOM_CFLAGS="${CFLAGS} -I${MASON_TIFF}/include -I${MASON_JPEG}/include -I${MASON_PROJ}/include -lproj -I${MASON_PNG}/include -I${MASON_EXPAT}/include"
     # note: it might be tempting to build with --without-libtool
     # but I find that will only lead to a static libgdal.a and will
     # not produce a shared library no matter if --enable-shared is passed
 
-    LIBS=$CUSTOM_LIBS ./configure \
+    LIBS="${CUSTOM_LIBS}" CUSTOM_CFLAGS="${CFLAGS}" ./configure \
         --enable-static --disable-shared \
         ${MASON_HOST_ARG} \
         --prefix=${MASON_PREFIX} \
@@ -83,7 +84,7 @@ function mason_compile {
         --with-podofo=no \
         --without-pam \
         --with-webp=no \
-        --with-pcre-no \
+        --with-pcre=no \
         --with-lzma=no
 
     make -j${MASON_CONCURRENCY}

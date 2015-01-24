@@ -225,7 +225,22 @@ function mason_clean {
     :
 }
 
-function link_files {
+function link_files_in_root {
+    if [[ -d "${MASON_PREFIX}/$1/" ]] ; then
+        for i in $(ls ${MASON_PREFIX}/$1/*.*); do
+            common_part=$(python -c "import os;print os.path.relpath('$i','${MASON_PREFIX}')")
+            if [[ $common_part != '.' ]] && [[ ! -e "${MASON_ROOT}/.link/$common_part" ]]; then
+                mason_step "linking ${MASON_ROOT}/.link/$common_part"
+                mkdir -p $(dirname ${MASON_ROOT}/.link/$common_part)
+                ln -sf ${MASON_PREFIX}/$common_part ${MASON_ROOT}/.link/$common_part
+            else
+                mason_success "Already linked file ${MASON_ROOT}/.link/$common_part"
+            fi
+        done
+    fi
+}
+
+function link_files_recursively {
     if [[ -d "${MASON_PREFIX}/$1/" ]] ; then
         for i in $(find -H ${MASON_PREFIX}/$1/ -name "*" ! -type d -print); do
             common_part=$(python -c "import os;print os.path.relpath('$i','${MASON_PREFIX}')")
@@ -242,7 +257,7 @@ function link_files {
 
 function link_dir {
     if [[ -d ${MASON_PREFIX}/$1 ]]; then
-        FOUND_SUBDIR=$(find -maxdepth 1 -mindepth 1 ${MASON_PREFIX}/$1 -name "*" -type d -print)
+        FOUND_SUBDIR=$(find ${MASON_PREFIX}/$1 -maxdepth 1 -mindepth 1 -name "*" -type d -print)
         # for headers like boost that use include/boost it is most efficient to symlink just the directory
         if [[ ${FOUND_SUBDIR} ]]; then
             for dir in ${FOUND_SUBDIR}; do
@@ -261,8 +276,10 @@ function link_dir {
                     fi
                 fi
             done
+            # still need to link files in the root directory for apps like postgres
+            link_files_in_root include
         else
-            link_files include
+            link_files_recursively include
         fi
     fi
 }
@@ -272,8 +289,8 @@ function mason_link {
         mason_error "${MASON_PREFIX} not found, please install first"
         exit 0
     fi
-    link_files lib
-    link_files bin
+    link_files_recursively lib
+    link_files_recursively bin
     link_dir include
     link_dir share
 }

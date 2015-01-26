@@ -17,8 +17,8 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR:-~/.mason}/mason install nasm 2.11.06
-    MASON_NASM=$(${MASON_DIR:-~/.mason}/mason prefix nasm 2.11.06)
+    MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason install nasm 2.11.06
+    MASON_NASM=$(MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason prefix nasm 2.11.06)
 }
 
 function mason_compile {

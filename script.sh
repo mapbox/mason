@@ -18,8 +18,8 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR:-~/.mason}/mason install jpeg v8d
-    MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg v8d)
+    ${MASON_DIR:-~/.mason}/mason install jpeg_turbo 1.4.0
+    MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg_turbo 1.4.0)
     SYSTEM_ZLIB="/usr"
 }
 

@@ -18,12 +18,12 @@ function mason_load_source {
 
 function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
-    ${MASON_DIR:-~/.mason}/mason install libtiff dev
-    MASON_TIFF=$(${MASON_DIR:-~/.mason}/mason prefix libtiff dev)
+    ${MASON_DIR:-~/.mason}/mason install libtiff 4.0.4beta
+    MASON_TIFF=$(${MASON_DIR:-~/.mason}/mason prefix libtiff 4.0.4beta)
     ${MASON_DIR:-~/.mason}/mason install proj 4.8.0
     MASON_PROJ=$(${MASON_DIR:-~/.mason}/mason prefix proj 4.8.0)
-    ${MASON_DIR:-~/.mason}/mason install jpeg v8d
-    MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg v8d)
+    ${MASON_DIR:-~/.mason}/mason install jpeg_turbo 1.4.0
+    MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg_turbo 1.4.0)
     ${MASON_DIR:-~/.mason}/mason install libpng 1.6.13
     MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.13)
     ${MASON_DIR:-~/.mason}/mason install expat 2.1.0

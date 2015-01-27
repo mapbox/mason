@@ -11,7 +11,7 @@ function mason_load_source {
         http://cairographics.org/releases/${MASON_NAME}-${MASON_VERSION}.tar.xz \
         34e29ec00864859cc26ac3e45a02d7b2cb65d1c8
 
-    mason_extract_tar_gz
+    mason_extract_tar_xz
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
 }

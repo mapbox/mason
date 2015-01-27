@@ -210,7 +210,13 @@ function mason_extract_tar_bz2 {
     tar xjf ../.cache/${MASON_SLUG} $@
 }
 
+function mason_extract_tar_xz {
+    rm -rf "${MASON_ROOT}/.build"
+    mkdir -p "${MASON_ROOT}/.build"
+    cd "${MASON_ROOT}/.build"
 
+    tar xJf ../.cache/${MASON_SLUG} $@
+}
 
 function mason_prepare_compile {
     :

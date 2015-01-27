@@ -1,8 +1,35 @@
 # Mason
 
-Build automation for the Mapbox C++ core
+Mason can compile C/C++ code, publish packages to S3, and install those packages via binaries.
+
+Mason does all its work locally inside `./mason_packages` and therefore does not require privileges for, or conflict with, system-wide packages.
+
+Mason works on both OS X and Linux.
 
 [![Build Status](https://travis-ci.org/mapbox/mason.svg?branch=master)](https://travis-ci.org/mapbox/mason)
+
+### Goals
+
+Mason is a package manager designed for developers who package standalone applications and who need complete control over dependency versions.
+
+Because Mason is developed by Mapbox the default S3 bucket and set of available packages are driven by Mapbox developers. For other developers: 1) fork Mason and ideally rename it to something like `mason-{yourorg}`, 2) configure it against your own s3 bucket, and 3) go ahead an publish your own packages to an S3 bucket of your creation.
+
+### Comparisons
+
+Mason is like [npm](https://github.com/npm/npm) because it installs packages in the current working directory (`./mason_packages`) rather than globally.
+
+Mason is like [homebrew](http://brew.sh/) because it requires no use of `sudo` to install packages.
+
+Mason is like linux package managers like `apt-get` or `yum` because it works on linux.
+
+Mason is unlike all of the above package managers because:
+
+  - Mason runs on both Linux and OS X and creates a single set of binaries that work on >= OS X 10.8 and >= Ubuntu Precise (rather than building binaries per version).
+  - Mason strongly prefers static libraries over shared libraries
+  - Mason has zero understanding of dependency trees: it leaves complete control to the developer for how packages relate.
+  - Mason does not depend on any specific runtime language (like python, node.js or ruby). It is a just a few bash scripts.
+  - Mason depends on git branches for declaring package names and versions
+  - Mason depends on [travis.ci](https://travis-ci.org) for creating and publishing binaries.
 
 ## Installation
 

@@ -17,6 +17,7 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
+    cd $(dirname ${MASON_ROOT})
     ${MASON_DIR:-~/.mason}/mason install libpng 1.6.15
     MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.15)
     ${MASON_DIR:-~/.mason}/mason install freetype 2.5.4
@@ -30,12 +31,11 @@ function mason_compile {
     curl --retry 3 -s -f -# -L \
       https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
       -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
+    # patch cairo to avoid needing pkg-config as a build dep
     patch -N -p1 < ./patch.diff
     CFLAGS="${CFLAGS} -Wno-enum-conversion -I${MASON_PIXMAN}/include/pixman-1 -I${MASON_FREETYPE}/include/freetype2 -I${MASON_PNG}/include/"
     LDFLAGS="-L${MASON_PIXMAN}/lib -lpixman-1 -L${MASON_FREETYPE}/lib -lfreetype -L${MASON_PNG}/lib -lpng"
-    # patch cairo to avoid needing pkg-config as a build dep
-    patch -N -p1 < ${PATCHES}/cairo-1.12.16.diff
-    ./autogen.sh \
+    CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} ./autogen.sh \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
         --enable-static --disable-shared \
@@ -81,7 +81,7 @@ function mason_compile {
         --enable-symbol-lookup=no \
         --disable-dependency-tracking
     # The -i and -k flags are to workaround make[6]: [install-data-local] Error 1 (ignored)
-    make -j${MASON_CONCURRENCY} -i -k
+    make V=1 -j${MASON_CONCURRENCY} -i -k
     make install -i -k
 }
 

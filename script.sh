@@ -80,10 +80,13 @@ fi
 }
 
 function mason_compile {
-    # TODO
     # patch to workaround crashes in python.input
     # https://github.com/mapnik/mapnik/issues/1968
-    #patch -N libs/python/src/converter/builtin_converters.cpp ${PATCHES}/boost_python_shared_ptr_gil.diff || true
+    mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
+    curl --retry 3 -s -f -# -L \
+      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
+      -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
+    patch -N -p0 < ./patch.diff
 
     gen_config ${BOOST_TOOLSET} clang++
     write_python_config user-config.jam "2.7" "/System" ""

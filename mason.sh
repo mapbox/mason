@@ -71,7 +71,7 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
         exit 1
     fi
 
-    export MASON_PLATFORM_VERSION=linux-`uname -m`
+    export MASON_PLATFORM_VERSION=`uname -m`
     export CFLAGS="-fPIC"
     export CXXFLAGS="${CFLAGS}"
 

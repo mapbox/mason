@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
 MASON_NAME=libuv
-MASON_VERSION=0.10.28
+MASON_VERSION=0.10.32
 MASON_LIB_FILE=lib/libuv.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \
-        https://github.com/joyent/libuv/archive/v${MASON_VERSION}.tar.gz \
-        a3fc90eca125e49979103d748be436a438083cb7
+        https://github.com/libuv/libuv/archive/v${MASON_VERSION}.tar.gz \
+        09f74ec846a9a19a3868f2ae3ecd3f2219b36674
 
     mason_extract_tar_gz
 

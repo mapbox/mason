@@ -16,7 +16,7 @@ env:
 
 before_install:
 - git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
-- source ~/.mason/scripts/setup_cpp11_toolchain.sh precise
+- source ~/.mason/scripts/setup_cpp11_toolchain.sh
 
 script:
 - ./script.sh build

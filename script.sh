@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=libcurl
-MASON_VERSION=7.38.0
+MASON_VERSION=7.40.0
 MASON_LIB_FILE=lib/libcurl.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libcurl.pc
 
@@ -10,8 +10,8 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libcurl.pc
 
 function mason_load_source {
     mason_download \
-        http://curl.haxx.se/download/curl-7.38.0.tar.gz \
-        5463f1b9dc807e4ae8be2ef4ed57e67f677f4426
+        http://curl.haxx.se/download/curl-7.40.0.tar.gz \
+        c7c97e02f5fa4302f4c25c72486359f7b46f7d6d
 
     mason_extract_tar_gz
 
@@ -19,8 +19,8 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR:-~/.mason}/mason install openssl 1.0.1i
-    MASON_OPENSSL=`~/.mason/mason prefix openssl 1.0.1i`
+    ${MASON_DIR:-~/.mason}/mason install openssl 1.0.1l
+    MASON_OPENSSL=`~/.mason/mason prefix openssl 1.0.1l`
 
     if [ ${MASON_PLATFORM} = 'linux' ]; then
         LIBS="-ldl ${LIBS=}"

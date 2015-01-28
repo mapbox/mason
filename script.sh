@@ -8,12 +8,12 @@ MASON_LIB_FILE=lib/libjpeg.a
 
 function mason_load_source {
     mason_download \
-        http://www.ijg.org/files/jpegsrc.v8d.tar.gz \
-        8847587af6570b90595105dc6824188b16015c22
+        http://www.ijg.org/files/jpegsrc.v9a.tar.gz \
+        fc3b1eefda3d8a193f9f92a16a1b0c9f56304b6d
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/jpeg-8d
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/jpeg-9a
 }
 
 

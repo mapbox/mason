@@ -60,7 +60,14 @@ function mason_compile {
     # very custom handling for libpq/postgres support
     # forcing our portable static library to be used
     MASON_LIBPQ_PATH=${MASON_LIBPQ}/lib/libpq.a
-    CUSTOM_LDFLAGS="${LDFLAGS} -Wl,${MASON_LIBPQ_PATH}"
+    if [[ $(uname -s) == 'Linux' ]]; then
+        # on Linux passing -Wl will lead to libtool re-positioning libpq.a in the wrong place (no longer after libgdal.a)
+        # which leads to unresolved symbols
+        CUSTOM_LDFLAGS="${LDFLAGS} ${MASON_LIBPQ_PATH}"
+    else
+        # on OSX not passing -Wl will break libtool archive creation leading to confusing arch errors
+        CUSTOM_LDFLAGS="${LDFLAGS} -Wl,${MASON_LIBPQ_PATH}"
+    fi
     # we have to remove -lpq otherwise it will trigger linking to system /usr/lib/libpq
     perl -i -p -e "s/\-lpq //g;" configure
     # on linux -Wl,/path/to/libpq.a still does not work for the configure test

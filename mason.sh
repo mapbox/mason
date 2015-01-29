@@ -37,8 +37,11 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
 
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_PLATFORM_VERSION}.sdk"
-    export MASON_CFLAGS="-mmacosx-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
-
+    MIN_SDK_VERSION_FLAG="-mmacosx-version-min=10.8"
+    SYSROOT_FLAGS="-isysroot ${MASON_SDK_PATH} -arch x86_64 ${MIN_SDK_VERSION_FLAG}"
+    export CFLAGS="$SYSROOT_FLAGS}"
+    export CXXFLAGS="${CFLAGS} -fvisibility-inlines-hidden"
+    export LDFLAGS="-Wl,-search_paths_first -Wl,-bind_at_load ${SYSROOT_FLAGS}"
 
 elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_HOST_ARG="--host=arm-apple-darwin"

@@ -186,6 +186,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     export LD="${MASON_ANDROID_TOOLCHAIN}-ld"
     export AR="${MASON_ANDROID_TOOLCHAIN}-ar"
     export RANLIB="${MASON_ANDROID_TOOLCHAIN}-ranlib"
+    export STRIP="${MASON_ANDROID_TOOLCHAIN}-strip"
     
     if [ ! -d ${MASON_SDK_ROOT} ]; then
         echo "creating android toolchain with ${MASON_ANDROID_CROSS_COMPILER}/${MASON_API_LEVEL} at ${MASON_SDK_ROOT}"

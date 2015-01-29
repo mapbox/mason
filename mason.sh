@@ -39,7 +39,7 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_PLATFORM_VERSION}.sdk"
     MIN_SDK_VERSION_FLAG="-mmacosx-version-min=10.8"
     SYSROOT_FLAGS="-isysroot ${MASON_SDK_PATH} -arch x86_64 ${MIN_SDK_VERSION_FLAG}"
-    export CFLAGS="$SYSROOT_FLAGS}"
+    export CFLAGS="${SYSROOT_FLAGS}"
     export CXXFLAGS="${CFLAGS} -fvisibility-inlines-hidden"
     export LDFLAGS="-Wl,-search_paths_first -Wl,-bind_at_load ${SYSROOT_FLAGS}"
 
@@ -232,7 +232,7 @@ function mason_check_existing {
             exit 0
         fi
     else
-        if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
+        if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] || [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
             mason_success "Already installed at ${MASON_PREFIX}"
             exit 0
         fi

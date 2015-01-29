@@ -6,40 +6,9 @@ MASON_SYSTEM_PACKAGE=true
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
-if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
-    MASON_HEADER_FILE="${MASON_SDK_PATH}/usr/include/zlib.h"
-    if [ ! -f "${MASON_HEADER_FILE}" ]; then
-        mason_error "Can't find header file ${MASON_HEADER_FILE}"
-        exit 1
-    fi
-
-    MASON_LIBRARY_FILE="${MASON_SDK_PATH}/usr/lib/libz.dylib"
-    if [ ! -f "${MASON_LIBRARY_FILE}" ]; then
-        mason_error "Can't find library file ${MASON_LIBRARY_FILE}"
-        exit 1
-    fi
-
-    MASON_CFLAGS=
-    MASON_LDFLAGS=-lz
-elif [[ ${MASON_PLATFORM} = 'android' ]]; then
-    MASON_HEADER_FILE="${MASON_SDK_PATH}/usr/include/zlib.h"
-    if [ ! -f "${MASON_HEADER_FILE}" ]; then
-        mason_error "Can't find header file ${MASON_HEADER_FILE}"
-        exit 1
-    fi
-
-    MASON_LIBRARY_FILE="${MASON_SDK_PATH}/usr/lib/libz.so"
-    if [ ! -f "${MASON_LIBRARY_FILE}" ]; then
-        mason_error "Can't find library file ${MASON_LIBRARY_FILE}"
-        exit 1
-    fi
-
-    MASON_CFLAGS=
-    MASON_LDFLAGS=-lz
-else
-    MASON_CFLAGS=`pkg-config zlib --cflags`
-    MASON_LDFLAGS=`pkg-config zlib --libs`
-fi
+function mason_load_source {
+    :
+}
 
 function mason_system_version {
     mkdir -p "${MASON_PREFIX}"
@@ -59,7 +28,55 @@ int main() {
 }
 
 function mason_compile {
-    :
+if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
+    MASON_HEADER_FILE="${MASON_SDK_PATH}/usr/include/zlib.h"
+    if [ ! -f "${MASON_HEADER_FILE}" ]; then
+        mason_error "Can't find header file ${MASON_HEADER_FILE}"
+        exit 1
+    fi
+
+    MASON_LIBRARY_FILE="${MASON_SDK_PATH}/usr/lib/libz.dylib"
+    if [ ! -f "${MASON_LIBRARY_FILE}" ]; then
+        mason_error "Can't find library file ${MASON_LIBRARY_FILE}"
+        exit 1
+    fi
+    mkdir -p ${MASON_PREFIX}/lib/
+    mkdir -p ${MASON_PREFIX}/include/
+    ln -s ${MASON_SDK_PATH}/usr/include/zlib.h ${MASON_PREFIX}/include/zlib.h
+    ln -s ${MASON_SDK_PATH}/usr/include/zconf.h ${MASON_PREFIX}/include/zconf.h
+    ln -s ${MASON_SDK_PATH}/usr/lib/libz.dylib ${MASON_PREFIX}/lib/libz.dylib
+    MASON_CFLAGS="-I${MASON_PREFIX}/include/"
+    MASON_LDFLAGS="-L${MASON_PREFIX}/lib -lz"
+elif [[ ${MASON_PLATFORM} = 'android' ]]; then
+    MASON_HEADER_FILE="${MASON_SDK_PATH}/usr/include/zlib.h"
+    if [ ! -f "${MASON_HEADER_FILE}" ]; then
+        mason_error "Can't find header file ${MASON_HEADER_FILE}"
+        exit 1
+    fi
+
+    MASON_LIBRARY_FILE="${MASON_SDK_PATH}/usr/lib/libz.so"
+    if [ ! -f "${MASON_LIBRARY_FILE}" ]; then
+        mason_error "Can't find library file ${MASON_LIBRARY_FILE}"
+        exit 1
+    fi
+
+    ln -s ${MASON_SDK_PATH}/usr/include/zlib.h ${MASON_PREFIX}/include/zlib.h
+    ln -s ${MASON_SDK_PATH}/usr/include/zconf.h ${MASON_PREFIX}/include/zconf.h
+    ln -s ${MASON_SDK_PATH}/usr/lib/libz.dylib ${MASON_PREFIX}/lib/libz.dylib
+    MASON_CFLAGS="-I${MASON_PREFIX}/include/"
+    MASON_LDFLAGS="-L${MASON_PREFIX}/lib -lz"
+elif [[ -d /usr/include/zlib.h ]] && [[ -d /usr/include/zconf.h ]]; then
+    mkdir -p ${MASON_PREFIX}/lib/
+    mkdir -p ${MASON_PREFIX}/include/
+    ln -s /usr/include/zlib.h ${MASON_PREFIX}/include/zlib.h
+    ln -s /usr/include/zconf.h ${MASON_PREFIX}/include/zconf.h
+    ln -s /usr/lib/libz.so ${MASON_PREFIX}/lib/libz.so
+    MASON_CFLAGS="-I${MASON_PREFIX}/include/"
+    MASON_LDFLAGS="-L${MASON_PREFIX}/lib -lz"
+else
+    MASON_CFLAGS=`pkg-config zlib --cflags`
+    MASON_LDFLAGS=`pkg-config zlib --libs`
+fi
 }
 
 function mason_cflags {

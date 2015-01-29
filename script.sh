@@ -47,11 +47,15 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    CUSTOM_LIBS="-L${MASON_LIBPQ}/lib -lpq -L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj -L${MASON_PNG}/lib -lpng -L${MASON_EXPAT}/lib -lexpat"
+    CUSTOM_LIBS="-L${MASON_LIBPQ}/lib -L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj -L${MASON_PNG}/lib -lpng -L${MASON_EXPAT}/lib -lexpat"
     CUSTOM_CFLAGS="${CFLAGS} -I${MASON_LIBPQ}/include -I${MASON_TIFF}/include -I${MASON_JPEG}/include -I${MASON_PROJ}/include -lproj -I${MASON_PNG}/include -I${MASON_EXPAT}/include"
     # note: it might be tempting to build with --without-libtool
     # but I find that will only lead to a static libgdal.a and will
     # not produce a shared library no matter if --enable-shared is passed
+
+    MASON_LIBPQ_PATH=${MASON_LIBPQ}/lib/libpq.a
+    MASON_LIBPQ_PATH=${MASON_LIBPQ_PATH////\\/}
+    perl -i -p -e "s/lpq/${MASON_LIBPQ_PATH}/g;" configure
 
     LIBS="${CUSTOM_LIBS}" CUSTOM_CFLAGS="${CFLAGS}" ./configure \
         --enable-static --disable-shared \
@@ -97,7 +101,9 @@ function mason_compile {
         --without-pam \
         --with-webp=no \
         --with-pcre=no \
-        --with-lzma=no
+        --with-liblzma=no \
+        --with-netcdf=no \
+        --with-poppler=no
 
     make -j${MASON_CONCURRENCY}
     make install

@@ -260,27 +260,24 @@ function mason_download {
     fi
 }
 
-function mason_extract_tar_gz {
+function mason_setup_build_dir {
     rm -rf "${MASON_ROOT}/.build"
     mkdir -p "${MASON_ROOT}/.build"
     cd "${MASON_ROOT}/.build"
+}
 
+function mason_extract_tar_gz {
+    mason_setup_build_dir
     tar xzf ../.cache/${MASON_SLUG} $@
 }
 
 function mason_extract_tar_bz2 {
-    rm -rf "${MASON_ROOT}/.build"
-    mkdir -p "${MASON_ROOT}/.build"
-    cd "${MASON_ROOT}/.build"
-
+    mason_setup_build_dir
     tar xjf ../.cache/${MASON_SLUG} $@
 }
 
 function mason_extract_tar_xz {
-    rm -rf "${MASON_ROOT}/.build"
-    mkdir -p "${MASON_ROOT}/.build"
-    cd "${MASON_ROOT}/.build"
-
+    mason_setup_build_dir
     tar xJf ../.cache/${MASON_SLUG} $@
 }
 
@@ -478,7 +475,7 @@ function mason_static_libs {
 }
 
 function mason_prefix {
-    if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
+    if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] || [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
         echo ${MASON_PREFIX}
     else
         mason_error "Cannot find required library file '${MASON_PREFIX}/${MASON_LIB_FILE}'"

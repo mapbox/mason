@@ -536,6 +536,9 @@ function mason_publish {
 function mason_run {
     if [ "$1" == "install" ]; then
         if [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+            mason_check_existing
+            mason_clear_existing
+            mason_build
             mason_success "Using system-provided ${MASON_NAME} $(mason_system_version)"
         else
             mason_check_existing

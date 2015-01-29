@@ -64,14 +64,14 @@ function mason_compile {
     mkdir -p ${MASON_PREFIX}/lib/
     mkdir -p ${MASON_PREFIX}/include/
     if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
-        ln -s ${MASON_SDK_PATH}/usr/include/iconv.h ${MASON_PREFIX}/include/iconv.h
-        ln -s ${MASON_SDK_PATH}/usr/lib/libiconv.dylib ${MASON_PREFIX}/lib/libiconv.dylib
+        ln -sf ${MASON_SDK_PATH}/usr/include/iconv.h ${MASON_PREFIX}/include/iconv.h
+        ln -sf ${MASON_SDK_PATH}/usr/lib/libiconv.dylib ${MASON_PREFIX}/lib/libiconv.dylib
     elif [[ ${MASON_PLATFORM} = 'android' ]]; then
-        ln -s ${MASON_SDK_PATH}/usr/include/iconv.h ${MASON_PREFIX}/include/iconv.h
-        ln -s ${MASON_SDK_PATH}/usr/lib/libiconv.dylib ${MASON_PREFIX}/lib/libiconv.dylib
+        ln -sf ${MASON_SDK_PATH}/usr/include/iconv.h ${MASON_PREFIX}/include/iconv.h
+        ln -sf ${MASON_SDK_PATH}/usr/lib/libiconv.dylib ${MASON_PREFIX}/lib/libiconv.dylib
     elif [[ -d /usr/include/iconv.h ]]; then
-        ln -s /usr/include/iconv.h ${MASON_PREFIX}/include/iconv.h
-        ln -s /usr/lib/libiconv.so ${MASON_PREFIX}/lib/libiconv.so
+        ln -sf /usr/include/iconv.h ${MASON_PREFIX}/include/iconv.h
+        ln -sf /usr/lib/libiconv.so ${MASON_PREFIX}/lib/libiconv.so
     fi
 }
 

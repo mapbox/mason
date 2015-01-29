@@ -20,6 +20,11 @@ before_install:
 
 script:
 - ./script.sh build
+- ./script.sh link
+- ./mason_packages/.link/bin/ogr2ogr --formats
+- if [[ $(uname -s) == 'Darwin' ]]; then otool -L ./mason_packages/.link/bin/ogr2ogr; else ldd ./mason_packages/.link/bin/ogr2ogr; fi;
+- ./mason_packages/.link/bin/gdalinfo --formats
+- if [[ $(uname -s) == 'Darwin' ]]; then otool -L ./mason_packages/.link/bin/gdalinfo; else ldd ./mason_packages/.link/bin/gdalinfo; fi;
 
 after_success:
 - ./script.sh publish

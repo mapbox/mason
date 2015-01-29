@@ -20,7 +20,11 @@ function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
     # set up to fix libtool .la files
     # https://github.com/mapbox/mason/issues/61
-    FIND="\/Users\/travis\/build\/mapbox\/mason"
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        FIND="\/Users\/travis\/build\/mapbox\/mason"
+    else
+        FIND="\/home\/travis\/build\/mapbox\/mason"
+    fi
     REPLACE="$(pwd)"
     REPLACE=${REPLACE////\\/}
     ${MASON_DIR:-~/.mason}/mason install libtiff 4.0.4beta
@@ -57,6 +61,11 @@ function mason_compile {
     CUSTOM_LDFLAGS="${LDFLAGS} -Wl,${MASON_LIBPQ_PATH}"
     # we have to remove -lpq otherwise it will trigger linking to system /usr/lib/libpq
     perl -i -p -e "s/\-lpq //g;" configure
+    # on linux -Wl,/path/to/libpq.a still does not work for the configure test
+    # so we have to force it into LIBS. But we don't do this on OS X since it breaks libtool archive logic
+    if [[ $(uname -s) == 'Linux' ]]; then
+        CUSTOM_LIBS="${MASON_LIBPQ}/lib/libpq.a -pthread ${CUSTOM_LIBS}"
+    fi
 
     # note: it might be tempting to build with --without-libtool
     # but I find that will only lead to a shared libgdal.so and will

@@ -17,6 +17,7 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
+    cd $(dirname ${MASON_ROOT})
     # set up to fix libtool .la files
     # https://github.com/mapbox/mason/issues/61
     FIND="\/Users\/travis\/build\/mapbox\/mason"

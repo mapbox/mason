@@ -55,26 +55,21 @@ elif [[ ${MASON_PLATFORM} = 'android' ]]; then
 
     MASON_CFLAGS="-I${MASON_PREFIX}/include/"
     MASON_LDFLAGS="-L${MASON_PREFIX}/lib -liconv"
-elif [[ -d /usr/include/iconv.h ]]; then
+else
     MASON_CFLAGS="-I${MASON_PREFIX}/include/"
     MASON_LDFLAGS="-L${MASON_PREFIX}/lib -liconv"
-else
-    MASON_CFLAGS=`pkg-config iconv --cflags`
-    MASON_LDFLAGS=`pkg-config iconv --libs`
 fi
 
 function mason_compile {
+    mkdir -p ${MASON_PREFIX}/lib/
+    mkdir -p ${MASON_PREFIX}/include/
     if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
-        mkdir -p ${MASON_PREFIX}/lib/
-        mkdir -p ${MASON_PREFIX}/include/
         ln -s ${MASON_SDK_PATH}/usr/include/iconv.h ${MASON_PREFIX}/include/iconv.h
         ln -s ${MASON_SDK_PATH}/usr/lib/libiconv.dylib ${MASON_PREFIX}/lib/libiconv.dylib
     elif [[ ${MASON_PLATFORM} = 'android' ]]; then
         ln -s ${MASON_SDK_PATH}/usr/include/iconv.h ${MASON_PREFIX}/include/iconv.h
         ln -s ${MASON_SDK_PATH}/usr/lib/libiconv.dylib ${MASON_PREFIX}/lib/libiconv.dylib
     elif [[ -d /usr/include/iconv.h ]]; then
-        mkdir -p ${MASON_PREFIX}/lib/
-        mkdir -p ${MASON_PREFIX}/include/
         ln -s /usr/include/iconv.h ${MASON_PREFIX}/include/iconv.h
         ln -s /usr/lib/libiconv.so ${MASON_PREFIX}/lib/libiconv.so
     fi

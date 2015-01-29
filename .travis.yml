@@ -26,4 +26,4 @@ script:
 - ./script.sh build
 
 after_success:
-- ./script.sh publish
+#- ./script.sh publish

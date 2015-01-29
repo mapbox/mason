@@ -18,16 +18,26 @@ function mason_load_source {
 
 function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
+    # set up to fix libtool .la files
+    # https://github.com/mapbox/mason/issues/61
+    FIND="\/Users\/travis\/build\/mapbox\/mason"
+    REPLACE="$(pwd)"
+    REPLACE=${REPLACE////\\/}
     ${MASON_DIR:-~/.mason}/mason install libtiff 4.0.4beta
     MASON_TIFF=$(${MASON_DIR:-~/.mason}/mason prefix libtiff 4.0.4beta)
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_TIFF}/lib/libtiff.la
     ${MASON_DIR:-~/.mason}/mason install proj 4.8.0
     MASON_PROJ=$(${MASON_DIR:-~/.mason}/mason prefix proj 4.8.0)
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PROJ}/lib/libproj.la
     ${MASON_DIR:-~/.mason}/mason install jpeg_turbo 1.4.0
     MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg_turbo 1.4.0)
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_JPEG}/lib/libjpeg.la
     ${MASON_DIR:-~/.mason}/mason install libpng 1.6.13
     MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.13)
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PNG}/lib/libpng.la
     ${MASON_DIR:-~/.mason}/mason install expat 2.1.0
     MASON_EXPAT=$(${MASON_DIR:-~/.mason}/mason prefix expat 2.1.0)
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
 }
 
 function mason_compile {

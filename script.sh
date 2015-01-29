@@ -67,19 +67,19 @@ function mason_compile {
     if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
         mkdir -p ${MASON_PREFIX}/lib/
         mkdir -p ${MASON_PREFIX}/include/
-        ln -s ${MASON_SDK_PATH}/usr/include/zlib.h ${MASON_PREFIX}/include/zlib.h
-        ln -s ${MASON_SDK_PATH}/usr/include/zconf.h ${MASON_PREFIX}/include/zconf.h
-        ln -s ${MASON_SDK_PATH}/usr/lib/libz.dylib ${MASON_PREFIX}/lib/libz.dylib
+        ln -sf ${MASON_SDK_PATH}/usr/include/zlib.h ${MASON_PREFIX}/include/zlib.h
+        ln -sf ${MASON_SDK_PATH}/usr/include/zconf.h ${MASON_PREFIX}/include/zconf.h
+        ln -sf ${MASON_SDK_PATH}/usr/lib/libz.dylib ${MASON_PREFIX}/lib/libz.dylib
     elif [[ ${MASON_PLATFORM} = 'android' ]]; then
-        ln -s ${MASON_SDK_PATH}/usr/include/zlib.h ${MASON_PREFIX}/include/zlib.h
-        ln -s ${MASON_SDK_PATH}/usr/include/zconf.h ${MASON_PREFIX}/include/zconf.h
-        ln -s ${MASON_SDK_PATH}/usr/lib/libz.dylib ${MASON_PREFIX}/lib/libz.dylib
+        ln -sf ${MASON_SDK_PATH}/usr/include/zlib.h ${MASON_PREFIX}/include/zlib.h
+        ln -sf ${MASON_SDK_PATH}/usr/include/zconf.h ${MASON_PREFIX}/include/zconf.h
+        ln -sf ${MASON_SDK_PATH}/usr/lib/libz.dylib ${MASON_PREFIX}/lib/libz.dylib
     elif [[ -d /usr/include/zlib.h ]] && [[ -d /usr/include/zconf.h ]]; then
         mkdir -p ${MASON_PREFIX}/lib/
         mkdir -p ${MASON_PREFIX}/include/
-        ln -s /usr/include/zlib.h ${MASON_PREFIX}/include/zlib.h
-        ln -s /usr/include/zconf.h ${MASON_PREFIX}/include/zconf.h
-        ln -s /usr/lib/libz.so ${MASON_PREFIX}/lib/libz.so
+        ln -sf /usr/include/zlib.h ${MASON_PREFIX}/include/zlib.h
+        ln -sf /usr/include/zconf.h ${MASON_PREFIX}/include/zconf.h
+        ln -sf /usr/lib/libz.so ${MASON_PREFIX}/lib/libz.so
     fi
 }
 

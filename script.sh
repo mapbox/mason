@@ -7,13 +7,14 @@ MASON_LIB_FILE=lib/libgdal.a
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
+    GIT_HASH=54cf139
     mason_download \
-        https://github.com/springmeyer/gdal/tarball/ddf1909 \
-        88f6f466322d62e991852114ad2d464e055e2386
+        https://github.com/springmeyer/gdal/tarball/${GIT_HASH} \
+        fb0057ed8cdfccdfeca0e7ead9b38cdb0188c8e9
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/springmeyer-gdal-ddf1909
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/springmeyer-gdal-${GIT_HASH}
 }
 
 function mason_prepare_compile {

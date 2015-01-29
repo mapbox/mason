@@ -17,7 +17,6 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    cd $(dirname ${MASON_ROOT})
     # set up to fix libtool .la files
     # https://github.com/mapbox/mason/issues/61
     FIND="\/Users\/travis\/build\/mapbox\/mason"
@@ -40,6 +39,10 @@ function mason_prepare_compile {
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
     ${MASON_DIR:-~/.mason}/mason install libpq 9.4.0
     MASON_LIBPQ=$(${MASON_DIR:-~/.mason}/mason prefix libpq 9.4.0)
+    ${MASON_DIR:-~/.mason}/mason install zlib system
+    MASON_ZLIB=$(${MASON_DIR:-~/.mason}/mason prefix zlib system)
+    ${MASON_DIR:-~/.mason}/mason install iconv system
+    MASON_ICONV=$(${MASON_DIR:-~/.mason}/mason prefix iconv system)
     export LIBRARY_PATH=${MASON_LIBPQ}/lib:$LIBRARY_PATH
 }
 
@@ -54,7 +57,8 @@ function mason_compile {
         --enable-static --disable-shared \
         ${MASON_HOST_ARG} \
         --prefix=${MASON_PREFIX} \
-        --with-libz=/usr/ \
+        --with-libz=${MASON_ZLIB} \
+        --with-libiconv-prefix=${MASON_ICONV} \
         --disable-rpath \
         --with-libjson-c=internal \
         --with-geotiff=internal \

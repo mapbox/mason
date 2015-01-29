@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
 MASON_NAME=gdal
-MASON_VERSION=1.11.1
+MASON_VERSION=1.11.1-big-pants
 MASON_LIB_FILE=lib/libgdal.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/gdal/CURRENT/gdal-${MASON_VERSION}.tar.gz \
+        http://download.osgeo.org/gdal/CURRENT/gdal-1.11.1.tar.gz \
         6a06e527e6a5abd565a67f84caadf9f891e5f49b
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-1.11.1
 }
 
 function mason_prepare_compile {

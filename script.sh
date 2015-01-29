@@ -8,12 +8,12 @@ MASON_LIB_FILE=lib/libgdal.a
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/gdal/CURRENT/gdal-1.11.1.tar.gz \
-        6a06e527e6a5abd565a67f84caadf9f891e5f49b
+        https://github.com/springmeyer/gdal/tarball/ddf1909 \
+        88f6f466322d62e991852114ad2d464e055e2386
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-1.11.1
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/springmeyer-gdal-ddf1909
 }
 
 function mason_prepare_compile {
@@ -52,6 +52,7 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    cd gdal/
     CUSTOM_LIBS="-L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj -L${MASON_PNG}/lib -lpng -L${MASON_EXPAT}/lib -lexpat"
     CUSTOM_CFLAGS="${CFLAGS} -I${MASON_LIBPQ}/include -I${MASON_TIFF}/include -I${MASON_JPEG}/include -I${MASON_PROJ}/include -I${MASON_PNG}/include -I${MASON_EXPAT}/include"
 

@@ -56,7 +56,7 @@ function mason_compile {
 
     MASON_LIBPQ_PATH=${MASON_LIBPQ}/lib/libpq.a
     MASON_LIBPQ_PATH=${MASON_LIBPQ_PATH////\\/}
-    perl -i -p -e "s/lpq/${MASON_LIBPQ_PATH}/g;" configure
+    perl -i -p -e "s/\-lpq/${MASON_LIBPQ_PATH}/g;" configure
 
     LIBS="${CUSTOM_LIBS}" CUSTOM_CFLAGS="${CFLAGS}" ./configure \
         --enable-static --disable-shared \

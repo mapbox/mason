@@ -21,7 +21,7 @@ script:
 - ./script.sh build
 - ./script.sh link
 # make sure we can init, start, create db, and stop
-- export PG_DATA=./local-postgres
+- export PGDATA=./local-postgres
 - ./mason_packages/.link/bin/initdb
 - ./mason_packages/.link/bin/pg_ctl -l postgres.log -w start
 - cat postgres.log

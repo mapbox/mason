@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=libuv
-MASON_VERSION=0.11.29
+MASON_VERSION=1.4.0
 MASON_LIB_FILE=lib/libuv.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libuv.pc
 
@@ -9,8 +9,8 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libuv.pc
 
 function mason_load_source {
     mason_download \
-        https://github.com/joyent/libuv/archive/v0.11.29.tar.gz \
-        5bf49a8652f680557cbaf335a160187b2da3bf7f
+        https://github.com/libuv/libuv/archive/v1.4.0.tar.gz \
+        22d3aada0b532d41c95cf51029f539f0570eeaa4
 
     mason_extract_tar_gz
 

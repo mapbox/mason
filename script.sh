@@ -54,11 +54,13 @@ function mason_compile {
 
     make -j${MASON_CONCURRENCY} -C src/interfaces/libpq/ install
     rm -f src/interfaces/libpq{*.so*,*.dylib}
-    rm -f ${MASON_PREFIX}/lib/lib{*.so*,*.dylib}
+    rm -f ${MASON_PREFIX}/lib/libpq{*.so*,*.dylib}
     MASON_LIBPQ_PATH=${MASON_PREFIX}/lib/libpq.a
     MASON_LIBPQ_PATH2=${MASON_LIBPQ_PATH////\\/}
-    perl -i -p -e "s/\-lpq /MASON_LIBPQ_PATH2/g;" src//Makefile.global.in
+    perl -i -p -e "s/\-lpq/${MASON_LIBPQ_PATH2}/g;" src//Makefile.global.in
+    perl -i -p -e "s/\-lpq/${MASON_LIBPQ_PATH2}/g;" src//Makefile.global
     make -j${MASON_CONCURRENCY} install
+    rm -f ${MASON_PREFIX}/lib/lib{*.so*,*.dylib}
 }
 
 function mason_clean {

@@ -1,0 +1,11 @@
+--- configure	2014-03-20 11:32:09.000000000 -0700
++++ configure	2014-03-20 11:32:07.000000000 -0700
+@@ -16149,7 +16149,7 @@
+ $as_echo "$dummy_cv_ansi" >&6; }
+ 
+ if test x"$dummy_cv_ansi" = xyes; then
+-    WARNFLAGS="$WARNFLAGS -ansi"
++    WARNFLAGS="$WARNFLAGS"
+ else
+     :
+ fi

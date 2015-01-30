@@ -1,0 +1,39 @@
+language: cpp
+
+sudo: false
+
+matrix:
+  include:
+    - os: osx
+      compiler: clang
+    - os: linux
+      compiler: clang
+
+env:
+  global:
+   - secure: "clCFM3prHnDocZ8lXlimPxAogvFirD1Zx8cMcFJ/XpkTA/0pCgnhpArM4y/NzLHR57pNZTSCr3p6XZI1c1iTG4Zm8x0sK2A4aTFRahypXNy/e+LzAbtd1y1+dEEDwlJvNNGxizQX4frhOgSNQFDFnWLtmF3stlft5YWyc2kI+FI="
+   - secure: "jKJErCng8Sk8YJ0IN2FX3lhv7G1LeudMfFBAXViZaXn8w/gWPs+SlfXQmIJ5SruU7U2GQKnAhzbjwXjVAgAh8OAblzny0DDm5Lh5WmwkgAP8JH1LpsBwCYx2S/v8qyR4DX1RVhHS8mQu298180ZDVgGccw+hd8xrE/S5TEQcNfQ="
+
+before_install:
+- git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
+
+script:
+- ./script.sh build
+- ./script.sh link
+# make sure we can init, start, create db, and stop
+- export PGDATA=./local-postgres
+# PGHOST must start with / so therefore must be absolute path
+- export PGHOST=$(pwd)/local-unix-socket
+- mkdir ${PGHOST}
+- export PGPORT=1111
+- ./mason_packages/.link/bin/initdb
+- ./mason_packages/.link/bin/postgres -k $PGHOST > postgres.log &
+- cat postgres.log
+- ./mason_packages/.link/bin/createdb template_postgis
+- ./mason_packages/.link/bin/psql -l
+#- ./mason_packages/.link/bin/psql template_postgis -c "CREATE EXTENSION postgis;"
+- ./mason_packages/.link/bin/pg_ctl -w stop
+- cat postgres.log
+
+after_success:
+- ./script.sh publish

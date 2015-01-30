@@ -21,7 +21,7 @@ function mason_compile {
     curl --retry 3 -s -f -# -L \
       https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
       -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
-    patch -N -p1 < ./patch.diff
+    patch -N -p0 < ./patch.diff
 
     ./configure \
         --prefix=${MASON_PREFIX} \

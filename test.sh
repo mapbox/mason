@@ -27,6 +27,7 @@ function finish {
   rm -rf ${PGDATA}
   rm -rf ${PGHOST}
   rm -rf ${PGTEMP_DIR}
+  rm -f postgres.log
 }
 
 trap finish EXIT

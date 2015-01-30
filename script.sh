@@ -17,11 +17,14 @@ function mason_load_source {
 }
 
 function mason_compile {
-    mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
-    curl --retry 3 -s -f -# -L \
-      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
-      -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
-    patch -N -p0 < ./patch.diff
+    # TODO: https://github.com/mapnik/mapnik-packaging/issues/144
+    if [[ $(uname -s) == 'Linux' ]]; then
+        mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
+        curl --retry 3 -s -f -# -L \
+          https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
+          -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
+        patch -N -p0 < ./patch.diff
+    fi
 
     ./configure \
         --prefix=${MASON_PREFIX} \

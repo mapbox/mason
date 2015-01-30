@@ -33,7 +33,6 @@ function mason_compile {
         --without-bonjour \
         --without-openssl \
         --without-pam \
-        --without-krb5 \
         --without-gssapi \
         --without-ossp-uuid \
         --without-readline \
@@ -53,6 +52,12 @@ function mason_compile {
         --disable-depend \
         --disable-cassert
 
+    make -j${MASON_CONCURRENCY} -C src/interfaces/libpq/ install
+    rm -f src/interfaces/libpq{*.so*,*.dylib}
+    rm -f ${MASON_PREFIX}/lib/lib{*.so*,*.dylib}
+    MASON_LIBPQ_PATH=${MASON_PREFIX}/lib/libpq.a
+    MASON_LIBPQ_PATH2=${MASON_LIBPQ_PATH////\\/}
+    perl -i -p -e "s/\-lpq /MASON_LIBPQ_PATH2/g;" src//Makefile.global.in
     make -j${MASON_CONCURRENCY} install
 }
 

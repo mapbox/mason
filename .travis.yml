@@ -25,7 +25,8 @@ script:
 - ./mason_packages/.link/bin/initdb
 - ./mason_packages/.link/bin/pg_ctl -l postgres.log -w start
 - cat postgres.log
-- ./mason_packages/.link/bin/psql template_postgis -c "CREATE DATABASE template_postgis;"
+- ./mason_packages/.link/bin/createdb template_postgis
+- ./mason_packages/.link/bin/psql -l
 #- ./mason_packages/.link/bin/psql template_postgis -c "CREATE EXTENSION postgis;"
 - ./mason_packages/.link/bin/pg_ctl -w stop
 - cat postgres.log

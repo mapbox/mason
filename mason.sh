@@ -95,8 +95,8 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         MASON_ANDROID_CROSS_COMPILER="aarch64-linux-android-4.9"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        export CFLAGS="-target aarch64-none-linux-android -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target aarch64-none-linux-android ${LDFLAGS}"
+        export CFLAGS="-target aarch64-none-linux-android -mfix-cortex-a53-835769 -D_LITTLE_ENDIAN ${CFLAGS}"
+        export LDFLAGS="-target aarch64-none-linux-android -Wl,--fix-cortex-a53-835769 ${LDFLAGS}"
         
         export JNIDIR="arm64-v8a"
         MASON_ANDROID_ARCH="arm64"
@@ -131,7 +131,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         MASON_ANDROID_CROSS_COMPILER="x86-4.9"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        export CFLAGS="-target i686-none-linux-android -march=i686 -msse3 -mstackrealign -mfpmath=sse ${CFLAGS}"
+        export CFLAGS="-target i686-none-linux-android -march=i686 -msse3 -mfpmath=sse ${CFLAGS}"
         export LDFLAGS="-target i686-none-linux-android -march=i686 ${LDFLAGS}"
         
         export JNIDIR="x86"

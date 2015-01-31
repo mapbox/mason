@@ -56,9 +56,9 @@ function main() {
             echo "unsupported distro: $codename $release"
             exit 1
         fi
-        export CPLUS_INCLUDE_PATH="${CPP11_TOOLCHAIN}/usr/include/c++/4.8:${CPP11_TOOLCHAIN}/usr/include/x86_64-linux-gnu/c++/4.8:${CPLUS_INCLUDE_PATH}"
-        export LD_LIBRARY_PATH="${CPP11_TOOLCHAIN}/usr/lib/x86_64-linux-gnu:${CPP11_TOOLCHAIN}/usr/lib/gcc/x86_64-linux-gnu/4.8/:${LD_LIBRARY_PATH}"
-        export LIBRARY_PATH="${LD_LIBRARY_PATH}:${LIBRARY_PATH}"
+        export CPLUS_INCLUDE_PATH="${CPP11_TOOLCHAIN}/usr/include/c++/4.8:${CPP11_TOOLCHAIN}/usr/include/x86_64-linux-gnu/c++/4.8:${CPLUS_INCLUDE_PATH:-}"
+        export LD_LIBRARY_PATH="${CPP11_TOOLCHAIN}/usr/lib/x86_64-linux-gnu:${CPP11_TOOLCHAIN}/usr/lib/gcc/x86_64-linux-gnu/4.8/:${LD_LIBRARY_PATH:-}"
+        export LIBRARY_PATH="${LD_LIBRARY_PATH}:${LIBRARY_PATH:-}"
         export PATH="${CPP11_TOOLCHAIN}/usr/bin":${PATH}
         export CXX="${CPP11_TOOLCHAIN}/usr/bin/clang++-3.5"
         export CC="${CPP11_TOOLCHAIN}/usr/bin/clang-3.5"

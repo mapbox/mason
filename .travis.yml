@@ -19,6 +19,7 @@ before_install:
 
 script:
 - ./script.sh build
+- ./test.sh
 
 after_success:
 - ./script.sh publish

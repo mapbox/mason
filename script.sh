@@ -37,8 +37,8 @@ function mason_prepare_compile {
     ${MASON_DIR:-~/.mason}/mason install jpeg_turbo 1.4.0
     MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg_turbo 1.4.0)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_JPEG}/lib/libjpeg.la
-    ${MASON_DIR:-~/.mason}/mason install libpng 1.6.13
-    MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.13)
+    ${MASON_DIR:-~/.mason}/mason install libpng 1.6.16
+    MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.16)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PNG}/lib/libpng.la
     ${MASON_DIR:-~/.mason}/mason install expat 2.1.0
     MASON_EXPAT=$(${MASON_DIR:-~/.mason}/mason prefix expat 2.1.0)
@@ -74,6 +74,12 @@ function mason_compile {
     # so we have to force it into LIBS. But we don't do this on OS X since it breaks libtool archive logic
     if [[ $(uname -s) == 'Linux' ]]; then
         CUSTOM_LIBS="${MASON_LIBPQ}/lib/libpq.a -pthread ${CUSTOM_LIBS}"
+    fi
+
+    # note: we put ${STDLIB_CXXFLAGS} into CXX instead of LDFLAGS due to libtool oddity:
+    # http://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        CXX="${CXX} -stdlib=libc++ -std=c++11"
     fi
 
     # note: it might be tempting to build with --without-libtool
@@ -131,7 +137,8 @@ function mason_compile {
     make install
 
     # attempt to make paths relative in gdal-config
-    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('include','include/gdal').replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \"\$0\" ))\" && pwd )'))"
+    # TODO - get write(data.replace('include','include/gdal') working
+    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \"\$0\" ))\" && pwd )'))"
     cat $MASON_PREFIX/bin/gdal-config
 }
 

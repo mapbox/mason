@@ -8,12 +8,24 @@ MASON_LIB_FILE=bin/shp2pgsql
 
 function mason_load_source {
     mason_download \
+        http://download.osgeo.org/postgis/source/postgis-2.1.5.tar.gz \
+        99fca8c072c09d083d280dceeda61f615d712f28
+
+    mason_extract_tar_gz
+
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/postgis-2.1.5
+
+: '
+
+    mason_download \
         http://postgis.net/stuff/postgis-2.2.0dev.tar.gz \
         36a7cdf264261929b5110da1a3b1ded6c054554e
 
     mason_extract_tar_gz
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/postgis-2.2.0dev
+
+'
 }
 
 function mason_prepare_compile {
@@ -94,12 +106,21 @@ function mason_compile {
     export LIBS=""
 
     if [[ $(uname -s) == 'Darwin' ]]; then
-        export LDFLAGS="${LDFLAGS} -Wl,-lc++ ${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a -L${MASON_ICONV}/lib -liconv"
+        export LDFLAGS="${LDFLAGS} -Wl,-lc++ -Wl,${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a -L${MASON_ICONV}/lib -liconv"
     else
         export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm"
     fi
 
-    perl -i -p -e "s/liblwgeom.la/liblwgeom.a/g;" raster/loader/Makefile.in
+    perl -i -p -e "s/librtcore\.a/librtcore\.a \-Wl,\.\.\/\.\.\/liblwgeom\/\.libs\/liblwgeom\.a/g;" raster/loader/Makefile.in
+
+    #perl -i -p -e "s/liblwgeom.la/liblwgeom.a/g;" raster/loader/Makefile.in
+    #perl -i -p -e "s/\.\.\/\.\.\/liblwgeom\/liblwgeom\.la/\-Wl,\.\.\/\.\.\/\.libs\/liblwgeom.a/g;" raster/loader/Makefile.in
+    #perl -i -p -e "s/\.\.\/\.\.\/liblwgeom\/liblwgeom\.la/\-Wl,\.\.\/\.\.\/\.libs\/liblwgeom\.a/g;" raster/loader/Makefile.in
+
+    #if [[ $(uname -s) == 'Darwin' ]]; then
+    #    perl -i -p -e "s/\.\.\/liblwgeom\/\.libs\/liblwgeom\.a/\-Wl,\.\.\/liblwgeom\/\.libs\/liblwgeom\.a/g;" postgis/Makefile.in
+    #fi
+    # http://lists.osgeo.org/pipermail/postgis-users/2011-September/030673.html
     if [[ $(uname -s) == 'Linux' ]]; then
       # help initGEOS configure check
       perl -i -p -e "s/\-lgeos_c  /\-lgeos_c \-lgeos \-lstdc++ \-lm /g;" configure
@@ -122,8 +143,8 @@ function mason_compile {
         --with-topology \
         --with-raster \
         --disable-nls || (cat config.log && exit 1)
-    make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
-    make install LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
+    make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS" -j${MASON_CONCURRENCY}
+    make install LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS" -j${MASON_CONCURRENCY}
 }
 
 function mason_clean {

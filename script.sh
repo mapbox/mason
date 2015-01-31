@@ -102,7 +102,7 @@ function mason_compile {
     perl -i -p -e "s/liblwgeom.la/liblwgeom.a/g;" raster/loader/Makefile.in
     if [[ $(uname -s) == 'Linux' ]]; then
       # help initGEOS configure check
-      perl -i -p -e "s/\-lgeos_c /\-lgeos_c \-lgeos \-lstdc++ \-lm /g;" configure
+      perl -i -p -e "s/\-lgeos_c  /\-lgeos_c \-lgeos \-lstdc++ \-lm /g;" configure
       # help GDALAllRegister configure check
       CMD="data=open('./configure','r').read();open('./configure','w')"
       CMD="${CMD}.write(data.replace('\`\$GDAL_CONFIG --libs\`','\"-lgdal -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm\"'))"

@@ -70,7 +70,6 @@ function mason_compile {
     export LDFLAGS="${LDFLAGS} \
       -L${MASON_GEOS}/lib -lgeos_c -lgeos\
       -L${MASON_GDAL}/lib -lgdal \
-      -L${MASON_ICONV}/lib -liconv \
       -L${MASON_ZLIB}/lib -lz \
       -L${MASON_TIFF}/lib -ltiff \
       -L${MASON_JPEG}/lib -ljpeg \
@@ -95,7 +94,7 @@ function mason_compile {
     export LIBS=""
 
     if [[ $(uname -s) == 'Darwin' ]]; then
-        export LDFLAGS="${LDFLAGS} -Wl,-lc++ ${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a"
+        export LDFLAGS="${LDFLAGS} -Wl,-lc++ ${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a -L${MASON_ICONV}/lib -liconv"
     else
         export LDFLAGS="${LDFLAGS} -lstdc++ ${MASON_GDAL}/lib/libgdal.a ${MASON_POSTGRES}/lib/libpq.a"
     fi

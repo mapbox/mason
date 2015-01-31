@@ -7,7 +7,9 @@ os:
   - osx
 
 install:
-- export MASON_DIR=./
+# NOTE: must be absolute path for predictable behavior
+# when packages call out to mason themselves in order to install deps
+- export MASON_DIR=$(pwd)
 
 script:
 - ./test.sh

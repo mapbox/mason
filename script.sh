@@ -137,8 +137,7 @@ function mason_compile {
     make install
 
     # attempt to make paths relative in gdal-config
-    # TODO - get write(data.replace('include','include/gdal') working
-    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \"\$0\" ))\" && pwd )'))"
+    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \"\$0\" ))\" && pwd )'))"
     cat $MASON_PREFIX/bin/gdal-config
 }
 

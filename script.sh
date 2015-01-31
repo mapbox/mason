@@ -96,10 +96,18 @@ function mason_compile {
     if [[ $(uname -s) == 'Darwin' ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-lc++ ${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a -L${MASON_ICONV}/lib -liconv"
     else
-        export LDFLAGS="${LDFLAGS} -lstdc++ ${MASON_GDAL}/lib/libgdal.a ${MASON_POSTGRES}/lib/libpq.a -pthread"
+        export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm"
     fi
 
     perl -i -p -e "s/liblwgeom.la/liblwgeom.a/g;" raster/loader/Makefile.in
+    if [[ $(uname -s) == 'Linux' ]]; then
+      # help initGEOS configure check
+      perl -i -p -e "s/\-lgeos/\-lgeos_c \-lgeos_c \-lstdc++ \-lm/g;" configure
+      # help GDALAllRegister configure check
+      CMD="data=open('./configure','r').read();open('./configure','w')"
+      CMD="${CMD}.write(data.replace('\`\$GDAL_CONFIG --libs\`','\"-lgdal -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm\"'))"
+      python -c "${CMD}"
+    fi
     ./configure \
         --enable-static --disable-shared \
         --prefix=${MASON_PREFIX} \

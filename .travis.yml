@@ -6,14 +6,18 @@ os:
   - linux
   - osx
 
-before_install:
-- export MASON_DIR=./
+env:
+  matrix:
+    - TEST="unit"
+    - TEST="c_install"
+    - TEST="c_build"
+    - TEST="cpp11_install"
+    - TEST="cpp11_build"
 
 install:
-- true
-
-before_script:
-- true
+# NOTE: must be absolute path for predictable behavior
+# when packages call out to mason themselves in order to install deps
+- export MASON_DIR=$(pwd)
 
 script:
-- true
+- ./test/${TEST}.sh

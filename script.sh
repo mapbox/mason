@@ -2,7 +2,7 @@
 
 MASON_NAME=postgis
 MASON_VERSION=2.1.5
-MASON_LIB_FILE=bin/shp2pgsql
+MASON_LIB_FILE=lib/liblwgeom.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 

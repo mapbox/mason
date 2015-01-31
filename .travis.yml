@@ -6,14 +6,8 @@ os:
   - linux
   - osx
 
-before_install:
+install:
 - export MASON_DIR=./
 
-install:
-- true
-
-before_script:
-- true
-
 script:
-- true
+- ./test.sh

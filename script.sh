@@ -8,24 +8,10 @@ MASON_LIB_FILE=bin/shp2pgsql
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/postgis/source/postgis-2.1.5.tar.gz \
+        http://download.osgeo.org/postgis/source/postgis-${MASON_VERSION}.tar.gz \
         99fca8c072c09d083d280dceeda61f615d712f28
-
     mason_extract_tar_gz
-
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/postgis-2.1.5
-
-: '
-
-    mason_download \
-        http://postgis.net/stuff/postgis-2.2.0dev.tar.gz \
-        36a7cdf264261929b5110da1a3b1ded6c054554e
-
-    mason_extract_tar_gz
-
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/postgis-2.2.0dev
-
-'
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/postgis-${MASON_VERSION}
 }
 
 function mason_prepare_compile {
@@ -103,7 +89,6 @@ function mason_compile {
       -I${MASON_GEOS}/include \
       -I${MASON_PROJ}/include \
       -I${MASON_XML2}/include/libxml2"
-    export LIBS=""
 
     if [[ $(uname -s) == 'Darwin' ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-lc++ -Wl,${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a -L${MASON_ICONV}/lib -liconv"
@@ -111,16 +96,12 @@ function mason_compile {
         export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm"
     fi
 
+
+    MASON_LIBPQ_PATH=${MASON_POSTGRES}/lib/libpq.a
+    MASON_LIBPQ_PATH2=${MASON_LIBPQ_PATH////\\/}
+    perl -i -p -e "s/\-lpq/${MASON_LIBPQ_PATH2} -pthread/g;" configure
     perl -i -p -e "s/librtcore\.a/librtcore\.a \.\.\/\.\.\/liblwgeom\/\.libs\/liblwgeom\.a/g;" raster/loader/Makefile.in
 
-    #perl -i -p -e "s/liblwgeom.la/liblwgeom.a/g;" raster/loader/Makefile.in
-    #perl -i -p -e "s/\.\.\/\.\.\/liblwgeom\/liblwgeom\.la/\-Wl,\.\.\/\.\.\/\.libs\/liblwgeom.a/g;" raster/loader/Makefile.in
-    #perl -i -p -e "s/\.\.\/\.\.\/liblwgeom\/liblwgeom\.la/\-Wl,\.\.\/\.\.\/\.libs\/liblwgeom\.a/g;" raster/loader/Makefile.in
-
-    #if [[ $(uname -s) == 'Darwin' ]]; then
-    #    perl -i -p -e "s/\.\.\/liblwgeom\/\.libs\/liblwgeom\.a/\-Wl,\.\.\/liblwgeom\/\.libs\/liblwgeom\.a/g;" postgis/Makefile.in
-    #fi
-    # http://lists.osgeo.org/pipermail/postgis-users/2011-September/030673.html
     if [[ $(uname -s) == 'Linux' ]]; then
       # help initGEOS configure check
       perl -i -p -e "s/\-lgeos_c  /\-lgeos_c \-lgeos \-lstdc++ \-lm /g;" configure
@@ -129,6 +110,7 @@ function mason_compile {
       CMD="${CMD}.write(data.replace('\`\$GDAL_CONFIG --libs\`','\"-lgdal -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm\"'))"
       python -c "${CMD}"
     fi
+
     ./configure \
         --enable-static --disable-shared \
         --prefix=${MASON_PREFIX} \

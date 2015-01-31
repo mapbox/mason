@@ -6,6 +6,10 @@ os:
   - linux
   - osx
 
+before_install:
+# bootstrap c++11 capable toolchain
+- source ~/.mason/scripts/setup_cpp11_toolchain.sh
+
 install:
 # NOTE: must be absolute path for predictable behavior
 # when packages call out to mason themselves in order to install deps

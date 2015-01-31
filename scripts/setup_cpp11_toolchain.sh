@@ -10,8 +10,10 @@ function usage() {
 
 function main() {
 
-    if [[ $1 == '-h' ]] || [[ $1 == '--help' ]]; then
+    if [[ ${1:-unset} != "unset" ]]; then
+      if [[ $1 == '-h' ]] || [[ $1 == '--help' ]]; then
         usage
+      fi
     fi
 
     if [[ $(uname -s) == 'Linux' ]]; then

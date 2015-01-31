@@ -111,7 +111,7 @@ function mason_compile {
         export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm"
     fi
 
-    perl -i -p -e "s/librtcore\.a/librtcore\.a \-Wl,\.\.\/\.\.\/liblwgeom\/\.libs\/liblwgeom\.a/g;" raster/loader/Makefile.in
+    perl -i -p -e "s/librtcore\.a/librtcore\.a \.\.\/\.\.\/liblwgeom\/\.libs\/liblwgeom\.a/g;" raster/loader/Makefile.in
 
     #perl -i -p -e "s/liblwgeom.la/liblwgeom.a/g;" raster/loader/Makefile.in
     #perl -i -p -e "s/\.\.\/\.\.\/liblwgeom\/liblwgeom\.la/\-Wl,\.\.\/\.\.\/\.libs\/liblwgeom.a/g;" raster/loader/Makefile.in
@@ -142,6 +142,8 @@ function mason_compile {
         --without-gui \
         --with-topology \
         --with-raster \
+        --with-sfcgal=no \
+        --without-sfcgal \
         --disable-nls || (cat config.log && exit 1)
     make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS" -j${MASON_CONCURRENCY}
     make install LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS" -j${MASON_CONCURRENCY}

@@ -23,9 +23,11 @@ function mason_compile {
       -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
     patch -N -p1 < ./patch.diff
 
-    # note: we put ${STDLIB_CXXFLAGS} into CXX instead of CXXFLAGS due to libtool oddity:
+    # note: we put ${STDLIB_CXXFLAGS} into CXX instead of LDFLAGS due to libtool oddity:
     # http://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass
-    CXX="${CXX} -stdlib=libc++ -std=c++11"
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        CXX="${CXX} -stdlib=libc++ -std=c++11"
+    fi
     ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \

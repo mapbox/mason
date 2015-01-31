@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 MASON_COMMAND=$1 ; shift
 MASON_NAME=$1 ; shift

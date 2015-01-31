@@ -35,9 +35,9 @@ function mason_prepare_compile {
     REPLACE=${REPLACE////\\/}
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PROJ}/lib/libproj.la
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_XML2}/lib/libxml2.la
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_XML2}/bin/xml2-config
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/lib/libgeos.la
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/lib/libgeos_c.la
-    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_XML2}/bin/xml2-config
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/bin/geos-config
 
     # gdal support, ugh: http://trac.osgeo.org/postgis/ticket/3027
@@ -115,6 +115,7 @@ function mason_compile {
         --with-topology \
         --with-raster \
         --disable-nls
+    cat mason_packages/.build/postgis-2.2.0dev/config.log
     make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
     make install LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
 }

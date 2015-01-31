@@ -96,7 +96,7 @@ function mason_compile {
     if [[ $(uname -s) == 'Darwin' ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-lc++ ${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a -L${MASON_ICONV}/lib -liconv"
     else
-        export LDFLAGS="${LDFLAGS} -lstdc++ ${MASON_GDAL}/lib/libgdal.a ${MASON_POSTGRES}/lib/libpq.a"
+        export LDFLAGS="${LDFLAGS} -lstdc++ ${MASON_GDAL}/lib/libgdal.a ${MASON_POSTGRES}/lib/libpq.a -pthread"
     fi
 
     perl -i -p -e "s/liblwgeom.la/liblwgeom.a/g;" raster/loader/Makefile.in

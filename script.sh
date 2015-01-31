@@ -114,8 +114,7 @@ function mason_compile {
         --without-gui \
         --with-topology \
         --with-raster \
-        --disable-nls
-    cat mason_packages/.build/postgis-2.2.0dev/config.log
+        --disable-nls || (cat config.log && exit 1)
     make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
     make install LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
 }

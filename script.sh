@@ -39,6 +39,7 @@ if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
         mason_error "Can't find library file ${MASON_LIBRARY_FILE}"
         exit 1
     fi
+    MASON_LIB_FILE="lib/libz.dylib"
     MASON_CFLAGS="-I${MASON_PREFIX}/include/"
     MASON_LDFLAGS="-L${MASON_PREFIX}/lib -lz"
 elif [[ ${MASON_PLATFORM} = 'android' ]]; then
@@ -53,12 +54,15 @@ elif [[ ${MASON_PLATFORM} = 'android' ]]; then
         mason_error "Can't find library file ${MASON_LIBRARY_FILE}"
         exit 1
     fi
+    MASON_LIB_FILE="lib/libz.o"
     MASON_CFLAGS="-I${MASON_PREFIX}/include/"
     MASON_LDFLAGS="-L${MASON_PREFIX}/lib -lz"
 elif [[ -d /usr/include/zlib.h ]] && [[ -d /usr/include/zconf.h ]]; then
+    MASON_LIB_FILE="lib/libz.o"
     MASON_CFLAGS="-I${MASON_PREFIX}/include/"
     MASON_LDFLAGS="-L${MASON_PREFIX}/lib -lz"
 else
+    MASON_LIB_FILE="lib/libz.o"
     MASON_CFLAGS=`pkg-config zlib --cflags`
     MASON_LDFLAGS=`pkg-config zlib --libs`
 fi

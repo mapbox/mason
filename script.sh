@@ -3,32 +3,37 @@
 MASON_NAME=sqlite
 MASON_VERSION=system
 MASON_SYSTEM_PACKAGE=true
-MASON_LIB_FILE=include/sqlite3.h
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
-if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
-    SQLITE_HEADER_DIR="${MASON_SDK_PATH}/usr/include"
-    SQLITE_LIBRARY_DIR="${MASON_SDK_PATH}/usr/lib"
-    MASON_CFLAGS="-I${MASON_PREFIX}/include"
-    MASON_LDFLAGS="-L${MASON_PREFIX}/lib -lsqlite3"
 
-    MASON_HEADER_FILE="${SQLITE_HEADER_DIR}/sqlite3.h"
-    if [ ! -f "${MASON_HEADER_FILE}" ]; then
-        mason_error "Can't find header file ${MASON_HEADER_FILE}"
-        exit 1
-    fi
+if [[ ${MASON_PLATFORM} = 'android' ]]; then
+    mason_error "Unavailable on platform \"${MASON_PLATFORM}\""
+    exit 1
+fi
 
-    MASON_LIBRARY_FILE="${SQLITE_LIBRARY_DIR}/libsqlite3.dylib"
-    if [ ! -f "${MASON_LIBRARY_FILE}" ]; then
-        mason_error "Can't find library file ${MASON_LIBRARY_FILE}"
-        exit 1
-    fi
+MASON_CFLAGS="-I${MASON_PREFIX}/include"
+MASON_LDFLAGS="-L${MASON_PREFIX}/lib"
+
+if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' || ${MASON_PLATFORM} = 'android' ]]; then
+    SQLITE_INCLUDE_PREFIX="${MASON_SDK_PATH}/usr/include"
+    SQLITE_LIBRARY="${MASON_SDK_PATH}/usr/lib/libsqlite3.${MASON_DYNLIB_SUFFIX}"
+    MASON_LDFLAGS="${MASON_LDFLAGS} -lsqlite3"
 else
-    SQLITE_HEADER_DIR="`pkg-config sqlite3 --variable=includedir`"
-    SQLITE_LIBRARY_DIR="`pkg-config sqlite3 --variable=libdir`"
-    MASON_CFLAGS="-I${MASON_PREFIX}/include `pkg-config sqlite3 --cflags-only-other`"
-    MASON_LDFLAGS="-I${MASON_PREFIX}/lib `pkg-config sqlite3 --libs-only-other --libs-only-l`"
+    SQLITE_INCLUDE_PREFIX="`pkg-config sqlite3 --variable=includedir`"
+    SQLITE_LIBRARY="`pkg-config sqlite3 --variable=libdir`/libsqlite3.${MASON_DYNLIB_SUFFIX}"
+    MASON_CFLAGS="${MASON_CFLAGS} `pkg-config sqlite3 --cflags-only-other`"
+    MASON_LDFLAGS="${MASON_LDFLAGS} `pkg-config sqlite3 --libs-only-other --libs-only-l`"
+fi
+
+if [ ! -f "${SQLITE_INCLUDE_PREFIX}/sqlite3.h" ]; then
+    mason_error "Can't find header file ${SQLITE_INCLUDE_PREFIX}/sqlite3.h"
+    exit 1
+fi
+
+if [ ! -f "${SQLITE_LIBRARY}" ]; then
+    mason_error "Can't find library file ${SQLITE_LIBRARY}"
+    exit 1
 fi
 
 function mason_system_version {
@@ -38,18 +43,18 @@ function mason_system_version {
         echo "#include <sqlite3.h>
 #include <stdio.h>
 int main() {
-    printf(\"%s\", sqlite3_libversion());
+    printf(\"%s\", SQLITE_VERSION);
     return 0;
 }
-" > version.c && ${CC:-cc} version.c $(mason_cflags) $(mason_ldflags) -o version
+" > version.c && cc version.c $(mason_cflags) -o version
     fi
     ./version
 }
 
 function mason_build {
     mkdir -p ${MASON_PREFIX}/{include,lib}
-    ln -sf ${SQLITE_HEADER_DIR}/sqlite3.h ${MASON_PREFIX}/include/
-    ln -sf ${SQLITE_LIBRARY_DIR}/libsqlite.* ${MASON_PREFIX}/lib/
+    ln -sf ${SQLITE_INCLUDE_PREFIX}/sqlite3.h ${MASON_PREFIX}/include/
+    ln -sf ${SQLITE_LIBRARY} ${MASON_PREFIX}/lib/
 }
 
 function mason_cflags {

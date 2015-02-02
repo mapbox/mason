@@ -88,9 +88,9 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         mason_error "ANDROID_NDK_PATH variable must be set with an active-platform built"
         exit 1
     fi
-    
+
     export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
-    
+
     CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector -no-canonical-prefixes -fno-integrated-as -O2 -g -DNDEBUG -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-functions -finline-limit=300 -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
     LDFLAGS="-no-canonical-prefixes"
     export CPPFLAGS="-D__ANDROID__"
@@ -102,7 +102,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
         export CFLAGS="-target aarch64-none-linux-android -mfix-cortex-a53-835769 -D_LITTLE_ENDIAN ${CFLAGS}"
         export LDFLAGS="-target aarch64-none-linux-android -Wl,--fix-cortex-a53-835769 ${LDFLAGS}"
-        
+
         export JNIDIR="arm64-v8a"
         MASON_ANDROID_ARCH="arm64"
         MASON_ANDROID_PLATFORM="21"
@@ -114,7 +114,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
         export CFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -D_LITTLE_ENDIAN ${CFLAGS}"
         export LDFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -Wl,--fix-cortex-a8 -Wl,--no-warn-mismatch -lm_hard ${LDFLAGS}"
-        
+
         export JNIDIR="armeabi-v7a"
         MASON_ANDROID_ARCH="arm"
         MASON_ANDROID_PLATFORM="9"
@@ -126,11 +126,11 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
         export CFLAGS="-target armv5te-none-linux-androideabi -march=armv5te -mtune=xscale -msoft-float -D_LITTLE_ENDIAN ${CFLAGS}"
         export LDFLAGS="-target armv5te-none-linux-androideabi -march=armv5te ${LDFLAGS}"
-        
+
         export JNIDIR="armeabi"
         MASON_ANDROID_ARCH="arm"
         MASON_ANDROID_PLATFORM="9"
-        
+
     elif [ ${MASON_ANDROID_ABI} = 'x86' ]; then
         MASON_ANDROID_TOOLCHAIN="i686-linux-android"
         MASON_ANDROID_CROSS_COMPILER="x86-4.9"
@@ -138,11 +138,11 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
         export CFLAGS="-target i686-none-linux-android -march=i686 -msse3 -mfpmath=sse ${CFLAGS}"
         export LDFLAGS="-target i686-none-linux-android -march=i686 ${LDFLAGS}"
-        
+
         export JNIDIR="x86"
         MASON_ANDROID_ARCH="x86"
         MASON_ANDROID_PLATFORM="9"
-        
+
     elif [ ${MASON_ANDROID_ABI} = 'x86-64' ]; then
         MASON_ANDROID_TOOLCHAIN="x86_64-linux-android"
         MASON_ANDROID_CROSS_COMPILER="x86_64-4.9"
@@ -151,7 +151,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         export JNIDIR="x86_64"
         export CFLAGS="-target x86_64-none-linux-android -march=x86-64 -msse4.2 -mpopcnt -m64 -mtune=intel ${CFLAGS}"
         export LDFLAGS="-target x86_64-none-linux-android -march=x86-64 ${LDFLAGS}"
-        
+
         MMASON_ANDROID_ARCH="x86_64"
         MASON_ANDROID_PLATFORM="21"
 
@@ -162,7 +162,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
         export CFLAGS="-target mipsel-none-linux-android ${CFLAGS}"
         export LDFLAGS="-target mipsel-none-linux-android ${LDFLAGS}"
-        
+
         export JNIDIR="mips"
         MASON_ANDROID_ARCH="mips"
         MASON_ANDROID_PLATFORM="9"
@@ -174,28 +174,28 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
         export CFLAGS="-target mips64el-none-linux-android ${CFLAGS}"
         export LDFLAGS="-target mips64el-none-linux-android ${LDFLAGS}"
-        
+
         export JNIDIR="mips64"
         MASON_ANDROID_ARCH="mips64"
         MASON_ANDROID_PLATFORM="21"
     fi
 
     export CXXFLAGS="${CFLAGS} -std=c++11"
-    
+
     export MASON_PLATFORM_VERSION="${MASON_ANDROID_ABI}-${MASON_ANDROID_PLATFORM}"
     MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
-    
+
     MASON_SDK_ROOT="${MASON_ROOT}/.android-platform/${MASON_PLATFORM_VERSION}/"
     MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
     export PATH=${MASON_SDK_ROOT}/bin:${PATH}
-    
+
     export CXX="${MASON_ANDROID_TOOLCHAIN}-clang++"
     export CC="${MASON_ANDROID_TOOLCHAIN}-clang"
     export LD="${MASON_ANDROID_TOOLCHAIN}-ld"
     export AR="${MASON_ANDROID_TOOLCHAIN}-ar"
     export RANLIB="${MASON_ANDROID_TOOLCHAIN}-ranlib"
     export STRIP="${MASON_ANDROID_TOOLCHAIN}-strip"
-    
+
     if [ ! -d ${MASON_SDK_ROOT} ]; then
         echo "creating android toolchain with ${MASON_ANDROID_CROSS_COMPILER}/${MASON_API_LEVEL} at ${MASON_SDK_ROOT}"
         "${ANDROID_NDK_PATH}/build/tools/make-standalone-toolchain.sh"  \
@@ -234,6 +234,11 @@ function mason_check_existing {
     if [ ${MASON_HEADER_ONLY:-false} = true ] ; then
         if [ -d "${MASON_PREFIX}" ] ; then
             mason_success "Already installed at ${MASON_PREFIX}"
+            exit 0
+        fi
+    elif [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+        if [ -f "${MASON_PREFIX}/version" ] ; then
+            mason_success "Using system-provided ${MASON_NAME} $(mason_system_version)"
             exit 0
         fi
     else
@@ -544,7 +549,7 @@ function mason_run {
             mason_check_existing
             mason_clear_existing
             mason_build
-            mason_success "Using system-provided ${MASON_NAME} $(mason_system_version)"
+            mason_success "Installed system-provided ${MASON_NAME} $(mason_system_version)"
         else
             mason_check_existing
             mason_clear_existing

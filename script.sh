@@ -41,16 +41,12 @@ function mason_compile {
     ln -sf ${BOOST_ROOT}/lib/libboost_* ${MASON_PREFIX}/lib/
 }
 
-function mason_prefix {
-    echo "${BOOST_ROOT}"
-}
-
 function mason_cflags {
-    echo "-I${BOOST_ROOT}/include"
+    echo "-I${MASON_PREFIX}/include"
 }
 
 function mason_ldflags {
-    echo "-L${BOOST_ROOT}/lib"
+    echo "-L${MASON_PREFIX}/lib"
 }
 
 mason_run "$@"

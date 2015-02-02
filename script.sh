@@ -24,16 +24,16 @@ elif [[ -d /usr/include/zlib.h ]] && [[ -d /usr/include/zconf.h ]]; then
     MASON_LDFLAGS="${MASON_LDFLAGS} -lz"
 else
     ZLIB_PREFIX="`pkg-config zlib --variable=prefix`"
-    ZLIB_LIBRARY="libz.so"
-    MASON_CFLAGS="${MASON_CFLAGS} `pkg-config zlib --cflags-only-other`"
-    MASON_LDFLAGS="${MASON_LDFLAGS} `pkg-config zlib --libs-only-other --libs-only-l`"
+    MASON_CFLAGS="`pkg-config zlib --cflags`"
+    MASON_LDFLAGS="`pkg-config zlib --libs`"
 fi
 
 if [ ! -f "${ZLIB_PREFIX}/include/zlib.h" ]; then
     mason_error "Can't find header file ${ZLIB_PREFIX}/include/zlib.h"
     exit 1
 fi
-if [ ! -f "${ZLIB_PREFIX}/lib/${ZLIB_LIBRARY}" ]; then
+
+if [[ ! -z ${ZLIB_LIBRARY} && ! -f "${ZLIB_PREFIX}/lib/${ZLIB_LIBRARY}" ]]; then
     mason_error "Can't find library file ${ZLIB_PREFIX}/lib/${ZLIB_LIBRARY}"
     exit 1
 fi
@@ -48,7 +48,7 @@ int main() {
     printf(\"%s\", ZLIB_VERSION);
     return 0;
 }
-" > version.c && cc version.c $(mason_cflags) -o version
+" > version.c && ${CC:-cc} version.c $(mason_cflags) -o version
     fi
     ./version
 }
@@ -56,7 +56,9 @@ int main() {
 function mason_build {
     mkdir -p ${MASON_PREFIX}/{include,lib}
     ln -sf ${ZLIB_PREFIX}/include/{zlib,zconf}.h ${MASON_PREFIX}/include/
-    ln -sf ${ZLIB_PREFIX}/lib/${ZLIB_LIBRARY} ${MASON_PREFIX}/lib/
+    if [ ! -z ${ZLIB_LIBRARY} ]; then
+        ln -sf ${ZLIB_PREFIX}/lib/${ZLIB_LIBRARY} ${MASON_PREFIX}/lib/
+    fi
 }
 
 function mason_cflags {

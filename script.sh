@@ -35,7 +35,7 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    echo -L${MASON_PREFIX}/lib
+    : # We're only using the full path to the archive, which is output in static_libs
 }
 
 function mason_clean {

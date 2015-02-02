@@ -18,10 +18,6 @@ elif [[ ${MASON_PLATFORM} = 'android' ]]; then
     ZLIB_INCLUDE_PREFIX="${MASON_SDK_PATH}/usr/include"
     ZLIB_LIBRARY="${MASON_SDK_PATH}/usr/lib/libz.so"
     MASON_LDFLAGS="${MASON_LDFLAGS} -lz"
-elif [[ -f /usr/include/zlib.h && -f /usr/include/zconf.h ]]; then
-    ZLIB_INCLUDE_PREFIX="/usr/include"
-    ZLIB_LIBRARY="/usr/lib/libz.${MASON_DYNLIB_SUFFIX}"
-    MASON_LDFLAGS="${MASON_LDFLAGS} -lz"
 else
     ZLIB_INCLUDE_PREFIX="`pkg-config zlib --variable=includedir`"
     ZLIB_LIBRARY="`pkg-config zlib --variable=libdir`/libz.${MASON_DYNLIB_SUFFIX}"

@@ -16,10 +16,6 @@ else
     exit 1
 fi
 
-function mason_load_source {
-    :
-}
-
 function mason_system_version {
     mkdir -p "${MASON_PREFIX}"
     cd "${MASON_PREFIX}"
@@ -35,10 +31,15 @@ int main() {
     ./version
 }
 
-function mason_compile {
-    mkdir -p ${MASON_PREFIX}/{include,lib}
-    ln -sf ${BOOST_ROOT}/include/boost ${MASON_PREFIX}/include/
-    ln -sf ${BOOST_ROOT}/lib/libboost_* ${MASON_PREFIX}/lib/
+function mason_build {
+    if [ ${MASON_PLATFORM} = 'ios' ]; then
+        mkdir -p ${MASON_PREFIX}/include
+        ln -sf ${BOOST_ROOT}/include/boost ${MASON_PREFIX}/include/
+    else
+        mkdir -p ${MASON_PREFIX}/{include,lib}
+        ln -sf ${BOOST_ROOT}/include/boost ${MASON_PREFIX}/include/
+        ln -sf ${BOOST_ROOT}/lib/libboost_* ${MASON_PREFIX}/lib/
+    fi
 }
 
 function mason_cflags {
@@ -46,7 +47,11 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    echo "-L${MASON_PREFIX}/lib"
+    if [ ${MASON_PLATFORM} = 'ios' ]; then
+        echo ""
+    else
+        echo "-L${MASON_PREFIX}/lib"
+    fi
 }
 
 mason_run "$@"

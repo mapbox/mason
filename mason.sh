@@ -33,6 +33,7 @@ esac
 
 if [ ${MASON_PLATFORM} = 'osx' ]; then
     export MASON_HOST_ARG="--host=x86_64-apple-darwin"
+    export MASON_DYNLIB_SUFFIX="dylib"
     export MASON_PLATFORM_VERSION=`xcrun --sdk macosx --show-sdk-version`
 
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
@@ -79,6 +80,7 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
         exit 1
     fi
 
+    export MASON_DYNLIB_SUFFIX="so"
     export MASON_PLATFORM_VERSION=`uname -m`
     export CFLAGS="-fPIC"
     export CXXFLAGS="${CFLAGS} -std=c++11"
@@ -182,6 +184,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
     export CXXFLAGS="${CFLAGS} -std=c++11"
 
+    export MASON_DYNLIB_SUFFIX="so"
     export MASON_PLATFORM_VERSION="${MASON_ANDROID_ABI}-${MASON_ANDROID_PLATFORM}"
     MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
 

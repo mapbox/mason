@@ -51,6 +51,7 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
 
 elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_HOST_ARG="--host=arm-apple-darwin"
+    export MASON_DYNLIB_SUFFIX="dylib"
     export MASON_PLATFORM_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
 
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer

@@ -237,7 +237,7 @@ function mason_check_existing {
             exit 0
         fi
     else
-        if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] || [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+        if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
             mason_success "Already installed at ${MASON_PREFIX}"
             exit 0
         fi

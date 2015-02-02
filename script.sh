@@ -15,7 +15,7 @@ fi
 MASON_CFLAGS="-I${MASON_PREFIX}/include"
 MASON_LDFLAGS="-L${MASON_PREFIX}/lib"
 
-if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' || ${MASON_PLATFORM} = 'android' ]]; then
+if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
     SQLITE_INCLUDE_PREFIX="${MASON_SDK_PATH}/usr/include"
     SQLITE_LIBRARY="${MASON_SDK_PATH}/usr/lib/libsqlite3.${MASON_DYNLIB_SUFFIX}"
     MASON_LDFLAGS="${MASON_LDFLAGS} -lsqlite3"

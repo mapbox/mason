@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=jpeg
-MASON_VERSION=v8d
+MASON_VERSION=v9a
 MASON_LIB_FILE=lib/libjpeg.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
@@ -27,6 +27,7 @@ function mason_compile {
         --disable-dependency-tracking
 
     V=1 make install -j${MASON_CONCURRENCY}
+    rm -rf ${MASON_PREFIX}/bin
 }
 
 function mason_cflags {
@@ -34,7 +35,7 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    echo -L${MASON_PREFIX}/lib -ljpeg
+    echo -L${MASON_PREFIX}/lib
 }
 
 function mason_clean {

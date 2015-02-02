@@ -38,7 +38,7 @@ int main() {
 function mason_compile {
     mkdir -p ${MASON_PREFIX}/{include,lib}
     ln -sf ${BOOST_ROOT}/include/boost ${MASON_PREFIX}/include/
-    ln -sf ${BOOST_ROOT}/lib/libboost_*. ${MASON_PREFIX}/lib/
+    ln -sf ${BOOST_ROOT}/lib/libboost_* ${MASON_PREFIX}/lib/
 }
 
 function mason_prefix {

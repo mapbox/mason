@@ -6,27 +6,6 @@ MASON_SYSTEM_PACKAGE=true
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
-function mason_load_source {
-    :
-}
-
-function mason_system_version {
-    mkdir -p "${MASON_PREFIX}"
-    cd "${MASON_PREFIX}"
-    if [ ! -f version ]; then
-        echo "#include <zlib.h>
-#include <stdio.h>
-#include <assert.h>
-int main() {
-    assert(ZLIB_VERSION[0] == zlibVersion()[0]);
-    printf(\"%s\", ZLIB_VERSION);
-    return 0;
-}
-" > version.c && cc version.c -I${MASON_PREFIX}/include/ -L${MASON_PREFIX}/lib -lz -o version
-    fi
-    ./version
-}
-
 if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
     MASON_HEADER_FILE="${MASON_SDK_PATH}/usr/include/zlib.h"
     if [ ! -f "${MASON_HEADER_FILE}" ]; then
@@ -40,7 +19,7 @@ if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
         exit 1
     fi
     MASON_LIB_FILE="lib/libz.dylib"
-    MASON_CFLAGS="-I${MASON_PREFIX}/include/"
+    MASON_CFLAGS="-I${MASON_PREFIX}/include"
     MASON_LDFLAGS="-L${MASON_PREFIX}/lib -lz"
 elif [[ ${MASON_PLATFORM} = 'android' ]]; then
     MASON_HEADER_FILE="${MASON_SDK_PATH}/usr/include/zlib.h"
@@ -55,11 +34,11 @@ elif [[ ${MASON_PLATFORM} = 'android' ]]; then
         exit 1
     fi
     MASON_LIB_FILE="lib/libz.o"
-    MASON_CFLAGS="-I${MASON_PREFIX}/include/"
+    MASON_CFLAGS="-I${MASON_PREFIX}/include"
     MASON_LDFLAGS="-L${MASON_PREFIX}/lib -lz"
 elif [[ -d /usr/include/zlib.h ]] && [[ -d /usr/include/zconf.h ]]; then
     MASON_LIB_FILE="lib/libz.o"
-    MASON_CFLAGS="-I${MASON_PREFIX}/include/"
+    MASON_CFLAGS="-I${MASON_PREFIX}/include"
     MASON_LDFLAGS="-L${MASON_PREFIX}/lib -lz"
 else
     MASON_LIB_FILE="lib/libz.o"
@@ -67,7 +46,32 @@ else
     MASON_LDFLAGS=`pkg-config zlib --libs`
 fi
 
-function mason_compile {
+function mason_system_version {
+    mkdir -p "${MASON_PREFIX}"
+    cd "${MASON_PREFIX}"
+    if [ ! -f version ]; then
+        echo "#include <zlib.h>
+#include <stdio.h>
+#include <assert.h>
+int main() {
+    assert(ZLIB_VERSION[0] == zlibVersion()[0]);
+    printf(\"%s\", ZLIB_VERSION);
+    return 0;
+}
+" > version.c
+        if [[ ${MASON_PLATFORM} = 'ios' ]]; then
+            # We need to link for Mac OS X
+            MASON_OSX_SDK_PATH="${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX`xcrun --sdk macosx --show-sdk-version`.sdk"
+            cc version.c $(mason_cflags) -L${MASON_OSX_SDK_PATH}/usr/lib -lz -o version && ./version
+        else
+            cc version.c $(mason_cflags) $(mason_ldflags) -o version && ./version
+        fi
+    else
+        ./version
+    fi
+}
+
+function mason_build {
     mkdir -p ${MASON_PREFIX}/include/
     mkdir -p ${MASON_PREFIX}/lib/
     if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then

@@ -3,28 +3,39 @@
 MASON_NAME=libcurl
 MASON_VERSION=system
 MASON_SYSTEM_PACKAGE=true
+MASON_LIB_FILE=include/curl/curl.h
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' ]]; then
-    MASON_HEADER_FILE="${MASON_SDK_PATH}/usr/include/curl/curl.h"
+    CURL_HEADER_DIR="${MASON_SDK_PATH}/usr/include"
+    MASON_HEADER_FILE="${CURL_HEADER_DIR}/curl/curl.h"
     if [ ! -f "${MASON_HEADER_FILE}" ]; then
         mason_error "Can't find header file ${MASON_HEADER_FILE}"
         exit 1
     fi
 
-    MASON_LIBRARY_FILE="${MASON_SDK_PATH}/usr/lib/libcurl.dylib"
+    CURL_LIBRARY_DIR="${MASON_SDK_PATH}/usr/lib"
+    MASON_LIBRARY_FILE="${CURL_LIBRARY_DIR}/libcurl.dylib"
     if [ ! -f "${MASON_LIBRARY_FILE}" ]; then
         mason_error "Can't find library file ${MASON_LIBRARY_FILE}"
         exit 1
     fi
 
-    MASON_CFLAGS=
-    MASON_LDFLAGS=-lcurl
+    MASON_CFLAGS="-I${MASON_PREFIX}/include"
+    MASON_LDFLAGS="-L${MASON_PREFIX}/lib -lcurl"
 else
-    MASON_CFLAGS=`pkg-config libcurl --cflags`
-    MASON_LDFLAGS=`pkg-config libcurl --libs`
+    CURL_HEADER_DIR="`pkg-config libcurl --variable=includedir`"
+    CURL_LIBRARY_DIR="`pkg-config libcurl --variable=libdir`"
+
+    MASON_CFLAGS="-I${MASON_PREFIX}/include `pkg-config libcurl --cflags-only-other`"
+    MASON_LDFLAGS="-I${MASON_PREFIX}/lib `pkg-config libcurl --libs-only-other --libs-only-l`"
 fi
+
+
+function mason_load_source {
+    :
+}
 
 function mason_system_version {
     mkdir -p "${MASON_PREFIX}"
@@ -42,7 +53,9 @@ int main() {
 }
 
 function mason_compile {
-    :
+    mkdir -p ${MASON_PREFIX}/{include,lib}
+    ln -sf ${CURL_HEADER_DIR}/curl ${MASON_PREFIX}/include/
+    ln -sf ${CURL_LIBRARY_DIR}/libcurl.* ${MASON_PREFIX}/lib/
 }
 
 function mason_cflags {

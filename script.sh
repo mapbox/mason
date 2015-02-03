@@ -18,8 +18,8 @@ function mason_load_source {
 
 function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
-    ${MASON_DIR:-~/.mason}/mason install libpng 1.6.15
-    MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.15)
+    ${MASON_DIR:-~/.mason}/mason install libpng 1.6.16
+    MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.16)
     ${MASON_DIR:-~/.mason}/mason install freetype 2.5.4
     MASON_FREETYPE=$(${MASON_DIR:-~/.mason}/mason prefix freetype 2.5.4)
     ${MASON_DIR:-~/.mason}/mason install pixman 0.32.6

@@ -24,15 +24,32 @@ function mason_prepare_compile {
     MASON_FREETYPE=$(${MASON_DIR:-~/.mason}/mason prefix freetype 2.5.4)
     ${MASON_DIR:-~/.mason}/mason install pixman 0.32.6
     MASON_PIXMAN=$(${MASON_DIR:-~/.mason}/mason prefix pixman 0.32.6)
+    # set up to fix libtool .la files
+    # https://github.com/mapbox/mason/issues/61
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        FIND="\/Users\/travis\/build\/mapbox\/mason"
+    else
+        FIND="\/home\/travis\/build\/mapbox\/mason"
+    fi
+    REPLACE="$(pwd)"
+    REPLACE=${REPLACE////\\/}
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PNG}/lib/libpng.la
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_FREETYPE}/lib/libfreetype.la
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PIXMAN}/lib/libpixman-1.la
 }
 
 function mason_compile {
-    mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
-    curl --retry 3 -s -f -# -L \
-      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
-      -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
     # patch cairo to avoid needing pkg-config as a build dep
-    patch -N -p1 < ./patch.diff
+    if [[ -f ../../../patch.diff ]]; then
+        patch -N -p1 < ../../../patch.diff
+    else
+        mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
+        curl --retry 3 -s -f -# -L \
+          https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
+          -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
+        patch -N -p1 < ./patch.diff
+    fi
+    
     CFLAGS="${CFLAGS} -Wno-enum-conversion -I${MASON_PIXMAN}/include/pixman-1 -I${MASON_FREETYPE}/include/freetype2 -I${MASON_PNG}/include/"
     LDFLAGS="-L${MASON_PIXMAN}/lib -lpixman-1 -L${MASON_FREETYPE}/lib -lfreetype -L${MASON_PNG}/lib -lpng"
     CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} ./autogen.sh \

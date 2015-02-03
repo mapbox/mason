@@ -20,10 +20,10 @@ index a24dbce..aaf0e5d 100644
 -AC_SUBST(PKGCONFIG_REQUIRES)
 -
 diff --git a/configure.ac b/configure.ac
-index fd54ad1..728f0d4 100644
+index a04baae..a162a6a 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -319,26 +319,7 @@ CAIRO_ENABLE_SURFACE_BACKEND(gallium, Gallium3D, no, [
+@@ -321,26 +321,7 @@ CAIRO_ENABLE_SURFACE_BACKEND(gallium, Gallium3D, no, [
  dnl ===========================================================================
  
  CAIRO_ENABLE_FUNCTIONS(png, PNG, yes, [
@@ -51,18 +51,44 @@ index fd54ad1..728f0d4 100644
  ])
  
  dnl ===========================================================================
-@@ -490,10 +471,6 @@ FREETYPE_MIN_VERSION=9.7.3
+@@ -491,35 +472,7 @@ FREETYPE_MIN_RELEASE=2.1.9
+ FREETYPE_MIN_VERSION=9.7.3
  
  CAIRO_ENABLE_FONT_BACKEND(ft, FreeType, auto, [
- 
+-
 -    PKG_CHECK_MODULES(FREETYPE, freetype2 >= $FREETYPE_MIN_VERSION,
 -                      [freetype_pkgconfig=yes],
 -		      [freetype_pkgconfig=no])
 -  
-     if test "x$freetype_pkgconfig" = "xyes"; then
-       ft_REQUIRES="freetype2 >= $FREETYPE_MIN_VERSION $ft_REQUIRES"
-     else
-@@ -656,19 +633,12 @@ CAIRO_ENABLE(test_surfaces, test surfaces, no)
+-    if test "x$freetype_pkgconfig" = "xyes"; then
+-      ft_REQUIRES="freetype2 >= $FREETYPE_MIN_VERSION $ft_REQUIRES"
+-    else
+-  
+-      if test -z "$FREETYPE_CONFIG"; then
+-        AC_PATH_PROG(FREETYPE_CONFIG, freetype-config, no)
+-      fi
+-      if test "x$FREETYPE_CONFIG" = "xno" ; then
+-        use_ft='no (freetype-config not found in path or $FREETYPE_CONFIG)'
+-      else
+-        AC_MSG_CHECKING(freetype2 libtool version)
+-
+-        FREETYPE_VERSION=`$FREETYPE_CONFIG --version`
+-	AX_COMPARE_VERSION([$FREETYPE_VERSION], [gt], [$FREETYPE_MIN_VERSION],
+-			   [AC_MSG_RESULT($FREETYPE_VERSION - OK)
+-			   ft_NONPKGCONFIG_CFLAGS=`$FREETYPE_CONFIG --cflags`
+-			   ft_NONPKGCONFIG_LIBS=`$FREETYPE_CONFIG --libs`],
+-			   [AC_MSG_RESULT($FREETYPE_VERSION - Too old)
+-			   use_ft="no ($FREETYPE_VERSION found; version $FREETYPE_MIN_VERSION from release $FREETYPE_MIN_RELEASE required)"])
+-      fi
+-    fi
+-
+-  ft_CFLAGS="$FREETYPE_CFLAGS"
+-  ft_LIBS="$FREETYPE_LIBS"
++    use_ft="yes"
+ ])
+ 
+ FONTCONFIG_MIN_VERSION=2.2.95
+@@ -658,19 +611,12 @@ CAIRO_ENABLE(test_surfaces, test surfaces, no)
  dnl ===========================================================================
  
  CAIRO_ENABLE_SURFACE_BACKEND(image, image, always, [

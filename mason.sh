@@ -155,7 +155,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         export CFLAGS="-target x86_64-none-linux-android -march=x86-64 -msse4.2 -mpopcnt -m64 -mtune=intel ${CFLAGS}"
         export LDFLAGS="-target x86_64-none-linux-android -march=x86-64 ${LDFLAGS}"
 
-        MMASON_ANDROID_ARCH="x86_64"
+        MASON_ANDROID_ARCH="x86_64"
         MASON_ANDROID_PLATFORM="21"
 
     elif [ ${MASON_ANDROID_ABI} = 'mips' ]; then

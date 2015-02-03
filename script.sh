@@ -104,7 +104,8 @@ function mason_compile {
         -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
       patch -N -p0 < ./patch.diff
     fi
-    gen_config ${BOOST_TOOLSET} clang++
+    gen_config ${BOOST_TOOLSET} g++
+    perl -i -p -e "s/\-march=i386/\-m64/g;" ./tools/build/v2/tools/gcc.jam
     write_python_config user-config.jam "2.7" "/System" ""
     if [[ ! -f ./b2 ]] ; then
         ./bootstrap.sh

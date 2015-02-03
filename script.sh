@@ -1,37 +1,33 @@
 #!/usr/bin/env bash
 
-MASON_NAME=libpng
-MASON_VERSION=1.6.16
-MASON_LIB_FILE=lib/libpng.a
-MASON_PKGCONFIG_FILE=lib/pkgconfig/libpng.pc
+MASON_NAME=zlib
+MASON_VERSION=1.2.8
+MASON_LIB_FILE=lib/libz.a
+MASON_PKGCONFIG_FILE=lib/pkgconfig/zlib.pc
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \
-        http://prdownloads.sourceforge.net/libpng/libpng-1.6.16.tar.gz?download \
-        b0449a7d05447842f3f19642c2104e0a57db13a8
+        http://zlib.net/zlib-1.2.8.tar.gz \
+        ed88885bd4027806753656d64006ab86a29e967e
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/libpng-${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/zlib-${MASON_VERSION}
 }
 
 function mason_compile {
     ./configure \
         --prefix=${MASON_PREFIX} \
-        ${MASON_HOST_ARG} \
-        --enable-static \
-        --with-pic \
-        --disable-shared \
-        --disable-dependency-tracking
+        --static
 
     make install -j${MASON_CONCURRENCY}
 }
 
 function mason_strip_ldflags {
     shift # -L...
-    shift # -lpng16
+    shift # -lz
     echo "$@"
 }
 

@@ -127,7 +127,7 @@ function mason_compile {
         --with-python=no \
         --with-java=no \
         --with-podofo=no \
-        --without-pam \
+        --with-pam \
         --with-webp=no \
         --with-pcre=no \
         --with-liblzma=no \

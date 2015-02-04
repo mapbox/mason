@@ -39,24 +39,56 @@ function read_link() {
     esac
 }
 
+# symlinks should be two deep
 function check_file_links() {
     if [[ ! -L ./mason_packages/.link/$1 ]]; then
         echo "not ok: ./mason_packages/.link/$1 is not a symlink"
         CODE=1
     else
-        echo "ok: ./mason_packages/.link/$1 is a symlink"
-        if [[ ! -f ./mason_packages/.link/$1 ]]; then
-            echo "not ok: ./mason_packages/.link/$1 is not a file"
+        resolved=$(read_link ./mason_packages/.link/$1)
+        if [[ ! -L $resolved ]]; then
+            echo "not ok: $resolved is not a symlink"
             CODE=1
         else
-            echo "ok: ./mason_packages/.link/$1 is a file"
+            echo "ok: $resolved is a symlink"
+            if [[ ! -f $resolved ]]; then
+                echo "not ok: $resolved is not a file"
+                CODE=1
+            else
+                # resolve last symlink
+                resolved2=$(read_link $resolved)
+                if [[ ! -f $resolved2 ]]; then
+                    echo "not ok: $resolved2 is not a file"
+                    CODE=1
+                else
+                    echo "ok: $resolved2 is a non-symlink file"
+                    expected_keyword="zlib"
+                    if [[ ${MASON_PLATFORM} == 'osx' ]]; then
+                        expected_keyword="MacOSX.platform"
+                    elif [[ ${MASON_PLATFORM} == 'ios' ]]; then
+                        # TODO: what about iPhone???
+                        expected_keyword="iPhoneSimulator"
+                    elif [[ ${MASON_PLATFORM} == 'linux' ]]; then
+                        expected_keyword="/usr/lib"
+                    elif [[ ${MASON_PLATFORM} == 'android' ]]; then
+                        MASON_ANDROID_ABI=$(${MASON_DIR:-~/.mason}/mason env MASON_ANDROID_ABI)
+                        expected_keyword=".android-platform/${MASON_ANDROID_ABI}"
+                    fi
+                    if [[ "$resolved2" =~ "${expected_keyword}" ]]; then
+                        echo "ok: '${expected_keyword}' found in path $resolved2"
+                    else
+                        echo "not ok: '${expected_keyword}' not found in path $resolved2"
+                        CODE=1
+                    fi
+                fi
+            fi
         fi
     fi
 
 }
 
 function check_shared_lib_info() {
-    resolved=$(read_link ./mason_packages/.link/$1)
+    resolved=$(read_link $(read_link ./mason_packages/.link/$1))
     if [[ -f $resolved ]]; then
         echo "ok: resolved to $resolved"
         if [[ ${MASON_PLATFORM} == 'osx' ]]; then
@@ -72,7 +104,21 @@ function check_shared_lib_info() {
             ldd $resolved
             readelf -d $resolved
         elif [[ ${MASON_PLATFORM} == 'android' ]]; then
-            file $resolved
+            FILE_DETAILS=$(file $resolved)
+            MASON_ANDROID_ARCH=$(~/.mason/mason env MASON_ANDROID_ARCH)
+            if [[ ${MASON_ANDROID_ARCH} =~ "64" ]]; then
+                if [[ ${FILE_DETAILS} =~ "64-bit" ]]; then
+                    echo "ok: ${MASON_ANDROID_ARCH} 64-bit arch (for ${MASON_ANDROID_ABI}) expected and detected in $FILE_DETAILS"
+                else
+                    echo "not ok: ${MASON_ANDROID_ARCH} 64-bit arch (for ${MASON_ANDROID_ABI}) expected and not detected in $FILE_DETAILS"
+                    CODE=1
+                fi
+            else
+                if [[ ${FILE_DETAILS} =~ "64-bit" ]]; then
+                    echo "not ok: ${MASON_ANDROID_ARCH} 32 bit arch (for ${MASON_ANDROID_ABI}) expected and not detected in $FILE_DETAILS"
+                    CODE=1
+                fi
+            fi
             BIN_PATH=$(~/.mason/mason env MASON_SDK_ROOT)/bin
             MASON_ANDROID_TOOLCHAIN=$(${MASON_DIR:-~/.mason}/mason env MASON_ANDROID_TOOLCHAIN)
             ${BIN_PATH}/${MASON_ANDROID_TOOLCHAIN}-readelf -d $resolved
@@ -89,7 +135,11 @@ check_ldflags
 check_file_links "include/zlib.h"
 check_file_links "include/zconf.h"
 check_file_links "lib/libz.$(${MASON_DIR:-~/.mason}/mason env MASON_DYNLIB_SUFFIX)"
-check_shared_lib_info "lib/libz.$(${MASON_DIR:-~/.mason}/mason env MASON_DYNLIB_SUFFIX)"
+if [[ ${CODE} == 0 ]]; then
+    check_shared_lib_info "lib/libz.$(${MASON_DIR:-~/.mason}/mason env MASON_DYNLIB_SUFFIX)"
+else
+    echo "Error already occured so skipping shared library test"
+fi
 
 exit ${CODE}
 

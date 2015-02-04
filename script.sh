@@ -45,10 +45,12 @@ function mason_prepare_compile {
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
     ${MASON_DIR:-~/.mason}/mason install libpq 9.4.0
     MASON_LIBPQ=$(${MASON_DIR:-~/.mason}/mason prefix libpq 9.4.0)
+    # depends on sudo apt-get install zlib1g-dev
     ${MASON_DIR:-~/.mason}/mason install zlib system
     MASON_ZLIB=$(${MASON_DIR:-~/.mason}/mason prefix zlib system)
-    ${MASON_DIR:-~/.mason}/mason install iconv system
-    MASON_ICONV=$(${MASON_DIR:-~/.mason}/mason prefix iconv system)
+    # depends on sudo apt-get install libc6-dev
+    #${MASON_DIR:-~/.mason}/mason install iconv system
+    #MASON_ICONV=$(${MASON_DIR:-~/.mason}/mason prefix iconv system)
     export LIBRARY_PATH=${MASON_LIBPQ}/lib:$LIBRARY_PATH
 }
 
@@ -90,7 +92,6 @@ function mason_compile {
         ${MASON_HOST_ARG} \
         --prefix=${MASON_PREFIX} \
         --with-libz=${MASON_ZLIB} \
-        --with-libiconv-prefix=${MASON_ICONV} \
         --disable-rpath \
         --with-libjson-c=internal \
         --with-geotiff=internal \

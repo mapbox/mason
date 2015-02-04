@@ -55,31 +55,24 @@ function check_file_links() {
                 echo "not ok: $resolved is not a file"
                 CODE=1
             else
-                # resolve last symlink
-                resolved2=$(read_link $resolved)
-                if [[ ! -f $resolved2 ]]; then
-                    echo "not ok: $resolved2 is not a file"
-                    CODE=1
+                echo "ok: $resolved is a non-symlink file"
+                expected_keyword="zlib"
+                if [[ ${MASON_PLATFORM} == 'osx' ]]; then
+                    expected_keyword="MacOSX.platform"
+                elif [[ ${MASON_PLATFORM} == 'ios' ]]; then
+                    # TODO: what about iPhone???
+                    expected_keyword="iPhoneSimulator"
+                elif [[ ${MASON_PLATFORM} == 'linux' ]]; then
+                    expected_keyword="/usr/lib"
+                elif [[ ${MASON_PLATFORM} == 'android' ]]; then
+                    MASON_ANDROID_ABI=$(${MASON_DIR:-~/.mason}/mason env MASON_ANDROID_ABI)
+                    expected_keyword=".android-platform/${MASON_ANDROID_ABI}"
+                fi
+                if [[ "$resolved" =~ "${expected_keyword}" ]]; then
+                    echo "ok: '${expected_keyword}' found in path $resolved"
                 else
-                    echo "ok: $resolved2 is a non-symlink file"
-                    expected_keyword="zlib"
-                    if [[ ${MASON_PLATFORM} == 'osx' ]]; then
-                        expected_keyword="MacOSX.platform"
-                    elif [[ ${MASON_PLATFORM} == 'ios' ]]; then
-                        # TODO: what about iPhone???
-                        expected_keyword="iPhoneSimulator"
-                    elif [[ ${MASON_PLATFORM} == 'linux' ]]; then
-                        expected_keyword="/usr/lib"
-                    elif [[ ${MASON_PLATFORM} == 'android' ]]; then
-                        MASON_ANDROID_ABI=$(${MASON_DIR:-~/.mason}/mason env MASON_ANDROID_ABI)
-                        expected_keyword=".android-platform/${MASON_ANDROID_ABI}"
-                    fi
-                    if [[ "$resolved2" =~ "${expected_keyword}" ]]; then
-                        echo "ok: '${expected_keyword}' found in path $resolved2"
-                    else
-                        echo "not ok: '${expected_keyword}' not found in path $resolved2"
-                        CODE=1
-                    fi
+                    echo "not ok: '${expected_keyword}' not found in path $resolved"
+                    CODE=1
                 fi
             fi
         fi
@@ -88,7 +81,7 @@ function check_file_links() {
 }
 
 function check_shared_lib_info() {
-    resolved=$(read_link $(read_link ./mason_packages/.link/$1))
+    resolved=$(read_link ./mason_packages/.link/$1)
     if [[ -f $resolved ]]; then
         echo "ok: resolved to $resolved"
         if [[ ${MASON_PLATFORM} == 'osx' ]]; then

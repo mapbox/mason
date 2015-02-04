@@ -46,42 +46,36 @@ function check_file_links() {
         CODE=1
     else
         resolved=$(read_link ./mason_packages/.link/$1)
-        if [[ ! -L $resolved ]]; then
-            echo "not ok: $resolved is not a symlink"
+        echo "ok: $resolved is a symlink"
+        # resolve osx symlinks further
+        if [[ -L $resolved ]]; then
+            resolved=$(read_link $resolved)
+        fi
+        if [[ ! -f $resolved ]]; then
+            echo "not ok: $resolved is not a file"
             CODE=1
         else
-            echo "ok: $resolved is a symlink"
-            # resolve osx symlinks further
-            if [[ -L $resolved ]]; then
-                resolved=$(read_link $resolved)
+            echo "ok: $resolved is a file"
+            expected_keyword="zlib"
+            if [[ ${MASON_PLATFORM} == 'osx' ]]; then
+                expected_keyword="MacOSX.platform"
+            elif [[ ${MASON_PLATFORM} == 'ios' ]]; then
+                # TODO: what about iPhone???
+                expected_keyword="iPhoneSimulator"
+            elif [[ ${MASON_PLATFORM} == 'linux' ]]; then
+                expected_keyword="/usr/lib"
+            elif [[ ${MASON_PLATFORM} == 'android' ]]; then
+                MASON_ANDROID_ABI=$(${MASON_DIR:-~/.mason}/mason env MASON_ANDROID_ABI)
+                expected_keyword=".android-platform/${MASON_ANDROID_ABI}"
             fi
-            if [[ ! -f $resolved ]]; then
-                echo "not ok: $resolved is not a file"
-                CODE=1
+            if [[ "$resolved" =~ "${expected_keyword}" ]]; then
+                echo "ok: '${expected_keyword}' found in path $resolved"
             else
-                echo "ok: $resolved is a file"
-                expected_keyword="zlib"
-                if [[ ${MASON_PLATFORM} == 'osx' ]]; then
-                    expected_keyword="MacOSX.platform"
-                elif [[ ${MASON_PLATFORM} == 'ios' ]]; then
-                    # TODO: what about iPhone???
-                    expected_keyword="iPhoneSimulator"
-                elif [[ ${MASON_PLATFORM} == 'linux' ]]; then
-                    expected_keyword="/usr/lib"
-                elif [[ ${MASON_PLATFORM} == 'android' ]]; then
-                    MASON_ANDROID_ABI=$(${MASON_DIR:-~/.mason}/mason env MASON_ANDROID_ABI)
-                    expected_keyword=".android-platform/${MASON_ANDROID_ABI}"
-                fi
-                if [[ "$resolved" =~ "${expected_keyword}" ]]; then
-                    echo "ok: '${expected_keyword}' found in path $resolved"
-                else
-                    echo "not ok: '${expected_keyword}' not found in path $resolved"
-                    CODE=1
-                fi
+                echo "not ok: '${expected_keyword}' not found in path $resolved"
+                CODE=1
             fi
         fi
     fi
-
 }
 
 function check_shared_lib_info() {

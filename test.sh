@@ -56,14 +56,18 @@ function check_file_links() {
             CODE=1
         else
             echo "ok: $resolved is a file"
-            expected_keyword="zlib"
+            expected_keyword=""
             if [[ ${MASON_PLATFORM} == 'osx' ]]; then
                 expected_keyword="MacOSX.platform"
             elif [[ ${MASON_PLATFORM} == 'ios' ]]; then
                 # TODO: what about iPhone???
                 expected_keyword="iPhoneSimulator"
             elif [[ ${MASON_PLATFORM} == 'linux' ]]; then
-                expected_keyword="/lib/x86_64-linux-gnu/"
+                if [[ ${1} =~ "libz" ]]; then
+                    expected_keyword="/lib/x86_64-linux-gnu/"
+                elif [[ ${1} =~ "include" ]]; then
+                    expected_keyword="/usr/include/"
+                fi
             elif [[ ${MASON_PLATFORM} == 'android' ]]; then
                 MASON_ANDROID_ABI=$(${MASON_DIR:-~/.mason}/mason env MASON_ANDROID_ABI)
                 expected_keyword=".android-platform/${MASON_ANDROID_ABI}"

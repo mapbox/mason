@@ -51,11 +51,15 @@ function check_file_links() {
             CODE=1
         else
             echo "ok: $resolved is a symlink"
+            # resolve osx symlinks further
+            if [[ -L $resolved ]]; then
+                resolved=$(read_link $resolved)
+            fi
             if [[ ! -f $resolved ]]; then
                 echo "not ok: $resolved is not a file"
                 CODE=1
             else
-                echo "ok: $resolved is a non-symlink file"
+                echo "ok: $resolved is a file"
                 expected_keyword="zlib"
                 if [[ ${MASON_PLATFORM} == 'osx' ]]; then
                     expected_keyword="MacOSX.platform"

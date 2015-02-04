@@ -12,7 +12,7 @@ MASON_LDFLAGS="-L${MASON_PREFIX}/lib"
 
 if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'ios' || ${MASON_PLATFORM} = 'android' ]]; then
     ZLIB_INCLUDE_PREFIX="${MASON_SDK_PATH}/usr/include"
-    if [[ ${MASON_ANDROID_ARCH} =~ "64" ]]; then
+    if [[ -d "${MASON_SDK_PATH}/usr/lib64" ]]; then
         ZLIB_LIBRARY="${MASON_SDK_PATH}/usr/lib64/libz.${MASON_DYNLIB_SUFFIX}"
     else
         ZLIB_LIBRARY="${MASON_SDK_PATH}/usr/lib/libz.${MASON_DYNLIB_SUFFIX}"

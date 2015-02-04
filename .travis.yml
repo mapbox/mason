@@ -39,6 +39,7 @@ script:
 - ./script.sh build
 - ./script.sh link
 - ./test.sh
+- ./script.sh version
 
 after_success:
 #- ./script.sh publish

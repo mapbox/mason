@@ -63,7 +63,7 @@ function check_file_links() {
                 # TODO: what about iPhone???
                 expected_keyword="iPhoneSimulator"
             elif [[ ${MASON_PLATFORM} == 'linux' ]]; then
-                expected_keyword="/usr/lib"
+                expected_keyword="/lib/x86_64-linux-gnu/"
             elif [[ ${MASON_PLATFORM} == 'android' ]]; then
                 MASON_ANDROID_ABI=$(${MASON_DIR:-~/.mason}/mason env MASON_ANDROID_ABI)
                 expected_keyword=".android-platform/${MASON_ANDROID_ABI}"

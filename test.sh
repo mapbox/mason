@@ -59,9 +59,6 @@ function check_file_links() {
             expected_keyword=""
             if [[ ${MASON_PLATFORM} == 'osx' ]]; then
                 expected_keyword="MacOSX.platform"
-            elif [[ ${MASON_PLATFORM} == 'ios' ]]; then
-                # TODO: what about iPhone???
-                expected_keyword="iPhoneSimulator"
             elif [[ ${MASON_PLATFORM} == 'linux' ]]; then
                 if [[ ${1} =~ "libz" ]]; then
                     expected_keyword="/lib/x86_64-linux-gnu/"
@@ -87,10 +84,6 @@ function check_shared_lib_info() {
     if [[ -f $resolved ]]; then
         echo "ok: resolved to $resolved"
         if [[ ${MASON_PLATFORM} == 'osx' ]]; then
-            file $resolved
-            otool -L $resolved
-            lipo -info $resolved
-        elif [[ ${MASON_PLATFORM} == 'ios' ]]; then
             file $resolved
             otool -L $resolved
             lipo -info $resolved
@@ -125,15 +118,17 @@ function check_shared_lib_info() {
     fi
 }
 
-check_cflags
-check_ldflags
-check_file_links "include/zlib.h"
-check_file_links "include/zconf.h"
-check_file_links "lib/libz.$(${MASON_DIR:-~/.mason}/mason env MASON_DYNLIB_SUFFIX)"
-if [[ ${CODE} == 0 ]]; then
-    check_shared_lib_info "lib/libz.$(${MASON_DIR:-~/.mason}/mason env MASON_DYNLIB_SUFFIX)"
-else
-    echo "Error already occured so skipping shared library test"
+if [[ $MASON_PLATFORM != 'ios' ]]; then
+    check_cflags
+    check_ldflags
+    check_file_links "include/zlib.h"
+    check_file_links "include/zconf.h"
+    check_file_links "lib/libz.$(${MASON_DIR:-~/.mason}/mason env MASON_DYNLIB_SUFFIX)"
+    if [[ ${CODE} == 0 ]]; then
+        check_shared_lib_info "lib/libz.$(${MASON_DIR:-~/.mason}/mason env MASON_DYNLIB_SUFFIX)"
+    else
+        echo "Error already occured so skipping shared library test"
+    fi
 fi
 
 exit ${CODE}

@@ -60,7 +60,7 @@ psql template_postgis -c "CREATE TABLESPACE temp_disk LOCATION '${PGTEMP_DIR}';"
 psql template_postgis -c "SET temp_tablespaces TO 'temp_disk';"
 psql template_postgis -c "CREATE EXTENSION postgis;"
 psql template_postgis -c "SELECT PostGIS_Full_Version();"
-wget https://s3.amazonaws.com/metro-extracts.mapzen.com/seattle_washington.water.coastline.zip
+curl -O https://s3.amazonaws.com/metro-extracts.mapzen.com/seattle_washington.water.coastline.zip
 unzip -o seattle_washington.water.coastline.zip
 createdb test-osm -T template_postgis
 shp2pgsql -s 4326 seattle_washington.water_coast.shp coast | psql test-osm

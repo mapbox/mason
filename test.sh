@@ -50,6 +50,7 @@ fi
 
 ./mason_packages/.link/bin/initdb
 export PATH=./mason_packages/.link/bin/:${PATH}
+export GDAL_DATA=$(~/.mason/mason prefix gdal 1.11.1-big-pants)/share/gdal
 postgres -k $PGHOST > postgres.log &
 sleep 2
 cat postgres.log
@@ -58,7 +59,6 @@ psql -l
 psql template_postgis -c "CREATE TABLESPACE temp_disk LOCATION '${PGTEMP_DIR}';"
 psql template_postgis -c "SET temp_tablespaces TO 'temp_disk';"
 psql template_postgis -c "CREATE EXTENSION postgis;"
-export GDAL_DATA=$(~/.mason/mason prefix gdal 1.11.1-big-pants)/share/gdal
 psql template_postgis -c "SELECT PostGIS_Full_Version();"
 wget https://s3.amazonaws.com/metro-extracts.mapzen.com/seattle_washington.water.coastline.zip
 unzip -o seattle_washington.water.coastline.zip

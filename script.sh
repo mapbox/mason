@@ -60,8 +60,8 @@ function mason_prepare_compile {
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
     ${MASON_DIR:-~/.mason}/mason install zlib system
     MASON_ZLIB=$(${MASON_DIR:-~/.mason}/mason prefix zlib system)
-    ${MASON_DIR:-~/.mason}/mason install iconv system
-    MASON_ICONV=$(${MASON_DIR:-~/.mason}/mason prefix iconv system)
+    #${MASON_DIR:-~/.mason}/mason install iconv system
+    #MASON_ICONV=$(${MASON_DIR:-~/.mason}/mason prefix iconv system)
 }
 
 function mason_compile {
@@ -78,7 +78,6 @@ function mason_compile {
       -L${MASON_XML2}/lib -lxml2"
     export CFLAGS="${CFLAGS} -I$(pwd)/liblwgeom/ \
       -I$(pwd)/raster/ -I$(pwd)/raster/rt_core/ \
-      -I${MASON_ICONV}/include \
       -I${MASON_TIFF}/include \
       -I${MASON_JPEG}/include \
       -I${MASON_PROJ}/include \
@@ -91,7 +90,7 @@ function mason_compile {
       -I${MASON_XML2}/include/libxml2"
 
     if [[ $(uname -s) == 'Darwin' ]]; then
-        export LDFLAGS="${LDFLAGS} -Wl,-lc++ -Wl,${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a -L${MASON_ICONV}/lib -liconv"
+        export LDFLAGS="${LDFLAGS} -Wl,-lc++ -Wl,${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a -liconv"
     else
         export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm"
     fi

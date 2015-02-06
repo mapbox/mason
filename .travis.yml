@@ -21,5 +21,8 @@ script:
 - ./script.sh build
 - ./test.sh
 
-after_success:
-- ./script.sh publish
+# postgis must be source compiled on top of postgres to work currently
+# so we don't actually want to package binaries for it - they don't make
+# sense yet
+#after_success:
+#- ./script.sh publish

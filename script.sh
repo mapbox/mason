@@ -23,6 +23,14 @@ function mason_compile {
     ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX}
     JOBS=${MASON_CONCURRENCY} make
     make install
+    # push over GDAL_DATA, ICU_DATA, PROJ_LIB
+    mkdir -p ${MASON_PREFIX}/share/gdal
+    mkdir -p ${MASON_PREFIX}/share/proj
+    mkdir -p ${MASON_PREFIX}/share/icu
+    cp -r $GDAL_DATA ${MASON_PREFIX}/share/gdal/
+    cp -r $PROJ_LIB ${MASON_PREFIX}/share/proj/
+    cp -r $ICU_DATA/*dat ${MASON_PREFIX}/share/icu/
+    find ${MASON_PREFIX} -name "*.pyc" -exec rm {} \;
 }
 
 function mason_cflags {

@@ -27,8 +27,8 @@ function mason_compile {
     mkdir -p ${MASON_PREFIX}/share/gdal
     mkdir -p ${MASON_PREFIX}/share/proj
     mkdir -p ${MASON_PREFIX}/share/icu
-    cp -r $GDAL_DATA ${MASON_PREFIX}/share/gdal/
-    cp -r $PROJ_LIB ${MASON_PREFIX}/share/proj/
+    cp -r $GDAL_DATA/ ${MASON_PREFIX}/share/gdal/
+    cp -r $PROJ_LIB/ ${MASON_PREFIX}/share/proj/
     cp -r $ICU_DATA/*dat ${MASON_PREFIX}/share/icu/
     find ${MASON_PREFIX} -name "*.pyc" -exec rm {} \;
 }

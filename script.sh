@@ -15,16 +15,16 @@ function mason_load_source {
     fi
 }
 
-function mason_prepare_compile {
-    cd $(dirname ${MASON_ROOT})
-    source bootstrap.sh
-}
-
 function mason_compile {
+    source bootstrap.sh
     ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX}
     JOBS=${MASON_CONCURRENCY} make
     make install
     # push over GDAL_DATA, ICU_DATA, PROJ_LIB
+    # fix mapnik-config entries for deps
+    HERE=$(pwd)
+    python -c "data=open('$MASON_PREFIX/bin/mapnik-config','r').read();open('$MASON_PREFIX/bin/mapnik-config','w').write(data.replace('$HERE','.'))"
+    cat $MASON_PREFIX/bin/mapnik-config
     mkdir -p ${MASON_PREFIX}/share/gdal
     mkdir -p ${MASON_PREFIX}/share/proj
     mkdir -p ${MASON_PREFIX}/share/icu

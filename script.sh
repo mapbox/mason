@@ -19,7 +19,7 @@ function mason_compile {
     echo $(pwd)
     source bootstrap.sh
     cat config.py
-    ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX}
+    ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX} PATH_REPLACE=''
     cat config.py
     echo $(pwd)
     JOBS=${MASON_CONCURRENCY} make

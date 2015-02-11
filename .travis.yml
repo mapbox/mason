@@ -20,7 +20,6 @@ before_install:
 script:
 - ./script.sh build
 - ./script.sh link
-- ./test.sh
 
 after_success:
 - ./script.sh publish

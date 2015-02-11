@@ -18,7 +18,6 @@ function mason_load_source {
 
 function mason_compile {
     perl -i -p -e "s/prefix = \/usr\/local/prefix = ${MASON_PREFIX//\//\\/}/g;" unix/Makefile
-    # sed -i "s/prefix = \/usr\/local/prefix = ${MASON_PREFIX//\//\\/}/" unix/Makefile
     make -f unix/Makefile install
 }
 

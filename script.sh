@@ -16,6 +16,7 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
+    cd $(dirname ${MASON_ROOT})
     source bootstrap.sh
 }
 

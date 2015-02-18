@@ -494,7 +494,7 @@ function mason_static_libs {
 }
 
 function mason_prefix {
-    if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] || [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+    if [ ${MASON_SYSTEM_PACKAGE:-false} = true ] || [ -z ${MASON_LIB_FILE:-} ] || [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
         echo ${MASON_PREFIX}
     else
         mason_error "Cannot find required library file '${MASON_PREFIX}/${MASON_LIB_FILE}'"
@@ -511,7 +511,7 @@ function mason_version {
 }
 
 function mason_publish {
-    if [ ! ${MASON_HEADER_ONLY:-false} = true ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
+    if [ ! ${MASON_HEADER_ONLY:-false} = true ] && [ ! -z ${MASON_LIB_FILE:-} ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
         mason_error "Required library file ${MASON_PREFIX}/${MASON_LIB_FILE} doesn't exist."
         exit 1
     fi

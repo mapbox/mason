@@ -13,6 +13,12 @@ elif [ ${MASON_UNAME} = 'Linux' ]; then
     MASON_PLATFORM=${MASON_PLATFORM:-linux}
 fi
 
+# In non-interactive environments like Travis CI, we can't use -s because it'll fill up the log
+# way too fast
+case $- in
+    *i*) MASON_CURL_ARGS=-s ;; # interactive
+    *)   MASON_CURL_ARGS=   ;; # non-interative
+esac
 
 case ${MASON_UNAME} in
     'Darwin')    MASON_CONCURRENCY=`sysctl -n hw.ncpu` ;;
@@ -255,7 +261,7 @@ function mason_download {
     cd "${MASON_ROOT}/.cache"
     if [ ! -f ${MASON_SLUG} ] ; then
         mason_step "Downloading $1..."
-        curl --retry 3 -f -# -L "$1" -o ${MASON_SLUG}
+        curl --retry 3 ${MASON_CURL_ARGS} -f -# -L "$1" -o ${MASON_SLUG}
     fi
 
     MASON_HASH=`git hash-object ${MASON_SLUG}`
@@ -426,13 +432,13 @@ function mason_try_binary {
     # try downloading from S3
     if [ ! -f "${MASON_BINARIES_PATH}" ] ; then
         mason_step "Downloading binary package ${MASON_BINARIES}..."
-        curl --retry 3 -f -# -L \
+        curl --retry 3 ${MASON_CURL_ARGS} -f -# -L \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
             -o "${MASON_BINARIES_PATH}.tmp" || mason_step "Binary not available yet for ${MASON_BINARIES}"
         mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}"
     else
         mason_step "Updating binary package ${MASON_BINARIES}..."
-        curl --retry 3 -s -f -# -L -z "${MASON_BINARIES_PATH}" \
+        curl --retry 3 ${MASON_CURL_ARGS} -f -# -L -z "${MASON_BINARIES_PATH}" \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
             -o "${MASON_BINARIES_PATH}.tmp" || mason_step "Binary not available yet for ${MASON_BINARIES}"
         mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}"

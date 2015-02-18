@@ -19,7 +19,7 @@ function mason_load_source {
 
     mason_setup_build_dir
     chmod +x ../.cache/${MASON_SLUG}
-    ../.cache/${MASON_SLUG}
+    ../.cache/${MASON_SLUG} > /dev/null
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/android-ndk-r10d
 }

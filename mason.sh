@@ -87,11 +87,6 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     export CXXFLAGS="${CFLAGS} -std=c++11"
 
 elif [ ${MASON_PLATFORM} = 'android' ]; then
-    if [ ${ANDROID_NDK_PATH:-false} = false ]; then
-        mason_error "ANDROID_NDK_PATH variable must be set with an active-platform built"
-        exit 1
-    fi
-
     export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
 
     CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector -no-canonical-prefixes -fno-integrated-as -O2 -g -DNDEBUG -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-functions -finline-limit=300 -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
@@ -189,7 +184,12 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     export MASON_PLATFORM_VERSION="${MASON_ANDROID_ABI}-${MASON_ANDROID_PLATFORM}"
     MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
 
-    MASON_SDK_ROOT="${MASON_ROOT}/.android-platform/${MASON_PLATFORM_VERSION}/"
+    # Installs the native SDK
+    MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r10d
+    MASON_SDK_ROOT=$(MASON_PLATFORM= mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
+    if [ ! -d ${MASON_SDK_ROOT} ] ; then
+        $(MASON_PLATFORM= mason install android-ndk ${MASON_NDK_PACKAGE_VERSION})
+    fi
     MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
     export PATH=${MASON_SDK_ROOT}/bin:${PATH}
 
@@ -199,18 +199,6 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     export AR="${MASON_ANDROID_TOOLCHAIN}-ar"
     export RANLIB="${MASON_ANDROID_TOOLCHAIN}-ranlib"
     export STRIP="${MASON_ANDROID_TOOLCHAIN}-strip"
-
-    if [ ! -d ${MASON_SDK_ROOT} ]; then
-        echo "creating android toolchain with ${MASON_ANDROID_CROSS_COMPILER}/${MASON_API_LEVEL} at ${MASON_SDK_ROOT}"
-        "${ANDROID_NDK_PATH}/build/tools/make-standalone-toolchain.sh"  \
-          --toolchain="${MASON_ANDROID_CROSS_COMPILER}" \
-          --llvm-version=3.5 \
-          --package-dir="${ANDROID_NDK_PATH}/package-dir/" \
-          --install-dir="${MASON_SDK_ROOT}" \
-          --stl="libcxx" \
-          --arch="${MASON_ANDROID_ARCH}" \
-          --platform="${MASON_API_LEVEL}"
-    fi
 fi
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=android-ndk
-MASON_VERSION=arm-9-r10d
+MASON_VERSION=mips-9-r10d
 MASON_LIB_FILE=
 
 . ${MASON_DIR:-~/.mason}/mason.sh

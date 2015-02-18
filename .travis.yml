@@ -1,10 +1,6 @@
 language: cpp
 sudo: false
 
-cache:
-  directories:
-  - mason_packages/.cache
-
 os:
   - linux
   - osx

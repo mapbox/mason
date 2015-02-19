@@ -14,7 +14,7 @@ function mason_load_source {
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         mason_download \
             https://nodejs.org/dist/v0.12.0/node-v0.12.0-linux-x64.tar.gz \
-            350df861e161c34b97398fc1b440f3d80f174cf9
+            0cc11d3465ae5b57c181bdb6064e2ba618910d41
     fi
 
     mason_extract_tar_gz

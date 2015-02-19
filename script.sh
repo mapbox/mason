@@ -9,11 +9,11 @@ MASON_LIB_FILE=bin/node
 function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then
         mason_download \
-            http://nodejs.org/dist/v0.10.36/node-v0.10.36-darwin-x64.tar.gz \
+            https://nodejs.org/dist/v0.10.36/node-v0.10.36-darwin-x64.tar.gz \
             bead5971c06fb58ac5a84f81187c5ec45dfc2c15
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         mason_download \
-            http://nodejs.org/dist/v0.10.36/node-v0.10.36-linux-x64.tar.gz \
+            https://nodejs.org/dist/v0.10.36/node-v0.10.36-linux-x64.tar.gz \
             350df861e161c34b97398fc1b440f3d80f174cf9
     fi
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=node
-MASON_VERSION=0.10.35
+MASON_VERSION=0.10.36
 MASON_LIB_FILE=bin/node
 
 . ${MASON_DIR:-~/.mason}/mason.sh
@@ -9,12 +9,12 @@ MASON_LIB_FILE=bin/node
 function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then
         mason_download \
-            http://nodejs.org/dist/v0.10.35/node-v0.10.35-darwin-x64.tar.gz \
-            f0311c1291cafe98649e5733210792f7d57cbcd1
+            http://nodejs.org/dist/v0.10.36/node-v0.10.36-darwin-x64.tar.gz \
+            ff5e9ab73aa025473d5601e6b71a13d0208caae9
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         mason_download \
-            http://nodejs.org/dist/v0.10.35/node-v0.10.35-linux-x64.tar.gz \
-            ffcb8592e9a2556ea0a25284d5ab5fe608f344c0
+            http://nodejs.org/dist/v0.10.36/node-v0.10.36-linux-x64.tar.gz \
+            350df861e161c34b97398fc1b440f3d80f174cf9
     fi
 
     mason_extract_tar_gz

@@ -10,7 +10,7 @@ function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then
         mason_download \
             https://nodejs.org/dist/v0.12.0/node-v0.12.0-darwin-x64.tar.gz \
-            bead5971c06fb58ac5a84f81187c5ec45dfc2c15
+            202d45f836ec45db11a58c4a3ced9774ea2144a2
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         mason_download \
             https://nodejs.org/dist/v0.12.0/node-v0.12.0-linux-x64.tar.gz \

@@ -44,4 +44,10 @@ cat postgres.log
 ./mason_packages/.link/bin/psql -l
 ./mason_packages/.link/bin/psql template_postgis -c "CREATE TABLESPACE temp_disk LOCATION '${PGTEMP_DIR}';"
 ./mason_packages/.link/bin/psql template_postgis -c "SET temp_tablespaces TO 'temp_disk';"
+./mason_packages/.link/bin/psql template_postgis -c "CREATE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;"
+if [[ $(uname -s) == 'Darwin' ]]; then
+    otool -L mason_packages/.link/lib/plpython*.so
+else
+    ldd mason_packages/.link/lib/plpython*.so
+fi
 #./mason_packages/.link/bin/psql template_postgis -c "CREATE EXTENSION postgis;"

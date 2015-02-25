@@ -30,6 +30,7 @@ function mason_compile {
         ${MASON_HOST_ARG} \
         --enable-thread-safety \
         --enable-largefile \
+        --with-python \
         --without-bonjour \
         --without-openssl \
         --without-pam \
@@ -41,7 +42,6 @@ function mason_compile {
         --without-libxml \
         --without-libxslt \
         --without-selinux \
-        --without-python \
         --without-perl \
         --without-tcl \
         --disable-rpath \

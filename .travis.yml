@@ -19,8 +19,7 @@ before_install:
 
 script:
 - ./script.sh build
-- ./script.sh link
-- if [[ -f ./test.sh ]]; then ./test.sh; fi;
+- ./test.sh
 
 after_success:
 - ./script.sh publish

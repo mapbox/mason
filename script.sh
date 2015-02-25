@@ -31,6 +31,7 @@ function mason_compile {
         --enable-thread-safety \
         --enable-largefile \
         --with-python \
+        --with-zlib \
         --without-bonjour \
         --without-openssl \
         --without-pam \
@@ -38,7 +39,6 @@ function mason_compile {
         --without-ossp-uuid \
         --without-readline \
         --without-ldap \
-        --without-zlib \
         --without-libxml \
         --without-libxslt \
         --without-selinux \

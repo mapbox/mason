@@ -59,7 +59,11 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    patch -N -p0 < ../../../patch.diff
+    mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
+    curl --retry 3 -s -f -# -L \
+      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
+      -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
+    patch -N -p0 < ./patch.diff
     NOCONFIGURE=1 ./autogen.sh
     # --without-lockfree to workaround https://github.com/openstreetmap/osm2pgsql/issues/196
     # parse-o5m.cpp:405:58: error: invalid suffix on literal

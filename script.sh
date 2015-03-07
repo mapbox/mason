@@ -67,7 +67,11 @@ function mason_compile {
     NOCONFIGURE=1 ./autogen.sh
     # --without-lockfree to workaround https://github.com/openstreetmap/osm2pgsql/issues/196
     # parse-o5m.cpp:405:58: error: invalid suffix on literal
-    CXXFLAGS="-Wno-reserved-user-defined-literal ${CXXFLAGS}" LDFLAGS="-L${MASON_BOOST_LIBS} -lboost_thread ${LDFLAGS}" ./configure \
+    LDFLAGS="-L${MASON_BOOST_LIBS} -lboost_thread ${LDFLAGS}"
+    if [[ $(uname -s) == 'Linux' ]]; then
+        LDFLAGS="${LDFLAGS} -lrt"
+    fi
+    CXXFLAGS="-Wno-reserved-user-defined-literal ${CXXFLAGS}" LDFLAGS="${LDFLAGS}" ./configure \
         --enable-static --disable-shared \
         ${MASON_HOST_ARG} \
         --prefix=${MASON_PREFIX} \

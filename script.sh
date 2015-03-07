@@ -71,7 +71,7 @@ function mason_compile {
     if [[ $(uname -s) == 'Linux' ]]; then
         LDFLAGS="${LDFLAGS} -lrt"
     fi
-    CXXFLAGS="-Wno-reserved-user-defined-literal ${CXXFLAGS}" LDFLAGS="${LDFLAGS}" ./configure \
+    CXXFLAGS="-Wno-reserved-user-defined-literal ${CXXFLAGS} -I${MASON_PROTOBUF_C}/include" LDFLAGS="${LDFLAGS}" ./configure \
         --enable-static --disable-shared \
         ${MASON_HOST_ARG} \
         --prefix=${MASON_PREFIX} \
@@ -83,7 +83,9 @@ function mason_compile {
         --with-bzip2=${MASON_BZIP} \
         --with-geos=${MASON_GEOS}/bin/geos-config \
         --with-proj=${MASON_PROJ} \
-        --with-protobuf-c=${MASON_PROTOBUF} \
+        --with-protobuf-c=${MASON_PROTOBUF_C} \
+        --with-protobuf-c-inc=${MASON_PROTOBUF_C}/include \
+        --with-protobuf-c-lib=${MASON_PROTOBUF_C}/lib \
         --with-postgresql=${MASON_LIBPQ}/bin/pg_config
 
     make -j${MASON_CONCURRENCY}

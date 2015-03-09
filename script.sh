@@ -60,6 +60,7 @@ function mason_compile {
     perl -i -p -e "s/\-lpq/${MASON_LIBPQ_PATH2} -pthread/g;" src//Makefile.global.in
     perl -i -p -e "s/\-lpq/${MASON_LIBPQ_PATH2} -pthread/g;" src//Makefile.global
     make -j${MASON_CONCURRENCY} install
+    make -j${MASON_CONCURRENCY} -C contrib/hstore install
     rm -f ${MASON_PREFIX}/lib/lib{*.so*,*.dylib}
 }
 

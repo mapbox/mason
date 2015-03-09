@@ -194,7 +194,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r10d
     MASON_SDK_ROOT=$(MASON_PLATFORM= mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
     if [ ! -d ${MASON_SDK_ROOT} ] ; then
-        $(MASON_PLATFORM= mason install android-ndk ${MASON_NDK_PACKAGE_VERSION})
+        MASON_PLATFORM= mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}
     fi
     MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
     export PATH=${MASON_SDK_ROOT}/bin:${PATH}

@@ -20,6 +20,8 @@ function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
     ${MASON_DIR:-~/.mason}/mason install protobuf 2.6.1
     ${MASON_DIR:-~/.mason}/mason link protobuf 2.6.1
+    ${MASON_DIR:-~/.mason}/mason install protobuf_c 1.1.0
+    ${MASON_DIR:-~/.mason}/mason link protobuf_c 1.1.0
 }
 
 function mason_compile {

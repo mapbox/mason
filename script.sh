@@ -19,7 +19,6 @@ function mason_load_source {
 
 function mason_compile {
     # note --with-writer for osmium
-    # note --with-schemas for xmlRelaxNGValidCtxtPtr used by llvm/tools/clang/tools/c-index-test/
     ./configure --prefix=${MASON_PREFIX} \
         --enable-static --disable-shared ${MASON_HOST_ARG} \
         --with-writer \
@@ -29,7 +28,6 @@ function mason_compile {
         --with-threads \
         --with-tree \
         --with-catalog \
-        --with-schemas \
         --without-icu \
         --without-zlib \
         --without-python \
@@ -41,6 +39,7 @@ function mason_compile {
         --without-html \
         --without-http \
         --without-sax1 \
+        --without-schemas \
         --without-schematron \
         --without-valid \
         --without-modules \

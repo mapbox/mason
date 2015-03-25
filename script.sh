@@ -23,7 +23,7 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    PROTOC=${MASON_DIR}/.link/bin/protoc \
+    PROTOC="${MASON_ROOT}/.link/bin/protoc" \
     LDFLAGS="-L${MASON_ROOT}/.link/lib" \
     CXXFLAGS="-I${MASON_ROOT}/.link/include" \
     make -C src

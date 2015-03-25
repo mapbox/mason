@@ -20,7 +20,7 @@ function mason_prepare_compile {
     echo ${MASON_ROOT}/.build
     cd ${MASON_ROOT}
     OSMIUM_INCLUDE_DIR=${MASON_ROOT}/osmcode-libosmium-5e4af90/include
-    wget -O osmium.tar.gz https://github.com/osmcode/libosmium/tarball/v2.0.0
+    curl --retry 3 -f -# -L "https://github.com/osmcode/libosmium/tarball/v2.0.0" -o osmium.tar.gz
     tar -xzf osmium.tar.gz
 
     cd $(dirname ${MASON_ROOT})

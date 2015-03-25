@@ -2,7 +2,7 @@
 
 MASON_NAME=osmium-tool
 MASON_VERSION=1.0.0
-MASON_LIB_FILE=build/osmium
+MASON_LIB_FILE=bin/osmium
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
@@ -17,11 +17,13 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    cd $(dirname ${MASON_ROOT})
-    OSMIUM_INCLUDE_DIR=$(pwd)/osmcode-libosmium-5e4af90/include
+    echo ${MASON_ROOT}/.build
+    cd ${MASON_ROOT}
+    OSMIUM_INCLUDE_DIR=${MASON_ROOT}/osmcode-libosmium-5e4af90/include
     wget -O osmium.tar.gz https://github.com/osmcode/libosmium/tarball/v2.0.0
     tar -xzf osmium.tar.gz
 
+    cd $(dirname ${MASON_ROOT})
     ${MASON_DIR:-~/.mason}/mason install boost 1.57.0
     ${MASON_DIR:-~/.mason}/mason link boost 1.57.0
     ${MASON_DIR:-~/.mason}/mason install boost_libprogram_options 1.57.0
@@ -34,23 +36,23 @@ function mason_prepare_compile {
     ${MASON_DIR:-~/.mason}/mason link expat 2.1.0
     ${MASON_DIR:-~/.mason}/mason install osmpbf 1.3.3
     ${MASON_DIR:-~/.mason}/mason link osmpbf 1.3.3
+    ${MASON_DIR:-~/.mason}/mason install bzip 1.0.6
+    ${MASON_DIR:-~/.mason}/mason link bzip 1.0.6
 }
 
 function mason_compile {
     mkdir build
     cd build
-    CXXFLAGS="-I${MASON_ROOT}/.link/include" LDFLAGS="-I${MASON_ROOT}/.link/lib" cmake -DOSMIUM_INCLUDE_DIR=${OSMIUM_INCLUDE_DIR} ..
-    make
-    pwd
-    ls $(pwd)
+    CMAKE_PREFIX_PATH=${MASON_ROOT}/.link \
+    cmake \
+        -DOSMIUM_INCLUDE_DIR=${OSMIUM_INCLUDE_DIR} \
+        -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
+        ..
+    make install
 }
 
 function mason_clean {
     make clean
-}
-
-function mason_cflags {
-    echo "-I${OSMIUM_INCLUDE_DIR}"
 }
 
 mason_run "$@"

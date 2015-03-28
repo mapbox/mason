@@ -38,6 +38,9 @@ function mason_prepare_compile {
     ${MASON_DIR:-~/.mason}/mason install expat 2.1.0
     MASON_EXPAT=$(${MASON_DIR:-~/.mason}/mason prefix expat 2.1.0)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
+    # depends on sudo apt-get install zlib1g-dev
+    ${MASON_DIR:-~/.mason}/mason install zlib system
+    MASON_ZLIB=$(${MASON_DIR:-~/.mason}/mason prefix zlib system)
 }
 
 function mason_compile {
@@ -47,12 +50,19 @@ function mason_compile {
       -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
     patch -N -p1 < ./patch.diff
     CUSTOM_LIBS="-L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj -L${MASON_PNG}/lib -lpng -L${MASON_EXPAT}/lib -lexpat"
-    CUSTOM_CFLAGS="${CFLAGS} -I${MASON_TIFF}/include -I${MASON_JPEG}/include -I${MASON_PROJ}/include -lproj -I${MASON_PNG}/include -I${MASON_EXPAT}/include"
+    CUSTOM_CFLAGS="${CFLAGS} -I${MASON_LIBPQ}/include -I${MASON_TIFF}/include -I${MASON_JPEG}/include -I${MASON_PROJ}/include -I${MASON_PNG}/include -I${MASON_EXPAT}/include"
+    CUSTOM_LDFLAGS="${LDFLAGS}"
     # note: it might be tempting to build with --without-libtool
     # but I find that will only lead to a static libgdal.a and will
     # not produce a shared library no matter if --enable-shared is passed
 
-    LIBS="${CUSTOM_LIBS}" CUSTOM_CFLAGS="${CFLAGS}" ./configure \
+    # note: we put ${STDLIB_CXXFLAGS} into CXX instead of LDFLAGS due to libtool oddity:
+    # http://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        CXX="${CXX} -stdlib=libc++ -std=c++11"
+    fi
+
+    LIBS="${CUSTOM_LIBS}" LDFLAGS="${CUSTOM_LDFLAGS}" CFLAGS="${CUSTOM_CFLAGS}" ./configure \
         --enable-static --disable-shared \
         ${MASON_HOST_ARG} \
         --prefix=${MASON_PREFIX} \
@@ -101,7 +111,7 @@ function mason_compile {
     make install
 
     # attempt to make paths relative in gdal-config
-    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('include','include/gdal').replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \"\$0\" ))\" && pwd )'))"
+    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \"\$0\" ))\" && pwd )'))"
     cat $MASON_PREFIX/bin/gdal-config
 }
 

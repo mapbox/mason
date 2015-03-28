@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libgdal.a
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/gdal/CURRENT/gdal-${MASON_VERSION}.tar.gz \
+        http://download.osgeo.org/gdal/${MASON_VERSION}/gdal-${MASON_VERSION}.tar.gz \
         50660f82fb01ff1c97f6342a3fbbe5bdc6d01b09
 
     mason_extract_tar_gz

@@ -44,11 +44,11 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    #mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
-    #curl --retry 3 -s -f -# -L \
-    #  https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
-    #  -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
-    patch -N -p1 < ../../../patch.diff
+    mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
+    curl --retry 3 -s -f -# -L \
+      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
+      -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
+    patch -N -p1 < ./patch.diff
     CUSTOM_LIBS="-L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj -L${MASON_PNG}/lib -lpng -L${MASON_EXPAT}/lib -lexpat"
     CUSTOM_CFLAGS="${CFLAGS} -I${MASON_LIBPQ}/include -I${MASON_TIFF}/include -I${MASON_JPEG}/include -I${MASON_PROJ}/include -I${MASON_PNG}/include -I${MASON_EXPAT}/include"
     CUSTOM_LDFLAGS="${LDFLAGS}"

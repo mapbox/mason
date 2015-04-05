@@ -33,7 +33,7 @@ function finish {
 trap finish EXIT
 
 if [[ ! -d ./mason_packages/.link ]]; then
-    ~/.mason/mason link postgres 9.4.0
+    ~/.mason/mason link postgres 9.4.1
 fi
 
 ./mason_packages/.link/bin/initdb

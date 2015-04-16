@@ -54,8 +54,8 @@ function mason_prepare_compile {
     MASON_PROTOBUF=$(${MASON_DIR:-~/.mason}/mason prefix protobuf 2.6.1)
     ${MASON_DIR:-~/.mason}/mason install protobuf_c 1.1.0
     MASON_PROTOBUF_C=$(${MASON_DIR:-~/.mason}/mason prefix protobuf_c 1.1.0)
-    ${MASON_DIR:-~/.mason}/mason install libpq 9.4.0
-    MASON_LIBPQ=$(${MASON_DIR:-~/.mason}/mason prefix libpq 9.4.0)
+    ${MASON_DIR:-~/.mason}/mason install libpq 9.4.1
+    MASON_LIBPQ=$(${MASON_DIR:-~/.mason}/mason prefix libpq 9.4.1)
 }
 
 function mason_compile {

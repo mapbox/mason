@@ -5,6 +5,7 @@ set -o pipefail
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
+git fetch
 for b in $(git for-each-ref --sort=-committerdate refs/remotes --format='%(refname:short)'); do
     NAME=$(basename $b)
     if [[ ! $NAME =~ "-" ]]; then

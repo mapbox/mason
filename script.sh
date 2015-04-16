@@ -55,7 +55,7 @@ function mason_compile {
         cxxflags="${CXXFLAGS:-" "}" \
         stage
     mkdir -p $(dirname ${MASON_PREFIX}/${MASON_LIB_FILE})
-    mv stage/${MASON_LIB_FILE} ${MASON_PREFIX}/${MASON_LIB_FILE}
+    mv stage/* ${MASON_PREFIX}/
 }
 
 function mason_ldflags {

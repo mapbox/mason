@@ -24,6 +24,11 @@ function create_links() {
 }
 
 function mason_compile {
+    mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
+    curl --retry 3 -s -f -# -L \
+      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
+      -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
+    patch -N -p1 < ./patch.diff
     CXXFLAGS="${CXXFLAGS} -Wno-attributes"
     # libtbb does not support -fvisibility=hidden
     CXXFLAGS="${CXXFLAGS//-fvisibility=hidden}"

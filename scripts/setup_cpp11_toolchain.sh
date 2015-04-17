@@ -42,16 +42,18 @@ function main() {
         # TODO: cache these for faster downloads
         local LLVM_DIST="http://llvm.org/apt/${codename}/pool/main/l/llvm-toolchain-3.5"
         if [[ $codename == "precise" ]]; then
-            dpack ${LLVM_DIST} clang-3.5_3.5~svn217304-1~exp1_amd64.deb
-            dpack ${LLVM_DIST} libllvm3.5_3.5~svn217304-1~exp1_amd64.deb
-            dpack ${LLVM_DIST} libclang-common-3.5-dev_3.5~svn215019-1~exp1_amd64.deb
-            dpack ${PPA} libstdc++6_4.8.1-2ubuntu1~${release}_amd64.deb
-            dpack ${PPA} libstdc++-4.8-dev_4.8.1-2ubuntu1~${release}_amd64.deb
-            dpack ${PPA} libgcc-4.8-dev_4.8.1-2ubuntu1~${release}_amd64.deb
+            dpack ${LLVM_DIST} clang-3.5_3.5~svn217304-1~exp1_amd64.deb &
+            dpack ${LLVM_DIST} libllvm3.5_3.5~svn217304-1~exp1_amd64.deb &
+            dpack ${LLVM_DIST} libclang-common-3.5-dev_3.5~svn215019-1~exp1_amd64.deb &
+            dpack ${PPA} libstdc++6_4.8.1-2ubuntu1~${release}_amd64.deb &
+            dpack ${PPA} libstdc++-4.8-dev_4.8.1-2ubuntu1~${release}_amd64.deb &
+            dpack ${PPA} libgcc-4.8-dev_4.8.1-2ubuntu1~${release}_amd64.deb &
+            wait
         elif [[ $codename == "trusty" ]]; then
-            dpack ${LLVM_DIST} clang-3.5_3.5~svn215019-1~exp1_amd64.deb
-            dpack ${LLVM_DIST} libllvm3.5_3.5~svn215019-1~exp1_amd64.deb
-            dpack ${LLVM_DIST} libclang-common-3.5-dev_3.5.1~svn225255-1~exp1_amd64.deb
+            dpack ${LLVM_DIST} clang-3.5_3.5~svn215019-1~exp1_amd64.deb &
+            dpack ${LLVM_DIST} libllvm3.5_3.5~svn215019-1~exp1_amd64.deb &
+            dpack ${LLVM_DIST} libclang-common-3.5-dev_3.5.1~svn225255-1~exp1_amd64.deb &
+            wait
         else
             echo "unsupported distro: $codename $release"
             exit 1

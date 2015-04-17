@@ -16,6 +16,13 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}${MASON_VERSION}oss
 }
 
+function create_links() {
+    libname=$1
+    if [ -f ${MASON_PREFIX}/lib/${libname}.so ]; then rm ${MASON_PREFIX}/lib/${libname}.so; fi
+    cp $(pwd)/build/BUILDPREFIX_release/${libname}.so.2 ${MASON_PREFIX}/lib/
+    (cd ${MASON_PREFIX}/lib/ && ln -s ${libname}.so.2 ${libname}.so)
+}
+
 function mason_compile {
     mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
     curl --retry 3 -s -f -# -L \
@@ -39,7 +46,17 @@ function mason_compile {
     mkdir -p ${MASON_PREFIX}/include/
     mkdir -p ${MASON_PREFIX}/bin/
 
-    cp $(pwd)/build/BUILDPREFIX_release/lib*.* ${MASON_PREFIX}/lib/
+    if [[ $(uname -s) == "Darwin" ]]; then
+        cp $(pwd)/build/BUILDPREFIX_release/lib*.* ${MASON_PREFIX}/lib/
+    else
+        # the linux libraries are funky: the lib.so.2 is the real lib
+        # and the lib.so is an ascii text file, so we need to only copy
+        # the lib.so.2 and then recreate the lib.so as a relative symlink
+        # to the lib.so.2
+        create_links libtbbmalloc_proxy
+        create_links libtbbmalloc
+        create_links libtbb
+    fi
     cp -r $(pwd)/include/tbb ${MASON_PREFIX}/include/
     touch ${MASON_PREFIX}/bin/tbb
 }

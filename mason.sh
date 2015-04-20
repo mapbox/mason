@@ -434,14 +434,16 @@ function mason_try_binary {
         mason_step "Downloading binary package ${MASON_BINARIES}..."
         curl --retry 3 ${MASON_CURL_ARGS} -f -L \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
-            -o "${MASON_BINARIES_PATH}.tmp" || mason_step "Binary not available yet for ${MASON_BINARIES}"
-        mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}"
+            -o "${MASON_BINARIES_PATH}.tmp" && \
+            mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}" || \
+            mason_step "Binary not available yet for ${MASON_BINARIES}"
     else
         mason_step "Updating binary package ${MASON_BINARIES}..."
         curl --retry 3 ${MASON_CURL_ARGS} -f -L -z "${MASON_BINARIES_PATH}" \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
-            -o "${MASON_BINARIES_PATH}.tmp" || mason_step "Binary not available yet for ${MASON_BINARIES}"
-        mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}"
+            -o "${MASON_BINARIES_PATH}.tmp" && \
+            mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}" || \
+            mason_step "Binary not available yet for ${MASON_BINARIES}"
     fi
 
     # unzip the file if it exists

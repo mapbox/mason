@@ -54,8 +54,9 @@ int main() {
 
 function mason_build {
     mkdir -p ${MASON_PREFIX}/{include,lib}
-    ln -sf ${CURL_HEADER_DIR}/curl ${MASON_PREFIX}/include/
+    ln -sf ${CURL_INCLUDE_PREFIX}/curl ${MASON_PREFIX}/include/
     ln -sf ${CURL_LIBRARY} ${MASON_PREFIX}/lib/
+    echo "build is done and available at ${MASON_PREFIX}/"
 }
 
 function mason_cflags {

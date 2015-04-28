@@ -31,4 +31,8 @@ function mason_cflags {
     echo "-I${BOOST_ROOT}/include"
 }
 
+function mason_ldflags {
+    :
+}
+
 mason_run "$@"

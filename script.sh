@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=mapnik
-MASON_VERSION=dev
+MASON_VERSION=latest
 MASON_LIB_FILE=lib/libmapnik-wkt.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh

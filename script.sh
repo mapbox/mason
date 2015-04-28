@@ -24,6 +24,9 @@ function mason_compile {
     echo $(pwd)
     JOBS=${MASON_CONCURRENCY} make
     make install
+    if [ $UNAME = 'Darwin' ]; then
+        install_name_tool -id @loader_path/libmapnik.dylib ${MASON_PREFIX}"/lib/libmapnik.dylib" 
+    fi
     # push over GDAL_DATA, ICU_DATA, PROJ_LIB
     # fix mapnik-config entries for deps
     HERE=$(pwd)

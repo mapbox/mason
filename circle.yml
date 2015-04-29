@@ -14,5 +14,9 @@ dependencies:
 test:
   override:
     - ./script.sh build
-  post:
-    - ./script.sh publish
+
+deployment:
+  publish:
+    branch: /.*/
+    commands:
+      - ./script.sh publish

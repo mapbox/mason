@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MASON_NAME=luabind
+MASON_NAME=luabind_lua51
 MASON_VERSION=e414c57bcb687bb3091b7c55bbff6947f052e46b
 MASON_LIB_FILE=lib/libluabind.a
 
@@ -13,7 +13,7 @@ function mason_load_source {
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/luabind-${MASON_VERSION}
 }
 
 function mason_prepare_compile {

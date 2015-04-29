@@ -13,6 +13,7 @@ dependencies:
 
 test:
   override:
+    - ldd --version
     - ./script.sh build
 
 deployment:

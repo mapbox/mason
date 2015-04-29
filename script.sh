@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=mesa
-MASON_VERSION=10.4.3
+MASON_VERSION=10.5.4
 MASON_LIB_FILE=lib/libGL.so
 MASON_PKGCONFIG_FILE=lib/pkgconfig/gl.pc
 
@@ -9,12 +9,12 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/gl.pc
 
 function mason_load_source {
     mason_download \
-        ftp://ftp.freedesktop.org/pub/mesa/10.4.3/MesaLib-10.4.3.tar.gz \
-        3a0cbced01f666d5d075bd3d6570fa43c91b86be
+        ftp://ftp.freedesktop.org/pub/mesa/10.5.4/MesaLib-10.5.4.tar.gz \
+        2c87044700a738d23133477864c62f194aa9daba
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/Mesa-10.4.3
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/Mesa-10.5.4
 }
 
 function mason_compile {

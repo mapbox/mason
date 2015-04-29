@@ -12,7 +12,7 @@ function mason_load_source {
         http://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${MASON_VERSION}.tar.bz2 \
         a685da85d38c37fd27603165642fc09feb7ae7c1
 
-    mason_extract_tar_gz
+    mason_extract_tar_bz2
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
 }

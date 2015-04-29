@@ -14,7 +14,7 @@ function mason_load_source {
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/Mesa-10.5.4
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/mesa-10.5.4
 }
 
 function mason_compile {

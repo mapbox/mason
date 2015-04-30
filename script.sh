@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=mesa
-MASON_VERSION=10.5.4
+MASON_VERSION=10.5.4-dbg
 MASON_LIB_FILE=lib/libGL.so
 MASON_PKGCONFIG_FILE=lib/pkgconfig/gl.pc
 
@@ -20,7 +20,7 @@ function mason_load_source {
 function mason_compile {
     autoreconf --force --install
 
-    CXXFLAGS=-std=c++11 ./autogen.sh \
+    CFLAGS='-g -DDEBUG' CXXFLAGS='-g -DDEBUG -std=c++11' ./autogen.sh \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
         --enable-shared \

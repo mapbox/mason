@@ -113,6 +113,7 @@ function mason_compile {
     if [[ ! -f ./b2 ]] ; then
         ./bootstrap.sh
     fi
+    CXXFLAGS="${CXXFLAGS} -fvisibility=hidden"
     ./b2 \
         --with-regex \
         --with-system \
@@ -124,6 +125,7 @@ function mason_compile {
         -j${MASON_CONCURRENCY} \
         -sHAVE_ICU=1 -sICU_PATH=${MASON_ICU} \
         linkflags="${BOOST_LDFLAGS}" \
+        cxxflags="${CXXFLAGS:-" "}" \
         -d0 \
         --ignore-site-config --user-config=user-config.jam \
         architecture="${BOOST_ARCH}" \

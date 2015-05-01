@@ -7,7 +7,7 @@ matrix:
     - os: osx
       compiler: clang
     - os: linux
-      compiler: gcc
+      compiler: clang
 
 env:
   global:

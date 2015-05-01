@@ -25,6 +25,8 @@ function mason_compile {
     # -DU_USING_ICU_NAMESPACE=0 -DU_STATIC_IMPLEMENTATION=1 -DU_TIMEZONE=0 -DUCONFIG_NO_LEGACY_CONVERSION=1 -DUCONFIG_NO_FORMATTING=1 -DUCONFIG_NO_TRANSLITERATION=1 -DUCONFIG_NO_REGULAR_EXPRESSIONS=1"
     export ICU_EXTRA_CPP_FLAGS="${ICU_CORE_CPP_FLAGS} -DUCONFIG_NO_COLLATION=1"
     cd ./source
+    CFLAGS="${CFLAGS} -fvisibility=hidden"
+    CXXFLAGS="${CXXFLAGS} -fvisibility=hidden"
     ./configure ${MASON_HOST_ARG} --prefix=${MASON_PREFIX} \
     --with-data-packaging=archive \
     --enable-renaming \

@@ -6,11 +6,12 @@ BOOST_LIBRARY="test"
 BOOST_TOOLSET="clang"
 BOOST_ARCH="x86"
 
-MASON_NAME=boost_lib${BOOST_LIBRARY}
+MASON_NAME=boost_lib${BOOST_LIBRARY}_shared
 MASON_VERSION=1.57.0
-MASON_LIB_FILE=lib/libboost_unit_test_framework.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
+
+MASON_LIB_FILE=lib/libboost_unit_test_framework.${MASON_DYNLIB_SUFFIX}
 
 function mason_load_source {
     mason_download \

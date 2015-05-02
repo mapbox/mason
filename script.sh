@@ -41,19 +41,13 @@ function mason_compile {
     curl --retry 3 -s -f -# -L \
       https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
       -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
-    patch -N -p1 < ./patch.diff
+    patch -N -p0 < ./patch.diff
 
     gen_config ${BOOST_TOOLSET} clang++
     if [[ ! -f ./b2 ]] ; then
         ./bootstrap.sh
     fi
-    # may cause:
-    #CXXFLAGS="${CXXFLAGS} -fvisibility=hidden"
-    : '
-      "_fchmodat", referenced from:
-      boost::filesystem::detail::permissions
-    '
-
+    CXXFLAGS="${CXXFLAGS} -fvisibility=hidden"
     ./b2 \
         --with-${BOOST_LIBRARY} \
         --prefix=${MASON_PREFIX} \

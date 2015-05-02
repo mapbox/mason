@@ -41,7 +41,13 @@ function mason_compile {
     if [[ ! -f ./b2 ]] ; then
         ./bootstrap.sh
     fi
-    CXXFLAGS="${CXXFLAGS} -fvisibility=hidden"
+    # may cause:
+    #CXXFLAGS="${CXXFLAGS} -fvisibility=hidden"
+    : '
+      "_fchmodat", referenced from:
+      boost::filesystem::detail::permissions
+    '
+
     ./b2 \
         --with-${BOOST_LIBRARY} \
         --prefix=${MASON_PREFIX} \

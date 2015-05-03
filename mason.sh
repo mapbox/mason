@@ -306,7 +306,7 @@ function mason_clean {
 }
 
 function link_files_in_root {
-    if [[ -d "${MASON_PREFIX}/$1/" ]] ; then
+    if [[ -d "${MASON_PREFIX}/$1/" ]] && [[ -f "${MASON_PREFIX}/$1/"*.* ]]; then
         for i in $(ls ${MASON_PREFIX}/$1/*.*); do
             common_part=$(python -c "import os;print os.path.relpath('$i','${MASON_PREFIX}')")
             if [[ $common_part != '.' ]] && [[ ! -e "${MASON_ROOT}/.link/$common_part" ]]; then

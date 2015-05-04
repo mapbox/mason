@@ -26,8 +26,9 @@ function mason_compile {
     JOBS=${MASON_CONCURRENCY} make
     make install
     if [[ `uname` = 'Darwin' ]]; then
-        install_name_tool -id @loader_path/libmapnik.dylib ${MASON_PREFIX}"/lib/libmapnik.dylib" 
-        for f in ${MASON_PREFIX}"/lib/mapnik/input/*.input"; do
+        install_name_tool -id @loader_path/libmapnik.dylib ${MASON_PREFIX}"/lib/libmapnik.dylib";
+        PLUGINDIRS=${MASON_PREFIX}"/lib/mapnik/input/*.input";
+        for f in $PLUGINDIRS; do
             echo $f;
             echo `basename $f`;
             install_name_tool -id plugins/input/`basename $f` $f;

@@ -31,6 +31,9 @@ elif [ "${MASON_COMMAND}" = "init" ]; then
     git checkout -b ${MASON_SLUG}
     git add script.sh
     git add .travis.yml
+    if [[ -f ./patch.diff ]]; then
+        git add ./patch.diff
+    fi
     git commit -m "initial version of ${MASON_SLUG}"
     git remote add origin git@github.com:mapbox/mason.git || git remote set-url origin git@github.com:mapbox/mason.git
     git push --set-upstream origin ${MASON_SLUG}

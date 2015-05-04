@@ -2,7 +2,7 @@
 
 MASON_NAME=sparsehash
 MASON_VERSION=2.0.2
-MASON_LIB_FILE=lib/libstxxl.a
+MASON_HEADER_ONLY=true
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
@@ -34,7 +34,7 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    echo "-L${MASON_PREFIX}/lib -lstxxl"
+    :
 }
 
 function mason_clean {

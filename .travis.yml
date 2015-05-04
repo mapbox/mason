@@ -11,6 +11,7 @@ env:
     - TEST="unit"
     - TEST="c_install"
     - TEST="c_build"
+    - TEST="cpp11_header_install"
     - TEST="cpp11_install"
     - TEST="cpp11_build"
 

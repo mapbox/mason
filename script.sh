@@ -20,7 +20,7 @@ function mason_compile {
     source bootstrap.sh
     cat config.py
     ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX} PATH_REPLACE='' RUNTIME_LINK='static'
-    cat ${MASON_BUILD_PATH}"config.log"
+    cat ${MASON_BUILD_PATH}"/config.log"
     cat config.py
     echo $(pwd)
     JOBS=${MASON_CONCURRENCY} make

@@ -3,13 +3,8 @@
 BOOST_VERSION1="1.58.0"
 BOOST_VERSION2="1_58_0"
 BOOST_LIBRARY="regex"
+BOOST_TOOLSET="clang"
 BOOST_ARCH="x86"
-
-if [[ $(uname -s) == 'Darwin' ]]; then
-  BOOST_TOOLSET="darwin"
-else
-  BOOST_TOOLSET="gcc"
-fi
 
 MASON_NAME=boost_liball
 MASON_VERSION=1.58.0
@@ -27,8 +22,6 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/boost_${BOOST_VERSION2}
 
     mason_extract_tar_bz2
-
-    MASON_BUILD_PATH=${MASON_ROOT}/.build/boost_1_58_0
 
 }
 

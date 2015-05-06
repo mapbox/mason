@@ -100,9 +100,7 @@ function mason_compile {
         -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
       patch -N -p0 < ./patch.diff
     fi
-    gen_config ${BOOST_TOOLSET} g++
-    perl -i -p -e "s/\-march=i386/\-m64/g;" ./tools/build/v2/tools/gcc.jam
-    write_python_config user-config.jam "2.7" "/System" ""
+    gen_config ${BOOST_TOOLSET} clang++
     if [[ ! -f ./b2 ]] ; then
         ./bootstrap.sh
     fi
@@ -117,12 +115,11 @@ function mason_compile {
         --prefix=${MASON_PREFIX} \
         -j${MASON_CONCURRENCY} \
         -sHAVE_ICU=1 -sICU_PATH=${MASON_ICU} \
-        linkflags="${BOOST_LDFLAGS}" \
+        linkflags="${LDFLAGS:-" "} ${BOOST_LDFLAGS}" \
         cxxflags="${CXXFLAGS:-" "}" \
         -d0 \
         --ignore-site-config --user-config=user-config.jam \
         architecture="${BOOST_ARCH}" \
-        address-model=64 \
         toolset="${BOOST_TOOLSET}" \
         link=static \
         variant=release \
@@ -133,7 +130,7 @@ function mason_compile {
 }
 
 function mason_ldflags {
-    echo "-lboost_regex -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lboost_python"
+    :
 }
 
 function mason_clean {

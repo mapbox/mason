@@ -12,8 +12,8 @@ if [[ ${MASON_PLATFORM} = 'ios' || ${MASON_PLATFORM} = 'android' ]]; then
     exit 1
 fi
 
-MASON_CFLAGS="-I${MASON_PREFIX}/include"
-MASON_LDFLAGS="-L${MASON_PREFIX}/lib"
+MASON_CFLAGS="${CFLAGS:-} -I${MASON_PREFIX}/include"
+MASON_LDFLAGS="${LDFLAGS:-} -L${MASON_PREFIX}/lib"
 
 if [[ ${MASON_PLATFORM} = 'osx' ]]; then
     CURL_INCLUDE_PREFIX="${MASON_SDK_PATH}/usr/include"
@@ -56,7 +56,6 @@ function mason_build {
     mkdir -p ${MASON_PREFIX}/{include,lib}
     ln -sf ${CURL_INCLUDE_PREFIX}/curl ${MASON_PREFIX}/include/
     ln -sf ${CURL_LIBRARY} ${MASON_PREFIX}/lib/
-    echo "build is done and available at ${MASON_PREFIX}/"
 }
 
 function mason_cflags {

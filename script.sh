@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=iojs
-MASON_VERSION=1.2.0
+MASON_VERSION=2.0.1
 MASON_LIB_FILE=bin/iojs
 
 . ${MASON_DIR:-~/.mason}/mason.sh
@@ -9,12 +9,12 @@ MASON_LIB_FILE=bin/iojs
 function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then
         mason_download \
-            https://iojs.org/dist/v1.2.0/iojs-v1.2.0-darwin-x64.tar.gz \
-            15c553a35abb84085f993e605b83a6b924e22f3c
+            https://iojs.org/dist/v2.0.1/iojs-v2.0.1-darwin-x64.tar.gz \
+            bc354a98eb9060343d86c3df8f2b75bbd1c5db53ffed923d8e6f89c1ef73078e
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         mason_download \
-            https://iojs.org/dist/v1.2.0/iojs-v1.2.0-linux-x64.tar.gz \
-            054234cb47ba4a3b3826a892836760b107596a57
+            https://iojs.org/dist/v2.0.1/iojs-v2.0.1-linux-x64.tar.gz \
+            ae9a1bcd870774198b5ff3bc9534f7c8cc3790af2c16bca5b07e6f4a6b4a065c
     fi
 
     mason_extract_tar_gz

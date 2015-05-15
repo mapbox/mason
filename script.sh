@@ -53,7 +53,7 @@ function mason_compile {
      --with-graphite2=no \
      --with-freetype \
      --with-uniscribe=no \
-     --with-coretext=no || cat config.log
+     --with-coretext=no
 
     make -j${MASON_CONCURRENCY} V=1
     make install
@@ -61,6 +61,10 @@ function mason_compile {
 
 function mason_ldflags {
     echo "-lharfbuzz"
+}
+
+function mason_cflags {
+    echo "-I${MASON_PREFIX}/include"
 }
 
 function mason_clean {

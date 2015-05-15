@@ -60,7 +60,7 @@ function mason_compile {
 }
 
 function mason_ldflags {
-    echo "-lharfbuzz"
+    : # We're only using the full path to the archive, which is output in static_libs
 }
 
 function mason_cflags {

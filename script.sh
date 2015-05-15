@@ -36,7 +36,11 @@ function mason_compile {
 }
 
 function mason_ldflags {
-    echo "-lfreetype -lz"
+    : # We're only using the full path to the archive, which is output in static_libs
+}
+
+function mason_cflags {
+    echo "-I${MASON_PREFIX}/include/freetype2"
 }
 
 function mason_clean {

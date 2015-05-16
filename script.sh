@@ -59,7 +59,7 @@ function mason_compile {
 
     cd gdal/
     CUSTOM_LIBS="-L${LINK_DIR}/lib -ltiff -ljpeg -lproj -lpng -lexpat"
-    CUSTOM_CFLAGS="${CFLAGS} -I${LINK_DIR}/include"
+    CUSTOM_CFLAGS="${CFLAGS} -I${LINK_DIR}/include -I${LINK_DIR}/include/libpng16"
 
     # very custom handling for libpq/postgres support
     # forcing our portable static library to be used

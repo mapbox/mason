@@ -67,7 +67,7 @@ function mason_compile {
     if [[ $(uname -s) == 'Linux' ]]; then
         # on Linux passing -Wl will lead to libtool re-positioning libpq.a in the wrong place (no longer after libgdal.a)
         # which leads to unresolved symbols
-        CUSTOM_LDFLAGS="${LDFLAGS} ${MASON_LIBPQ_PATH}"
+        CUSTOM_LDFLAGS="-z nodeflib ${LDFLAGS} ${MASON_LIBPQ_PATH}"
     else
         # on OSX not passing -Wl will break libtool archive creation leading to confusing arch errors
         CUSTOM_LDFLAGS="${LDFLAGS} -Wl,${MASON_LIBPQ_PATH}"

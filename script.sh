@@ -15,51 +15,55 @@ function mason_load_source {
     fi
 }
 
-function mason_prepare_compile {
-    cd $(dirname ${MASON_ROOT})
+if [[ $(uname -s) == 'Darwin' ]]; then
+    FIND_PATTERN="\/Users\/travis\/build\/mapbox\/mason"
+else
+    FIND_PATTERN="\/home\/travis\/build\/mapbox\/mason"
+fi
+
+function install_dep {
     # set up to fix libtool .la files
     # https://github.com/mapbox/mason/issues/61
-    if [[ $(uname -s) == 'Darwin' ]]; then
-        FIND="\/Users\/travis\/build\/mapbox\/mason"
-    else
-        FIND="\/home\/travis\/build\/mapbox\/mason"
-    fi
     REPLACE="$(pwd)"
     REPLACE=${REPLACE////\\/}
-    ${MASON_DIR:-~/.mason}/mason install libtiff 4.0.4beta
-    MASON_TIFF=$(${MASON_DIR:-~/.mason}/mason prefix libtiff 4.0.4beta)
-    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_TIFF}/lib/libtiff.la
-    ${MASON_DIR:-~/.mason}/mason install proj 4.8.0
-    MASON_PROJ=$(${MASON_DIR:-~/.mason}/mason prefix proj 4.8.0)
-    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PROJ}/lib/libproj.la
-    ${MASON_DIR:-~/.mason}/mason install jpeg_turbo 1.4.0
-    MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg_turbo 1.4.0)
-    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_JPEG}/lib/libjpeg.la
-    ${MASON_DIR:-~/.mason}/mason install libpng 1.6.16
-    MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.16)
-    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PNG}/lib/libpng.la
-    ${MASON_DIR:-~/.mason}/mason install expat 2.1.0
-    MASON_EXPAT=$(${MASON_DIR:-~/.mason}/mason prefix expat 2.1.0)
-    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
-    ${MASON_DIR:-~/.mason}/mason install libpq 9.4.0
-    MASON_LIBPQ=$(${MASON_DIR:-~/.mason}/mason prefix libpq 9.4.0)
+    ${MASON_DIR:-~/.mason}/mason install $1 $2
+    ${MASON_DIR:-~/.mason}/mason link $1 $2
+    LA_FILE=$(${MASON_DIR:-~/.mason}/mason prefix $1 $2)/lib/$3.la
+    if [[ -f ${LA_FILE} ]]; then
+       perl -i -p -e "s/${FIND_PATTERN}/${REPLACE}/g;" ${LA_FILE}
+    else
+        echo "$LA_FILE not found"
+    fi
+}
+
+function mason_prepare_compile {
+    cd $(dirname ${MASON_ROOT})
+    install_dep libtiff 4.0.4beta libtiff
+    install_dep proj 4.8.0 libproj
+    install_dep jpeg_turbo 1.4.0 libjpeg
+    install_dep libpng 1.6.16 libpng
+    install_dep expat 2.1.0 libexpat
+    install_dep libpq 9.4.0 libpq
     # depends on sudo apt-get install zlib1g-dev
     ${MASON_DIR:-~/.mason}/mason install zlib system
     MASON_ZLIB=$(${MASON_DIR:-~/.mason}/mason prefix zlib system)
     # depends on sudo apt-get install libc6-dev
     #${MASON_DIR:-~/.mason}/mason install iconv system
     #MASON_ICONV=$(${MASON_DIR:-~/.mason}/mason prefix iconv system)
-    export LIBRARY_PATH=${MASON_LIBPQ}/lib:$LIBRARY_PATH
 }
 
 function mason_compile {
+    LINK_DIR="${MASON_ROOT}/.link"
+    echo $LINK_DIR
+    export LIBRARY_PATH=${LINK_DIR}/lib:${LIBRARY_PATH}
+
     cd gdal/
-    CUSTOM_LIBS="-L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj -L${MASON_PNG}/lib -lpng -L${MASON_EXPAT}/lib -lexpat"
-    CUSTOM_CFLAGS="${CFLAGS} -I${MASON_LIBPQ}/include -I${MASON_TIFF}/include -I${MASON_JPEG}/include -I${MASON_PROJ}/include -I${MASON_PNG}/include -I${MASON_EXPAT}/include"
+    CUSTOM_LIBS="-L${LINK_DIR}/lib -ltiff -ljpeg -lproj -lpng -lexpat"
+    CUSTOM_CFLAGS="${CFLAGS} -I${LINK_DIR}/include"
 
     # very custom handling for libpq/postgres support
     # forcing our portable static library to be used
-    MASON_LIBPQ_PATH=${MASON_LIBPQ}/lib/libpq.a
+    MASON_LIBPQ_PATH=${LINK_DIR}/lib/libpq.a
     if [[ $(uname -s) == 'Linux' ]]; then
         # on Linux passing -Wl will lead to libtool re-positioning libpq.a in the wrong place (no longer after libgdal.a)
         # which leads to unresolved symbols
@@ -73,7 +77,7 @@ function mason_compile {
     # on linux -Wl,/path/to/libpq.a still does not work for the configure test
     # so we have to force it into LIBS. But we don't do this on OS X since it breaks libtool archive logic
     if [[ $(uname -s) == 'Linux' ]]; then
-        CUSTOM_LIBS="${MASON_LIBPQ}/lib/libpq.a -pthread ${CUSTOM_LIBS}"
+        CUSTOM_LIBS="${MASON_LIBPQ_PATH} -pthread ${CUSTOM_LIBS}"
     fi
 
     # note: we put ${STDLIB_CXXFLAGS} into CXX instead of LDFLAGS due to libtool oddity:
@@ -89,21 +93,21 @@ function mason_compile {
         --enable-static --disable-shared \
         ${MASON_HOST_ARG} \
         --prefix=${MASON_PREFIX} \
-        --with-libz=${MASON_ZLIB} \
+        --with-libz=${LINK_DIR} \
         --disable-rpath \
         --with-libjson-c=internal \
         --with-geotiff=internal \
-        --with-expat=${MASON_EXPAT} \
+        --with-expat=${LINK_DIR} \
         --with-threads=yes \
         --with-fgdb=no \
         --with-rename-internal-libtiff-symbols=no \
         --with-rename-internal-libgeotiff-symbols=no \
         --with-hide-internal-symbols=yes \
-        --with-libtiff=${MASON_TIFF} \
-        --with-jpeg=${MASON_JPEG} \
-        --with-png=${MASON_PNG} \
-        --with-pg=${MASON_LIBPQ}/bin/pg_config \
-        --with-static-proj4=${MASON_PROJ} \
+        --with-libtiff=${LINK_DIR} \
+        --with-jpeg=${LINK_DIR} \
+        --with-png=${LINK_DIR} \
+        --with-pg=${LINK_DIR}/bin/pg_config \
+        --with-static-proj4=${LINK_DIR} \
         --with-spatialite=no \
         --with-geos=no \
         --with-sqlite3=no \
@@ -137,6 +141,10 @@ function mason_compile {
 
     # attempt to make paths relative in gdal-config
     python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \"\$0\" ))\" && pwd )'))"
+    # fix paths to all deps to point to mason_packages/.link
+    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('$MASON_ROOT','./mason_packages'))"
+    # add static libpq.a
+    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('CONFIG_DEP_LIBS=\"','CONFIG_DEP_LIBS=\"${MASON_LIBPQ_PATH}'))"
     cat $MASON_PREFIX/bin/gdal-config
 }
 

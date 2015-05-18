@@ -44,28 +44,56 @@ elif [ "${MASON_COMMAND}" = "env" ]; then
     exit
 fi
 
-if [ -z "${MASON_NAME}" ]; then
-    usage
-    echo "Missing <lib>"
-    exit 1
-elif [ -z "${MASON_VERSION}" ]; then
-    usage
-    echo "Missing <version>"
-    exit 1
+if [ "${MASON_COMMAND}" != "install" ]; then
+    if [[ -z "${MASON_NAME}" && "${MASON_COMMAND}" != "install" ]]; then
+        usage
+        echo "Missing <lib>"
+        exit 1
+    elif [[ -z "${MASON_VERSION}" && "${MASON_COMMAND}" != "install" ]]; then
+        usage
+        echo "Missing <version>"
+        exit 1
+    fi
+elif [[ -z "${MASON_VERSION}" && -z "${MASON_NAME}" ]]; then
+    # this is install, with zero args. err if no config.json
+    if [ ! -e "${MASON_DIR}/config.json" ]; then
+        echo "Missing config.json"
+        exit 1
+    else
+        MASON_INSTALL_CONFIG="${MASON_DIR}/config.json"
+    fi
+elif [ "${MASON_NAME}" == "-c" ]; then
+    # check for mason_version json exists
+    if [ ! -e "${MASON_DIR}/${MASON_VERSION}.json" ]; then
+        echo "Missing ${MASON_VERSION}.json"
+        exit 1
+    else
+        MASON_INSTALL_CONFIG="${MASON_DIR}/${MASON_VERSION}.json"
+        unset MASON_NAME
+        unset MASON_VERSION
+    fi
 fi
 
 . ${MASON_DIR}/mason.sh
 
 
-# Load script if it doesn't exist yet
-MASON_SCRIPT="${MASON_ROOT}/.scripts/${MASON_SLUG}.sh"
+function mason_load_install_script() {
+    MASON_SCRIPT="${MASON_ROOT}/.scripts/${MASON_SLUG}.sh"
 
-if [ ! -f "${MASON_SCRIPT}" ]; then
-    mason_step "Loading install script 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/script.sh'..."
-    mkdir -p "${MASON_ROOT}/.scripts"
-    curl --retry 3 -s -f -# -L \
-      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/script.sh \
-      -o "${MASON_ROOT}/.scripts/${MASON_SLUG}.sh" || (mason_error "Could not find install script for ${MASON_SLUG}" && exit 1)
+    if [ ! -f "${MASON_SCRIPT}" ]; then
+        mason_step "Loading install script 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/script.sh'..."
+        mkdir -p "${MASON_ROOT}/.scripts"
+        curl --retry 3 -s -f -# -L \
+          https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/script.sh \
+          -o "${MASON_ROOT}/.scripts/${MASON_SLUG}.sh" || (mason_error "Could not find install script for ${MASON_SLUG}" && exit 1)
+    fi
+
+    bash "${MASON_SCRIPT}" "${MASON_COMMAND}" "$@"
+}
+
+if [ ! -e "${MASON_INSTALL_CONFIG}" ]; then
+    # Load script if it doesn't exist yet
+    mason_load_install_script
+else
+    mason_run install
 fi
-
-bash "${MASON_SCRIPT}" "${MASON_COMMAND}" "$@"

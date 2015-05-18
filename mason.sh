@@ -2,29 +2,38 @@ set -e
 set -o pipefail
 # set -x
 
-MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
-MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
+function mason_set_sys {
+    MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
+    MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
 
-MASON_UNAME=`uname -s`
-if [ ${MASON_UNAME} = 'Darwin' ]; then
-    MASON_PLATFORM=${MASON_PLATFORM:-osx}
-    MASON_XCODE_ROOT=`"xcode-select" -p`
-elif [ ${MASON_UNAME} = 'Linux' ]; then
-    MASON_PLATFORM=${MASON_PLATFORM:-linux}
-fi
+    MASON_UNAME=`uname -s`
 
-# In non-interactive environments like Travis CI, we can't use -s because it'll fill up the log
-# way too fast
-case $- in
-    *i*) MASON_CURL_ARGS=-s ;; # interactive
-    *)   MASON_CURL_ARGS=   ;; # non-interative
-esac
+    if [ ${MASON_UNAME} = 'Darwin' ]; then
+        MASON_PLATFORM=${MASON_PLATFORM:-osx}
+        MASON_XCODE_ROOT=`"xcode-select" -p`
+    elif [ ${MASON_UNAME} = 'Linux' ]; then
+        MASON_PLATFORM=${MASON_PLATFORM:-linux}
+    fi
 
-case ${MASON_UNAME} in
-    'Darwin')    MASON_CONCURRENCY=`sysctl -n hw.ncpu` ;;
-    'Linux')        MASON_CONCURRENCY=`nproc` ;;
-    *)              MASON_CONCURRENCY=1 ;;
-esac
+    # In non-interactive environments like Travis CI, we can't use -s because it'll fill up the log
+    # way too fast
+    case $- in
+        *i*) MASON_CURL_ARGS=-s ;; # interactive
+        *)   MASON_CURL_ARGS=   ;; # non-interative
+    esac
+
+    case ${MASON_UNAME} in
+        'Darwin')    MASON_CONCURRENCY=`sysctl -n hw.ncpu` ;;
+        'Linux')        MASON_CONCURRENCY=`nproc` ;;
+        *)              MASON_CONCURRENCY=1 ;;
+    esac
+
+    case ${MASON_ROOT} in
+        *\ * ) mason_error "Directory '${MASON_ROOT} contains spaces."; exit ;;
+    esac
+}
+
+mason_set_sys
 
 
 function mason_step    { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }
@@ -32,215 +41,217 @@ function mason_substep { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }
 function mason_success { >&2 echo -e "\033[1m\033[32m* $1\033[0m"; }
 function mason_error   { >&2 echo -e "\033[1m\033[31m$1\033[0m"; }
 
+function mason_platform_specifics {
+    if [ ${MASON_PLATFORM} = 'osx' ]; then
+        export MASON_HOST_ARG="--host=x86_64-apple-darwin"
+        export MASON_DYNLIB_SUFFIX="dylib"
+        export MASON_PLATFORM_VERSION=`xcrun --sdk macosx --show-sdk-version`
 
-case ${MASON_ROOT} in
-    *\ * ) mason_error "Directory '${MASON_ROOT} contains spaces."; exit ;;
-esac
+        MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
+        MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_PLATFORM_VERSION}.sdk"
+        MIN_SDK_VERSION_FLAG="-mmacosx-version-min=10.8"
+        SYSROOT_FLAGS="-isysroot ${MASON_SDK_PATH} -arch x86_64 ${MIN_SDK_VERSION_FLAG}"
+        export CFLAGS="${SYSROOT_FLAGS}"
+        export CXXFLAGS="${CFLAGS} -fvisibility-inlines-hidden -stdlib=libc++ -std=c++11"
+        # NOTE: OSX needs '-stdlib=libc++ -std=c++11' in both CXXFLAGS and LDFLAGS
+        # to correctly target c++11 for build systems that don't know about it yet (like libgeos 3.4.2)
+        # But because LDFLAGS is also for C libs we can only put these flags into LDFLAGS per package
+        export LDFLAGS="-Wl,-search_paths_first ${SYSROOT_FLAGS}"
+        export CXX="${MASON_XCODE_ROOT}/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
+        export CC="${MASON_XCODE_ROOT}/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
 
-if [ ${MASON_PLATFORM} = 'osx' ]; then
-    export MASON_HOST_ARG="--host=x86_64-apple-darwin"
-    export MASON_DYNLIB_SUFFIX="dylib"
-    export MASON_PLATFORM_VERSION=`xcrun --sdk macosx --show-sdk-version`
+    elif [ ${MASON_PLATFORM} = 'ios' ]; then
+        export MASON_HOST_ARG="--host=arm-apple-darwin"
+        export MASON_DYNLIB_SUFFIX="dylib"
+        export MASON_PLATFORM_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
 
-    MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
-    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_PLATFORM_VERSION}.sdk"
-    MIN_SDK_VERSION_FLAG="-mmacosx-version-min=10.8"
-    SYSROOT_FLAGS="-isysroot ${MASON_SDK_PATH} -arch x86_64 ${MIN_SDK_VERSION_FLAG}"
-    export CFLAGS="${SYSROOT_FLAGS}"
-    export CXXFLAGS="${CFLAGS} -fvisibility-inlines-hidden -stdlib=libc++ -std=c++11"
-    # NOTE: OSX needs '-stdlib=libc++ -std=c++11' in both CXXFLAGS and LDFLAGS
-    # to correctly target c++11 for build systems that don't know about it yet (like libgeos 3.4.2)
-    # But because LDFLAGS is also for C libs we can only put these flags into LDFLAGS per package
-    export LDFLAGS="-Wl,-search_paths_first ${SYSROOT_FLAGS}"
-    export CXX="${MASON_XCODE_ROOT}/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
-    export CC="${MASON_XCODE_ROOT}/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
+        MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer
+        MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneOS${MASON_PLATFORM_VERSION}.sdk"
+        export MASON_IOS_CFLAGS="-miphoneos-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch armv7 -arch armv7s -arch arm64"
 
-elif [ ${MASON_PLATFORM} = 'ios' ]; then
-    export MASON_HOST_ARG="--host=arm-apple-darwin"
-    export MASON_DYNLIB_SUFFIX="dylib"
-    export MASON_PLATFORM_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
+        if [ `xcrun --sdk iphonesimulator --show-sdk-version` != ${MASON_PLATFORM_VERSION} ]; then
+            mason_error "iPhone Simulator SDK version doesn't match iPhone SDK version"
+            exit 1
+        fi
 
-    MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer
-    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneOS${MASON_PLATFORM_VERSION}.sdk"
-    export MASON_IOS_CFLAGS="-miphoneos-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch armv7 -arch armv7s -arch arm64"
+        MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneSimulator.platform/Developer
+        MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneSimulator${MASON_PLATFORM_VERSION}.sdk"
+        export MASON_ISIM_CFLAGS="-miphoneos-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
 
-    if [ `xcrun --sdk iphonesimulator --show-sdk-version` != ${MASON_PLATFORM_VERSION} ]; then
-        mason_error "iPhone Simulator SDK version doesn't match iPhone SDK version"
-        exit 1
+    elif [ ${MASON_PLATFORM} = 'linux' ]; then
+        for i in /etc/*-release ; do . $i ; done
+        MASON_PLATFORM_DISTRIBUTION=`echo ${ID:-${DISTRIB_ID}} | tr '[:upper:]' '[:lower:]'`
+        if [ -z "${MASON_PLATFORM_DISTRIBUTION}" ]; then
+            mason_error "Cannot determine distribution name"
+            exit 1
+        fi
+
+        MASON_PLATFORM_DISTRIBUTION_VERSION=${DISTRIB_RELEASE:-${VERSION_ID}}
+        if [ -z "${MASON_PLATFORM_DISTRIBUTION_VERSION}" ]; then
+            mason_error "Cannot determine distribution version"
+            exit 1
+        fi
+
+        export MASON_DYNLIB_SUFFIX="so"
+        export MASON_PLATFORM_VERSION=`uname -m`
+        export CFLAGS="-fPIC"
+        export CXXFLAGS="${CFLAGS} -std=c++11"
+
+    elif [ ${MASON_PLATFORM} = 'android' ]; then
+        export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
+
+        CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector -no-canonical-prefixes -fno-integrated-as -O2 -g -DNDEBUG -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-functions -finline-limit=300 -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
+        LDFLAGS="-no-canonical-prefixes"
+        export CPPFLAGS="-D__ANDROID__"
+
+        if [ ${MASON_ANDROID_ABI} = 'arm-v8' ]; then
+            MASON_ANDROID_TOOLCHAIN="aarch64-linux-android"
+            MASON_ANDROID_CROSS_COMPILER="aarch64-linux-android-4.9"
+            export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
+
+            export CFLAGS="-target aarch64-none-linux-android -mfix-cortex-a53-835769 -D_LITTLE_ENDIAN ${CFLAGS}"
+            export LDFLAGS="-target aarch64-none-linux-android -Wl,--fix-cortex-a53-835769 ${LDFLAGS}"
+
+            export JNIDIR="arm64-v8a"
+            MASON_ANDROID_ARCH="arm64"
+            MASON_ANDROID_PLATFORM="21"
+
+        elif [ ${MASON_ANDROID_ABI} = 'arm-v7' ]; then
+            MASON_ANDROID_TOOLCHAIN="arm-linux-androideabi"
+            MASON_ANDROID_CROSS_COMPILER="arm-linux-androideabi-4.9"
+            export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
+
+            export CFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -D_LITTLE_ENDIAN ${CFLAGS}"
+            export LDFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -Wl,--fix-cortex-a8 -Wl,--no-warn-mismatch -lm_hard ${LDFLAGS}"
+
+            export JNIDIR="armeabi-v7a"
+            MASON_ANDROID_ARCH="arm"
+            MASON_ANDROID_PLATFORM="9"
+
+        elif [ ${MASON_ANDROID_ABI} = 'arm-v5' ]; then
+            MASON_ANDROID_TOOLCHAIN="arm-linux-androideabi"
+            MASON_ANDROID_CROSS_COMPILER="arm-linux-androideabi-4.9"
+            export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
+
+            export CFLAGS="-target armv5te-none-linux-androideabi -march=armv5te -mtune=xscale -msoft-float -D_LITTLE_ENDIAN ${CFLAGS}"
+            export LDFLAGS="-target armv5te-none-linux-androideabi -march=armv5te ${LDFLAGS}"
+
+            export JNIDIR="armeabi"
+            MASON_ANDROID_ARCH="arm"
+            MASON_ANDROID_PLATFORM="9"
+
+        elif [ ${MASON_ANDROID_ABI} = 'x86' ]; then
+            MASON_ANDROID_TOOLCHAIN="i686-linux-android"
+            MASON_ANDROID_CROSS_COMPILER="x86-4.9"
+            export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
+
+            export CFLAGS="-target i686-none-linux-android -march=i686 -msse3 -mfpmath=sse ${CFLAGS}"
+            export LDFLAGS="-target i686-none-linux-android -march=i686 ${LDFLAGS}"
+
+            export JNIDIR="x86"
+            MASON_ANDROID_ARCH="x86"
+            MASON_ANDROID_PLATFORM="9"
+
+        elif [ ${MASON_ANDROID_ABI} = 'x86-64' ]; then
+            MASON_ANDROID_TOOLCHAIN="x86_64-linux-android"
+            MASON_ANDROID_CROSS_COMPILER="x86_64-4.9"
+            export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
+
+            export JNIDIR="x86_64"
+            export CFLAGS="-target x86_64-none-linux-android -march=x86-64 -msse4.2 -mpopcnt -m64 -mtune=intel ${CFLAGS}"
+            export LDFLAGS="-target x86_64-none-linux-android -march=x86-64 ${LDFLAGS}"
+
+            MASON_ANDROID_ARCH="x86_64"
+            MASON_ANDROID_PLATFORM="21"
+
+        elif [ ${MASON_ANDROID_ABI} = 'mips' ]; then
+            MASON_ANDROID_TOOLCHAIN="mipsel-linux-android"
+            MASON_ANDROID_CROSS_COMPILER="mipsel-linux-android-4.9"
+            export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
+
+            export CFLAGS="-target mipsel-none-linux-android ${CFLAGS}"
+            export LDFLAGS="-target mipsel-none-linux-android ${LDFLAGS}"
+
+            export JNIDIR="mips"
+            MASON_ANDROID_ARCH="mips"
+            MASON_ANDROID_PLATFORM="9"
+
+        elif [ ${MASON_ANDROID_ABI} = 'mips-64' ]; then
+            MASON_ANDROID_TOOLCHAIN="mips64el-linux-android"
+            MASON_ANDROID_CROSS_COMPILER="mips64el-linux-android-4.9"
+            export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
+
+            export CFLAGS="-target mips64el-none-linux-android ${CFLAGS}"
+            export LDFLAGS="-target mips64el-none-linux-android ${LDFLAGS}"
+
+            export JNIDIR="mips64"
+            MASON_ANDROID_ARCH="mips64"
+            MASON_ANDROID_PLATFORM="21"
+        fi
+
+        export CXXFLAGS="${CFLAGS} -std=c++11"
+
+        export MASON_DYNLIB_SUFFIX="so"
+        export MASON_PLATFORM_VERSION="${MASON_ANDROID_ABI}-${MASON_ANDROID_PLATFORM}"
+        MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
+
+        # Installs the native SDK
+        MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r10d
+        MASON_SDK_ROOT=$(MASON_PLATFORM= mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
+        if [ ! -d ${MASON_SDK_ROOT} ] ; then
+            MASON_PLATFORM= mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}
+        fi
+        MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
+        export PATH=${MASON_SDK_ROOT}/bin:${PATH}
+
+        export CXX="${MASON_ANDROID_TOOLCHAIN}-clang++"
+        export CC="${MASON_ANDROID_TOOLCHAIN}-clang"
+        export LD="${MASON_ANDROID_TOOLCHAIN}-ld"
+        export AR="${MASON_ANDROID_TOOLCHAIN}-ar"
+        export RANLIB="${MASON_ANDROID_TOOLCHAIN}-ranlib"
+        export STRIP="${MASON_ANDROID_TOOLCHAIN}-strip"
     fi
+}
 
-    MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneSimulator.platform/Developer
-    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneSimulator${MASON_PLATFORM_VERSION}.sdk"
-    export MASON_ISIM_CFLAGS="-miphoneos-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
+mason_platform_specifics
 
-elif [ ${MASON_PLATFORM} = 'linux' ]; then
-    for i in /etc/*-release ; do . $i ; done
-    MASON_PLATFORM_DISTRIBUTION=`echo ${ID:-${DISTRIB_ID}} | tr '[:upper:]' '[:lower:]'`
-    if [ -z "${MASON_PLATFORM_DISTRIBUTION}" ]; then
-        mason_error "Cannot determine distribution name"
-        exit 1
+function mason_set_defaults {
+    # Variable defaults
+    MASON_HOST_ARG=${MASON_HOST_ARG:-}
+    MASON_PLATFORM_VERSION=${MASON_PLATFORM_VERSION:-0}
+    MASON_NAME=${MASON_NAME:-nopackage}
+    MASON_VERSION=${MASON_VERSION:-noversion}
+    MASON_HEADER_ONLY=${MASON_HEADER_ONLY:-false}
+    MASON_SLUG=${MASON_NAME}-${MASON_VERSION}
+    if [[ ${MASON_HEADER_ONLY} == true ]]; then
+        MASON_PLATFORM_ID=headers
+    else
+        MASON_PLATFORM_ID=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}
     fi
+    MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}
+    MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}.tar.gz
+    MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
+    MASON_INSTALL_CONFIG=${MASON_INSTALL_CONFIG:-noinstallconfig}
+}
 
-    MASON_PLATFORM_DISTRIBUTION_VERSION=${DISTRIB_RELEASE:-${VERSION_ID}}
-    if [ -z "${MASON_PLATFORM_DISTRIBUTION_VERSION}" ]; then
-        mason_error "Cannot determine distribution version"
-        exit 1
-    fi
-
-    export MASON_DYNLIB_SUFFIX="so"
-    export MASON_PLATFORM_VERSION=`uname -m`
-    export CFLAGS="-fPIC"
-    export CXXFLAGS="${CFLAGS} -std=c++11"
-
-elif [ ${MASON_PLATFORM} = 'android' ]; then
-    export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
-
-    CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector -no-canonical-prefixes -fno-integrated-as -O2 -g -DNDEBUG -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-functions -finline-limit=300 -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
-    LDFLAGS="-no-canonical-prefixes"
-    export CPPFLAGS="-D__ANDROID__"
-
-    if [ ${MASON_ANDROID_ABI} = 'arm-v8' ]; then
-        MASON_ANDROID_TOOLCHAIN="aarch64-linux-android"
-        MASON_ANDROID_CROSS_COMPILER="aarch64-linux-android-4.9"
-        export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
-
-        export CFLAGS="-target aarch64-none-linux-android -mfix-cortex-a53-835769 -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target aarch64-none-linux-android -Wl,--fix-cortex-a53-835769 ${LDFLAGS}"
-
-        export JNIDIR="arm64-v8a"
-        MASON_ANDROID_ARCH="arm64"
-        MASON_ANDROID_PLATFORM="21"
-
-    elif [ ${MASON_ANDROID_ABI} = 'arm-v7' ]; then
-        MASON_ANDROID_TOOLCHAIN="arm-linux-androideabi"
-        MASON_ANDROID_CROSS_COMPILER="arm-linux-androideabi-4.9"
-        export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
-
-        export CFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -Wl,--fix-cortex-a8 -Wl,--no-warn-mismatch -lm_hard ${LDFLAGS}"
-
-        export JNIDIR="armeabi-v7a"
-        MASON_ANDROID_ARCH="arm"
-        MASON_ANDROID_PLATFORM="9"
-
-    elif [ ${MASON_ANDROID_ABI} = 'arm-v5' ]; then
-        MASON_ANDROID_TOOLCHAIN="arm-linux-androideabi"
-        MASON_ANDROID_CROSS_COMPILER="arm-linux-androideabi-4.9"
-        export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
-
-        export CFLAGS="-target armv5te-none-linux-androideabi -march=armv5te -mtune=xscale -msoft-float -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target armv5te-none-linux-androideabi -march=armv5te ${LDFLAGS}"
-
-        export JNIDIR="armeabi"
-        MASON_ANDROID_ARCH="arm"
-        MASON_ANDROID_PLATFORM="9"
-
-    elif [ ${MASON_ANDROID_ABI} = 'x86' ]; then
-        MASON_ANDROID_TOOLCHAIN="i686-linux-android"
-        MASON_ANDROID_CROSS_COMPILER="x86-4.9"
-        export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
-
-        export CFLAGS="-target i686-none-linux-android -march=i686 -msse3 -mfpmath=sse ${CFLAGS}"
-        export LDFLAGS="-target i686-none-linux-android -march=i686 ${LDFLAGS}"
-
-        export JNIDIR="x86"
-        MASON_ANDROID_ARCH="x86"
-        MASON_ANDROID_PLATFORM="9"
-
-    elif [ ${MASON_ANDROID_ABI} = 'x86-64' ]; then
-        MASON_ANDROID_TOOLCHAIN="x86_64-linux-android"
-        MASON_ANDROID_CROSS_COMPILER="x86_64-4.9"
-        export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
-
-        export JNIDIR="x86_64"
-        export CFLAGS="-target x86_64-none-linux-android -march=x86-64 -msse4.2 -mpopcnt -m64 -mtune=intel ${CFLAGS}"
-        export LDFLAGS="-target x86_64-none-linux-android -march=x86-64 ${LDFLAGS}"
-
-        MASON_ANDROID_ARCH="x86_64"
-        MASON_ANDROID_PLATFORM="21"
-
-    elif [ ${MASON_ANDROID_ABI} = 'mips' ]; then
-        MASON_ANDROID_TOOLCHAIN="mipsel-linux-android"
-        MASON_ANDROID_CROSS_COMPILER="mipsel-linux-android-4.9"
-        export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
-
-        export CFLAGS="-target mipsel-none-linux-android ${CFLAGS}"
-        export LDFLAGS="-target mipsel-none-linux-android ${LDFLAGS}"
-
-        export JNIDIR="mips"
-        MASON_ANDROID_ARCH="mips"
-        MASON_ANDROID_PLATFORM="9"
-
-    elif [ ${MASON_ANDROID_ABI} = 'mips-64' ]; then
-        MASON_ANDROID_TOOLCHAIN="mips64el-linux-android"
-        MASON_ANDROID_CROSS_COMPILER="mips64el-linux-android-4.9"
-        export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
-
-        export CFLAGS="-target mips64el-none-linux-android ${CFLAGS}"
-        export LDFLAGS="-target mips64el-none-linux-android ${LDFLAGS}"
-
-        export JNIDIR="mips64"
-        MASON_ANDROID_ARCH="mips64"
-        MASON_ANDROID_PLATFORM="21"
-    fi
-
-    export CXXFLAGS="${CFLAGS} -std=c++11"
-
-    export MASON_DYNLIB_SUFFIX="so"
-    export MASON_PLATFORM_VERSION="${MASON_ANDROID_ABI}-${MASON_ANDROID_PLATFORM}"
-    MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
-
-    # Installs the native SDK
-    MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r10d
-    MASON_SDK_ROOT=$(MASON_PLATFORM= mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
-    if [ ! -d ${MASON_SDK_ROOT} ] ; then
-        MASON_PLATFORM= mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}
-    fi
-    MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
-    export PATH=${MASON_SDK_ROOT}/bin:${PATH}
-
-    export CXX="${MASON_ANDROID_TOOLCHAIN}-clang++"
-    export CC="${MASON_ANDROID_TOOLCHAIN}-clang"
-    export LD="${MASON_ANDROID_TOOLCHAIN}-ld"
-    export AR="${MASON_ANDROID_TOOLCHAIN}-ar"
-    export RANLIB="${MASON_ANDROID_TOOLCHAIN}-ranlib"
-    export STRIP="${MASON_ANDROID_TOOLCHAIN}-strip"
-fi
-
-
-# Variable defaults
-MASON_HOST_ARG=${MASON_HOST_ARG:-}
-MASON_PLATFORM_VERSION=${MASON_PLATFORM_VERSION:-0}
-MASON_NAME=${MASON_NAME:-nopackage}
-MASON_VERSION=${MASON_VERSION:-noversion}
-MASON_HEADER_ONLY=${MASON_HEADER_ONLY:-false}
-MASON_SLUG=${MASON_NAME}-${MASON_VERSION}
-if [[ ${MASON_HEADER_ONLY} == true ]]; then
-    MASON_PLATFORM_ID=headers
-else
-    MASON_PLATFORM_ID=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}
-fi
-MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}
-MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}.tar.gz
-MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
-
-
+mason_set_defaults
 
 
 function mason_check_existing {
     # skip installing if it already exists
+    version=$(mason_version)
     if [ ${MASON_HEADER_ONLY:-false} = true ] ; then
-        if [ -d "${MASON_PREFIX}" ] ; then
+        if [[ -d "${MASON_PREFIX}" && $(mason_version) == $MASON_VERSION ]] ; then
             mason_success "Already installed at ${MASON_PREFIX}"
             exit 0
         fi
     elif [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
-        if [ -f "${MASON_PREFIX}/version" ] ; then
+        if [[ -f "${MASON_PREFIX}/version" && $(mason_version) == $MASON_VERSION ]] ; then
             mason_success "Using system-provided ${MASON_NAME} $(mason_system_version)"
             exit 0
         fi
     else
-        if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
+        if [[ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" && $(mason_version) == $MASON_VERSION ]] ; then
             mason_success "Already installed at ${MASON_PREFIX}"
             exit 0
         fi
@@ -463,7 +474,7 @@ function mason_try_binary {
         fi
 
         mason_success "Installed binary package at ${MASON_PREFIX}"
-        exit 0
+        if [ ! -e "${MASON_INSTALL_CONFIG}" ]; then exit 0; else return true; fi
     fi
 }
 
@@ -550,7 +561,29 @@ function mason_publish {
 
 function mason_run {
     if [ "$1" == "install" ]; then
-        if [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+        if [[ "${MASON_INSTALL_CONFIG}" != "noinstallconfig" && "${MASON_NAME}" == "nopackage" ]]; then
+            ( (echo "import json; import sys;" ;
+               echo "config = json.loads(open('$MASON_INSTALL_CONFIG').read());" ;
+               echo "for key in config: sys.stdout.write(key + ' ' + config[key] + '\n');") | python ) |
+                while read -r line; do
+                    MASON_NAME=$(echo $line | awk '{print $1}')
+                    MASON_VERSION=$(echo $line | awk '{print $2}')
+                    mason_set_sys
+                    mason_set_defaults
+                    mason_load_install_script
+                    mason_check_existing
+                    mason_clear_existing
+                    if [ ${MASON_SYSTEM_PACKAGE:-false} = false ]; then
+                        MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}.tar.gz
+                        carryon=mason_try_binary
+                        if [[ ${carryon:-false} == true ]]; then mason_build; fi
+                    else
+                        mason_build
+                        mason_success "Installed system-provided ${MASON_NAME} $(mason_system_version)"
+                    fi
+                done
+
+        elif [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
             mason_check_existing
             mason_clear_existing
             mason_build
@@ -588,4 +621,3 @@ function mason_run {
         exit 1
     fi
 }
-

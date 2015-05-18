@@ -149,7 +149,7 @@ function mason_compile {
     # fix paths to all deps to point to mason_packages/.link
     python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('$MASON_ROOT','./mason_packages'))"
     # add static libpq.a
-    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('CONFIG_DEP_LIBS=\"','CONFIG_DEP_LIBS=\"./mason_packages/.link/lib/libpq.a'))"
+    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('CONFIG_DEP_LIBS=\"','CONFIG_DEP_LIBS=\"-lpq'))"
     cat $MASON_PREFIX/bin/gdal-config
 }
 

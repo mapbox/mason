@@ -11,7 +11,7 @@ env:
     - TEST="unit"
     - TEST="c_install"
     - TEST="c_build"
-    - TEST="c_build_symlink_includes"
+    - TEST="c_install_symlink_includes"
     - TEST="cpp11_header_install"
     - TEST="cpp11_install"
     - TEST="cpp11_build"

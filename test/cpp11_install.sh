@@ -18,3 +18,5 @@ if [[ ! -L mason_packages/.link/lib/libboost_regex.a ]]; then
     echo "lib/libboost_regex.a is not a symlink like expected"
     failure=1
 fi
+
+exit $failure

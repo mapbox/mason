@@ -35,4 +35,6 @@ if [[ -L mason_packages/.link/include/google ]]; then
     failure=1
 fi
 
+exit $failure
+
 

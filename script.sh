@@ -60,6 +60,7 @@ function mason_compile {
     cd gdal/
     CUSTOM_LIBS="-L${LINK_DIR}/lib -ltiff -ljpeg -lproj -lpng -lexpat"
     CUSTOM_CFLAGS="${CFLAGS} -I${LINK_DIR}/include -I${LINK_DIR}/include/libpng16"
+    CUSTOM_CXXFLAGS="${CUSTOM_CFLAGS}"
 
     # very custom handling for libpq/postgres support
     # forcing our portable static library to be used
@@ -89,7 +90,11 @@ function mason_compile {
     # note: it might be tempting to build with --without-libtool
     # but I find that will only lead to a shared libgdal.so and will
     # not produce a static library even if --enable-static is passed
-    LIBS="${CUSTOM_LIBS}" LDFLAGS="${CUSTOM_LDFLAGS}" CFLAGS="${CUSTOM_CFLAGS}" ./configure \
+    LIBS="${CUSTOM_LIBS}" \
+    LDFLAGS="${CUSTOM_LDFLAGS}" \
+    CFLAGS="${CUSTOM_CFLAGS}" \
+    CXXFLAGS="${CUSTOM_CXXFLAGS}" \
+    ./configure \
         --enable-static --disable-shared \
         ${MASON_HOST_ARG} \
         --prefix=${MASON_PREFIX} \

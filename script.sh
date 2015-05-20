@@ -1,25 +1,26 @@
 #!/usr/bin/env bash
 
 MASON_NAME=mapnik
-MASON_VERSION=latest
+MASON_VERSION=3.0.0-rc2
 MASON_LIB_FILE=lib/libmapnik-wkt.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-3.x
-    if [[ ! -d ${MASON_BUILD_PATH} ]]; then
-        git clone --depth 1 https://github.com/mapnik/mapnik.git ${MASON_BUILD_PATH}
-    else
-        (cd ${MASON_BUILD_PATH} && git pull)
-    fi
+    mason_download \
+        https://github.com/mapnik/mapnik/archive/v${MASON_VERSION}.tar.gz \
+        6ce52501e0be70b15cd062efeca8fa57faf84a16
+
+    mason_extract_tar_gz
+
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-${MASON_VERSION}
 }
 
 function mason_compile {
     echo $(pwd)
     source bootstrap.sh
     cat config.py
-    ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX} PATH_REPLACE='' RUNTIME_LINK='static'
+    ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX} PATH_REPLACE='' MAPNIK_BUNDLED_SHARE_DIRECTORY=True
     cat ${MASON_BUILD_PATH}"/config.log"
     cat config.py
     echo $(pwd)

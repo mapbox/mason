@@ -9,7 +9,7 @@ MASON_LIB_FILE=lib/libmapnik-wkt.a
 function mason_load_source {
     mason_download \
         https://github.com/mapnik/mapnik/archive/v${MASON_VERSION}.tar.gz \
-        6ce52501e0be70b15cd062efeca8fa57faf84a16
+        bd852ee3f7348ead66e6a6d78741f323365a49f0
 
     mason_extract_tar_gz
 

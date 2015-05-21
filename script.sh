@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=android-ndk
-MASON_VERSION=mips64-21-r10d
+MASON_VERSION=mips64-21-r10e
 MASON_LIB_FILE=
 
 . ${MASON_DIR:-~/.mason}/mason.sh
@@ -9,19 +9,19 @@ MASON_LIB_FILE=
 function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then
         mason_download \
-            http://dl.google.com/android/ndk/android-ndk-r10d-darwin-x86_64.bin \
-            8d65e748dda9741822a300e13b12960aa82ca58d
+            http://dl.google.com/android/ndk/android-ndk-r10e-darwin-x86_64.bin \
+            dea2dd3939eea3289cab075804abb153014b78d3
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         mason_download \
-            http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin \
-            95e64c8cf21d10a0a92abdafbee0df7808b063a1
+            http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin \
+            285606ba6882d27d99ed469fc5533cc3c93967f5
     fi
 
     mason_setup_build_dir
     chmod +x ../.cache/${MASON_SLUG}
     ../.cache/${MASON_SLUG} > /dev/null
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/android-ndk-r10d
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/android-ndk-r10e
 }
 
 function mason_compile {

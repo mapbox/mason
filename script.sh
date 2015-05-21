@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MASON_NAME=stxxl
+MASON_NAME=stxxl_shared
 MASON_VERSION=1.4.1
 MASON_LIB_FILE=lib/libstxxl.${MASON_DYNLIB_SUFFIX}
 

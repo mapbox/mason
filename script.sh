@@ -20,7 +20,7 @@ function mason_compile {
     echo $(pwd)
     source bootstrap.sh
     cat config.py
-    ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX} PATH_REPLACE='' MAPNIK_BUNDLED_SHARE_DIRECTORY=True
+    ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX} PATH_REPLACE='' MAPNIK_BUNDLED_SHARE_DIRECTORY=True || true
     cat ${MASON_BUILD_PATH}"/config.log"
     cat config.py
     echo $(pwd)

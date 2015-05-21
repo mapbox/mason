@@ -95,8 +95,8 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
 elif [ ${MASON_PLATFORM} = 'android' ]; then
     export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
 
-    CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector -no-canonical-prefixes -fno-integrated-as -O2 -g -DNDEBUG -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-functions -finline-limit=300 -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
-    LDFLAGS="-no-canonical-prefixes"
+    CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-integrated-as -O2 -g -DNDEBUG -fomit-frame-pointer -fstrict-aliasing -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
+    LDFLAGS="-no-canonical-prefixes -fuse-ld=gold"
     export CPPFLAGS="-D__ANDROID__"
 
     if [ ${MASON_ANDROID_ABI} = 'arm-v8' ]; then
@@ -104,8 +104,8 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         MASON_ANDROID_CROSS_COMPILER="aarch64-linux-android-4.9"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        export CFLAGS="-target aarch64-none-linux-android -mfix-cortex-a53-835769 -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target aarch64-none-linux-android -Wl,--fix-cortex-a53-835769 ${LDFLAGS}"
+        export CFLAGS="-target aarch64-none-linux-android -D_LITTLE_ENDIAN ${CFLAGS}"
+        export LDFLAGS="-target aarch64-none-linux-android ${LDFLAGS}"
 
         export JNIDIR="arm64-v8a"
         MASON_ANDROID_ARCH="arm64"
@@ -191,7 +191,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
 
     # Installs the native SDK
-    MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r10d
+    MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r10e
     MASON_SDK_ROOT=$(MASON_PLATFORM= mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
     if [ ! -d ${MASON_SDK_ROOT} ] ; then
         MASON_PLATFORM= mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}
@@ -588,4 +588,3 @@ function mason_run {
         exit 1
     fi
 }
-

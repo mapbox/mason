@@ -30,7 +30,7 @@ function mason_compile {
 
     ${MASON_BUILD_PATH}/build/tools/make-standalone-toolchain.sh \
           --toolchain="x86_64-4.9" \
-          --llvm-version="3.5" \
+          --llvm-version="3.6" \
           --package-dir="${MASON_BUILD_PATH}/package-dir/" \
           --install-dir="${MASON_PREFIX}" \
           --stl="libcxx" \

@@ -96,7 +96,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
 
     CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-integrated-as -O2 -g -DNDEBUG -fomit-frame-pointer -fstrict-aliasing -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
-    LDFLAGS="-no-canonical-prefixes -fuse-ld=gold"
+    LDFLAGS="-no-canonical-prefixes"
     export CPPFLAGS="-D__ANDROID__"
 
     if [ ${MASON_ANDROID_ABI} = 'arm-v8' ]; then
@@ -105,7 +105,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
         export CFLAGS="-target aarch64-none-linux-android -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target aarch64-none-linux-android ${LDFLAGS}"
+        export LDFLAGS="-target aarch64-none-linux-android -fuse-ld=gold ${LDFLAGS}"
 
         export JNIDIR="arm64-v8a"
         MASON_ANDROID_ARCH="arm64"
@@ -117,7 +117,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
         export CFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -Wl,--fix-cortex-a8 -Wl,--no-warn-mismatch -lm_hard ${LDFLAGS}"
+        export LDFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -Wl,--fix-cortex-a8 -Wl,--no-warn-mismatch -lm_hard  -fuse-ld=gold ${LDFLAGS}"
 
         export JNIDIR="armeabi-v7a"
         MASON_ANDROID_ARCH="arm"
@@ -129,7 +129,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
         export CFLAGS="-target armv5te-none-linux-androideabi -march=armv5te -mtune=xscale -msoft-float -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target armv5te-none-linux-androideabi -march=armv5te ${LDFLAGS}"
+        export LDFLAGS="-target armv5te-none-linux-androideabi -march=armv5te -fuse-ld=gold ${LDFLAGS}"
 
         export JNIDIR="armeabi"
         MASON_ANDROID_ARCH="arm"
@@ -141,7 +141,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
         export CFLAGS="-target i686-none-linux-android -march=i686 -msse3 -mfpmath=sse ${CFLAGS}"
-        export LDFLAGS="-target i686-none-linux-android -march=i686 ${LDFLAGS}"
+        export LDFLAGS="-target i686-none-linux-android -march=i686 -fuse-ld=gold ${LDFLAGS}"
 
         export JNIDIR="x86"
         MASON_ANDROID_ARCH="x86"
@@ -154,7 +154,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
         export JNIDIR="x86_64"
         export CFLAGS="-target x86_64-none-linux-android -march=x86-64 -msse4.2 -mpopcnt -m64 -mtune=intel ${CFLAGS}"
-        export LDFLAGS="-target x86_64-none-linux-android -march=x86-64 ${LDFLAGS}"
+        export LDFLAGS="-target x86_64-none-linux-android -march=x86-64 -fuse-ld=gold ${LDFLAGS}"
 
         MASON_ANDROID_ARCH="x86_64"
         MASON_ANDROID_PLATFORM="21"

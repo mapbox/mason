@@ -20,8 +20,8 @@ function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
     ${MASON_DIR:-~/.mason}/mason install libpng 1.6.16
     MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.16)
-    ${MASON_DIR:-~/.mason}/mason install freetype 2.5.4
-    MASON_FREETYPE=$(${MASON_DIR:-~/.mason}/mason prefix freetype 2.5.4)
+    ${MASON_DIR:-~/.mason}/mason install freetype 2.5.5
+    MASON_FREETYPE=$(${MASON_DIR:-~/.mason}/mason prefix freetype 2.5.5)
     ${MASON_DIR:-~/.mason}/mason install pixman 0.32.6
     MASON_PIXMAN=$(${MASON_DIR:-~/.mason}/mason prefix pixman 0.32.6)
     # set up to fix libtool .la files

@@ -184,7 +184,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         MASON_ANDROID_PLATFORM="21"
     fi
 
-    export CXXFLAGS="${CFLAGS} -std=c++11"
+    export CXXFLAGS="${CFLAGS}"
 
     export MASON_DYNLIB_SUFFIX="so"
     export MASON_PLATFORM_VERSION="${MASON_ANDROID_ABI}-${MASON_ANDROID_PLATFORM}"

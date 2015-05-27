@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 MASON_NAME=mapnik
-MASON_VERSION=3.0.0-rc2
+MASON_VERSION=3.0.0-rc3
 MASON_LIB_FILE=lib/libmapnik-wkt.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \
-        https://github.com/mapnik/mapnik/archive/v${MASON_VERSION}.tar.gz \
-        bd852ee3f7348ead66e6a6d78741f323365a49f0
+        https://s3.amazonaws.com/mapnik/dist/v${MASON_VERSION}/mapnik-v{$MASON_VERSION}.tar.bz2 \
+        d6bf086cccc213db4e1196293f69869235af9008
 
-    mason_extract_tar_gz
+    mason_extract_tar_bz2
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-${MASON_VERSION}
 }

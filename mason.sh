@@ -116,8 +116,8 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         MASON_ANDROID_CROSS_COMPILER="arm-linux-androideabi-4.9"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        export CFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -Wl,--fix-cortex-a8 -Wl,--no-warn-mismatch -lm_hard  -fuse-ld=gold ${LDFLAGS}"
+        export CFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=softfp -D_LITTLE_ENDIAN ${CFLAGS}"
+        export LDFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -Wl,--fix-cortex-a8 -fuse-ld=gold ${LDFLAGS}"
 
         export JNIDIR="armeabi-v7a"
         MASON_ANDROID_ARCH="arm"

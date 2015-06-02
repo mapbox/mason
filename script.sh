@@ -19,6 +19,7 @@ function mason_load_source {
 function mason_compile {
     mkdir -p build-dir
     cd build-dir
+    cat ../CMakeLists.txt | sed -e '/find_package.Sqlite3/ s/^/#/' > ../CMakeLists.txt.new && cp ../CMakeLists.txt.new ../CMakeLists.txt
     cmake .. -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX}
     make
     make install

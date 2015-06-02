@@ -67,7 +67,8 @@ function check_file_links() {
                 fi
             elif [[ ${MASON_PLATFORM} == 'android' ]]; then
                 MASON_ANDROID_ABI=$(${MASON_DIR:-~/.mason}/mason env MASON_ANDROID_ABI)
-                expected_keyword=".android-platform/${MASON_ANDROID_ABI}"
+                MASON_NDK_PACKAGE_VERSION=$(${MASON_DIR:-~/.mason}/mason env MASON_NDK_PACKAGE_VERSION)
+                expected_keyword="android-ndk/${MASON_NDK_PACKAGE_VERSION}"
             fi
             if [[ "$resolved" =~ "${expected_keyword}" ]]; then
                 echo "ok: '${expected_keyword}' found in path $resolved"
@@ -132,4 +133,3 @@ if [[ $MASON_PLATFORM != 'ios' ]]; then
 fi
 
 exit ${CODE}
-

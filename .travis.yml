@@ -15,6 +15,7 @@ env:
     - TEST="cpp11_header_install"
     - TEST="cpp11_install"
     - TEST="cpp11_build"
+    - TEST="c_build_android"
 
 install:
 # NOTE: must be absolute path for predictable behavior

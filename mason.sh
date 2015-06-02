@@ -191,7 +191,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
 
     # Installs the native SDK
-    MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r10e
+    export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r10e
     MASON_SDK_ROOT=$(MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
     if [ ! -d ${MASON_SDK_ROOT} ] ; then
         MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}

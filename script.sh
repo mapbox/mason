@@ -44,7 +44,7 @@ function mason_ldflags {
 }
 
 function mason_static_libs {
-    echo ${MASON_PREFIX}/lib/gtest.a
+    echo ${MASON_PREFIX}/lib/libgtest.a
 }
 
 

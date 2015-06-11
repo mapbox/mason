@@ -40,7 +40,7 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    echo -pthread
+    echo -lpthread
 }
 
 function mason_static_libs {

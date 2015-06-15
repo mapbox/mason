@@ -2,14 +2,14 @@
 
 MASON_NAME=geojsonvt
 MASON_VERSION=1.1.0
-MASON_LIB_FILE=lib/libgtest.a
+MASON_LIB_FILE=lib/libgeojsonvt.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/geojson-vt-cpp/archive/v1.1.0.tar.gz \
-        8d81b78e7fca0bcbd4b34ddbfbd421773f83dc00
+        9b7caa80331b09258d9cd9b31d2e12de74565592
 
     mason_extract_tar_gz
 
@@ -22,13 +22,8 @@ function mason_compile {
     ln -s ${MASON_DIR:-~/.mason} .mason
 
     # build
-    ./configure
-    make -j${MASON_CONCURRENCY}
-
-    # install
-    mkdir -p ${MASON_PREFIX}/lib
-    cp -v build/Release/libgeojsonvt.a ${MASON_PREFIX}/lib
-    cp -vr include ${MASON_PREFIX}
+    INSTALL_PREFIX=${MASON_PREFIX} ./configure
+    CXXFLAGS="-fPIC ${CFLAGS:-} ${CXXFLAGS:-}" make install
 }
 
 function mason_cflags {

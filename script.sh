@@ -18,8 +18,9 @@ function mason_load_source {
 function mason_compile {
     echo $(pwd)
     source bootstrap.sh
+    echo "CUSTOM_LDFLAGS = '-Wl,-z,origin -Wl,-rpath=\\\$\$ORIGIN'" >> config.py
     cat config.py
-    ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX} PATH_REPLACE='' MAPNIK_BUNDLED_SHARE_DIRECTORY=True RUNTIME_LINK='static'
+    ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX}
     cat ${MASON_BUILD_PATH}"/config.log"
     cat config.py
     echo $(pwd)

@@ -74,16 +74,6 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_ISIM_CFLAGS="-miphoneos-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
 
 elif [ ${MASON_PLATFORM} = 'linux' ]; then
-    for i in /etc/*-release ; do test -f $i && . $i ; done
-    MASON_PLATFORM_DISTRIBUTION=`echo ${ID:-${DISTRIB_ID}} | tr '[:upper:]' '[:lower:]'`
-    if [ -z "${MASON_PLATFORM_DISTRIBUTION}" ]; then
-        mason_error "Cannot determine distribution name"
-    fi
-
-    MASON_PLATFORM_DISTRIBUTION_VERSION=${DISTRIB_RELEASE:-${VERSION_ID}}
-    if [ -z "${MASON_PLATFORM_DISTRIBUTION_VERSION}" ]; then
-        mason_error "Cannot determine distribution version"
-    fi
 
     export MASON_DYNLIB_SUFFIX="so"
     export MASON_PLATFORM_VERSION=`uname -m`

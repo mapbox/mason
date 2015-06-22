@@ -78,13 +78,11 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     MASON_PLATFORM_DISTRIBUTION=`echo ${ID:-${DISTRIB_ID}} | tr '[:upper:]' '[:lower:]'`
     if [ -z "${MASON_PLATFORM_DISTRIBUTION}" ]; then
         mason_error "Cannot determine distribution name"
-        exit 1
     fi
 
     MASON_PLATFORM_DISTRIBUTION_VERSION=${DISTRIB_RELEASE:-${VERSION_ID}}
     if [ -z "${MASON_PLATFORM_DISTRIBUTION_VERSION}" ]; then
         mason_error "Cannot determine distribution version"
-        exit 1
     fi
 
     export MASON_DYNLIB_SUFFIX="so"

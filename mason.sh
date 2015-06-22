@@ -308,7 +308,7 @@ function mason_clean {
 function link_files_in_root {
     if [[ -d "${MASON_PREFIX}/$1/" ]] ; then
         for i in $(find -H ${MASON_PREFIX}/$1/ -maxdepth 1 -mindepth 1 -name "*" ! -type d -print); do
-            common_part=$(python -c "import os;print os.path.relpath('$i','${MASON_PREFIX}')")
+            common_part=$(python -c "import os;print(os.path.relpath('$i','${MASON_PREFIX}'))")
             if [[ $common_part != '.' ]] && [[ ! -e "${MASON_ROOT}/.link/$common_part" ]]; then
                 mason_step "linking ${MASON_ROOT}/.link/$common_part"
                 mkdir -p $(dirname ${MASON_ROOT}/.link/$common_part)
@@ -323,7 +323,7 @@ function link_files_in_root {
 function link_files_recursively {
     if [[ -d "${MASON_PREFIX}/$1/" ]] ; then
         for i in $(find -H ${MASON_PREFIX}/$1/ -name "*" ! -type d -print); do
-            common_part=$(python -c "import os;print os.path.relpath('$i','${MASON_PREFIX}')")
+            common_part=$(python -c "import os;print(os.path.relpath('$i','${MASON_PREFIX}'))")
             if [[ $common_part != '.' ]] && [[ ! -e "${MASON_ROOT}/.link/$common_part" ]]; then
                 mason_step "linking ${MASON_ROOT}/.link/$common_part"
                 mkdir -p $(dirname ${MASON_ROOT}/.link/$common_part)

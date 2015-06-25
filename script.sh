@@ -7,9 +7,9 @@ MASON_LIB_FILE=lib/libgdal.a
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/gdal-2.x
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/gdal-2.0
     if [[ ! -d ${MASON_BUILD_PATH} ]]; then
-        git clone --depth 1 https://github.com/springmeyer/gdal.git -b build-fixes ${MASON_BUILD_PATH}
+        git clone --depth 1 https://github.com/OSGeo/gdal.git -b 2.0 ${MASON_BUILD_PATH}
     else
         (cd ${MASON_BUILD_PATH} && git pull)
     fi

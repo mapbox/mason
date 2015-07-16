@@ -76,9 +76,30 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
 elif [ ${MASON_PLATFORM} = 'linux' ]; then
 
     export MASON_DYNLIB_SUFFIX="so"
-    export MASON_PLATFORM_VERSION=`uname -m`
+
+    # Assume current system is the target platform
+    if [ -z ${MASON_PLATFORM_VERSION} ] ; then
+        export MASON_PLATFORM_VERSION=`uname -m`
+    fi
+
     export CFLAGS="-fPIC"
     export CXXFLAGS="${CFLAGS} -std=c++11"
+
+    if [ `uname -m` != ${MASON_PLATFORM_VERSION} ] ; then
+        # Install the cross compiler
+        MASON_XC_PACKAGE_NAME=gcc
+        MASON_XC_PACKAGE_VERSION=${MASON_XC_GCC_VERSION:-4.9.2}-${MASON_PLATFORM_VERSION}
+        MASON_XC_PACKAGE=${MASON_XC_PACKAGE_NAME}-${MASON_XC_PACKAGE_VERSION}
+        MASON_XC_ROOT=$(MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason prefix ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
+        if [ ! -d ${MASON_XC_ROOT} ] ; then
+            MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason install ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION}
+        fi
+
+        # Load toolchain specific variables
+        if [ -f ${MASON_XC_ROOT}/toolchain.sh ] ; then
+            source ${MASON_XC_ROOT}/toolchain.sh
+        fi
+    fi
 
 elif [ ${MASON_PLATFORM} = 'android' ]; then
     export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}

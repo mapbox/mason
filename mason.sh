@@ -502,12 +502,7 @@ function mason_static_libs {
 }
 
 function mason_prefix {
-    if [ ${MASON_SYSTEM_PACKAGE:-false} = true ] || [ -z ${MASON_LIB_FILE:-} ] || [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
-        echo ${MASON_PREFIX}
-    else
-        mason_error "Cannot find required library file '${MASON_PREFIX}/${MASON_LIB_FILE}'"
-        exit 1
-    fi
+    echo ${MASON_PREFIX}
 }
 
 function mason_version {

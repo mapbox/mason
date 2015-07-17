@@ -7,6 +7,9 @@ matrix:
       compiler: clang
     - os: linux
       compiler: clang
+      addons:
+        apt:
+          packages: [ 'cmake' ]
     - os: linux
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=arm-v5
     - os: linux

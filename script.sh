@@ -16,19 +16,7 @@ for LIB in ${QT_LIBS} ; do
 done
 
 function mason_system_version {
-    mkdir -p "${MASON_PREFIX}"
-    cd "${MASON_PREFIX}"
-    if [ ! -f version ]; then
-        echo "#include <QtGlobal>
-#include <cstdio>
-
-int main() {
-    printf(\"%s\", QT_VERSION_STR);
-    return 0;
-}
-" > version.cpp && ${CXX:-c++} -x c++ ${CXXFLAGS} $(mason_cflags) $(mason_ldflags) version.cpp -o version
-    fi
-    ./version
+    pkg-config QtCore --modversion
 }
 
 function mason_build {

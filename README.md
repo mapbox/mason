@@ -36,7 +36,7 @@ Mason is unlike all of the above package managers because:
 You need to install Mason to your user directory into `~/.mason`.
 
 ```bash
-git clone https://github.com/mapbox/mason.git ~/.mason
+git clone -b master --single-branch https://github.com/mapbox/mason.git ~/.mason
 sudo ln -s ~/.mason/mason /usr/local/bin/mason
 ```
 

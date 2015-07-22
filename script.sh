@@ -23,8 +23,8 @@ else
         fi
         MASON_LDFLAGS="${MASON_LDFLAGS} -lz"
     else
-        ZLIB_INCLUDE_PREFIX="`pkg-config zlib --variable=includedir`"
-        ZLIB_LIBRARY="`pkg-config zlib --variable=libdir`/libz.${MASON_DYNLIB_SUFFIX}"
+        ZLIB_INCLUDE_PREFIX="${MASON_SDK_PATH}`pkg-config zlib --variable=includedir`"
+        ZLIB_LIBRARY="${MASON_SDK_PATH}`pkg-config zlib --variable=libdir`/libz.${MASON_DYNLIB_SUFFIX}"
         MASON_CFLAGS="${MASON_CFLAGS} `pkg-config zlib --cflags-only-other`"
         MASON_LDFLAGS="${MASON_LDFLAGS} `pkg-config zlib --libs-only-other --libs-only-l`"
     fi

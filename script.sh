@@ -16,6 +16,10 @@ else
 fi
 
 function mason_system_version {
+    # Use host compiler to produce a binary that can run on the host
+    HOST_CXX=`MASON_PLATFORM= mason env CXX`
+    HOST_CFLAGS=`MASON_PLATFORM= mason env CFLAGS`
+
     mkdir -p "${MASON_PREFIX}"
     cd "${MASON_PREFIX}"
     if [ ! -f version ]; then
@@ -25,7 +29,7 @@ int main() {
     printf(\"%d.%d.%d\", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
     return 0;
 }
-" > version.cpp && ${CXX:-cc} version.cpp $(mason_cflags) $(mason_ldflags) -o version
+" > version.cpp && ${HOST_CXX} ${HOST_CFLAGS} version.cpp $(mason_cflags) -o version
     fi
     ./version
 }

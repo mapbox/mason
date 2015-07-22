@@ -451,9 +451,16 @@ function mason_try_binary {
         mason_step "Updating binary package ${MASON_BINARIES}..."
         curl --retry 3 ${MASON_CURL_ARGS} -f -L -z "${MASON_BINARIES_PATH}" \
             https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
-            -o "${MASON_BINARIES_PATH}.tmp" && \
-            mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}" || \
+            -o "${MASON_BINARIES_PATH}.tmp"
+        if [ $? -eq 0 ] ; then
+            if [ -f "${MASON_BINARIES_PATH}.tmp" ]; then
+                mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}"
+            else
+                mason_step "Binary package is still up to date"
+            fi
+        else
             mason_step "Binary not available yet for ${MASON_BINARIES}"
+        fi
     fi
 
     # unzip the file if it exists

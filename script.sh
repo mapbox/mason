@@ -14,6 +14,7 @@ fi
 function mason_system_version {
     # Use host compiler to produce a binary that can run on the host
     HOST_CC=`MASON_PLATFORM= mason env CC`
+    HOST_CFLAGS=`MASON_PLATFORM= mason env CFLAGS`
 
     mkdir -p "${MASON_PREFIX}"
     cd "${MASON_PREFIX}"
@@ -25,7 +26,7 @@ int main() {
     printf(\"%s\", PNG_LIBPNG_VER_STRING);
     return 0;
 }
-" > version.c && ${HOST_CC} version.c $(mason_cflags) -o version
+" > version.c && ${HOST_CC} ${HOST_CFLAGS} version.c $(mason_cflags) -o version
     fi
     ./version
 }

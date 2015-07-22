@@ -28,7 +28,7 @@ int main() {
     ./version
 }
 
-function mason_compile {
+function mason_build {
     :
 }
 

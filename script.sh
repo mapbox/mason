@@ -12,18 +12,20 @@ if [ ! $(pkg-config libpng --exists; echo $?) = 0 ]; then
 fi
 
 function mason_system_version {
+    # Use host compiler to produce a binary that can run on the host
+    HOST_CC=`MASON_PLATFORM= mason env CC`
+
     mkdir -p "${MASON_PREFIX}"
     cd "${MASON_PREFIX}"
     if [ ! -f version ]; then
-        echo "#include <png.h>
+        echo "#define PNG_VERSION_INFO_ONLY
+#include <png.h>
 #include <stdio.h>
-#include <assert.h>
 int main() {
-    assert(PNG_LIBPNG_VER == png_access_version_number());
     printf(\"%s\", PNG_LIBPNG_VER_STRING);
     return 0;
 }
-" > version.c && ${CC:-cc} version.c $(mason_cflags) $(mason_ldflags) -o version
+" > version.c && ${HOST_CC} version.c $(mason_cflags) -o version
     fi
     ./version
 }

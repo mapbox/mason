@@ -29,12 +29,12 @@ else
         MASON_LDFLAGS="${MASON_LDFLAGS} `pkg-config zlib --libs-only-other --libs-only-l`"
     fi
 
-    if [ ! -f "${ZLIB_INCLUDE_PREFIX}/zlib.h" ]; then
+    if [ ! -f "${ZLIB_INCLUDE_PREFIX}/zlib.h" -a ! -h  "${ZLIB_INCLUDE_PREFIX}/zlib.h" ]; then
         mason_error "Can't find header file ${ZLIB_INCLUDE_PREFIX}/zlib.h"
         exit 1
     fi
 
-    if [ ! -f "${ZLIB_LIBRARY}" ]; then
+    if [ ! -f "${ZLIB_LIBRARY}" -a ! -h "${ZLIB_LIBRARY}" ]; then
         mason_error "Can't find library file ${ZLIB_LIBRARY}"
         exit 1
     fi

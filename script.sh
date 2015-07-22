@@ -64,7 +64,7 @@ int main() {
 function mason_build {
     if [[ ${MASON_PLATFORM} != 'ios' ]]; then
         mkdir -p ${MASON_PREFIX}/{include,lib}
-        ln -sf ${ZLIB_INCLUDE_PREFIX}/{zlib,zconf}.h ${MASON_PREFIX}/include/
+        ln -sf ${ZLIB_INCLUDE_PREFIX}/z*.h ${MASON_PREFIX}/include/
         ln -sf ${ZLIB_LIBRARY} ${MASON_PREFIX}/lib/
     fi
     VERSION=$(mason_system_version)

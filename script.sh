@@ -18,7 +18,6 @@ function mason_load_source {
 function mason_compile {
     mkdir -p ${MASON_PREFIX}
     cp -a ${MASON_BUILD_PATH} ${MASON_PREFIX}
-    . ${MASON_PREFIX}/setup.sh
 }
 
 function mason_cflags {

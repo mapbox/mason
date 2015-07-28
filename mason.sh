@@ -63,6 +63,9 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneOS${MASON_PLATFORM_VERSION}.sdk"
     export MASON_IOS_CFLAGS="-miphoneos-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch armv7 -arch armv7s -arch arm64"
+    if [[ ${MASON_PLATFORM_VERSION%%.*} -ge 9 ]]; then
+        export MASON_IOS_CFLAGS="${MASON_IOS_CFLAGS} -fembed-bitcode"
+    fi
 
     if [ `xcrun --sdk iphonesimulator --show-sdk-version` != ${MASON_PLATFORM_VERSION} ]; then
         mason_error "iPhone Simulator SDK version doesn't match iPhone SDK version"

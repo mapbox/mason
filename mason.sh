@@ -93,9 +93,9 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
         MASON_XC_PACKAGE_NAME=gcc
         MASON_XC_PACKAGE_VERSION=${MASON_XC_GCC_VERSION:-4.9.2}-${MASON_PLATFORM_VERSION}
         MASON_XC_PACKAGE=${MASON_XC_PACKAGE_NAME}-${MASON_XC_PACKAGE_VERSION}
-        MASON_XC_ROOT=$(MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason prefix ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
+        MASON_XC_ROOT=$(MASON_PLATFORM_VERSION=`uname -m` MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason prefix ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
         if [ ! -d ${MASON_XC_ROOT} ] ; then
-            MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason install ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION}
+            MASON_PLATFORM=$(MASON_PLATFORM_VERSION=`uname -m` ${MASON_DIR:-~/.mason}/mason install ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
         fi
 
         # Load toolchain specific variables
@@ -473,7 +473,10 @@ function mason_try_binary {
     if [ -f "${MASON_BINARIES_PATH}" ] ; then
         mkdir -p "${MASON_PREFIX}"
         cd "${MASON_PREFIX}"
-        tar xzf "${MASON_BINARIES_PATH}"
+
+        # Try to force the ownership of the unpacked files
+        # to the current user using fakeroot if available
+        `which fakeroot` tar xzf "${MASON_BINARIES_PATH}"
 
         if [ ! -z ${MASON_PKGCONFIG_FILE:-} ] ; then
             if [ -f "${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}" ] ; then

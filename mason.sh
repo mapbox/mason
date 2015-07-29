@@ -473,7 +473,10 @@ function mason_try_binary {
     if [ -f "${MASON_BINARIES_PATH}" ] ; then
         mkdir -p "${MASON_PREFIX}"
         cd "${MASON_PREFIX}"
-        tar xzf "${MASON_BINARIES_PATH}"
+
+        # Try to force the ownership of the unpacked files
+        # to the current user using fakeroot if available
+        `which fakeroot` tar xzf "${MASON_BINARIES_PATH}"
 
         if [ ! -z ${MASON_PKGCONFIG_FILE:-} ] ; then
             if [ -f "${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}" ] ; then

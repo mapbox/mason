@@ -232,9 +232,6 @@ if [[ ${MASON_HEADER_ONLY} == true ]]; then
 else
     MASON_PLATFORM_ID=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}
 fi
-if [ ! -z ${MASON_PKGCONFIG_FILE} ]; then
-    PKG_CONFIG_SYSROOT_DIR=
-fi
 MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}
 MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}.tar.gz
 MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
@@ -499,11 +496,15 @@ function mason_pkgconfig {
 }
 
 function mason_cflags {
-    `mason_pkgconfig` --static --cflags
+    local FLAGS=$(`mason_pkgconfig` --static --cflags)
+    # Replace double-prefix in case we use a sysroot.
+    echo ${FLAGS//${MASON_SYSROOT}${MASON_PREFIX}/${MASON_PREFIX}}
 }
 
 function mason_ldflags {
-    `mason_pkgconfig` --static --libs
+    local FLAGS=$(`mason_pkgconfig` --static --libs)
+    # Replace double-prefix in case we use a sysroot.
+    echo ${FLAGS//${MASON_SYSROOT}${MASON_PREFIX}/${MASON_PREFIX}}
 }
 
 function mason_static_libs {

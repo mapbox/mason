@@ -23,7 +23,7 @@ function mason_compile {
     unzip -o ../proj-datumgrid-1.5.zip
     cd ../
     ./configure --prefix=${MASON_PREFIX} \
-    --without-mutex ${HOST_ARG} \
+    --without-mutex ${MASON_HOST_ARG} \
     --with-jni=no \
     --enable-static \
     --disable-shared \

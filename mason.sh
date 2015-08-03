@@ -531,6 +531,34 @@ function mason_version {
     fi
 }
 
+function mason_list_existing_package {
+    local PREFIX=$1
+    local RESULT=$(aws s3api head-object --bucket mason-binaries --key $PREFIX/$MASON_NAME/$MASON_VERSION.tar.gz 2>/dev/null)
+    if [ ! -z "${RESULT}" ]; then
+        printf "%-30s %6.1fM    %s\n" \
+            "${PREFIX}" \
+            "$(bc -l <<< "$(echo ${RESULT} | jq -r .ContentLength) / 1000000")" \
+            "$(echo ${RESULT} | jq -r .LastModified)"
+    else
+        printf "%-30s %s\n" "${PREFIX}" "<missing>"
+    fi
+}
+
+function mason_list_existing {
+    if [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+        mason_error "System packages don't have published packages."
+        exit 1
+    elif [ ${MASON_HEADER_ONLY:-false} = true ]; then
+        mason_list_existing_package headers
+    else
+        for PREFIX in $(jq -r .CommonPrefixes[].Prefix[0:-1] <<< "$(aws s3api list-objects --bucket=mason-binaries --delimiter=/)") ; do
+            if [ ${PREFIX} != "headers" -a ${PREFIX} != "prebuilt" ] ; then
+                mason_list_existing_package ${PREFIX}
+            fi
+        done
+    fi
+}
+
 function mason_publish {
     if [ ! ${MASON_HEADER_ONLY:-false} = true ] && [ ! -z ${MASON_LIB_FILE:-} ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
         mason_error "Required library file ${MASON_PREFIX}/${MASON_LIB_FILE} doesn't exist."
@@ -602,6 +630,8 @@ function mason_run {
         mason_version
     elif [ "$1" == "prefix" ]; then
         mason_prefix
+    elif [ "$1" == "existing" ]; then
+        mason_list_existing
     elif [ $1 ]; then
         mason_error "Unknown command '$1'"
         exit 1

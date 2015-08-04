@@ -63,7 +63,8 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
 
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneOS${MASON_PLATFORM_VERSION}.sdk"
-    export MASON_IOS_CFLAGS="-miphoneos-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch armv7 -arch armv7s -arch arm64"
+    MIN_SDK_VERSION_FLAG="-miphoneos-version-min=7.0"
+    export MASON_IOS_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH} -arch armv7 -arch armv7s -arch arm64"
     if [[ ${MASON_PLATFORM_VERSION%%.*} -ge 9 ]]; then
         export MASON_IOS_CFLAGS="${MASON_IOS_CFLAGS} -fembed-bitcode"
     fi
@@ -75,7 +76,7 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
 
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneSimulator.platform/Developer
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneSimulator${MASON_PLATFORM_VERSION}.sdk"
-    export MASON_ISIM_CFLAGS="-miphoneos-version-min=${MASON_PLATFORM_VERSION} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
+    export MASON_ISIM_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
 
 elif [ ${MASON_PLATFORM} = 'linux' ]; then
 

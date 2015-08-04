@@ -13,12 +13,12 @@ fi
 function mason_load_source {
     mkdir -p ${MASON_ROOT}
     echo ${MASON_ROOT}
-    export MASON_BUILD_PATH=${MASON_ROOT}/../toolchain/${MASON_PLATFORM}/
+    export MASON_BUILD_PATH=${MASON_ROOT}/../toolchain/${MASON_PLATFORM}
 }
 
 function mason_compile {
     mkdir -p ${MASON_PREFIX}
-    cp -a ${MASON_BUILD_PATH} ${MASON_PREFIX}
+    cp -av ${MASON_BUILD_PATH}/* ${MASON_PREFIX}/
 }
 
 function mason_cflags {

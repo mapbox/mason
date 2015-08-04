@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 if [ "$1" == "publish" ]; then
-    hdiutil detach ${MASON_PREFIX}/root
+    if [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
+        hdiutil detach ${MASON_PREFIX}/root
+    fi
+    MASON_LIB_FILE=
 elif [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
     URL=https://mason-binaries.s3.amazonaws.com/prebuilt/osx-x86_64/gcc-4.9.2-arm-v7.dmg
     FILE="${MASON_ROOT}/.cache/osx-x86_64-gcc-4.9.2-arm-v7.dmg"

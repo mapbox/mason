@@ -4,6 +4,7 @@ set -o pipefail
 
 MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
 MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
+MASON_DIR=${MASON_DIR:-~/.mason}
 
 MASON_UNAME=`uname -s`
 if [ ${MASON_UNAME} = 'Darwin' ]; then
@@ -93,10 +94,10 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
         MASON_XC_PACKAGE_NAME=gcc
         MASON_XC_PACKAGE_VERSION=${MASON_XC_GCC_VERSION:-4.9.2}-${MASON_PLATFORM_VERSION}
         MASON_XC_PACKAGE=${MASON_XC_PACKAGE_NAME}-${MASON_XC_PACKAGE_VERSION}
-        MASON_XC_ROOT=$(MASON_PLATFORM_VERSION=`uname -m` MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason prefix ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
+        MASON_XC_ROOT=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
         if [ ! -d ${MASON_XC_ROOT} ] ; then
-            MASON_PLATFORM=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR:-~/.mason}/mason install ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
-            MASON_XC_ROOT=`mason prefix ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION}`
+            MASON_PLATFORM=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason install ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
+            MASON_XC_ROOT=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
         fi
 
         # Load toolchain specific variables
@@ -205,9 +206,9 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
     # Installs the native SDK
     export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r10e
-    MASON_SDK_ROOT=$(MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
+    MASON_SDK_ROOT=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
     if [ ! -d ${MASON_SDK_ROOT} ] ; then
-        MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}
+        MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}
     fi
     MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
     export PATH=${MASON_SDK_ROOT}/bin:${PATH}

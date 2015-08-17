@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libmapnik-wkt.a
 
 function mason_load_source {
     mason_download \
-        https://s3.amazonaws.com/mapnik/dist/v${MASON_VERSION}/mapnik-v{$MASON_VERSION}.tar.bz2 \
+        https://s3.amazonaws.com/mapnik/dist/v${MASON_VERSION}/mapnik-v${MASON_VERSION}.tar.bz2 \
         24699baf01fa24c09bee472d6e2b3a543326a161
 
     mason_extract_tar_bz2
@@ -19,7 +19,9 @@ function mason_load_source {
 function mason_compile {
     echo $(pwd)
     source bootstrap.sh
-    echo "CUSTOM_LDFLAGS = '-Wl,-z,origin -Wl,-rpath=\\\$\$ORIGIN'" >> config.py
+    if [[ $(uname -s) = 'Linux' ]]; then
+        echo "CUSTOM_LDFLAGS = '-Wl,-z,origin -Wl,-rpath=\\\$\$ORIGIN'" >> config.py
+    fi
     cat config.py
     ./configure PREFIX=${MASON_PREFIX} PYTHON_PREFIX=${MASON_PREFIX}
     cat ${MASON_BUILD_PATH}"/config.log"

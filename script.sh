@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=android-ndk
-MASON_VERSION=arm64-21-r10e
+MASON_VERSION=arm64-21-r10e-gcc
 MASON_LIB_FILE=
 
 . ${MASON_DIR:-~/.mason}/mason.sh
@@ -30,10 +30,8 @@ function mason_compile {
 
     ${MASON_BUILD_PATH}/build/tools/make-standalone-toolchain.sh \
           --toolchain="aarch64-linux-android-4.9" \
-          --llvm-version="3.6" \
           --package-dir="${MASON_BUILD_PATH}/package-dir/" \
           --install-dir="${MASON_PREFIX}" \
-          --stl="libcxx" \
           --arch="arm64" \
           --platform="android-21"
 }

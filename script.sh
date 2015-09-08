@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 
 MASON_NAME=geojsonvt
-MASON_VERSION=1.1.0
+MASON_VERSION=2.1.6.1
 MASON_LIB_FILE=lib/libgeojsonvt.a
+MASON_CXX_PACKAGE=true
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \
-        https://github.com/mapbox/geojson-vt-cpp/archive/v1.1.0.tar.gz \
-        9b7caa80331b09258d9cd9b31d2e12de74565592
+        https://github.com/mapbox/geojson-vt-cpp/archive/v${MASON_VERSION}.tar.gz \
+        e17bb4265123a4da0756f85f37a64eb49973d153
 
     mason_extract_tar_gz
 

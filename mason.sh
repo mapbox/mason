@@ -40,8 +40,13 @@ esac
 
 if [ ${MASON_PLATFORM} = 'osx' ]; then
     export MASON_HOST_ARG="--host=x86_64-apple-darwin"
-    export MASON_DYNLIB_SUFFIX="dylib"
     export MASON_PLATFORM_VERSION=`xcrun --sdk macosx --show-sdk-version`
+
+    if [[  ${MASON_PLATFORM_VERSION%%.*} -ge 10 && ${MASON_PLATFORM_VERSION##*.} -ge 11 ]]; then
+        export MASON_DYNLIB_SUFFIX="tbd"
+    else
+        export MASON_DYNLIB_SUFFIX="dylib"
+    fi
 
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_PLATFORM_VERSION}.sdk"
@@ -58,7 +63,6 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
 
 elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_HOST_ARG="--host=arm-apple-darwin"
-    export MASON_DYNLIB_SUFFIX="dylib"
     export MASON_PLATFORM_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
 
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer
@@ -67,6 +71,9 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_IOS_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH} -arch armv7 -arch armv7s -arch arm64"
     if [[ ${MASON_PLATFORM_VERSION%%.*} -ge 9 ]]; then
         export MASON_IOS_CFLAGS="${MASON_IOS_CFLAGS} -fembed-bitcode"
+        export MASON_DYNLIB_SUFFIX="tbd"
+    else
+        export MASON_DYNLIB_SUFFIX="dylib"
     fi
 
     if [ `xcrun --sdk iphonesimulator --show-sdk-version` != ${MASON_PLATFORM_VERSION} ]; then

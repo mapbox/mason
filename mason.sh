@@ -38,6 +38,8 @@ case ${MASON_ROOT} in
     *\ * ) mason_error "Directory '${MASON_ROOT} contains spaces."; exit ;;
 esac
 
+export MASON_STDLIB_VERSION="-"`${CXX:-c++} ${MASON_DIR}/stdlib.cpp -o ${MASON_DIR}/stdlib.o && ${MASON_DIR}/stdlib.o`
+
 if [ ${MASON_PLATFORM} = 'osx' ]; then
     export MASON_HOST_ARG="--host=x86_64-apple-darwin"
     export MASON_PLATFORM_VERSION=`xcrun --sdk macosx --show-sdk-version`
@@ -86,7 +88,6 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_ISIM_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
 
 elif [ ${MASON_PLATFORM} = 'linux' ]; then
-
     export MASON_DYNLIB_SUFFIX="so"
 
     # Assume current system is the target platform
@@ -243,7 +244,12 @@ else
     MASON_PLATFORM_ID=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}
 fi
 MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}
-MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}.tar.gz
+MASON_BINARIES_PREFIX=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}
+if [[ ${MASON_CXX_PACKAGE} == true ]]; then
+    MASON_BINARIES=${MASON_BINARIES_PREFIX}${MASON_STDLIB_VERSION}.tar.gz
+else
+    MASON_BINARIES=${MASON_BINARIES_PREFIX}.tar.gz
+fi
 MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
 
 

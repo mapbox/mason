@@ -3,6 +3,7 @@
 MASON_NAME=geojsonvt
 MASON_VERSION=1.1.0
 MASON_LIB_FILE=lib/libgeojsonvt.a
+MASON_CXX_PACKAGE=true
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 

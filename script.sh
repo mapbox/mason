@@ -11,10 +11,10 @@ QT_LIBS=(${2:-QtCore})
 # Qt5 libs are called Qt5*, so we have to use the correct name to pkg-config
 QT_VERSION_MAJOR=$(qmake -query QT_VERSION | cut -d. -f1)
 if [ ${QT_VERSION_MAJOR} -gt 4 ] ; then
-    QT_LIBS=${QT_LIBS[@]/#Qt/Qt${QT_VERSION_MAJOR}}
+    QT_LIBS=(${QT_LIBS[@]/#Qt/Qt${QT_VERSION_MAJOR}})
 fi
 
-for LIB in ${QT_LIBS} ; do
+for LIB in ${QT_LIBS[@]} ; do
     if ! `pkg-config ${LIB} --exists` ; then
         mason_error "Can't find ${LIB}"
         exit 1
@@ -22,7 +22,11 @@ for LIB in ${QT_LIBS} ; do
 done
 
 function mason_system_version {
-    pkg-config QtCore --modversion
+    if [ ${QT_VERSION_MAJOR} -gt 4 ] ; then
+        pkg-config Qt${QT_VERSION_MAJOR}Core --modversion
+    else
+        pkg-config QtCore --modversion
+    fi
 }
 
 function mason_build {

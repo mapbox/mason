@@ -47,7 +47,10 @@ env:
 
 before_install:
 - git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
-- pushd ~/.mason && git checkout mason-cxx-version && popd
+- pushd ~/.mason
+- git fetch
+- git checkout mason-cxx-version
+- popd
 
 script:
 - ./script.sh build

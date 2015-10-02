@@ -602,15 +602,15 @@ function mason_publish {
     local MD5="$(openssl md5 -binary < "${MASON_BINARIES_PATH}" | base64)"
     local SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\nx-amz-acl:public-read\n/${MASON_BUCKET}/${MASON_BINARIES}" | openssl sha1 -binary -hmac "$AWS_SECRET_ACCESS_KEY" | base64)"
 
-    curl -S -T "${MASON_BINARIES_PATH}" https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
-        -H "Date: $DATE" \
-        -H "Authorization: AWS $AWS_ACCESS_KEY_ID:$SIGNATURE" \
-        -H "Content-Type: $CONTENT_TYPE" \
-        -H "Content-MD5: $MD5" \
-        -H "x-amz-acl: public-read"
+    curl --show-error --upload-file "${MASON_BINARIES_PATH}" https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
+        --header "Date: $DATE" \
+        --header "Authorization: AWS $AWS_ACCESS_KEY_ID:$SIGNATURE" \
+        --header "Content-Type: $CONTENT_TYPE" \
+        --header "Content-MD5: $MD5" \
+        --header "x-amz-acl: public-read"
 
     echo https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}
-    curl -f -I https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}
+    curl --fail --head https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}
 }
 
 function mason_run {

@@ -38,9 +38,12 @@ function mason_prepare_compile {
     ${MASON_DIR:-~/.mason}/mason install boost_libfilesystem 1.57.0
     ${MASON_DIR:-~/.mason}/mason link boost_libfilesystem 1.57.0
     ${MASON_DIR:-~/.mason}/mason install libxml2 2.9.2
+    ${MASON_DIR:-~/.mason}/mason link libxml2 2.9.2
     MASON_XML2=$(${MASON_DIR:-~/.mason}/mason prefix libxml2 2.9.2)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_XML2}/bin/xml2-config
     ${MASON_DIR:-~/.mason}/mason install geos 3.4.2
+    ${MASON_DIR:-~/.mason}/mason link geos 3.4.2
+    MASON_LINKED_HEADERS=$(pwd)/mason_packages/.link/include
     MASON_GEOS=$(${MASON_DIR:-~/.mason}/mason prefix geos 3.4.2)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/bin/geos-config
     ${MASON_DIR:-~/.mason}/mason install proj 4.8.0
@@ -71,7 +74,8 @@ function mason_compile {
     if [[ $(uname -s) == 'Linux' ]]; then
         LDFLAGS="${LDFLAGS} -lrt"
     fi
-    CXXFLAGS="-Wno-reserved-user-defined-literal ${CXXFLAGS} -I${MASON_PROTOBUF_C}/include" LDFLAGS="${LDFLAGS}" ./configure \
+    # -I${MASON_GEOS_HEADER} works around geos-config hardcoding the platform - which breaks if built on OS X 10.10 but building on 10.11
+    CFLAGS="-I${MASON_LINKED_HEADERS} -I${MASON_LINKED_HEADERS}/libxml2 ${CFLAGS}" CXXFLAGS="-I${MASON_LINKED_HEADERS} -I${MASON_LINKED_HEADERS}/libxml2 -Wno-reserved-user-defined-literal ${CXXFLAGS} -I${MASON_PROTOBUF_C}/include" LDFLAGS="${LDFLAGS}" ./configure \
         --enable-static --disable-shared \
         ${MASON_HOST_ARG} \
         --prefix=${MASON_PREFIX} \

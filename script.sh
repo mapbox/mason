@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libstxxl.a
 
 function mason_load_source {
     mason_download \
-        http://cznic.dl.sourceforge.net/project/stxxl/stxxl/1.4.1/stxxl-1.4.1.tar.gz \
+        https://github.com/stxxl/stxxl/releases/download/1.4.1/stxxl-1.4.1.tar.gz \
         68c0d402ec19e0d254b5b2b217a8c9c5d759a9ef
 
     mason_extract_tar_gz

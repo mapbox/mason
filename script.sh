@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=geos
-MASON_VERSION=3.4.2
+MASON_VERSION=3.5.0
 MASON_LIB_FILE=lib/libgeos.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
@@ -9,7 +9,7 @@ MASON_LIB_FILE=lib/libgeos.a
 function mason_load_source {
     mason_download \
         http://download.osgeo.org/geos/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
-        b248842dee2afa6e944693c21571a2999dfafc5a
+        a641469449fc32b829fb885cb0ea5fdd3333ce62
 
     mason_extract_tar_bz2
 
@@ -18,10 +18,6 @@ function mason_load_source {
 
 function mason_compile {
     mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
-    curl --retry 3 -s -f -# -L \
-      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
-      -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
-    patch -N -p1 < ./patch.diff
 
     # note: we put ${STDLIB_CXXFLAGS} into CXX instead of LDFLAGS due to libtool oddity:
     # http://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass

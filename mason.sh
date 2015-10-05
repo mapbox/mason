@@ -58,8 +58,8 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
     # to correctly target c++11 for build systems that don't know about it yet (like libgeos 3.4.2)
     # But because LDFLAGS is also for C libs we can only put these flags into LDFLAGS per package
     export LDFLAGS="-Wl,-search_paths_first ${SYSROOT_FLAGS}"
-    export CXX="${MASON_XCODE_ROOT}/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
-    export CC="${MASON_XCODE_ROOT}/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
+    export CXX="/usr/bin/clang++"
+    export CC="/usr/bin/clang"
 
 elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_HOST_ARG="--host=arm-apple-darwin"

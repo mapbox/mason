@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 
 MASON_NAME=earcut
-MASON_VERSION=0.9
+MASON_VERSION=0.9-pool
 MASON_HEADER_ONLY=true
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \
-    https://github.com/mapbox/earcut.hpp/archive/v0.9.tar.gz \
-    5fbb3bb44456caf100c80f11d4c6c2c0adb1669d
+    https://github.com/mapbox/earcut.hpp/archive/v0.9-pool.tar.gz \
+    b3dacbd180a5480d797b32ec3bc242b688046e99
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/earcut.hpp-0.9
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/earcut.hpp-0.9-pool
 }
 
 function mason_compile {

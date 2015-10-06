@@ -32,7 +32,7 @@ function mason_compile {
       https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
       -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
     # patch cairo to avoid needing pkg-config as a build dep
-    patch -N -p1 < ../../../patch.diff
+    patch -N -p1 < ./patch.diff
     CFLAGS="${CFLAGS} -Wno-enum-conversion -I${MASON_PIXMAN}/include/pixman-1 -I${MASON_FREETYPE}/include/freetype2 -I${MASON_PNG}/include/"
     LDFLAGS="-L${MASON_PIXMAN}/lib -lpixman-1 -L${MASON_FREETYPE}/lib -lfreetype -L${MASON_PNG}/lib -lpng"
     CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} ./autogen.sh \

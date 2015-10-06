@@ -40,8 +40,8 @@ function gen_config() {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR:-~/.mason}/mason install icu 54.1
-    MASON_ICU=$(${MASON_DIR:-~/.mason}/mason prefix icu 54.1)
+    ${MASON_DIR:-~/.mason}/mason install icu 55.1
+    MASON_ICU=$(${MASON_DIR:-~/.mason}/mason prefix icu 55.1)
     BOOST_LDFLAGS="-L${MASON_ICU}/lib -licuuc -licui18n -licudata"
 }
 

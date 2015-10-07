@@ -24,7 +24,7 @@ function mason_compile {
 
     # build
     INSTALL_PREFIX=${MASON_PREFIX} ./configure
-    CXXFLAGS="-fPIC ${CFLAGS:-} ${CXXFLAGS:-}" make install
+    V=1 CXXFLAGS="-fPIC ${CFLAGS:-} ${CXXFLAGS:-}" make install
 }
 
 function mason_cflags {

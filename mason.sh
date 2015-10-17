@@ -85,6 +85,25 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneSimulator${MASON_PLATFORM_VERSION}.sdk"
     export MASON_ISIM_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
 
+elif [ ${MASON_PLATFORM} = 'tvos' ]; then
+    export MASON_HOST_ARG="--host=arm-apple-darwin"
+    export MASON_DYNLIB_SUFFIX="dylib"
+    export MASON_PLATFORM_VERSION=`xcrun --sdk appletvos --show-sdk-version`
+
+    MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/AppleTVOS.platform/Developer
+    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/AppleTVOS${MASON_PLATFORM_VERSION}.sdk"
+    MIN_SDK_VERSION_FLAG="-mappletvos-version-min=9.0"
+    export MASON_TVOS_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH} -arch arm64 -fembed-bitcode"
+
+    if [ `xcrun --sdk appletvsimulator --show-sdk-version` != ${MASON_PLATFORM_VERSION} ]; then
+        mason_error "AppleTV Simulator SDK version doesn't match AppleTV SDK version"
+        exit 1
+    fi
+
+    MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/AppleTVSimulator.platform/Developer
+    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/AppleTVSimulator${MASON_PLATFORM_VERSION}.sdk"
+    export MASON_TVSIM_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH} -arch x86_64"
+
 elif [ ${MASON_PLATFORM} = 'linux' ]; then
 
     export MASON_DYNLIB_SUFFIX="so"
@@ -434,6 +453,34 @@ function mason_build {
         done
         cd "${MASON_PREFIX}"
         rm -rf lib-isim lib-ios
+    elif [ ${MASON_PLATFORM} = 'tvos' ]; then
+        mason_substep "Building for Simulator..."
+        export CFLAGS="${MASON_TVSIM_CFLAGS}"
+        cd "${MASON_BUILD_PATH}"
+        mason_compile
+        cd "${MASON_PREFIX}"
+        mv lib lib-tvsim
+        for i in lib-tvsim/*.a ; do lipo -info $i ; done
+
+        mason_substep "Building for iOS..."
+        export CFLAGS="${MASON_TVOS_CFLAGS}"
+        cd "${MASON_BUILD_PATH}"
+        mason_clean
+        cd "${MASON_BUILD_PATH}"
+        mason_compile
+        cd "${MASON_PREFIX}"
+        cp -r lib lib-tvos
+        for i in lib-tvos/*.a ; do lipo -info $i ; done
+
+        # Create universal binary
+        mason_substep "Creating Universal Binary..."
+        cd "${MASON_PREFIX}/lib-tvos"
+        for i in *.a ; do
+            lipo -create ../lib-tvos/$i ../lib-tvsim/$i -output ../lib/$i
+            lipo -info ../lib/$i
+        done
+        cd "${MASON_PREFIX}"
+        rm -rf lib-tvsim lib-tvos
     elif [ ${MASON_PLATFORM} = 'android' ]; then
         cd "${MASON_BUILD_PATH}"
         mason_compile

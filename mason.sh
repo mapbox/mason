@@ -462,7 +462,7 @@ function mason_build {
         mv lib lib-tvsim
         for i in lib-tvsim/*.a ; do lipo -info $i ; done
 
-        mason_substep "Building for iOS..."
+        mason_substep "Building for tvOS..."
         export CFLAGS="${MASON_TVOS_CFLAGS}"
         cd "${MASON_BUILD_PATH}"
         mason_clean

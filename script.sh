@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-BOOST_VERSION1="1.57.0"
-BOOST_VERSION2="1_57_0"
+BOOST_VERSION1="1.59.0"
+BOOST_VERSION2="1_59_0"
 BOOST_LIBRARY="program_options"
 BOOST_TOOLSET="clang"
 BOOST_ARCH="x86"
 
 MASON_NAME=boost_lib${BOOST_LIBRARY}
-MASON_VERSION=1.57.0
+MASON_VERSION=${BOOST_VERSION1}
 MASON_LIB_FILE=lib/libboost_${BOOST_LIBRARY}.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
@@ -15,7 +15,7 @@ MASON_LIB_FILE=lib/libboost_${BOOST_LIBRARY}.a
 function mason_load_source {
     mason_download \
         http://downloads.sourceforge.net/project/boost/boost/${BOOST_VERSION1}/boost_${BOOST_VERSION2}.tar.bz2 \
-        397306fa6d0858c4885fbba7d43a0164dcb7f53e
+        ff2e48f4d7e3c4b393d41e07a2f5d923b990967d
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/boost_${BOOST_VERSION2}
 

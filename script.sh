@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=openssl
-MASON_VERSION=1.0.1p
+MASON_VERSION=1.0.2
 MASON_LIB_FILE=lib/libssl.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/openssl.pc
 
@@ -10,7 +10,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/openssl.pc
 function mason_load_source {
     mason_download \
         ftp://ftp.openssl.org/source/openssl-${MASON_VERSION}.tar.gz \
-        db77eba6cc1f9e50f61a864c07d09ecd0154c84d
+        edb5a59838b24d0845950feed47dae014c66b2ab
 
     mason_extract_tar_gz
 

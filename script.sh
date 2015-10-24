@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=libzip
-MASON_VERSION=0.11.2
+MASON_VERSION=1.0.1
 MASON_LIB_FILE=lib/libzip.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libzip.pc
 
@@ -9,8 +9,8 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libzip.pc
 
 function mason_load_source {
     mason_download \
-        http://www.nih.at/libzip/libzip-0.11.2.tar.gz \
-        5e2407b231390e1cb8234541e89693ae57487170
+        http://www.nih.at/libzip/libzip-${MASON_VERSION}.tar.gz \
+        b7761ee2ef581979df32f42637042f5663d766bf
 
     mason_extract_tar_gz
 

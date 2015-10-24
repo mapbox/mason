@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=glfw
-MASON_VERSION=3.1
+MASON_VERSION=3.1.2
 MASON_LIB_FILE=lib/libglfw3.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/glfw3.pc
 
@@ -9,8 +9,8 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/glfw3.pc
 
 function mason_load_source {
     mason_download \
-        https://github.com/glfw/glfw/archive/3.1.tar.gz \
-        55b33f2be4938d7a270a1718fd5fe00486438395
+        https://github.com/glfw/glfw/archive/${MASON_VERSION}.tar.gz \
+        66bf7b2fc987c0ec2ca1a4eb757b33e6f3f8bb1b
 
     mason_extract_tar_gz
 

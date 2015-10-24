@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=openssl
-MASON_VERSION=1.0.1l
+MASON_VERSION=1.0.1p
 MASON_LIB_FILE=lib/libssl.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/openssl.pc
 
@@ -9,8 +9,8 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/openssl.pc
 
 function mason_load_source {
     mason_download \
-        ftp://ftp.openssl.org/source/openssl-1.0.1l.tar.gz \
-        448aaf41b40d9ff0a1722a2838fb48f78b95dfa4
+        ftp://ftp.openssl.org/source/openssl-${MASON_VERSION}.tar.gz \
+        db77eba6cc1f9e50f61a864c07d09ecd0154c84d
 
     mason_extract_tar_gz
 
@@ -26,7 +26,7 @@ function mason_prepare_compile {
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         MASON_OS_COMPILER="linux-x86_64 enable-ec_nistp_64_gcc_128"
     elif [[ ${MASON_PLATFORM} == 'android' ]]; then
-        COMMON="-fpic -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-integrated-as -O2 -g -DNDEBUG -fomit-frame-pointer -fstrict-aliasing -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -no-canonical-prefixes"
+        COMMON="-fPIC -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-integrated-as -O2 -g -DNDEBUG -fomit-frame-pointer -fstrict-aliasing -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -no-canonical-prefixes"
         if [ ${MASON_ANDROID_ABI} = 'arm-v5' ]; then
             MASON_OS_COMPILER="linux-armv4 -march=armv5te -mtune=xscale -msoft-float -fuse-ld=gold $COMMON"
         elif [ ${MASON_ANDROID_ABI} = 'arm-v7' ]; then
@@ -46,20 +46,46 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    NO_ASM=
+
+    # Work around a Android 6.0 TEXTREL exception. See https://github.com/mapbox/mapbox-gl-native/issues/2772
+    if [[ ${MASON_PLATFORM} == 'android' ]]; then
+        if [ ${MASON_ANDROID_ABI} = 'x86' ]; then
+            NO_ASM=-no-asm
+        fi
+    fi
+
     ./Configure \
         --prefix=${MASON_PREFIX} \
         enable-tlsext \
+        ${NO_ASM} \
         -no-dso \
         -no-hw \
+        -no-engines \
         -no-comp \
-        -no-idea \
-        -no-mdc2 \
-        -no-rc5 \
+        -no-gmp \
         -no-zlib \
         -no-shared \
         -no-ssl2 \
         -no-ssl3 \
         -no-krb5 \
+        -no-camellia \
+        -no-capieng \
+        -no-cast \
+        -no-dtls \
+        -no-gost \
+        -no-idea \
+        -no-jpake \
+        -no-md2 \
+        -no-mdc2 \
+        -no-rc5 \
+        -no-rdrand \
+        -no-ripemd \
+        -no-rsax \
+        -no-sctp \
+        -no-seed \
+        -no-sha0 \
+        -no-whirlpool \
         -fPIC \
         -DOPENSSL_PIC \
         -DOPENSSL_NO_DEPRECATED \

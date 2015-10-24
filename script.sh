@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
 
 MASON_NAME=sqlite
-MASON_VERSION=3.8.10.2
+MASON_VERSION=3.9.1
 MASON_LIB_FILE=lib/libsqlite3.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/sqlite3.pc
+
+SQLITE_FILE_VERSION=3090100
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \
-        https://www.sqlite.org/2015/sqlite-autoconf-3081002.tar.gz \
-        841053dd606523187b42aa2dd8d9356735d3d382
+        https://www.sqlite.org/2015/sqlite-autoconf-${SQLITE_FILE_VERSION}.tar.gz \
+        92d8a46908e793c9e387f3199699783fd5f6ebed
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/sqlite-autoconf-3081002
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/sqlite-autoconf-${SQLITE_FILE_VERSION}
 }
 
 function mason_compile {

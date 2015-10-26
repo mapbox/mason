@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-MASON_NAME=mesa
-MASON_VERSION=10.5.4
+MASON_NAME=openswr-mesa
+MASON_VERSION=11.0-openswr
 MASON_LIB_FILE=lib/libGL.so
 MASON_PKGCONFIG_FILE=lib/pkgconfig/gl.pc
 
@@ -9,27 +9,22 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/gl.pc
 
 function mason_load_source {
     mason_download \
-        ftp://ftp.freedesktop.org/pub/mesa/10.5.4/mesa-10.5.4.tar.gz \
-        2c87044700a738d23133477864c62f194aa9daba
+        https://github.com/OpenSWR/openswr-mesa/archive/11.0-openswr.tar.gz \
+        bf76df16a495d1fdd9f03fd301f325503d087c20
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/mesa-10.5.4
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
 }
 
 function mason_compile {
-    autoreconf --force --install
-
-    CXXFLAGS=-std=c++11 ./autogen.sh \
+    CXXFLAGS=-std=c++14 ./autogen.sh \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
-        --enable-shared \
-        --with-gallium-drivers=svga,swrast \
-        --disable-dri \
-        --enable-xlib-glx \
+        --with-gallium-drivers=swr,swrast \
+        --enable-swr-native \
         --enable-glx-tls \
-        --with-llvm-prefix=/usr/lib/llvm-3.4 \
-        --without-va
+        --with-llvm-prefix=/usr/lib/llvm-3.6
 
     make install
 }

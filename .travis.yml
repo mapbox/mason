@@ -21,7 +21,7 @@ before_install:
 - export CXX="g++-4.9"
 - export CC="gcc-4.9"
 - sudo apt-get install -y flex bison python-pip libdrm-dev x11proto-gl-dev x11proto-dri2-dev x11proto-dri3-dev x11proto-present-dev libx11-xcb-dev libxext-dev libxdamage-dev libxfixes-dev libxcb-glx0-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-present-dev libxcb-sync-dev libxshmfence-dev libudev-dev libexpat1-dev libva-dev gettext libnuma-dev llvm-3.6 mesa-utils
-- sudo pip install mako
+- sudo -H pip install mako
 
 script:
 - ./script.sh build

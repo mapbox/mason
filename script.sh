@@ -10,7 +10,7 @@ MASON_SYSTEM_PACKAGE=true
 if [[ ${MASON_PLATFORM} = 'android' ]]; then
     mason_error "Unavailable on platform \"${MASON_PLATFORM}\""
     exit 1
-elif [[ ${MASON_PLATFORM} = 'ios' ]]; then
+elif [[ ${MASON_PLATFORM} = 'ios' || ${MASON_PLATFORM} = 'tvos' ]]; then
     MASON_CFLAGS=""
     MASON_LDFLAGS="-lsqlite3"
 else

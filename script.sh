@@ -24,7 +24,8 @@ function mason_compile {
         --enable-static \
         --with-pic \
         --disable-shared \
-        --disable-dependency-tracking
+        --disable-dependency-tracking \
+        --disable-dynamic-extensions
 
     make install -j${MASON_CONCURRENCY}
 }

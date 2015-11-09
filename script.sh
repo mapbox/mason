@@ -106,12 +106,6 @@ function mason_compile {
     fi
     CXXFLAGS="${CXXFLAGS} -fvisibility=hidden"
     ./b2 \
-        --with-regex \
-        --with-system \
-        --with-thread \
-        --with-filesystem \
-        --with-program_options \
-        --with-python \
         --prefix=${MASON_PREFIX} \
         -j${MASON_CONCURRENCY} \
         -sHAVE_ICU=1 -sICU_PATH=${MASON_ICU} \

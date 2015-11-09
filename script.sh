@@ -6,7 +6,7 @@ BOOST_LIBRARY="regex"
 BOOST_TOOLSET="clang"
 BOOST_ARCH="x86"
 
-MASON_NAME=boost_liball
+MASON_NAME=boost_libeverything
 MASON_VERSION=1.59.0
 # this boost package has multiple libraries to we
 # reference this empty file as a placeholder for all of them

@@ -115,7 +115,6 @@ function mason_compile {
         --ignore-site-config --user-config=user-config.jam \
         architecture="${BOOST_ARCH}" \
         toolset="${BOOST_TOOLSET}" \
-        link=static \
         variant=release \
         install
 

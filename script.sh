@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
 
 MASON_NAME=osmium-tool
-MASON_VERSION=1.0.0
+MASON_VERSION=1.3.0
 MASON_LIB_FILE=bin/osmium
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 function mason_load_source {
     mason_download \
-        https://github.com/osmcode/osmium-tool/tarball/v1.0.0 \
-        a5a1822267e1832e27e805ff9bcfe9217a4f82ad
+        https://github.com/osmcode/osmium-tool/tarball/v1.3.0 \
+        b7be94a999061bb0dbfb04451cb2b2a8a09c1d23
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/osmcode-osmium-tool-06bcd2c
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/osmcode-osmium-tool-24de9be
 }
 
 function mason_prepare_compile {
     echo ${MASON_ROOT}/.build
     cd ${MASON_ROOT}
-    OSMIUM_INCLUDE_DIR=${MASON_ROOT}/osmcode-libosmium-5e4af90/include
-    curl --retry 3 -f -# -L "https://github.com/osmcode/libosmium/tarball/v2.0.0" -o osmium.tar.gz
+    OSMIUM_INCLUDE_DIR=${MASON_ROOT}/osmcode-libosmium-0ff2780/include
+    curl --retry 3 -f -# -L "https://github.com/osmcode/libosmium/tarball/v2.5.4" -o osmium.tar.gz
     tar -xzf osmium.tar.gz
 
     cd $(dirname ${MASON_ROOT})

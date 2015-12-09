@@ -9,7 +9,7 @@ MASON_LIB_FILE=lib/libgeojsonvt.a
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/geojson-vt-cpp/archive/v${MASON_VERSION}.tar.gz \
-        f48b3293c7f5894f03b29fd8b703a94b4e726221
+        1cda3b57410b4cc6875ef044564790012b9aca67
 
     mason_extract_tar_gz
 

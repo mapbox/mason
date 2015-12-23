@@ -8,8 +8,17 @@ MASON_SYSTEM_PACKAGE=true
 
 QT_LIBS=(${2:-QtCore})
 
+#Some systems such as Fedora23 uses qmake-qt5
+if hash qmake-qt5 2>/dev/null; then
+    QMAKE_CMD=qmake-qt5
+elif hash qmake-qt4 2>/dev/null; then
+    QMAKE_CMD=qmake-qt4
+else
+    QMAKE_CMD=qmake
+fi
+
 # Qt5 libs are called Qt5*, so we have to use the correct name to pkg-config
-QT_VERSION_MAJOR=$(qmake -query QT_VERSION | cut -d. -f1)
+QT_VERSION_MAJOR=$($QMAKE_CMD -query QT_VERSION | cut -d. -f1)
 if [ ${QT_VERSION_MAJOR} -gt 4 ] ; then
     QT_LIBS=(${QT_LIBS[@]/#Qt/Qt${QT_VERSION_MAJOR}})
 fi

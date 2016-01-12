@@ -7,6 +7,11 @@ compiler: clang
 matrix:
   include:
     - os: osx
+      osx_image: xcode6
+      compiler: clang
+    - os: osx
+      osx_image: xcode7
+      compiler: clang
     - os: linux
     - os: linux
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=arm-v5

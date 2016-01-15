@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=webp
-MASON_VERSION=0.4.2
+MASON_VERSION=0.5.0
 MASON_LIB_FILE=lib/libwebp.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libwebp.pc
 
@@ -9,8 +9,8 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libwebp.pc
 
 function mason_load_source {
     mason_download \
-        http://downloads.webmproject.org/releases/webp/libwebp-0.4.2.tar.gz \
-        fdc496dcbcb03c9f26c2d9ce771545fa557a40c8
+        http://downloads.webmproject.org/releases/webp/libwebp-$MASON_VERSION.tar.gz \
+        9e5a4130ff09d28f0217eba972dcca5a57525f03
 
     mason_extract_tar_gz
 

@@ -28,10 +28,6 @@ function mason_compile {
     make install -j${MASON_CONCURRENCY}
 }
 
-function mason_ldflags {
-	echo $(`mason_pkgconfig` --static --libs)
-}
-
 function mason_clean {
     make clean
 }

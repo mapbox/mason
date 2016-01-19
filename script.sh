@@ -28,6 +28,16 @@ function mason_compile {
     make install -j${MASON_CONCURRENCY}
 }
 
+function mason_strip_ldflags {
+    shift # -L...
+    shift # -lwebp
+    echo "$@"
+}
+
+function mason_ldflags {
+    mason_strip_ldflags $(`mason_pkgconfig` --static --libs)
+}
+
 function mason_clean {
     make clean
 }

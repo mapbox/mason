@@ -18,11 +18,23 @@ function mason_load_source {
 }
 
 function mason_compile {
+    export CFLAGS="${CFLAGS:-} -Os"
     ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
         --enable-static \
         --disable-shared \
+        --with-pic \
+        --enable-libwebpdecoder \
+        --disable-cwebp \
+        --disable-dwebp \
+        --enable-swap-16bit-csp \
+        --disable-gl \
+        --disable-png \
+        --disable-jpeg \
+        --disable-tiff \
+        --disable-gif \
+        --disable-wic \
         --disable-dependency-tracking
 
     make install -j${MASON_CONCURRENCY}

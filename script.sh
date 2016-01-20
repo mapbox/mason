@@ -18,6 +18,7 @@ function mason_load_source {
 }
 
 function mason_compile {
+    export CFLAGS="${CFLAGS:-} -O3"
     ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \

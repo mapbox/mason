@@ -18,6 +18,9 @@ matrix:
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=x86
     - os: linux
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=x86-64
+      addons:
+        apt:
+          packages: [ 'yasm' ]
     - os: linux
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=mips
     - os: linux

@@ -29,9 +29,23 @@ function mason_compile {
 }
 
 function mason_strip_ldflags {
-    shift # -L...
-    shift # -lwebp
-    echo "$@"
+    ldflags=()
+    while [[ $1 ]]
+    do
+        case "$1" in
+            -lwebp)
+                shift
+                ;;
+            -L*)
+                shift
+                ;;
+            *)
+                ldflags+=("$1")
+                shift
+                ;;
+        esac
+    done
+    echo "${ldflags[@]}"
 }
 
 function mason_ldflags {

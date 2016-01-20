@@ -5,9 +5,14 @@ sudo: false
 matrix:
   include:
     - os: osx
+      env: MASON_PLATFORM=osx
       compiler: clang
     - os: linux
+      env: MASON_PLATFORM=linux
       compiler: clang
+      addons:
+        apt:
+          packages: [ 'yasm' ]
     - os: linux
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=arm-v5
     - os: linux
@@ -33,6 +38,7 @@ env:
 
 before_install:
 - git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
+- if [[ "${MASON_PLATFORM}" == "osx" ]]; then brew install yasm ; fi
 - if [[ "${MASON_PLATFORM}" == "android" ]]; then MASON_PLATFORM= ~/.mason/mason install 7z 9.20; export PATH=$(MASON_PLATFORM= ~/.mason/mason prefix 7z 9.20)/bin:${PATH}; wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin; chmod a+x ./android-ndk-r10d-linux-x86_64.bin; 7za x ./android-ndk-r10d-linux-x86_64.bin > /dev/null; export ANDROID_NDK_PATH=$(pwd)/android-ndk-r10d; fi;
 
 script:

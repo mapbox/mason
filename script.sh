@@ -58,8 +58,12 @@ function mason_compile {
     mv stage/${MASON_LIB_FILE} ${MASON_PREFIX}/${MASON_LIB_FILE}
 }
 
+function mason_cflags {
+    :
+}
+
 function mason_ldflags {
-    echo "-lboost_${BOOST_LIBRARY}"
+    :
 }
 
 function mason_clean {

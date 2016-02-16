@@ -18,8 +18,8 @@ function mason_load_source {
 function mason_prepare_compile {
     echo ${MASON_ROOT}/.build
     cd ${MASON_ROOT}
-    OSMIUM_INCLUDE_DIR=${MASON_ROOT}/osmcode-libosmium-b9b5f46/include
-    curl --retry 3 -f -# -L "https://github.com/osmcode/libosmium/tarball/v2.6.0" -o osmium.tar.gz
+    OSMIUM_INCLUDE_DIR=${MASON_ROOT}/osmcode-libosmium-372d29a/include
+    curl --retry 3 -f -# -L "https://github.com/osmcode/libosmium/tarball/372d29a34d8b3f571ea7172d527730d3d5200dab" -o osmium.tar.gz
     tar -xzf osmium.tar.gz
 
     cd $(dirname ${MASON_ROOT})

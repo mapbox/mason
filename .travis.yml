@@ -7,7 +7,13 @@ compiler: clang
 matrix:
   include:
     - os: osx
+      osx_image: xcode7
+      env: MASON_PLATFORM=ios
+    - os: osx
+      osx_image: xcode7
+      env: MASON_PLATFORM=osx
     - os: linux
+      env: MASON_PLATFORM=linux
 
 env:
   global:

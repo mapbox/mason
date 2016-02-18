@@ -19,15 +19,21 @@ function mason_load_source {
 }
 
 function mason_compile {
-    ./configure \
-        --prefix=${MASON_PREFIX} \
-        ${MASON_HOST_ARG} \
-        --enable-static \
-        --with-pic \
-        --disable-shared \
-        --disable-dependency-tracking
+    if [ ${MASON_PLATFORM} = 'ios' ]; then
+        ${CXX:-c++} ${CFLAGS:-} -O3 -g -isystem fused-src -pthread -c -fPIC fused-src/gtest/gtest-all.cc
+        mkdir -p lib/.libs
+        libtool -static gtest-all.o -o lib/.libs/libgtest.a
+    else
+        ./configure \
+            --prefix=${MASON_PREFIX} \
+            ${MASON_HOST_ARG} \
+            --enable-static \
+            --with-pic \
+            --disable-shared \
+            --disable-dependency-tracking
 
-    make -j${MASON_CONCURRENCY}
+        make -j${MASON_CONCURRENCY}
+    fi
 
     mkdir -p ${MASON_PREFIX}/lib
     cp -v lib/.libs/libgtest.a ${MASON_PREFIX}/lib

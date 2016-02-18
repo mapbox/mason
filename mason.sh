@@ -68,7 +68,7 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneOS${MASON_PLATFORM_VERSION}.sdk"
     MIN_SDK_VERSION_FLAG="-miphoneos-version-min=7.0"
-    export MASON_IOS_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH} -arch armv7 -arch armv7s -arch arm64"
+    export MASON_IOS_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH}"
     if [[ ${MASON_PLATFORM_VERSION%%.*} -ge 9 ]]; then
         export MASON_IOS_CFLAGS="${MASON_IOS_CFLAGS} -fembed-bitcode"
         export MASON_DYNLIB_SUFFIX="tbd"
@@ -83,7 +83,7 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
 
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneSimulator.platform/Developer
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneSimulator${MASON_PLATFORM_VERSION}.sdk"
-    export MASON_ISIM_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH} -arch i386 -arch x86_64"
+    export MASON_ISIM_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH}"
 
 elif [ ${MASON_PLATFORM} = 'linux' ]; then
 
@@ -407,33 +407,44 @@ function mason_build {
     mason_prepare_compile
 
     if [ ${MASON_PLATFORM} = 'ios' ]; then
-        mason_substep "Building for Simulator..."
-        export CFLAGS="${MASON_ISIM_CFLAGS}"
-        cd "${MASON_BUILD_PATH}"
-        mason_compile
-        cd "${MASON_PREFIX}"
-        mv lib lib-isim
-        for i in lib-isim/*.a ; do lipo -info $i ; done
 
-        mason_substep "Building for iOS..."
-        export CFLAGS="${MASON_IOS_CFLAGS}"
-        cd "${MASON_BUILD_PATH}"
-        mason_clean
-        cd "${MASON_BUILD_PATH}"
-        mason_compile
-        cd "${MASON_PREFIX}"
-        cp -r lib lib-ios
-        for i in lib-ios/*.a ; do lipo -info $i ; done
+        SIMULATOR_TARGETS="i386 x86_64"
+        DEVICE_TARGETS="armv7 armv7s arm64"
+        LIB_FOLDERS=
+
+        for ARCH in ${SIMULATOR_TARGETS} ; do
+            mason_substep "Building for iOS Simulator ${ARCH}..."
+            export CFLAGS="${MASON_ISIM_CFLAGS} -arch ${ARCH}"
+            cd "${MASON_BUILD_PATH}"
+            mason_compile
+            cd "${MASON_PREFIX}"
+            mv lib lib-isim-${ARCH}
+            for i in lib-isim-${ARCH}/*.a ; do lipo -info $i ; done
+            LIB_FOLDERS="${LIB_FOLDERS} lib-isim-${ARCH}"
+        done
+
+        for ARCH in ${DEVICE_TARGETS} ; do
+            mason_substep "Building for iOS ${ARCH}..."
+            export CFLAGS="${MASON_IOS_CFLAGS} -arch ${ARCH}"
+            cd "${MASON_BUILD_PATH}"
+            mason_compile
+            cd "${MASON_PREFIX}"
+            mv lib lib-ios-${ARCH}
+            for i in lib-ios-${ARCH}/*.a ; do lipo -info $i ; done
+            LIB_FOLDERS="${LIB_FOLDERS} lib-ios-${ARCH}"
+        done
 
         # Create universal binary
         mason_substep "Creating Universal Binary..."
-        cd "${MASON_PREFIX}/lib-ios"
-        for i in *.a ; do
-            lipo -create ../lib-ios/$i ../lib-isim/$i -output ../lib/$i
-            lipo -info ../lib/$i
-        done
         cd "${MASON_PREFIX}"
-        rm -rf lib-isim lib-ios
+        mkdir -p lib
+        for LIB in $(find ${LIB_FOLDERS} -name "*.a" | xargs basename | sort | uniq) ; do
+            lipo -create $(find ${LIB_FOLDERS} -name "${LIB}") -output lib/${LIB}
+            lipo -info lib/${LIB}
+        done
+
+        cd "${MASON_PREFIX}"
+        rm -rf ${LIB_FOLDERS}
     elif [ ${MASON_PLATFORM} = 'android' ]; then
         cd "${MASON_BUILD_PATH}"
         mason_compile

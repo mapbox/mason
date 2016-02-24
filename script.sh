@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=cairo
-MASON_VERSION=1.14.2
+MASON_VERSION=1.14.4
 MASON_LIB_FILE=lib/libcairo.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
@@ -9,7 +9,7 @@ MASON_LIB_FILE=lib/libcairo.a
 function mason_load_source {
     mason_download \
         http://cairographics.org/releases/${MASON_NAME}-${MASON_VERSION}.tar.xz \
-        3202106739cb0cb044c910a9b67769c95d0b6bce
+        ecf18db1e89d99799783757d9026a74012dfafcb
 
     mason_extract_tar_xz
 

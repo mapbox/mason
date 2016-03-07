@@ -117,7 +117,7 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
 elif [ ${MASON_PLATFORM} = 'android' ]; then
     export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
 
-    CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-integrated-as -O2 -g -DNDEBUG -fomit-frame-pointer -fstrict-aliasing -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
+    CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-integrated-as -fomit-frame-pointer -fstrict-aliasing -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
     LDFLAGS="-no-canonical-prefixes -Wl,--warn-shared-textrel -Wl,--fatal-warnings"
     export CPPFLAGS="-D__ANDROID__"
 

@@ -164,9 +164,10 @@ MASON_NAME=libuv
 MASON_VERSION=0.11.29
 MASON_LIB_FILE=lib/libuv.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libuv.pc
+MASON_CXX_PACKAGE=true
 ```
 
-Declare these variables first. `MASON_NAME` and `MASON_VERSION` are mandatory. If the install script build a static library, specify the relative path in the installation directory in `MASON_LIB_FILE`. This is used to check whether an installation actually exists before proceeding to download/build the library anew. You can optionally specify `MASON_PKGCONFIG_FILE` as the relative path to the pig-config file if the library has one. If the library doesn't have one, you need to override the functions `mason_cflags` and `mason_ldflags` (see below).
+Declare these variables first. `MASON_NAME` and `MASON_VERSION` are mandatory. If the install script build a static library, specify the relative path in the installation directory in `MASON_LIB_FILE`. This is used to check whether an installation actually exists before proceeding to download/build the library anew. You can optionally specify `MASON_PKGCONFIG_FILE` as the relative path to the pig-config file if the library has one. If the library doesn't have one, you need to override the functions `mason_cflags` and `mason_ldflags` (see below). You can optionally specify `MASON_CXX_PACKAGE`, in which case the binary will be versioned with the C++ stdlib used to compile it.
 
 Then, we're loading the build system with
 
@@ -257,6 +258,8 @@ Name | Description
 `MASON_HOST_ARG` | Cross-compilation arguments. Example: `--host=x86_64-apple-darwin`
 `MASON_LIB_FILE` | Relative path to the library file in the install directory. Example: `lib/libuv.a`
 `MASON_PKGCONFIG_FILE` | Relative path to the pkg-config file in the install directory.  Example: `lib/pkgconfig/libuv.pc`
+`MASON_CXX_PACKAGE` | If true, will append the C++ stdlib to the binary version. Example: `true`
+`MASON_STDLIB_VERSION` | The C++ stdlib and and version (ABI version for libc++) used to compile the binary package. Example: `-libcxx-1`
 `MASON_XCODE_ROOT` | OS X specific; Path to the Xcode Developer directory. Example: `/Applications/Xcode.app/Contents/Developer`
 
 

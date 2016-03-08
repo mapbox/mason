@@ -23,6 +23,7 @@ before_install:
 - source ~/.mason/scripts/setup_cpp11_toolchain.sh
 
 script:
+- if [[ $(uname -s) == 'Darwin' ]]; then brew install cmake; fi
 - ./script.sh build
 
 after_success:

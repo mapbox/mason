@@ -47,10 +47,10 @@ function mason_compile {
         -DOSMIUM_INCLUDE_DIR=${OSMIUM_INCLUDE_DIR} \
         ..
     make
-    mkdir -p ${MASON_PREFIX}
-    mv minjur ${MASON_PREFIX}/minjur
-    mv minjur-mp ${MASON_PREFIX}/minjur-mp
-    mv minjur-generate-tilelist ${MASON_PREFIX}/minjur-generate-tilelist
+    mkdir -p ${MASON_PREFIX}/bin
+    mv minjur ${MASON_PREFIX}/bin/minjur
+    mv minjur-mp ${MASON_PREFIX}/bin/minjur-mp
+    mv minjur-generate-tilelist ${MASON_PREFIX}/bin/minjur-generate-tilelist
 }
 
 function mason_clean {

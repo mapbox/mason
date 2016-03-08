@@ -64,7 +64,7 @@ function mason_compile {
         --with-thread \
         --with-filesystem \
         --with-program_options \
-        --with-unit_test \
+        --with-test \
         --with-date_time \
         --with-iostreams \
         --prefix=${MASON_PREFIX} \

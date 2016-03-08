@@ -15,6 +15,7 @@ MASON_LIB_FILE=lib/libboost_placeholder.txt
 . ${MASON_DIR:-~/.mason}/mason.sh
 
 export CXX=${CXX:-clang++}
+export MASON_CONCURRENCY_OVERRIDE=${MASON_CONCURRENCY_OVERRIDE:-${MASON_CONCURRENCY}}
 
 function mason_load_source {
     mason_download \
@@ -68,7 +69,7 @@ function mason_compile {
         --with-date_time \
         --with-iostreams \
         --prefix=${MASON_PREFIX} \
-        -j${MASON_CONCURRENCY} \
+        -j${MASON_CONCURRENCY_OVERRIDE} \
         -sHAVE_ICU=0 \
         linkflags="${LDFLAGS:-" "} ${BOOST_LDFLAGS}" \
         cxxflags="${CXXFLAGS:-" "}" \

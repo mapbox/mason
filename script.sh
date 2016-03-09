@@ -25,7 +25,7 @@ function mason_compile {
         --disable-dependency-tracking
 
     make -j${MASON_CONCURRENCY}
-    #make install
+    make install
 }
 
 function mason_strip_ldflags {

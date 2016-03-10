@@ -40,16 +40,18 @@ esac
 
 if [ ${MASON_PLATFORM} = 'osx' ]; then
     export MASON_HOST_ARG="--host=x86_64-apple-darwin"
-    export MASON_PLATFORM_VERSION=`xcrun --sdk macosx --show-sdk-version`
+    export MASON_PLATFORM_VERSION=`uname -m`
 
-    if [[  ${MASON_PLATFORM_VERSION%%.*} -ge 10 && ${MASON_PLATFORM_VERSION##*.} -ge 11 ]]; then
+    MASON_SDK_VERSION=`xcrun --sdk macosx --show-sdk-version`
+    MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
+    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_SDK_VERSION}.sdk"
+
+    if [[  ${MASON_SDK_VERSION%%.*} -ge 10 && ${MASON_SDK_VERSION##*.} -ge 11 ]]; then
         export MASON_DYNLIB_SUFFIX="tbd"
     else
         export MASON_DYNLIB_SUFFIX="dylib"
     fi
 
-    MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
-    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_PLATFORM_VERSION}.sdk"
     MIN_SDK_VERSION_FLAG="-mmacosx-version-min=10.8"
     SYSROOT_FLAGS="-isysroot ${MASON_SDK_PATH} -arch x86_64 ${MIN_SDK_VERSION_FLAG}"
     export CFLAGS="${SYSROOT_FLAGS}"

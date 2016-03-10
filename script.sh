@@ -36,6 +36,10 @@ function mason_compile {
           --stl="libcxx" \
           --arch="x86" \
           --platform="android-9"
+
+    mkdir -p ${MASON_PREFIX}/prebuilt/android-x86/gdbserver
+    cp -Rv ${MASON_BUILD_PATH}/prebuilt/android-x86/gdbserver/* \
+               ${MASON_PREFIX}/prebuilt/android-x86/gdbserver/
 }
 
 function mason_clean {

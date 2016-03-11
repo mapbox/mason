@@ -70,8 +70,6 @@ Apart from library/version specific actions, you can also run these commands wit
 
 ```bash
 $ mason install libuv 0.11.29
-* Loading install script 'https://github.com/mapbox/mason/blob/libuv-0.11.29/script.sh'...
-######################################################################## 100.0%
 * Downloading binary package osx-10.10/libuv/0.11.29.tar.gz...
 ######################################################################## 100.0%
 * Installed binary package at /Users/user/mason_packages/osx-10.10/libuv/0.11.29
@@ -79,9 +77,7 @@ $ mason install libuv 0.11.29
 
 Installs [libuv](https://github.com/joyent/libuv) into the current folder in the `mason_packages` directory. Libraries are versioned by platform and version number, so you can install several different versions of the same library along each other. Similarly, you can also install libraries for different platforms alongside each other, for example library binaries for OS X and iOS.
 
-Installation happens in multiple phases: First, Mason obtains the installation script for the requested library/version by either downloading it from Github, or loading the cached version from the `mason_packages/.scripts` folder if it exists.
-
-If the specified library/version is already present for this platform, nothing further happens. This means you can run the `install` command multiple times (e.g. as part of a configuration script) without doing unnecessary work.
+The `install` command first checks if the specified library/version is already present for this platform, and if so, exits. This means you can run it multiple times (e.g. as part of a configuration script) without doing unnecessary work.
 
 Next, Mason checks whether there are pre-built binaries available in the S3 bucket for the current platform. If that is the case, they are downloaded and unzipped and the installation is complete.
 
@@ -239,7 +235,6 @@ Name | Description
 `MASON_VERSION` | Version specified in the `script.sh` file. Example: `0.11.29`
 `MASON_SLUG` | Combination of the name and version. Example: `libuv-0.11.29`
 `MASON_PREFIX` | Absolute installation path. Example: `/Users/user/mason_packages/osx-10.10/libuv/0.11.29`
-`MASON_SCRIPT` | Absolute path to the install script. Example: `/Users/user/mason_packages/.scripts/libuv-0.11.29.sh`
 `MASON_BUILD_PATH` | Absolute path to the build root. Example: `/Users/user/mason_packages/.build/libuv-0.11.29`
 `MASON_BUCKET` | S3 bucket that is used for storing pre-built binary packages. Example: `mason-binaries`
 `MASON_BINARIES` | Relative path to the gzipped tarball in the `.binaries` directory. Example: `osx-10.10/libuv/0.11.29.tar.gz`
@@ -320,6 +315,4 @@ We have to override the `mason_cflags` and `mason_ldflags` commands since the re
 
 ## Troubleshooting
 
-Install scripts are cached in the `mason_packages/.scripts` directory. If you update script in the Mason repository, and your changes aren't getting applied, make sure you delete the script from that directory.
-
-Similarly, downloaded source tarballs are cached in `mason_packages/.cache`. If for some reason the initial download failed, but it still left a file in that directory, make sure you delete the partial download there.
+Downloaded source tarballs are cached in `mason_packages/.cache`. If for some reason the initial download failed, but it still left a file in that directory, make sure you delete the partial download there.

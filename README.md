@@ -65,7 +65,6 @@ The `command` can be one of the following
 Apart from library/version specific actions, you can also run these commands without library/version:
 
 * `selfupdate`: Updates mason itself
-* `init`: Creates a new Git repository named after the current folder name and publishes it to GitHub
 
 ### `install`
 

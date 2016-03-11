@@ -61,6 +61,7 @@ The `command` can be one of the following
 * `cflags`: Prints C/C++ compiler flags
 * `ldflags`: Prints linker flags
 * `link`: Creates symlinks for packages in `mason_packages/.link`
+* `trigger`: Trigger a build and publish operation on Travis CI
 
 Apart from library/version specific actions, you can also run these commands without library/version:
 
@@ -138,6 +139,16 @@ Prints the linker flags that are required to link against this library.
 ```
 
 This command only works if the package has already been installed. When run it symlinks the versioned `lib`, `include`, `share`, and `bin` folders of the package into a shared structure that is unversioned. For example if `mason prefix libuv 0.11.29` was `./mason_packages/osx-10.10/libuv/0.11.29` then the library would become available at `./mason_packages/.link/lib/libuv.a`
+
+### `trigger`
+
+In order to ensure that all prebuild binaries are consistent and reproducible, we perform the final build and publish operation on Travis CI. Use the `trigger` command to kick this off:
+
+```bash
+~ $ mason publish libuv 0.11.29
+```
+
+Run this command from the root of a local mason repository checkout. It makes a request to the Travis API to build and publish the specified version of the package, using the Travis configuration in `./scripts/${MASON_NAME}/${MASON_VERSION}/.travis.yml`. It requires the `TRAVIS_TOKEN` environment variable to be set. You can obtain an appropriate value using the [Travis command line client's](https://github.com/travis-ci/travis.rb#readme) `travis token` command.
 
 
 ## Writing build scripts

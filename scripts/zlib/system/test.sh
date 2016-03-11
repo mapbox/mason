@@ -5,7 +5,7 @@ set -u
 CODE=0
 
 function check_cflags() {
-    MASON_CFLAGS=$(./script.sh cflags)
+    MASON_CFLAGS=$(./mason cflags ${MASON_NAME} ${MASON_VERSION})
     MASON_CFLAGS=${MASON_CFLAGS/-I/}
     if [[ ! -d ${MASON_CFLAGS} ]]; then
         echo "not ok: Path for cflags not found: ${MASON_CFLAGS}"
@@ -16,7 +16,7 @@ function check_cflags() {
 }
 
 function check_ldflags() {
-    MASON_LDFLAGS=$(./script.sh ldflags)
+    MASON_LDFLAGS=$(./mason ldflags ${MASON_NAME} ${MASON_VERSION})
     for var in $MASON_LDFLAGS; do
         if [[ "${var}" =~ "-L" ]]; then
             vpath=${var/-L/}

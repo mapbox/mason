@@ -23,11 +23,10 @@ addons:
      - clang-3.5
 
 before_install:
-- git clone --depth=1 https://github.com/mapbox/mason.git ~/.mason
 
 script:
 - export CXX="clang++-3.5"
-- ./script.sh build
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
 
 after_success:
-- ./script.sh publish
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

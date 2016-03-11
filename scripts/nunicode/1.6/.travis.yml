@@ -29,12 +29,11 @@ before_install:
 - "if [[ `lsb_release -r` =~ '12.04' ]]; then sudo add-apt-repository --yes ppa:kubuntu-ppa/backports ; fi"
 - "if [[ ${TRAVIS_OS_NAME:-linux} = 'linux' ]]; then sudo apt-get update -y ; fi"
 - "if [[ ${TRAVIS_OS_NAME:-linux} = 'linux' ]]; then sudo apt-get -y install cmake ; fi"
-- git clone --depth=1 --single-branch https://github.com/mapbox/mason.git ~/.mason
 - source ~/.mason/scripts/setup_cpp11_toolchain.sh
 
 script:
 - if [[ $(uname -s) == 'Darwin' ]]; then brew install cmake; fi
-- ./script.sh build
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
 
 after_success:
-- ./script.sh publish
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

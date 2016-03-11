@@ -54,6 +54,35 @@ elif [ -z "${MASON_VERSION}" ]; then
     exit 1
 fi
 
+if [ "${MASON_COMMAND}" = "trigger" ]; then
+    if [ -z "${TRAVIS_TOKEN}" ]; then
+        echo "TRAVIS_TOKEN is not set."
+        exit 1
+    fi
+
+    body="{
+      \"request\": {
+        \"message\": \"Building ${MASON_NAME} ${MASON_VERSION}\",
+        \"branch\": \"triggered-builds\",
+        \"config\": {
+          \"env\": [
+            \"MASON_NAME=${MASON_NAME} MASON_VERSION=${MASON_VERSION}\"
+          ],
+          \"script\": \"./scripts/${MASON_NAME}/${MASON_VERSION}/script.sh build\"
+        }
+      }
+    }"
+
+    curl -s -X POST https://api.travis-ci.org/repo/mapbox%2Fmason/requests \
+        -H "Content-Type: application/json" \
+        -H "Accept: application/json" \
+        -H "Travis-API-Version: 3" \
+        -H "Authorization: token ${TRAVIS_TOKEN}" \
+        -d "$body"
+
+    exit
+fi
+
 . ${MASON_DIR}/mason.sh
 
 

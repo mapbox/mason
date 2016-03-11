@@ -45,16 +45,22 @@ if [ "${MASON_COMMAND}" = "trigger" ]; then
         exit 1
     fi
 
+    config=$(ruby <<RUBY
+    require 'yaml'
+    require 'json'
+    config = YAML.load_file("scripts/${MASON_NAME}/${MASON_VERSION}/.travis.yml")
+    config["env"] ||= {}
+    config["env"]["global"] ||= []
+    config["env"]["global"] << "MASON_NAME=${MASON_NAME}" << "MASON_VERSION=${MASON_VERSION}"
+    puts JSON.pretty_generate(config)
+RUBY
+    )
+
     body="{
       \"request\": {
         \"message\": \"Building ${MASON_NAME} ${MASON_VERSION}\",
-        \"branch\": \"triggered-builds\",
-        \"config\": {
-          \"env\": [
-            \"MASON_NAME=${MASON_NAME} MASON_VERSION=${MASON_VERSION}\"
-          ],
-          \"script\": \"./scripts/${MASON_NAME}/${MASON_VERSION}/script.sh build\"
-        }
+        \"branch\": \"$(git rev-parse --abbrev-ref HEAD)\",
+        \"config\": ${config}
       }
     }"
 

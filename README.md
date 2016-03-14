@@ -61,18 +61,16 @@ The `command` can be one of the following
 * `cflags`: Prints C/C++ compiler flags
 * `ldflags`: Prints linker flags
 * `link`: Creates symlinks for packages in `mason_packages/.link`
+* `trigger`: Trigger a build and publish operation on Travis CI
 
 Apart from library/version specific actions, you can also run these commands without library/version:
 
 * `selfupdate`: Updates mason itself
-* `init`: Creates a new Git repository named after the current folder name and publishes it to GitHub
 
 ### `install`
 
 ```bash
 $ mason install libuv 0.11.29
-* Loading install script 'https://github.com/mapbox/mason/blob/libuv-0.11.29/script.sh'...
-######################################################################## 100.0%
 * Downloading binary package osx-10.10/libuv/0.11.29.tar.gz...
 ######################################################################## 100.0%
 * Installed binary package at /Users/user/mason_packages/osx-10.10/libuv/0.11.29
@@ -80,9 +78,7 @@ $ mason install libuv 0.11.29
 
 Installs [libuv](https://github.com/joyent/libuv) into the current folder in the `mason_packages` directory. Libraries are versioned by platform and version number, so you can install several different versions of the same library along each other. Similarly, you can also install libraries for different platforms alongside each other, for example library binaries for OS X and iOS.
 
-Installation happens in multiple phases: First, Mason obtains the installation script for the requested library/version by either downloading it from Github, or loading the cached version from the `mason_packages/.scripts` folder if it exists.
-
-If the specified library/version is already present for this platform, nothing further happens. This means you can run the `install` command multiple times (e.g. as part of a configuration script) without doing unnecessary work.
+The `install` command first checks if the specified library/version is already present for this platform, and if so, exits. This means you can run it multiple times (e.g. as part of a configuration script) without doing unnecessary work.
 
 Next, Mason checks whether there are pre-built binaries available in the S3 bucket for the current platform. If that is the case, they are downloaded and unzipped and the installation is complete.
 
@@ -144,18 +140,20 @@ Prints the linker flags that are required to link against this library.
 
 This command only works if the package has already been installed. When run it symlinks the versioned `lib`, `include`, `share`, and `bin` folders of the package into a shared structure that is unversioned. For example if `mason prefix libuv 0.11.29` was `./mason_packages/osx-10.10/libuv/0.11.29` then the library would become available at `./mason_packages/.link/lib/libuv.a`
 
+### `trigger`
+
+In order to ensure that all prebuild binaries are consistent and reproducible, we perform the final build and publish operation on Travis CI. Use the `trigger` command to kick this off:
+
+```bash
+~ $ mason publish libuv 0.11.29
+```
+
+Run this command from the root of a local mason repository checkout. It makes a request to the Travis API to build and publish the specified version of the package, using the Travis configuration in `./scripts/${MASON_NAME}/${MASON_VERSION}/.travis.yml`. It requires the `TRAVIS_TOKEN` environment variable to be set. You can obtain an appropriate value using the [Travis command line client's](https://github.com/travis-ci/travis.rb#readme) `travis token` command.
+
 
 ## Writing build scripts
 
-Every build script has its own branch on https://github.com/mapbox/mason.
-
-### Branch naming
-
-The branches are named `library-version`, e.g. [`libuv-0.11.29`](https://github.com/mapbox/mason/tree/libuv-0.11.29). The `-` is important since it is used to separate the package name from the version. If you wish to make a package name more readable without using a dash you can use an underscore like `boost_libfilesystem`.
-
-### Branch files
-
-The repository must contain a file called `script.sh`, which is structured like this:
+Each version of each package has its own directory in scripts/${package}/${version}, e.g. [`scripts/libuv/0.11.29`](https://github.com/mapbox/mason/tree/master/scripts/libuv/0.11.29). The directory must contain a file called `script.sh`, which is structured like this:
 
 ```bash
 #!/usr/bin/env bash
@@ -248,7 +246,6 @@ Name | Description
 `MASON_VERSION` | Version specified in the `script.sh` file. Example: `0.11.29`
 `MASON_SLUG` | Combination of the name and version. Example: `libuv-0.11.29`
 `MASON_PREFIX` | Absolute installation path. Example: `/Users/user/mason_packages/osx-10.10/libuv/0.11.29`
-`MASON_SCRIPT` | Absolute path to the install script. Example: `/Users/user/mason_packages/.scripts/libuv-0.11.29.sh`
 `MASON_BUILD_PATH` | Absolute path to the build root. Example: `/Users/user/mason_packages/.build/libuv-0.11.29`
 `MASON_BUCKET` | S3 bucket that is used for storing pre-built binary packages. Example: `mason-binaries`
 `MASON_BINARIES` | Relative path to the gzipped tarball in the `.binaries` directory. Example: `osx-10.10/libuv/0.11.29.tar.gz`
@@ -329,6 +326,4 @@ We have to override the `mason_cflags` and `mason_ldflags` commands since the re
 
 ## Troubleshooting
 
-Install scripts are cached in the `mason_packages/.scripts` directory. If you update script in the Mason repository, and your changes aren't getting applied, make sure you delete the script from that directory.
-
-Similarly, downloaded source tarballs are cached in `mason_packages/.cache`. If for some reason the initial download failed, but it still left a file in that directory, make sure you delete the partial download there.
+Downloaded source tarballs are cached in `mason_packages/.cache`. If for some reason the initial download failed, but it still left a file in that directory, make sure you delete the partial download there.

@@ -17,8 +17,8 @@ fi
 # In non-interactive environments like Travis CI, we can't use -s because it'll fill up the log
 # way too fast
 case $- in
-    *i*) MASON_CURL_ARGS=-s ;; # interactive
-    *)   MASON_CURL_ARGS=   ;; # non-interative
+    *i*) MASON_CURL_ARGS=   ;; # interactive
+    *)   MASON_CURL_ARGS=-s ;; # non-interative
 esac
 
 case ${MASON_UNAME} in

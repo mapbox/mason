@@ -8,14 +8,14 @@ os:
 
 env:
   matrix:
-    - TEST="unit"
-    - TEST="c_install"
-    - TEST="c_build"
-    - TEST="c_install_symlink_includes"
-    - TEST="cpp11_header_install"
-    - TEST="cpp11_install"
-    - TEST="cpp11_build"
-    - TEST="c_build_android"
+    - MASON_TEST="unit"
+    - MASON_TEST="c_install"
+    - MASON_TEST="c_build"
+    - MASON_TEST="c_install_symlink_includes"
+    - MASON_TEST="cpp11_header_install"
+    - MASON_TEST="cpp11_install"
+    - MASON_TEST="cpp11_build"
+    - MASON_TEST="c_build_android"
 
 install:
 # NOTE: must be absolute path for predictable behavior
@@ -23,4 +23,4 @@ install:
 - export MASON_DIR=$(pwd)
 
 script:
-- ./test/${TEST}.sh
+- ./test/${MASON_TEST}.sh

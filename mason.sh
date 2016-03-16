@@ -127,7 +127,9 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
         export CFLAGS="-target aarch64-none-linux-android -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target aarch64-none-linux-android -fuse-ld=gold ${LDFLAGS}"
+
+        # Using bfd for aarch64: https://code.google.com/p/android/issues/detail?id=204151
+        export LDFLAGS="-target aarch64-none-linux-android -fuse-ld=bfd ${LDFLAGS}"
 
         export JNIDIR="arm64-v8a"
         MASON_ANDROID_ARCH="arm64"

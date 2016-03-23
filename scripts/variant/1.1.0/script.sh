@@ -12,7 +12,7 @@ function mason_load_source {
     cd61bc7ad50429875c7a5deb80611f97d87a8fe0
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/variant-1.0
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/variant-${MASON_VERSION}
 }
 
 function mason_compile {

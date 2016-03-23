@@ -145,7 +145,7 @@ This command only works if the package has already been installed. When run it s
 In order to ensure that all prebuild binaries are consistent and reproducible, we perform the final build and publish operation on Travis CI. Use the `trigger` command to kick this off:
 
 ```bash
-~ $ mason publish libuv 0.11.29
+~ $ mason trigger libuv 0.11.29
 ```
 
 Run this command from the root of a local mason repository checkout. It makes a request to the Travis API to build and publish the specified version of the package, using the Travis configuration in `./scripts/${MASON_NAME}/${MASON_VERSION}/.travis.yml`. It requires the `TRAVIS_TOKEN` environment variable to be set. You can obtain an appropriate value using the [Travis command line client's](https://github.com/travis-ci/travis.rb#readme) `travis token` command.

@@ -17,11 +17,10 @@ function mason_load_source {
 }
 
 function mason_compile {
-    mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
-    curl --retry 3 -s -f -# -L \
-      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
-      -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
-    patch -N -p1 < ./patch.diff
+    if [ "$MASON_PLATFORM" == "linux" ]; then
+        mason_step "Loading patch ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff"
+        patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
+    fi
 
     # note: we put ${STDLIB_CXXFLAGS} into CXX instead of LDFLAGS due to libtool oddity:
     # http://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass

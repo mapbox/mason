@@ -2,10 +2,10 @@ diff --git a/configure b/configure
 index eee34f8..808c020 100755
 --- a/configure
 +++ b/configure
-@@ -16149,7 +16149,7 @@ fi
+@@ -17611,7 +17611,7 @@
  $as_echo "$dummy_cv_ansi" >&6; }
  
- if test x"$dummy_cv_ansi" = xyes; then
+ if test yes = "$dummy_cv_ansi"; then
 -    WARNFLAGS="$WARNFLAGS -ansi"
 +    WARNFLAGS="$WARNFLAGS"
  else

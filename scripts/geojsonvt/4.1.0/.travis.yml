@@ -12,6 +12,14 @@ matrix:
       env: MASON_PLATFORM=ios
       compiler: clang
     - os: osx
+      osx_image: xcode7.2
+      env: MASON_PLATFORM=ios
+      compiler: clang
+    - os: osx
+      osx_image: xcode7.3
+      env: MASON_PLATFORM=ios
+      compiler: clang
+    - os: osx
       osx_image: xcode7
       env: MASON_PLATFORM=osx
       compiler: clang

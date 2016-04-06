@@ -298,9 +298,9 @@ function mason_download {
 }
 
 function mason_setup_build_dir {
-    rm -rf "${MASON_ROOT}/.build"
-    mkdir -p "${MASON_ROOT}/.build"
-    cd "${MASON_ROOT}/.build"
+    rm -rf "${MASON_ROOT}/.build/${MASON_SLUG}"
+    mkdir -p "${MASON_ROOT}/.build/"
+    cd "${MASON_ROOT}/.build/"
 }
 
 function mason_extract_tar_gz {

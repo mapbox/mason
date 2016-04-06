@@ -21,10 +21,10 @@ function mason_prepare_compile {
     MASON_POSTGRES=$(${MASON_DIR:-~/.mason}/mason prefix postgres 9.5.2)
     ${MASON_DIR:-~/.mason}/mason install proj 4.9.2
     MASON_PROJ=$(${MASON_DIR:-~/.mason}/mason prefix proj 4.9.2)
-    ${MASON_DIR:-~/.mason}/mason install libxml2 2.9.2
-    MASON_XML2=$(${MASON_DIR:-~/.mason}/mason prefix libxml2 2.9.2)
-    ${MASON_DIR:-~/.mason}/mason install geos 3.4.2
-    MASON_GEOS=$(${MASON_DIR:-~/.mason}/mason prefix geos 3.4.2)
+    ${MASON_DIR:-~/.mason}/mason install libxml2 2.9.3
+    MASON_XML2=$(${MASON_DIR:-~/.mason}/mason prefix libxml2 2.9.3)
+    ${MASON_DIR:-~/.mason}/mason install geos 3.5.0
+    MASON_GEOS=$(${MASON_DIR:-~/.mason}/mason prefix geos 3.5.0)
     if [[ $(uname -s) == 'Darwin' ]]; then
         FIND="\/Users\/travis\/build\/mapbox\/mason"
     else
@@ -123,8 +123,9 @@ function mason_compile {
         --with-sfcgal=no \
         --without-sfcgal \
         --disable-nls || (cat config.log && exit 1)
-    make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS" -j${MASON_CONCURRENCY}
-    make install LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS" -j${MASON_CONCURRENCY}
+    # -j${MASON_CONCURRENCY} disabled due to https://trac.osgeo.org/postgis/ticket/3345
+    make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
+    make install LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
 }
 
 function mason_clean {

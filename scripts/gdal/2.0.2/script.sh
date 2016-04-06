@@ -39,8 +39,8 @@ function mason_prepare_compile {
     ${MASON_DIR:-~/.mason}/mason install libpng 1.6.21
     MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.21)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PNG}/lib/libpng.la
-    ${MASON_DIR:-~/.mason}/mason install expat 2.1.0
-    MASON_EXPAT=$(${MASON_DIR:-~/.mason}/mason prefix expat 2.1.0)
+    ${MASON_DIR:-~/.mason}/mason install expat 2.1.1
+    MASON_EXPAT=$(${MASON_DIR:-~/.mason}/mason prefix expat 2.1.1)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
     ${MASON_DIR:-~/.mason}/mason install libpq 9.5.2
     MASON_LIBPQ=$(${MASON_DIR:-~/.mason}/mason prefix libpq 9.5.2)

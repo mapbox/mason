@@ -2,10 +2,6 @@ language: cpp
 
 sudo: false
 
-os:
-  - linux
-  - osx
-
 env:
   matrix:
     - MASON_TEST="unit"

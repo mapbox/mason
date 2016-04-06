@@ -19,7 +19,7 @@ function mason_load_source {
 function mason_compile {
     if [[ ${MASON_PLATFORM} == 'linux' ]]; then
         mason_step "Loading patch"
-        patch src/include/pg_config_manual.h ../../../patch.diff
+        patch src/include/pg_config_manual.h ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     fi
 
     ./configure \

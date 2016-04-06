@@ -1,15 +1,5 @@
 language: generic
 
-sudo: false
-
-addons:
-  apt:
-    sources:
-     - ubuntu-toolchain-r-test
-     - llvm-toolchain-precise-3.5
-    packages:
-     - clang-3.5
-
 matrix:
   include:
     - os: osx
@@ -18,6 +8,14 @@ matrix:
     - os: linux
       compiler: clang
       env: CXX=clang++-3.5 CC=clang-3.5
+      sudo: false
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+           - llvm-toolchain-precise-3.5
+          packages:
+           - clang-3.5
 
 env:
   global:

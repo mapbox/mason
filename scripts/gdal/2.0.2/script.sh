@@ -33,17 +33,17 @@ function mason_prepare_compile {
     ${MASON_DIR:-~/.mason}/mason install proj 4.9.2
     MASON_PROJ=$(${MASON_DIR:-~/.mason}/mason prefix proj 4.9.2)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PROJ}/lib/libproj.la
-    ${MASON_DIR:-~/.mason}/mason install jpeg_turbo 1.4.0
-    MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg_turbo 1.4.0)
+    ${MASON_DIR:-~/.mason}/mason install jpeg_turbo 1.4.2
+    MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg_turbo 1.4.2)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_JPEG}/lib/libjpeg.la
-    ${MASON_DIR:-~/.mason}/mason install libpng 1.6.16
-    MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.16)
+    ${MASON_DIR:-~/.mason}/mason install libpng 1.6.21
+    MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.21)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PNG}/lib/libpng.la
     ${MASON_DIR:-~/.mason}/mason install expat 2.1.0
     MASON_EXPAT=$(${MASON_DIR:-~/.mason}/mason prefix expat 2.1.0)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
-    ${MASON_DIR:-~/.mason}/mason install libpq 9.4.0
-    MASON_LIBPQ=$(${MASON_DIR:-~/.mason}/mason prefix libpq 9.4.0)
+    ${MASON_DIR:-~/.mason}/mason install libpq 9.5.2
+    MASON_LIBPQ=$(${MASON_DIR:-~/.mason}/mason prefix libpq 9.5.2)
     # depends on sudo apt-get install zlib1g-dev
     ${MASON_DIR:-~/.mason}/mason install zlib system
     MASON_ZLIB=$(${MASON_DIR:-~/.mason}/mason prefix zlib system)

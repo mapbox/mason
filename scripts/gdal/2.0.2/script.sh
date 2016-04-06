@@ -54,6 +54,10 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    if [[ ${MASON_PLATFORM} == 'linux' ]]; then
+        mason_step "Loading patch"
+        patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
+    fi
     CUSTOM_LIBS="-L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj -L${MASON_PNG}/lib -lpng -L${MASON_EXPAT}/lib -lexpat"
     CUSTOM_CFLAGS="${CFLAGS} -I${MASON_LIBPQ}/include -I${MASON_TIFF}/include -I${MASON_JPEG}/include -I${MASON_PROJ}/include -I${MASON_PNG}/include -I${MASON_EXPAT}/include"
 

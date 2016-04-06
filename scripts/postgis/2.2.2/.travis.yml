@@ -18,7 +18,6 @@ before_install:
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
-- ./test.sh
 
 # postgis must be source compiled on top of postgres to work currently
 # so we don't actually want to package binaries for it - they don't make

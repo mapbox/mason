@@ -63,8 +63,8 @@ function mason_prepare_compile {
 
 function mason_compile {
     export LDFLAGS="${LDFLAGS} \
-      -L${MASON_GEOS}/lib -lgeos_c -lgeos\
       -L${MASON_GDAL}/lib -lgdal \
+      -L${MASON_GEOS}/lib -lgeos_c -lgeos\
       -L${MASON_ZLIB}/lib -lz \
       -L${MASON_TIFF}/lib -ltiff \
       -L${MASON_JPEG}/lib -ljpeg \
@@ -89,7 +89,7 @@ function mason_compile {
     if [[ $(uname -s) == 'Darwin' ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-lc++ -Wl,${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a -liconv"
     else
-        export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm"
+        export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a -lgeos_c -lgeos -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm"
     fi
 
 
@@ -103,7 +103,7 @@ function mason_compile {
       perl -i -p -e "s/\-lgeos_c  /\-lgeos_c \-lgeos \-lstdc++ \-lm /g;" configure
       # help GDALAllRegister configure check
       CMD="data=open('./configure','r').read();open('./configure','w')"
-      CMD="${CMD}.write(data.replace('\`\$GDAL_CONFIG --libs\`','\"-lgdal -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm\"'))"
+      CMD="${CMD}.write(data.replace('\`\$GDAL_CONFIG --libs\`','\"-lgdal -lgeos_c -lgeos -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm\"'))"
       python -c "${CMD}"
     fi
 

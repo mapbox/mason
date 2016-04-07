@@ -2,7 +2,7 @@
 
 MASON_NAME=postgis
 MASON_VERSION=2.2.2
-MASON_LIB_FILE=lib/liblwgeom.a
+MASON_LIB_FILE=bin/shp2pgsql
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
@@ -109,7 +109,7 @@ function mason_compile {
 
     ./configure \
         --enable-static --disable-shared \
-        --prefix=${MASON_PREFIX} \
+        --prefix=$(mktemp -d) \
         ${MASON_HOST_ARG} \
         --with-projdir=${MASON_PROJ} \
         --with-geosconfig=${MASON_GEOS}/bin/geos-config \
@@ -126,6 +126,11 @@ function mason_compile {
     # -j${MASON_CONCURRENCY} disabled due to https://trac.osgeo.org/postgis/ticket/3345
     make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
     make install LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
+    # the meat of postgis installs into postgres directory
+    # so we actually want to package postgres with the postgis stuff
+    # inside, so here we symlink it
+    mkdir -p $(dirname $MASON_PREFIX)
+    ln -sf ${MASON_POSTGRES} ${MASON_PREFIX}
 }
 
 function mason_clean {

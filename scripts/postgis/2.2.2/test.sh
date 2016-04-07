@@ -22,7 +22,8 @@ function cleanup() {
     if [[ -d ${PGTEMP_DIR} ]]; then rm -r ${PGTEMP_DIR}; fi
     if [[ -d ${PGHOST} ]]; then rm -r ${PGHOST}; fi
     rm -f postgres.log
-    rm -f seattle_washington_water_coast.*
+    rm -f seattle_washington_water_coast*
+    rm -f seattle_washington.water.coast*
 }
 
 function setup() {
@@ -45,8 +46,7 @@ cleanup
 setup
 
 if [[ ! -d ./mason_packages/.link ]]; then
-    ../../../mason install postgres 9.5.2
-    ../../../mason link postgres 9.5.2
+    ./script.sh link
 fi
 
 ./mason_packages/.link/bin/initdb

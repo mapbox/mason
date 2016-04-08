@@ -4,7 +4,7 @@ MASON_NAME=luabind_lua524
 MASON_VERSION=e414c57bcb687bb3091b7c55bbff6947f052e46b
 MASON_LIB_FILE=lib/libluabind.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -18,10 +18,10 @@ function mason_load_source {
 
 function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
-    ${MASON_DIR:-~/.mason}/mason install lua 5.2.4
-    MASON_LUA=$(${MASON_DIR:-~/.mason}/mason prefix lua 5.2.4)
-    ${MASON_DIR:-~/.mason}/mason install boost 1.57.0
-    MASON_BOOST_HEADERS=$(${MASON_DIR:-~/.mason}/mason prefix boost 1.57.0)
+    ${MASON_DIR}/mason install lua 5.2.4
+    MASON_LUA=$(${MASON_DIR}/mason prefix lua 5.2.4)
+    ${MASON_DIR}/mason install boost 1.57.0
+    MASON_BOOST_HEADERS=$(${MASON_DIR}/mason prefix boost 1.57.0)
     SYSTEM_ZLIB="/usr"
 }
 

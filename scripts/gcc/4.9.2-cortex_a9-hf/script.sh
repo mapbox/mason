@@ -4,7 +4,7 @@ MASON_NAME=gcc
 MASON_VERSION=4.9.2-cortex_a9-hf
 MASON_LIB_FILE=root/bin/arm-cortex_a9-linux-gnueabihf-gcc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 if [ -f ${MASON_PREFIX}/setup.sh ]; then
     . ${MASON_PREFIX}/setup.sh

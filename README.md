@@ -164,7 +164,7 @@ Declare these variables first. `MASON_NAME` and `MASON_VERSION` are mandatory. I
 Then, we're loading the build system with
 
 ```bash
-. ~/.mason/mason.sh
+. ${MASON_DIR}/mason.sh
 ```
 
 Next, we're defining a function that obtains the source code and unzips it:
@@ -276,7 +276,7 @@ MASON_NAME=libpng
 MASON_VERSION=system
 MASON_SYSTEM_PACKAGE=true
 
-. ~/.mason/mason.sh
+. ${MASON_DIR}/mason.sh
 
 if [ ! $(pkg-config libpng --exists; echo $?) = 0 ]; then
     mason_error "Cannot find libpng with pkg-config"

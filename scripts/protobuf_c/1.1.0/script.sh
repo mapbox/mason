@@ -5,7 +5,7 @@ MASON_VERSION=1.1.0
 MASON_LIB_FILE=lib/libprotobuf-c.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/protobuf-c.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -19,8 +19,8 @@ function mason_load_source {
 
 function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
-    ${MASON_DIR:-~/.mason}/mason install protobuf 2.6.1
-    MASON_PROTOBUF=$(${MASON_DIR:-~/.mason}/mason prefix protobuf 2.6.1)
+    ${MASON_DIR}/mason install protobuf 2.6.1
+    MASON_PROTOBUF=$(${MASON_DIR}/mason prefix protobuf 2.6.1)
     export PKG_CONFIG_PATH=${MASON_PROTOBUF}/lib/pkgconfig:${PKG_CONFIG_PATH}
 }
 

@@ -4,7 +4,7 @@ MASON_NAME=sparsehash
 MASON_VERSION=2.0.2
 MASON_HEADER_ONLY=true
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

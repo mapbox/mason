@@ -12,7 +12,7 @@ MASON_VERSION=1.59.0
 # reference this empty file as a placeholder for all of them
 MASON_LIB_FILE=lib/libboost_placeholder.txt
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 export CXX=${CXX:-clang++}
 export MASON_CONCURRENCY_OVERRIDE=${MASON_CONCURRENCY_OVERRIDE:-${MASON_CONCURRENCY}}

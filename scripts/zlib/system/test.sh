@@ -66,8 +66,8 @@ function check_file_links() {
                     expected_keyword="/usr/include/"
                 fi
             elif [[ ${MASON_PLATFORM} == 'android' ]]; then
-                MASON_ANDROID_ABI=$(${MASON_DIR:-~/.mason}/mason env MASON_ANDROID_ABI)
-                MASON_NDK_PACKAGE_VERSION=$(${MASON_DIR:-~/.mason}/mason env MASON_NDK_PACKAGE_VERSION)
+                MASON_ANDROID_ABI=$(${MASON_DIR}/mason env MASON_ANDROID_ABI)
+                MASON_NDK_PACKAGE_VERSION=$(${MASON_DIR}/mason env MASON_NDK_PACKAGE_VERSION)
                 expected_keyword="android-ndk/${MASON_NDK_PACKAGE_VERSION}"
             fi
             if [[ "$resolved" =~ "${expected_keyword}" ]]; then
@@ -109,7 +109,7 @@ function check_shared_lib_info() {
                 fi
             fi
             BIN_PATH=$(~/.mason/mason env MASON_SDK_ROOT)/bin
-            MASON_ANDROID_TOOLCHAIN=$(${MASON_DIR:-~/.mason}/mason env MASON_ANDROID_TOOLCHAIN)
+            MASON_ANDROID_TOOLCHAIN=$(${MASON_DIR}/mason env MASON_ANDROID_TOOLCHAIN)
             ${BIN_PATH}/${MASON_ANDROID_TOOLCHAIN}-readelf -d $resolved
         fi
 
@@ -124,9 +124,9 @@ if [[ $MASON_PLATFORM != 'ios' ]]; then
     check_ldflags
     check_file_links "include/zlib.h"
     check_file_links "include/zconf.h"
-    check_file_links "lib/libz.$(${MASON_DIR:-~/.mason}/mason env MASON_DYNLIB_SUFFIX)"
+    check_file_links "lib/libz.$(${MASON_DIR}/mason env MASON_DYNLIB_SUFFIX)"
     if [[ ${CODE} == 0 ]]; then
-        check_shared_lib_info "lib/libz.$(${MASON_DIR:-~/.mason}/mason env MASON_DYNLIB_SUFFIX)"
+        check_shared_lib_info "lib/libz.$(${MASON_DIR}/mason env MASON_DYNLIB_SUFFIX)"
     else
         echo "Error already occured so skipping shared library test"
     fi

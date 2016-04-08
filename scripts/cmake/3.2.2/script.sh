@@ -4,7 +4,7 @@ MASON_NAME=cmake
 MASON_VERSION=3.2.2
 MASON_LIB_FILE=bin/cmake
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

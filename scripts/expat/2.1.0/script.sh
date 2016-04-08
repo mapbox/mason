@@ -5,7 +5,7 @@ MASON_VERSION=2.1.0
 MASON_LIB_FILE=lib/libexpat.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/expat.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

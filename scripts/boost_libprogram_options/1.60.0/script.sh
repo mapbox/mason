@@ -10,7 +10,7 @@ MASON_NAME=boost_lib${BOOST_LIBRARY}
 MASON_VERSION=${BOOST_VERSION1}
 MASON_LIB_FILE=lib/libboost_${BOOST_LIBRARY}.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

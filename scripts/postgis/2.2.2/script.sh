@@ -4,7 +4,7 @@ MASON_NAME=postgis
 MASON_VERSION=2.2.2
 MASON_LIB_FILE=bin/shp2pgsql
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -17,14 +17,14 @@ function mason_load_source {
 
 function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
-    ${MASON_DIR:-~/.mason}/mason install postgres 9.5.2
-    MASON_POSTGRES=$(${MASON_DIR:-~/.mason}/mason prefix postgres 9.5.2)
-    ${MASON_DIR:-~/.mason}/mason install proj 4.9.2
-    MASON_PROJ=$(${MASON_DIR:-~/.mason}/mason prefix proj 4.9.2)
-    ${MASON_DIR:-~/.mason}/mason install libxml2 2.9.3
-    MASON_XML2=$(${MASON_DIR:-~/.mason}/mason prefix libxml2 2.9.3)
-    ${MASON_DIR:-~/.mason}/mason install geos 3.5.0
-    MASON_GEOS=$(${MASON_DIR:-~/.mason}/mason prefix geos 3.5.0)
+    ${MASON_DIR}/mason install postgres 9.5.2
+    MASON_POSTGRES=$(${MASON_DIR}/mason prefix postgres 9.5.2)
+    ${MASON_DIR}/mason install proj 4.9.2
+    MASON_PROJ=$(${MASON_DIR}/mason prefix proj 4.9.2)
+    ${MASON_DIR}/mason install libxml2 2.9.3
+    MASON_XML2=$(${MASON_DIR}/mason prefix libxml2 2.9.3)
+    ${MASON_DIR}/mason install geos 3.5.0
+    MASON_GEOS=$(${MASON_DIR}/mason prefix geos 3.5.0)
     if [[ $(uname -s) == 'Darwin' ]]; then
         FIND="\/Users\/travis\/build\/mapbox\/mason"
     else
@@ -39,26 +39,26 @@ function mason_prepare_compile {
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/lib/libgeos_c.la
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/bin/geos-config
 
-    ${MASON_DIR:-~/.mason}/mason install gdal 2.0.2
-    MASON_GDAL=$(${MASON_DIR:-~/.mason}/mason prefix gdal 2.0.2)
+    ${MASON_DIR}/mason install gdal 2.0.2
+    MASON_GDAL=$(${MASON_DIR}/mason prefix gdal 2.0.2)
     ln -sf ${MASON_GDAL}/include ${MASON_GDAL}/include/gdal
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GDAL}/lib/libgdal.la
-    ${MASON_DIR:-~/.mason}/mason install libtiff 4.0.6
-    MASON_TIFF=$(${MASON_DIR:-~/.mason}/mason prefix libtiff 4.0.6)
+    ${MASON_DIR}/mason install libtiff 4.0.6
+    MASON_TIFF=$(${MASON_DIR}/mason prefix libtiff 4.0.6)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_TIFF}/lib/libtiff.la
-    ${MASON_DIR:-~/.mason}/mason install jpeg_turbo 1.4.2
-    MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg_turbo 1.4.2)
+    ${MASON_DIR}/mason install jpeg_turbo 1.4.2
+    MASON_JPEG=$(${MASON_DIR}/mason prefix jpeg_turbo 1.4.2)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_JPEG}/lib/libjpeg.la
-    ${MASON_DIR:-~/.mason}/mason install libpng 1.6.21
-    MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.21)
+    ${MASON_DIR}/mason install libpng 1.6.21
+    MASON_PNG=$(${MASON_DIR}/mason prefix libpng 1.6.21)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PNG}/lib/libpng.la
-    ${MASON_DIR:-~/.mason}/mason install expat 2.1.1
-    MASON_EXPAT=$(${MASON_DIR:-~/.mason}/mason prefix expat 2.1.1)
+    ${MASON_DIR}/mason install expat 2.1.1
+    MASON_EXPAT=$(${MASON_DIR}/mason prefix expat 2.1.1)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
-    ${MASON_DIR:-~/.mason}/mason install zlib system
-    MASON_ZLIB=$(${MASON_DIR:-~/.mason}/mason prefix zlib system)
-    #${MASON_DIR:-~/.mason}/mason install iconv system
-    #MASON_ICONV=$(${MASON_DIR:-~/.mason}/mason prefix iconv system)
+    ${MASON_DIR}/mason install zlib system
+    MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib system)
+    #${MASON_DIR}/mason install iconv system
+    #MASON_ICONV=$(${MASON_DIR}/mason prefix iconv system)
 }
 
 function mason_compile {

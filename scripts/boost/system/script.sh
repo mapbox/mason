@@ -4,7 +4,7 @@ MASON_NAME=boost
 MASON_VERSION=system
 MASON_SYSTEM_PACKAGE=true
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 if [ -d '/usr/local/include/boost' ]; then
     BOOST_ROOT='/usr/local'

@@ -4,7 +4,7 @@ MASON_NAME=cairo
 MASON_VERSION=1.12.18
 MASON_LIB_FILE=lib/libcairo.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -18,12 +18,12 @@ function mason_load_source {
 
 function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
-    ${MASON_DIR:-~/.mason}/mason install libpng 1.6.16
-    MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.16)
-    ${MASON_DIR:-~/.mason}/mason install freetype 2.5.5
-    MASON_FREETYPE=$(${MASON_DIR:-~/.mason}/mason prefix freetype 2.5.5)
-    ${MASON_DIR:-~/.mason}/mason install pixman 0.32.6
-    MASON_PIXMAN=$(${MASON_DIR:-~/.mason}/mason prefix pixman 0.32.6)
+    ${MASON_DIR}/mason install libpng 1.6.16
+    MASON_PNG=$(${MASON_DIR}/mason prefix libpng 1.6.16)
+    ${MASON_DIR}/mason install freetype 2.5.5
+    MASON_FREETYPE=$(${MASON_DIR}/mason prefix freetype 2.5.5)
+    ${MASON_DIR}/mason install pixman 0.32.6
+    MASON_PIXMAN=$(${MASON_DIR}/mason prefix pixman 0.32.6)
     # set up to fix libtool .la files
     # https://github.com/mapbox/mason/issues/61
     if [[ $(uname -s) == 'Darwin' ]]; then

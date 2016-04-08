@@ -5,7 +5,7 @@ MASON_VERSION=4.0.4beta
 MASON_LIB_FILE=lib/libtiff.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libtiff-4.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -19,8 +19,8 @@ function mason_load_source {
 
 function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
-    ${MASON_DIR:-~/.mason}/mason install jpeg_turbo 1.4.0
-    MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg_turbo 1.4.0)
+    ${MASON_DIR}/mason install jpeg_turbo 1.4.0
+    MASON_JPEG=$(${MASON_DIR}/mason prefix jpeg_turbo 1.4.0)
     SYSTEM_ZLIB="/usr"
 }
 

@@ -4,7 +4,7 @@ MASON_NAME=libuv
 MASON_VERSION=0.10.33
 MASON_LIB_FILE=lib/libuv.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

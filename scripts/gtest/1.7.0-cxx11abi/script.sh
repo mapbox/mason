@@ -6,7 +6,7 @@ MASON_NAME=gtest
 MASON_VERSION=${LIB_VERSION}-cxx11abi
 MASON_LIB_FILE=lib/libgtest.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

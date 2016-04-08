@@ -4,7 +4,7 @@ MASON_NAME=bzip2
 MASON_VERSION=1.0.6
 MASON_LIB_FILE=lib/libbz2.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

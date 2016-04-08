@@ -7,7 +7,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libcurl.pc
 
 MASON_PWD=`pwd`
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 
 function mason_load_source {
@@ -21,7 +21,7 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR:-~/.mason}/mason install boringssl d3bcf13
+    ${MASON_DIR}/mason install boringssl d3bcf13
     MASON_OPENSSL=`~/.mason/mason prefix boringssl d3bcf13`
 
     if [ ${MASON_PLATFORM} = 'linux' ]; then

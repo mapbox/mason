@@ -4,7 +4,7 @@ MASON_NAME=gdal
 MASON_VERSION=dev
 MASON_LIB_FILE=lib/libgdal.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/gdal-2.x
@@ -26,9 +26,9 @@ function install_dep {
     # https://github.com/mapbox/mason/issues/61
     REPLACE="$(pwd)"
     REPLACE=${REPLACE////\\/}
-    ${MASON_DIR:-~/.mason}/mason install $1 $2
-    ${MASON_DIR:-~/.mason}/mason link $1 $2
-    LA_FILE=$(${MASON_DIR:-~/.mason}/mason prefix $1 $2)/lib/$3.la
+    ${MASON_DIR}/mason install $1 $2
+    ${MASON_DIR}/mason link $1 $2
+    LA_FILE=$(${MASON_DIR}/mason prefix $1 $2)/lib/$3.la
     if [[ -f ${LA_FILE} ]]; then
        perl -i -p -e "s/${FIND_PATTERN}/${REPLACE}/g;" ${LA_FILE}
     else
@@ -45,11 +45,11 @@ function mason_prepare_compile {
     install_dep expat 2.1.0 libexpat
     install_dep libpq 9.4.0 libpq
     # depends on sudo apt-get install zlib1g-dev
-    ${MASON_DIR:-~/.mason}/mason install zlib system
-    MASON_ZLIB=$(${MASON_DIR:-~/.mason}/mason prefix zlib system)
+    ${MASON_DIR}/mason install zlib system
+    MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib system)
     # depends on sudo apt-get install libc6-dev
-    #${MASON_DIR:-~/.mason}/mason install iconv system
-    #MASON_ICONV=$(${MASON_DIR:-~/.mason}/mason prefix iconv system)
+    #${MASON_DIR}/mason install iconv system
+    #MASON_ICONV=$(${MASON_DIR}/mason prefix iconv system)
 }
 
 function mason_compile {

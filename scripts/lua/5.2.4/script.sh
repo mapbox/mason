@@ -4,7 +4,7 @@ MASON_NAME=lua
 MASON_VERSION=5.2.4
 MASON_LIB_FILE=lib/liblua.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

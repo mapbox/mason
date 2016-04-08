@@ -5,7 +5,7 @@ MASON_VERSION=2cd5323531dcd800549b2cb1cb51d708e72ab2d8
 MASON_LIB_FILE=lib/libharfbuzz.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/harfbuzz.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -18,11 +18,11 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR:-~/.mason}/mason install freetype 2.5.4
-    MASON_FREETYPE=$(${MASON_DIR:-~/.mason}/mason prefix freetype 2.5.4)
-    MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason install ragel 6.9
-    export PATH=$(MASON_PLATFORM= ${MASON_DIR:-~/.mason}/mason prefix ragel 6.9)/bin:$PATH
-    export PKG_CONFIG_PATH="$(${MASON_DIR:-~/.mason}/mason prefix freetype 2.5.4)/lib/pkgconfig":$PKG_CONFIG_PATH
+    ${MASON_DIR}/mason install freetype 2.5.4
+    MASON_FREETYPE=$(${MASON_DIR}/mason prefix freetype 2.5.4)
+    MASON_PLATFORM= ${MASON_DIR}/mason install ragel 6.9
+    export PATH=$(MASON_PLATFORM= ${MASON_DIR}/mason prefix ragel 6.9)/bin:$PATH
+    export PKG_CONFIG_PATH="$(${MASON_DIR}/mason prefix freetype 2.5.4)/lib/pkgconfig":$PKG_CONFIG_PATH
     export C_INCLUDE_PATH="${MASON_FREETYPE}/include/freetype2"
     export CPLUS_INCLUDE_PATH="${MASON_FREETYPE}/include/freetype2"
     export LIBRARY_PATH="${MASON_FREETYPE}/lib"

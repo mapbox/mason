@@ -4,7 +4,7 @@ MASON_NAME=geojsonvt
 MASON_VERSION=4.0.0
 MASON_LIB_FILE=lib/libgeojsonvt.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -19,7 +19,7 @@ function mason_load_source {
 function mason_compile {
     # setup mason
     rm -rf .mason
-    ln -s ${MASON_DIR:-~/.mason} .mason
+    ln -s ${MASON_DIR} .mason
 
     # build
     INSTALL_PREFIX=${MASON_PREFIX} ./configure

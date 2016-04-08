@@ -5,7 +5,7 @@ MASON_VERSION=1.6.16
 MASON_LIB_FILE=lib/libpng.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libpng.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

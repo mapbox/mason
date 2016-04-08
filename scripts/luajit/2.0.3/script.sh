@@ -4,7 +4,7 @@ MASON_NAME=luajit
 MASON_VERSION=2.0.3
 MASON_LIB_FILE=lib/libluajit-5.1.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

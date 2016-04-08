@@ -72,4 +72,5 @@ fi
 
 . ${MASON_DIR}/mason.sh
 
+export MASON_DIR
 bash "${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/script.sh" "${MASON_COMMAND}" "$@"

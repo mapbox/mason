@@ -4,7 +4,7 @@ MASON_NAME=clang-tidy
 MASON_VERSION=3.8
 MASON_LIB_FILE=bin/clang-tidy
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_build {
     mkdir -p "${MASON_PREFIX}/bin"

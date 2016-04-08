@@ -4,7 +4,7 @@ MASON_NAME=jpeg
 MASON_VERSION=v9a
 MASON_LIB_FILE=lib/libjpeg.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

@@ -4,7 +4,7 @@ MASON_NAME=tippecanoe
 MASON_VERSION=1.9.7
 MASON_LIB_FILE=bin/tippecanoe
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -18,10 +18,10 @@ function mason_load_source {
 
 function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
-    ${MASON_DIR:-~/.mason}/mason install protobuf 2.6.1
-    ${MASON_DIR:-~/.mason}/mason link protobuf 2.6.1
-    ${MASON_DIR:-~/.mason}/mason install sqlite 3.9.1
-    ${MASON_DIR:-~/.mason}/mason link sqlite 3.9.1
+    ${MASON_DIR}/mason install protobuf 2.6.1
+    ${MASON_DIR}/mason link protobuf 2.6.1
+    ${MASON_DIR}/mason install sqlite 3.9.1
+    ${MASON_DIR}/mason link sqlite 3.9.1
 }
 
 function mason_compile {

@@ -4,7 +4,7 @@ MASON_NAME=osm2pgsql
 MASON_VERSION=0.87.2
 MASON_LIB_FILE=bin/osm2pgsql
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -27,35 +27,35 @@ function mason_prepare_compile {
     fi
     REPLACE="$(pwd)"
     REPLACE=${REPLACE////\\/}
-    ${MASON_DIR:-~/.mason}/mason install boost 1.57.0
-    MASON_BOOST=$(${MASON_DIR:-~/.mason}/mason prefix boost 1.57.0)
+    ${MASON_DIR}/mason install boost 1.57.0
+    MASON_BOOST=$(${MASON_DIR}/mason prefix boost 1.57.0)
     MASON_BOOST_LIBS=$(pwd)/mason_packages/.link/lib
-    ${MASON_DIR:-~/.mason}/mason install boost_libsystem 1.57.0
-    ${MASON_DIR:-~/.mason}/mason link boost_libsystem 1.57.0
-    ${MASON_DIR:-~/.mason}/mason install boost_libthread 1.57.0
-    ${MASON_DIR:-~/.mason}/mason link boost_libthread 1.57.0
-    MASON_BOOST_SYSTEM=$(${MASON_DIR:-~/.mason}/mason prefix boost_libsystem 1.57.0)
-    ${MASON_DIR:-~/.mason}/mason install boost_libfilesystem 1.57.0
-    ${MASON_DIR:-~/.mason}/mason link boost_libfilesystem 1.57.0
-    ${MASON_DIR:-~/.mason}/mason install libxml2 2.9.2
-    MASON_XML2=$(${MASON_DIR:-~/.mason}/mason prefix libxml2 2.9.2)
+    ${MASON_DIR}/mason install boost_libsystem 1.57.0
+    ${MASON_DIR}/mason link boost_libsystem 1.57.0
+    ${MASON_DIR}/mason install boost_libthread 1.57.0
+    ${MASON_DIR}/mason link boost_libthread 1.57.0
+    MASON_BOOST_SYSTEM=$(${MASON_DIR}/mason prefix boost_libsystem 1.57.0)
+    ${MASON_DIR}/mason install boost_libfilesystem 1.57.0
+    ${MASON_DIR}/mason link boost_libfilesystem 1.57.0
+    ${MASON_DIR}/mason install libxml2 2.9.2
+    MASON_XML2=$(${MASON_DIR}/mason prefix libxml2 2.9.2)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_XML2}/bin/xml2-config
-    ${MASON_DIR:-~/.mason}/mason install geos 3.4.2
-    MASON_GEOS=$(${MASON_DIR:-~/.mason}/mason prefix geos 3.4.2)
+    ${MASON_DIR}/mason install geos 3.4.2
+    MASON_GEOS=$(${MASON_DIR}/mason prefix geos 3.4.2)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/bin/geos-config
-    ${MASON_DIR:-~/.mason}/mason install proj 4.8.0
-    MASON_PROJ=$(${MASON_DIR:-~/.mason}/mason prefix proj 4.8.0)
-    ${MASON_DIR:-~/.mason}/mason install bzip 1.0.6
-    MASON_BZIP=$(${MASON_DIR:-~/.mason}/mason prefix bzip 1.0.6)
+    ${MASON_DIR}/mason install proj 4.8.0
+    MASON_PROJ=$(${MASON_DIR}/mason prefix proj 4.8.0)
+    ${MASON_DIR}/mason install bzip 1.0.6
+    MASON_BZIP=$(${MASON_DIR}/mason prefix bzip 1.0.6)
     # depends on sudo apt-get install zlib1g-dev
-    ${MASON_DIR:-~/.mason}/mason install zlib system
-    MASON_ZLIB=$(${MASON_DIR:-~/.mason}/mason prefix zlib system)
-    ${MASON_DIR:-~/.mason}/mason install protobuf 2.6.1
-    MASON_PROTOBUF=$(${MASON_DIR:-~/.mason}/mason prefix protobuf 2.6.1)
-    ${MASON_DIR:-~/.mason}/mason install protobuf_c 1.1.0
-    MASON_PROTOBUF_C=$(${MASON_DIR:-~/.mason}/mason prefix protobuf_c 1.1.0)
-    ${MASON_DIR:-~/.mason}/mason install libpq 9.4.1
-    MASON_LIBPQ=$(${MASON_DIR:-~/.mason}/mason prefix libpq 9.4.1)
+    ${MASON_DIR}/mason install zlib system
+    MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib system)
+    ${MASON_DIR}/mason install protobuf 2.6.1
+    MASON_PROTOBUF=$(${MASON_DIR}/mason prefix protobuf 2.6.1)
+    ${MASON_DIR}/mason install protobuf_c 1.1.0
+    MASON_PROTOBUF_C=$(${MASON_DIR}/mason prefix protobuf_c 1.1.0)
+    ${MASON_DIR}/mason install libpq 9.4.1
+    MASON_LIBPQ=$(${MASON_DIR}/mason prefix libpq 9.4.1)
 }
 
 function mason_compile {

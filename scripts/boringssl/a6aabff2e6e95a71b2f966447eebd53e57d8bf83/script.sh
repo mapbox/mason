@@ -4,7 +4,7 @@ MASON_NAME=boringssl
 MASON_VERSION=a6aabff2e6e95a71b2f966447eebd53e57d8bf83
 MASON_LIB_FILE=lib/libboringssl.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 MASON_PWD=$(pwd)
 

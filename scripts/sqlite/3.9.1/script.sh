@@ -7,7 +7,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/sqlite3.pc
 
 SQLITE_FILE_VERSION=3090100
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

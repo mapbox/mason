@@ -4,7 +4,7 @@ MASON_NAME=parallel
 MASON_VERSION=20160422
 MASON_LIB_FILE=bin/parallel
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

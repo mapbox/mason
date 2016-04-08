@@ -5,7 +5,7 @@ MASON_VERSION=2.9.3
 MASON_LIB_FILE=lib/libxml2.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libxml-2.0.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

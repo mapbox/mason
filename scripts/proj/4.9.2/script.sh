@@ -4,7 +4,7 @@ MASON_NAME=proj
 MASON_VERSION=4.9.2
 MASON_LIB_FILE=lib/libproj.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

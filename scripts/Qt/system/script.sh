@@ -4,7 +4,7 @@ MASON_NAME=Qt
 MASON_VERSION=system
 MASON_SYSTEM_PACKAGE=true
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 QT_LIBS=(${2:-QtCore})
 

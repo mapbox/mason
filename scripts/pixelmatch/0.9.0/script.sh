@@ -4,7 +4,7 @@ MASON_NAME=pixelmatch
 MASON_VERSION=0.9.0
 MASON_HEADER_ONLY=true
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

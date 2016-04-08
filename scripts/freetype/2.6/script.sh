@@ -6,7 +6,7 @@ MASON_VERSION=2.6
 MASON_LIB_FILE=lib/libfreetype.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/freetype2.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

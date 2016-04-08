@@ -5,7 +5,7 @@ MASON_VERSION=55.1
 MASON_LIB_FILE=lib/libicuuc.a
 #MASON_PKGCONFIG_FILE=lib/pkgconfig/icu-uc.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

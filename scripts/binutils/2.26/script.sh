@@ -4,7 +4,7 @@ MASON_NAME=binutils
 MASON_VERSION=2.26
 MASON_LIB_FILE=bin/ld
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

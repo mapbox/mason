@@ -4,7 +4,6 @@ set -o pipefail
 
 MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
 MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
-MASON_DIR=${MASON_DIR:-~/.mason}
 
 MASON_UNAME=`uname -s`
 if [ ${MASON_UNAME} = 'Darwin' ]; then

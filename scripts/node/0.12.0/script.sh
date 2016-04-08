@@ -4,7 +4,7 @@ MASON_NAME=node
 MASON_VERSION=0.12.0
 MASON_LIB_FILE=bin/node
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then

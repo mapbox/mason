@@ -4,7 +4,7 @@ MASON_NAME=kdbush
 MASON_VERSION=0.1.0
 MASON_HEADER_ONLY=true
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

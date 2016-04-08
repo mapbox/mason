@@ -5,7 +5,7 @@ MASON_VERSION=0.5.0
 MASON_LIB_FILE=lib/libwebp.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libwebp.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

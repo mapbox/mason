@@ -4,7 +4,7 @@ MASON_NAME=osrm
 MASON_VERSION=0.4.1
 MASON_LIB_FILE=lib/libOSRM.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -17,8 +17,8 @@ function mason_load_source {
 }
 
 function dep() {
-    ${MASON_DIR:-~/.mason}/mason install $1 $2
-    ${MASON_DIR:-~/.mason}/mason link $1 $2
+    ${MASON_DIR}/mason install $1 $2
+    ${MASON_DIR}/mason link $1 $2
 }
 
 function all_deps() {

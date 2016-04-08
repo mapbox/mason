@@ -9,7 +9,7 @@ BOOST_ARCH="x86"
 MASON_NAME=boost_lib${BOOST_LIBRARY}_shared
 MASON_VERSION=1.57.0
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 MASON_LIB_FILE=lib/libboost_unit_test_framework.${MASON_DYNLIB_SUFFIX}
 

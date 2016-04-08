@@ -12,7 +12,7 @@ MASON_VERSION=1.59.0
 # reference this empty file as a placeholder for all of them
 MASON_LIB_FILE=lib/libboost_placeholder.txt
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -40,8 +40,8 @@ function gen_config() {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR:-~/.mason}/mason install icu 55.1
-    MASON_ICU=$(${MASON_DIR:-~/.mason}/mason prefix icu 55.1)
+    ${MASON_DIR}/mason install icu 55.1
+    MASON_ICU=$(${MASON_DIR}/mason prefix icu 55.1)
     BOOST_LDFLAGS="-L${MASON_ICU}/lib -licuuc -licui18n -licudata"
 }
 

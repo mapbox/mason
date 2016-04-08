@@ -4,7 +4,7 @@ MASON_NAME=gdal
 MASON_VERSION=2.0.2
 MASON_LIB_FILE=lib/libgdal.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -27,29 +27,29 @@ function mason_prepare_compile {
     fi
     REPLACE="$(pwd)"
     REPLACE=${REPLACE////\\/}
-    ${MASON_DIR:-~/.mason}/mason install libtiff 4.0.6
-    MASON_TIFF=$(${MASON_DIR:-~/.mason}/mason prefix libtiff 4.0.6)
+    ${MASON_DIR}/mason install libtiff 4.0.6
+    MASON_TIFF=$(${MASON_DIR}/mason prefix libtiff 4.0.6)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_TIFF}/lib/libtiff.la
-    ${MASON_DIR:-~/.mason}/mason install proj 4.9.2
-    MASON_PROJ=$(${MASON_DIR:-~/.mason}/mason prefix proj 4.9.2)
+    ${MASON_DIR}/mason install proj 4.9.2
+    MASON_PROJ=$(${MASON_DIR}/mason prefix proj 4.9.2)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PROJ}/lib/libproj.la
-    ${MASON_DIR:-~/.mason}/mason install jpeg_turbo 1.4.2
-    MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg_turbo 1.4.2)
+    ${MASON_DIR}/mason install jpeg_turbo 1.4.2
+    MASON_JPEG=$(${MASON_DIR}/mason prefix jpeg_turbo 1.4.2)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_JPEG}/lib/libjpeg.la
-    ${MASON_DIR:-~/.mason}/mason install libpng 1.6.21
-    MASON_PNG=$(${MASON_DIR:-~/.mason}/mason prefix libpng 1.6.21)
+    ${MASON_DIR}/mason install libpng 1.6.21
+    MASON_PNG=$(${MASON_DIR}/mason prefix libpng 1.6.21)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PNG}/lib/libpng.la
-    ${MASON_DIR:-~/.mason}/mason install expat 2.1.1
-    MASON_EXPAT=$(${MASON_DIR:-~/.mason}/mason prefix expat 2.1.1)
+    ${MASON_DIR}/mason install expat 2.1.1
+    MASON_EXPAT=$(${MASON_DIR}/mason prefix expat 2.1.1)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
-    ${MASON_DIR:-~/.mason}/mason install libpq 9.5.2
-    MASON_LIBPQ=$(${MASON_DIR:-~/.mason}/mason prefix libpq 9.5.2)
+    ${MASON_DIR}/mason install libpq 9.5.2
+    MASON_LIBPQ=$(${MASON_DIR}/mason prefix libpq 9.5.2)
     # depends on sudo apt-get install zlib1g-dev
-    ${MASON_DIR:-~/.mason}/mason install zlib system
-    MASON_ZLIB=$(${MASON_DIR:-~/.mason}/mason prefix zlib system)
+    ${MASON_DIR}/mason install zlib system
+    MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib system)
     # depends on sudo apt-get install libc6-dev
-    #${MASON_DIR:-~/.mason}/mason install iconv system
-    #MASON_ICONV=$(${MASON_DIR:-~/.mason}/mason prefix iconv system)
+    #${MASON_DIR}/mason install iconv system
+    #MASON_ICONV=$(${MASON_DIR}/mason prefix iconv system)
     export LIBRARY_PATH=${MASON_LIBPQ}/lib:$LIBRARY_PATH
 }
 

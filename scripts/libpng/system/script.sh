@@ -4,7 +4,7 @@ MASON_NAME=libpng
 MASON_VERSION=system
 MASON_SYSTEM_PACKAGE=true
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 if [ ! $(pkg-config libpng --exists; echo $?) = 0 ]; then
     mason_error "Cannot find libpng with pkg-config"

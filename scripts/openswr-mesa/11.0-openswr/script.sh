@@ -5,7 +5,7 @@ MASON_VERSION=11.0-openswr
 MASON_LIB_FILE=lib/libGL.so
 MASON_PKGCONFIG_FILE=lib/pkgconfig/gl.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

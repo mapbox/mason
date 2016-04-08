@@ -4,7 +4,7 @@ MASON_NAME=sqlite
 MASON_VERSION=system
 MASON_SYSTEM_PACKAGE=true
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 
 if [[ ${MASON_PLATFORM} = 'android' ]]; then

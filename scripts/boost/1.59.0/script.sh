@@ -4,7 +4,7 @@ MASON_NAME=boost
 MASON_VERSION=1.59.0
 MASON_HEADER_ONLY=true
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 BOOST_ROOT=${MASON_PREFIX}
 

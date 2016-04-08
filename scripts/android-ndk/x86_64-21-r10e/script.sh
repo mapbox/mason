@@ -4,7 +4,7 @@ MASON_NAME=android-ndk
 MASON_VERSION=x86_64-21-r10e
 MASON_LIB_FILE=
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then

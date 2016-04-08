@@ -4,7 +4,7 @@ MASON_NAME=ccache
 MASON_VERSION=3.2.4
 MASON_LIB_FILE=bin/ccache
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

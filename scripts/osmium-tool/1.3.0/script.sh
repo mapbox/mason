@@ -4,7 +4,7 @@ MASON_NAME=osmium-tool
 MASON_VERSION=1.3.0
 MASON_LIB_FILE=bin/osmium
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -24,20 +24,20 @@ function mason_prepare_compile {
     tar -xzf osmium.tar.gz
 
     cd $(dirname ${MASON_ROOT})
-    ${MASON_DIR:-~/.mason}/mason install boost 1.57.0
-    ${MASON_DIR:-~/.mason}/mason link boost 1.57.0
-    ${MASON_DIR:-~/.mason}/mason install boost_libprogram_options 1.57.0
-    ${MASON_DIR:-~/.mason}/mason link boost_libprogram_options 1.57.0
-    ${MASON_DIR:-~/.mason}/mason install protobuf 2.6.1
-    ${MASON_DIR:-~/.mason}/mason link protobuf 2.6.1
-    ${MASON_DIR:-~/.mason}/mason install zlib 1.2.8
-    ${MASON_DIR:-~/.mason}/mason link zlib 1.2.8
-    ${MASON_DIR:-~/.mason}/mason install expat 2.1.0
-    ${MASON_DIR:-~/.mason}/mason link expat 2.1.0
-    ${MASON_DIR:-~/.mason}/mason install osmpbf 1.3.3
-    ${MASON_DIR:-~/.mason}/mason link osmpbf 1.3.3
-    ${MASON_DIR:-~/.mason}/mason install bzip 1.0.6
-    ${MASON_DIR:-~/.mason}/mason link bzip 1.0.6
+    ${MASON_DIR}/mason install boost 1.57.0
+    ${MASON_DIR}/mason link boost 1.57.0
+    ${MASON_DIR}/mason install boost_libprogram_options 1.57.0
+    ${MASON_DIR}/mason link boost_libprogram_options 1.57.0
+    ${MASON_DIR}/mason install protobuf 2.6.1
+    ${MASON_DIR}/mason link protobuf 2.6.1
+    ${MASON_DIR}/mason install zlib 1.2.8
+    ${MASON_DIR}/mason link zlib 1.2.8
+    ${MASON_DIR}/mason install expat 2.1.0
+    ${MASON_DIR}/mason link expat 2.1.0
+    ${MASON_DIR}/mason install osmpbf 1.3.3
+    ${MASON_DIR}/mason link osmpbf 1.3.3
+    ${MASON_DIR}/mason install bzip 1.0.6
+    ${MASON_DIR}/mason link bzip 1.0.6
 }
 
 function mason_compile {

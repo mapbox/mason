@@ -5,7 +5,7 @@ MASON_VERSION=0.11.2
 MASON_LIB_FILE=lib/libzip.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libzip.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

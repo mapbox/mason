@@ -5,7 +5,7 @@ MASON_VERSION=2.6.1
 MASON_LIB_FILE=lib/libprotobuf-lite.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/protobuf-lite.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

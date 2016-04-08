@@ -5,7 +5,7 @@ MASON_VERSION=46346a6b570b6084be53063216fbd2825d311675
 MASON_LIB_FILE=lib/libtiff.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libtiff-4.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
@@ -18,8 +18,8 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR:-~/.mason}/mason install jpeg v8d
-    MASON_JPEG=$(${MASON_DIR:-~/.mason}/mason prefix jpeg v8d)
+    ${MASON_DIR}/mason install jpeg v8d
+    MASON_JPEG=$(${MASON_DIR}/mason prefix jpeg v8d)
     SYSTEM_ZLIB="/usr"
 }
 

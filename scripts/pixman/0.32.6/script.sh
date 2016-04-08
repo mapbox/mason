@@ -4,7 +4,7 @@ MASON_NAME=pixman
 MASON_VERSION=0.32.6
 MASON_LIB_FILE=lib/libpixman-1.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

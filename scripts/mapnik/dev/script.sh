@@ -4,7 +4,7 @@ MASON_NAME=mapnik
 MASON_VERSION=dev
 MASON_LIB_FILE=lib/libmapnik-wkt.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-3.x

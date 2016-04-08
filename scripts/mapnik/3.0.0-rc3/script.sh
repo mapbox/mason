@@ -4,7 +4,7 @@ MASON_NAME=mapnik
 MASON_VERSION=3.0.0-rc3
 MASON_LIB_FILE=lib/libmapnik-wkt.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

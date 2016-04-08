@@ -4,7 +4,7 @@ MASON_NAME=iojs
 MASON_VERSION=2.0.1
 MASON_LIB_FILE=bin/iojs
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then

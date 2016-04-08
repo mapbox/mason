@@ -4,7 +4,7 @@ MASON_NAME=geowave-jace
 MASON_VERSION=0.8.7
 MASON_LIB_FILE=lib/libjace.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download http://s3.amazonaws.com/geowave-rpms/release/TARBALL/geowave-0.8.7-c8ef40c-jace-source.tar.gz \
@@ -16,8 +16,8 @@ function mason_load_source {
 }
 
 function dep() {
-    ${MASON_DIR:-~/.mason}/mason install $1 $2
-    ${MASON_DIR:-~/.mason}/mason link $1 $2
+    ${MASON_DIR}/mason install $1 $2
+    ${MASON_DIR}/mason link $1 $2
 }
 
 function all_deps() {

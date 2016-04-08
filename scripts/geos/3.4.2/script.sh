@@ -4,7 +4,7 @@ MASON_NAME=geos
 MASON_VERSION=3.4.2
 MASON_LIB_FILE=lib/libgeos.a
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

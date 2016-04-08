@@ -4,7 +4,7 @@ MASON_NAME=libosmium
 MASON_VERSION=2.6.1
 MASON_HEADER_ONLY=true
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

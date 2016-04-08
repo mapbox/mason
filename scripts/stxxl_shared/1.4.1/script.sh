@@ -4,7 +4,7 @@ MASON_NAME=stxxl_shared
 MASON_VERSION=1.4.1
 MASON_LIB_FILE=lib/libstxxl.${MASON_DYNLIB_SUFFIX}
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

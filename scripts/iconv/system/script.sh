@@ -4,7 +4,7 @@ MASON_NAME=iconv
 MASON_VERSION=system
 MASON_SYSTEM_PACKAGE=true
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     :

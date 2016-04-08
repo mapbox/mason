@@ -4,7 +4,7 @@ MASON_NAME=shelf-pack
 MASON_VERSION=1.0.0
 MASON_HEADER_ONLY=true
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

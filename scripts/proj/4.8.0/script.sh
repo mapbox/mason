@@ -5,7 +5,7 @@ MASON_VERSION=4.8.0
 MASON_LIB_FILE=lib/libproj.a
 #MASON_PKGCONFIG_FILE=lib/pkgconfig/proj.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

@@ -5,7 +5,7 @@ MASON_VERSION=1.0.2
 MASON_LIB_FILE=lib/libssl.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/openssl.pc
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

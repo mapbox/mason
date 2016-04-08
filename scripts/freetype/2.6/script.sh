@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-#export PATH=~/.mason:$PATH
 MASON_NAME=freetype
 MASON_VERSION=2.6
 MASON_LIB_FILE=lib/libfreetype.a

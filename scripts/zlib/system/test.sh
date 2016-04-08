@@ -94,7 +94,7 @@ function check_shared_lib_info() {
             readelf -d $resolved
         elif [[ ${MASON_PLATFORM} == 'android' ]]; then
             FILE_DETAILS=$(file $resolved)
-            MASON_ANDROID_ARCH=$(~/.mason/mason env MASON_ANDROID_ARCH)
+            MASON_ANDROID_ARCH=$(${MASON_DIR}/mason env MASON_ANDROID_ARCH)
             if [[ ${MASON_ANDROID_ARCH} =~ "64" ]]; then
                 if [[ ${FILE_DETAILS} =~ "64-bit" ]]; then
                     echo "ok: ${MASON_ANDROID_ARCH} 64-bit arch (for ${MASON_ANDROID_ABI}) expected and detected in $FILE_DETAILS"
@@ -108,7 +108,7 @@ function check_shared_lib_info() {
                     CODE=1
                 fi
             fi
-            BIN_PATH=$(~/.mason/mason env MASON_SDK_ROOT)/bin
+            BIN_PATH=$(${MASON_DIR}/mason env MASON_SDK_ROOT)/bin
             MASON_ANDROID_TOOLCHAIN=$(${MASON_DIR}/mason env MASON_ANDROID_TOOLCHAIN)
             ${BIN_PATH}/${MASON_ANDROID_TOOLCHAIN}-readelf -d $resolved
         fi

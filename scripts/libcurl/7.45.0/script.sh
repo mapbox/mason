@@ -22,7 +22,7 @@ function mason_load_source {
 
 function mason_prepare_compile {
     ${MASON_DIR}/mason install openssl ${OPENSSL_VERSION}
-    MASON_OPENSSL=`~/.mason/mason prefix openssl ${OPENSSL_VERSION}`
+    MASON_OPENSSL=`${MASON_DIR}/mason prefix openssl ${OPENSSL_VERSION}`
 
     if [ ${MASON_PLATFORM} = 'linux' ]; then
         LIBS="-ldl ${LIBS=}"

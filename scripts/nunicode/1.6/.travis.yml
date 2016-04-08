@@ -29,7 +29,7 @@ before_install:
 - "if [[ `lsb_release -r` =~ '12.04' ]]; then sudo add-apt-repository --yes ppa:kubuntu-ppa/backports ; fi"
 - "if [[ ${TRAVIS_OS_NAME:-linux} = 'linux' ]]; then sudo apt-get update -y ; fi"
 - "if [[ ${TRAVIS_OS_NAME:-linux} = 'linux' ]]; then sudo apt-get -y install cmake ; fi"
-- source ~/.mason/scripts/setup_cpp11_toolchain.sh
+- source ./scripts/setup_cpp11_toolchain.sh
 
 script:
 - if [[ $(uname -s) == 'Darwin' ]]; then brew install cmake; fi

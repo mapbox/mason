@@ -19,11 +19,7 @@ fi
 ROOTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MASON_DIR=${MASON_DIR:-$ROOTDIR}
 
-if [ "${MASON_COMMAND}" = "selfupdate" ]; then
-    cd ~/.mason
-    git pull origin master
-    exit
-elif [ "${MASON_COMMAND}" = "env" ]; then
+if [ "${MASON_COMMAND}" = "env" ]; then
     . ${MASON_DIR}/mason.sh > /dev/null
     eval echo \$${MASON_NAME}
     exit

@@ -62,10 +62,6 @@ The `command` can be one of the following
 * `link`: Creates symlinks for packages in `mason_packages/.link`
 * `trigger`: Trigger a build and publish operation on Travis CI
 
-Apart from library/version specific actions, you can also run these commands without library/version:
-
-* `selfupdate`: Updates mason itself
-
 ### `install`
 
 ```bash

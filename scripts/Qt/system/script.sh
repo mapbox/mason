@@ -8,13 +8,16 @@ MASON_SYSTEM_PACKAGE=true
 
 QT_LIBS=(${2:-QtCore})
 
+if hash qmake 2>/dev/null; then
+    QMAKE_CMD=qmake
 #Some systems such as Fedora23 uses qmake-qt5
-if hash qmake-qt5 2>/dev/null; then
+elif hash qmake-qt5 2>/dev/null; then
     QMAKE_CMD=qmake-qt5
 elif hash qmake-qt4 2>/dev/null; then
     QMAKE_CMD=qmake-qt4
 else
-    QMAKE_CMD=qmake
+    mason_error "Can't find qmake executable"
+    exit 1
 fi
 
 # Qt5 libs are called Qt5*, so we have to use the correct name to pkg-config

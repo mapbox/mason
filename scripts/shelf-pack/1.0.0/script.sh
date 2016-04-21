@@ -18,7 +18,7 @@ function mason_load_source {
 function mason_compile {
     mkdir -p ${MASON_PREFIX}/include/mapbox
     cp -v include/*.hpp ${MASON_PREFIX}/include/mapbox
-    cp -v README.md LICENSE.txt ${MASON_PREFIX}
+    cp -v README.md LICENSE.md ${MASON_PREFIX}
 }
 
 function mason_cflags {

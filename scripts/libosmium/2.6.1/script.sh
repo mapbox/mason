@@ -19,6 +19,7 @@ function mason_load_source {
 function mason_compile {
     mkdir -p ${MASON_PREFIX}/include/
     cp -r include/osmium ${MASON_PREFIX}/include/osmium
+    cp include/utf8.h ${MASON_PREFIX}/include/
 }
 
 mason_run "$@"

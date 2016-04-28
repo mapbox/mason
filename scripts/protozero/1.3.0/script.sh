@@ -21,4 +21,13 @@ function mason_compile {
     cp -r include/protozero ${MASON_PREFIX}/include/protozero
 }
 
+function mason_cflags {
+    echo "-I${MASON_PREFIX}/include"
+}
+
+function mason_ldflags {
+    :
+}
+
+
 mason_run "$@"

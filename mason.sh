@@ -246,8 +246,9 @@ if [[ ${MASON_HEADER_ONLY} == true ]]; then
 else
     MASON_PLATFORM_ID=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}
 fi
-MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}
-MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}.tar.gz
+MASON_SUFFIX=${MASON_SUFFIX:-}
+MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}${MASON_SUFFIX}
+MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}${MASON_SUFFIX}.tar.gz
 MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
 
 
@@ -557,7 +558,7 @@ function mason_version {
 
 function mason_list_existing_package {
     local PREFIX=$1
-    local RESULT=$(aws s3api head-object --bucket mason-binaries --key $PREFIX/$MASON_NAME/$MASON_VERSION.tar.gz 2>/dev/null)
+    local RESULT=$(aws s3api head-object --bucket mason-binaries --key ${PREFIX}/${MASON_NAME}/${MASON_VERSION}${MASON_SUFFIX}.tar.gz 2>/dev/null)
     if [ ! -z "${RESULT}" ]; then
         printf "%-30s %6.1fM    %s\n" \
             "${PREFIX}" \

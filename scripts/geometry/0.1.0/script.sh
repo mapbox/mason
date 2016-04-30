@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/geometry.hpp/archive/v${MASON_VERSION}.tar.gz \
-        6d0432ccb300fda98805ad429a1fac980d42510e
+        32e0fbb03adcda1c12d26f0e5b6d544275567303
 
     mason_extract_tar_gz
 

@@ -3,7 +3,7 @@
 LIB_VERSION=1.7.0
 
 MASON_NAME=gtest
-MASON_VERSION=${LIB_VERSION}
+MASON_VERSION=${LIB_VERSION}-cxx11abi
 MASON_LIB_FILE=lib/libgtest.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh

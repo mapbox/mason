@@ -3,7 +3,7 @@
 LIB_VERSION=4.1.2
 
 MASON_NAME=geojsonvt
-MASON_VERSION=${LIB_VERSION}
+MASON_VERSION=${LIB_VERSION}-cxx11abi
 MASON_LIB_FILE=lib/libgeojsonvt.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh

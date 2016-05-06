@@ -28,7 +28,6 @@ Mason is unlike all of the above package managers because:
   - Mason strongly prefers static libraries over shared libraries
   - Mason has zero understanding of dependency trees: it leaves complete control to the developer for how packages relate.
   - Mason does not depend on any specific runtime language (like python, node.js or ruby). It is a just a few bash scripts.
-  - Mason depends on git branches for declaring package names and versions
   - Mason depends on [travis.ci](https://travis-ci.org) for creating and publishing binaries.
 
 ## Installation

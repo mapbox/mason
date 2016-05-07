@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/mourner/kdbush.hpp/archive/v${MASON_VERSION}.tar.gz \
-        459af213d4b74f8211ad968f4e9daf42ce454ba8
+        e40170a84ee9fd6cff0a74577d70c22c570b0bdf
 
     mason_extract_tar_gz
 

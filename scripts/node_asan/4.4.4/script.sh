@@ -4,7 +4,7 @@ MASON_NAME=node_asan
 MASON_VERSION=4.4.4
 MASON_LIB_FILE=bin/node
 
-. ${MASON_DIR:-~/.mason}/mason.sh
+. ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \

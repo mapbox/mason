@@ -28,13 +28,15 @@ function mason_compile {
     ./configure \
         --prefix=${MASON_PREFIX} \
         --debug
-    platform=$(uname -s | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/")
-    BINARY_NAME=node-v${MASON_VERSION}-${platform}-x64
-    BINARY_TARBALL=${BINARY_NAME}.tar
-    make ${BINARY_TARBALL} -j${MASON_CONCURRENCY}
-    tar -xf ${BINARY_TARBALL}
+    echo "making binary"
+    make binary -j${MASON_CONCURRENCY}
+    ls
+    echo "uncompressing binary"
+    tar -xf *.tar.gz
+    echo "making dir"
     mkdir -p ${MASON_PREFIX}
-    cp -r ${BINARY_NAME}/* ${MASON_PREFIX}/
+    echo "making copying"
+    cp -r node-v${MASON_VERSION}*/* ${MASON_PREFIX}/
 }
 
 function mason_clean {

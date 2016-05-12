@@ -28,7 +28,13 @@ function mason_compile {
     ./configure \
         --prefix=${MASON_PREFIX} \
         --debug
-    make install -j${MASON_CONCURRENCY}
+    platform=$(uname -s | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/")
+    BINARY_NAME=node-v${MASON_VERSION}-${platform}-x64
+    BINARY_TARBALL=${BINARY_NAME}.tar
+    make ${BINARY_TARBALL} -j${MASON_CONCURRENCY}
+    tar -xf ${BINARY_TARBALL}
+    mkdir -p ${MASON_PREFIX}
+    cp -r ${BINARY_NAME}/* ${MASON_PREFIX}/
 }
 
 function mason_clean {

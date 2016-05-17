@@ -104,13 +104,13 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
         MASON_XC_PACKAGE_VERSION=${MASON_XC_GCC_VERSION:-4.9.2}-${MASON_PLATFORM_VERSION}
         MASON_XC_PACKAGE=${MASON_XC_PACKAGE_NAME}-${MASON_XC_PACKAGE_VERSION}
         MASON_XC_ROOT=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
-        if [ ! -d ${MASON_XC_ROOT} ] ; then
+        if [[ ! ${MASON_XC_ROOT} =~ ".build" ]] && [ ! -d ${MASON_XC_ROOT} ] ; then
             $(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason install ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
             MASON_XC_ROOT=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix ${MASON_XC_PACKAGE_NAME} ${MASON_XC_PACKAGE_VERSION})
         fi
 
         # Load toolchain specific variables
-        if [ -f ${MASON_XC_ROOT}/toolchain.sh ] ; then
+        if [[ ! ${MASON_XC_ROOT} =~ ".build" ]] && [ -f ${MASON_XC_ROOT}/toolchain.sh ] ; then
             source ${MASON_XC_ROOT}/toolchain.sh
         fi
     fi

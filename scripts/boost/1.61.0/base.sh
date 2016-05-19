@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-export MASON_NAME=boost
 export MASON_VERSION=1.61.0
 export BOOST_VERSION=${MASON_VERSION//./_}
 export BOOST_TOOLSET="clang"

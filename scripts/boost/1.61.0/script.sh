@@ -6,7 +6,9 @@ HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 source ${HERE}/base.sh
 
 # this package is the one that is header-only
+MASON_NAME=boost
 MASON_HEADER_ONLY=true
+unset MASON_LIB_FILE
 
 # setup mason env
 . ${MASON_DIR}/mason.sh

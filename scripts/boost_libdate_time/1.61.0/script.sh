@@ -9,7 +9,7 @@ BOOST_LIBRARY=${THIS_DIR#boost_lib}
 MASON_NAME=boost_lib${BOOST_LIBRARY}
 MASON_LIB_FILE=lib/libboost_${BOOST_LIBRARY}.a
 # hack for inconsistently named test lib
-if [[ ${MASON_LIB_FILE} == "lib/libboost_unit_test.a" ]]; then
+if [[ ${MASON_LIB_FILE} == "lib/libboost_test.a" ]]; then
     MASON_LIB_FILE=lib/libboost_unit_test_framework.a
 fi
 

@@ -42,6 +42,13 @@ function mason_compile {
 > 
 "
 
+    # work around https://github.com/Project-OSRM/node-osrm/issues/191
+    patch ${MASON_PREFIX}/include/boost/interprocess/detail/os_file_functions.hpp <<< "471c471
+<    return ::open(name, (int)mode);
+---
+>    return ::open(name, (int)mode,S_IRUSR|S_IWUSR);
+"
+
 }
 
 mason_run "$@"

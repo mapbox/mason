@@ -4,14 +4,14 @@ MASON_NAME=unique_resource
 MASON_VERSION=dev
 MASON_HEADER_ONLY=true
 
-GIT_HASH="ac4e6aecda8edc4f4884b0fd0f762228b5f5e770"
+GIT_HASH="cba309e92ec79a95be2aa5a324a688a06af8d40a"
 
 . ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
         https://github.com/okdshin/${MASON_NAME}/archive/${GIT_HASH}.tar.gz \
-        4946aea4183ed006d0e05b2147691a80f873bd86
+        1423b932d80d39250fd0c5715b165bb0efa63883
 
     mason_extract_tar_gz
 

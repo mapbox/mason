@@ -8,8 +8,8 @@ MASON_HEADER_ONLY=true
 
 function mason_load_source {
     mason_download \
-        https://github.com/google/leveldb/tarball/v${MASON_VERSION} \
-        803d69203a62faf50f1b77897310a3a1fcae712b
+        https://github.com/google/leveldb/archive/v${MASON_VERSION}.tar.gz \
+        d90b5cadb7a366a2ab27ec8b5ed1ea9445c9a2df
 
     mason_extract_tar_gz
 

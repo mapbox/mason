@@ -209,8 +209,6 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         MASON_ANDROID_PLATFORM="21"
     fi
 
-    export CXXFLAGS="${CFLAGS}"
-
     export MASON_DYNLIB_SUFFIX="so"
     export MASON_PLATFORM_VERSION="${MASON_ANDROID_ABI}-${MASON_ANDROID_PLATFORM}"
     MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
@@ -223,6 +221,10 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     fi
     MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
     export PATH=${MASON_SDK_ROOT}/bin:${PATH}
+
+    export CFLAGS="--sysroot=${MASON_SDK_PATH} ${CFLAGS}"
+    export CXXFLAGS="--sysroot=${MASON_SDK_PATH} ${CFLAGS}"
+    export LDFLAGS="--sysroot=${MASON_SDK_PATH} ${LDFLAGS}"
 
     export CXX="${MASON_ANDROID_TOOLCHAIN}-clang++"
     export CC="${MASON_ANDROID_TOOLCHAIN}-clang"

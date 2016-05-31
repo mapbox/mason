@@ -68,6 +68,7 @@ function mason_compile {
     mkdir -p ./build
     cd ./build
     CMAKE_EXTRA_ARGS=""
+    ## TODO: CLANG_DEFAULT_CXX_STDLIB and CLANG_APPEND_VC_REV not available in clang-3.8 cmake files
     if [[ $(uname -s) == 'Darwin' ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCLANG_DEFAULT_CXX_STDLIB=libc++"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DC_INCLUDE_DIRS=:/usr/include:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/"
@@ -86,9 +87,6 @@ function mason_compile {
      ${CMAKE_EXTRA_ARGS}
     ninja -j${JOBS} -k5
     ninja install -k5
-    # manual install of tools that don't get installed right
-    cp build/Release/bin/include-what-you-use ${MASON_PREFIX}/bin
-
 }
 
 function mason_cflags {

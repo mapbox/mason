@@ -14,6 +14,8 @@ matrix:
            - ubuntu-toolchain-r-test
           packages:
            - libstdc++6
+           - cmake
+           - ninja
 
 env:
   global:

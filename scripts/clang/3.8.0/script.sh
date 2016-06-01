@@ -87,6 +87,7 @@ function mason_compile {
      ${CMAKE_EXTRA_ARGS}
     ninja -j${MASON_CONCURRENCY} -k5
     ninja install -k5
+    (cd ${MASON_PREFIX}/bin/ && ln -s clang++ clang++-3.8)
 }
 
 function mason_cflags {

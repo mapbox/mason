@@ -7,7 +7,7 @@ matrix:
       compiler: clang
     - os: linux
       compiler: gcc
-      env: CXX=g++-5 CC=gcc-5
+      env: CXX=gcc++-5 CC=gcc-5
       sudo: false
       addons:
         apt:
@@ -15,6 +15,7 @@ matrix:
            - ubuntu-toolchain-r-test
           packages:
            - libstdc++6
+           - ninja-build
            - g++-5
 
 env:
@@ -25,8 +26,6 @@ env:
 script:
 - ./mason install cmake 3.5.2
 - export PATH=$(./mason prefix cmake 3.5.2)/bin:${PATH}
-- ./mason install ninja 1.7.1
-- export PATH=$(./mason prefix ninja 1.7.1)/bin:${PATH}
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 
 after_success:

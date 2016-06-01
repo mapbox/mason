@@ -414,7 +414,7 @@ function mason_build {
     if [ ${MASON_PLATFORM} = 'ios' ]; then
 
         SIMULATOR_TARGETS="i386 x86_64"
-        DEVICE_TARGETS="armv7 armv7s arm64"
+        DEVICE_TARGETS="armv7 arm64"
         LIB_FOLDERS=
 
         for ARCH in ${SIMULATOR_TARGETS} ; do

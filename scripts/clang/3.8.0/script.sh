@@ -85,7 +85,7 @@ function mason_compile {
      -DCMAKE_CXX_FLAGS_RELEASE="${CXXFLAGS}" \
      -DLLVM_OPTIMIZED_TABLEGEN=ON \
      ${CMAKE_EXTRA_ARGS}
-    ninja -j${JOBS} -k5
+    ninja -j${MASON_CONCURRENCY} -k5
     ninja install -k5
 }
 

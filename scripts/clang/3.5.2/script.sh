@@ -59,6 +59,9 @@ function mason_load_source {
     mkdir -p "${MASON_ROOT}/.cache"
     cd "${MASON_ROOT}/.cache"
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/llvm-${MASON_VERSION}
+    if [[ -d ${MASON_BUILD_PATH}/ ]]; then
+        rm -rf ${MASON_BUILD_PATH}/
+    fi
     mkdir -p ${MASON_BUILD_PATH}/
     setup_release ${MASON_VERSION} ${MASON_BUILD_PATH}
 }
@@ -73,6 +76,7 @@ function mason_compile {
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCLANG_DEFAULT_CXX_STDLIB=libc++"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DC_INCLUDE_DIRS=:/usr/include:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10"
     fi
     cmake ../ -G Ninja -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
      -DCMAKE_BUILD_TYPE=Release \
@@ -82,7 +86,7 @@ function mason_compile {
      -DCLANG_APPEND_VC_REV=$CLANG_GIT_REV \
      -DCLANG_VENDOR_UTI=org.mapbox.clang \
      -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
-     -DCMAKE_CXX_FLAGS_RELEASE="${CXXFLAGS}" \
+     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
      -DLLVM_OPTIMIZED_TABLEGEN=ON \
      ${CMAKE_EXTRA_ARGS}
     ninja -j${MASON_CONCURRENCY} -k5

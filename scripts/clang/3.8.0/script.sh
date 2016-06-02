@@ -32,7 +32,7 @@ function setup_release() {
     if [[ ${ENABLE_LLDB} == true ]]; then
         curl_get "http://llvm.org/releases/${LLVM_RELEASE}/lldb-${LLVM_RELEASE}.src.tar.xz"
     fi
-    curl_get "http://llvm.org/releases/${LLVM_RELEASE}/openmp-${LLVM_RELEASE}.src.tar.xz"
+    #curl_get "http://llvm.org/releases/${LLVM_RELEASE}/openmp-${LLVM_RELEASE}.src.tar.xz"
     curl_get "http://llvm.org/releases/${LLVM_RELEASE}/clang-tools-extra-${LLVM_RELEASE}.src.tar.xz"
     for i in $(ls *.xz); do
         echo "unpacking $i"
@@ -49,7 +49,7 @@ function setup_release() {
     if [[ ${ENABLE_LLDB} == true ]]; then
         mv lldb-${LLVM_RELEASE}.src ${BUILD_PATH}/tools/lldb
     fi
-    mv openmp-${LLVM_RELEASE}.src ${BUILD_PATH}/projects/openmp
+    #mv openmp-${LLVM_RELEASE}.src ${BUILD_PATH}/projects/openmp
     mv clang-tools-extra-${LLVM_RELEASE}.src ${BUILD_PATH}/tools/clang/tools/extra
     cd ../
 }

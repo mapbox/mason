@@ -13,7 +13,7 @@ MASON_LIB_FILE=bin/${MASON_NAME}
 
 function mason_build {
     mason install clang ${MASON_VERSION}
-    CLANG_PREFIX=$(mason prefix clang ${MASON_VERSION})
+    CLANG_PREFIX=$(${MASON_DIR}/mason prefix clang ${MASON_VERSION})
     mkdir -p "${MASON_PREFIX}/bin"
     cp ${CLANG_PREFIX}/bin/${MASON_NAME} "${MASON_PREFIX}/bin/"
 }

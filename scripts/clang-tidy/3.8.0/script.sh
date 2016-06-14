@@ -15,8 +15,8 @@ function mason_build {
     ${MASON_DIR}/mason install clang ${MASON_VERSION}
     CLANG_PREFIX=$(${MASON_DIR}/mason prefix clang ${MASON_VERSION})
     mkdir -p "${MASON_PREFIX}/bin"
-    mkdir -p "${MASON_PREFIX}/include/c++"
-    mkdir -p "${MASON_PREFIX}/lib/clang/${MASON_VERSION}/include"
+    mkdir -p "${MASON_PREFIX}/include"
+    mkdir -p "${MASON_PREFIX}/lib/clang/${MASON_VERSION}"
     cp ${CLANG_PREFIX}/bin/${MASON_NAME} "${MASON_PREFIX}/bin/"
     cp -R ${CLANG_PREFIX}/include/c++ "${MASON_PREFIX}/include/c++"
     cp -R ${CLANG_PREFIX}/lib/clang/${MASON_VERSION}/include "${MASON_PREFIX}/lib/clang/${MASON_VERSION}/include"

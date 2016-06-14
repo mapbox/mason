@@ -15,6 +15,8 @@ function mason_build {
     ${MASON_DIR}/mason install clang ${MASON_VERSION}
     CLANG_PREFIX=$(${MASON_DIR}/mason prefix clang ${MASON_VERSION})
     mkdir -p "${MASON_PREFIX}/bin"
+    # we need to copy the standard C++ headers because clang-tidy doesn't know
+    # where to find them in the system and complains about missing information
     mkdir -p "${MASON_PREFIX}/include"
     mkdir -p "${MASON_PREFIX}/lib/clang/${MASON_VERSION}"
     cp ${CLANG_PREFIX}/bin/${MASON_NAME} "${MASON_PREFIX}/bin/"

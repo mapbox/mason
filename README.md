@@ -32,6 +32,8 @@ Mason is unlike all of the above package managers because:
 
 ## Installation
 
+#### Symlink
+
 You need to install Mason to your user directory into `~/.mason`.
 
 ```bash
@@ -40,6 +42,34 @@ sudo ln -s ~/.mason/mason /usr/local/bin/mason
 ```
 
 The second line is optional.
+
+#### Submodule
+
+Mason can be added a submodule to your repository instead of creating a global symlink. This is helpful for other contributors to get set up quickly. Make sure to include the final part of the following command `.mason/` so your submodule path has the leading `.` instead of just being `mason/`.
+
+```bash
+git submodule add git@github.com:mapbox/mason.git .mason/
+```
+        
+This will append a few lines to your `.gitmodules` file. Something like this:
+
+```
+[submodule ".mason"]
+    path = .mason
+    url = git@github.com:mapbox/mason.git
+```
+   
+Update your `Makefile` to point to the mason scripts and provide an installation script for the necessary dependencies. The following installs two Mason packages with the `make mason_packages` command.
+
+```Make
+MASON ?= .mason/mason
+
+mason_packages: $(MASON)
+    $(MASON) install geometry.hpp 0.7.0
+    $(MASON) install variant 1.1.0
+```
+
+*If you are cloning a repository with a Mason submodule, you can `git submodule update --init --recursive` to get the necessary scripts.*
 
 ## Usage
 

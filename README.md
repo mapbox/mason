@@ -51,12 +51,12 @@ Mason can be added a submodule to your repository instead of creating a global s
 git submodule add git@github.com:mapbox/mason.git .mason/
 ```
         
-This will append a few lines to your `.gitmodules` file. Something like this:
+This will append a few lines to your `.gitmodules` file. Make sure to change the `url` parameter to `https` instead of `git@github` ssh protocol.
 
 ```
 [submodule ".mason"]
     path = .mason
-    url = git@github.com:mapbox/mason.git
+    url = https://github.com/mapbox/mason.git
 ```
    
 Update your `Makefile` to point to the mason scripts and provide an installation script for the necessary dependencies. The following installs two Mason packages with the `make mason_packages` command.
@@ -64,12 +64,13 @@ Update your `Makefile` to point to the mason scripts and provide an installation
 ```Make
 MASON ?= .mason/mason
 
+$(MASON):
+    git submodule update --init
+
 mason_packages: $(MASON)
     $(MASON) install geometry.hpp 0.7.0
     $(MASON) install variant 1.1.0
 ```
-
-*If you are cloning a repository with a Mason submodule, you can `git submodule update --init --recursive` to get the necessary scripts.*
 
 ## Usage
 

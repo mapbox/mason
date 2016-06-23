@@ -4,6 +4,7 @@ set -o pipefail
 
 MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
 MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
+MASON_IGNORE_OSX_SDK=${MASON_IGNORE_OSX_SDK:-false}
 
 MASON_UNAME=`uname -s`
 if [ ${MASON_UNAME} = 'Darwin' ]; then
@@ -41,26 +42,28 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
     export MASON_HOST_ARG="--host=x86_64-apple-darwin"
     export MASON_PLATFORM_VERSION=`uname -m`
 
-    MASON_SDK_VERSION=`xcrun --sdk macosx --show-sdk-version`
-    MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
-    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_SDK_VERSION}.sdk"
+    if [[ ${MASON_IGNORE_OSX_SDK} == false ]]; then
+        MASON_SDK_VERSION=`xcrun --sdk macosx --show-sdk-version`
+        MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
+        MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_SDK_VERSION}.sdk"
 
-    if [[  ${MASON_SDK_VERSION%%.*} -ge 10 && ${MASON_SDK_VERSION##*.} -ge 11 ]]; then
-        export MASON_DYNLIB_SUFFIX="tbd"
-    else
-        export MASON_DYNLIB_SUFFIX="dylib"
+        if [[  ${MASON_SDK_VERSION%%.*} -ge 10 && ${MASON_SDK_VERSION##*.} -ge 11 ]]; then
+            export MASON_DYNLIB_SUFFIX="tbd"
+        else
+            export MASON_DYNLIB_SUFFIX="dylib"
+        fi
+
+        MIN_SDK_VERSION_FLAG="-mmacosx-version-min=10.8"
+        SYSROOT_FLAGS="-isysroot ${MASON_SDK_PATH} -arch x86_64 ${MIN_SDK_VERSION_FLAG}"
+        export CFLAGS="${SYSROOT_FLAGS}"
+        export CXXFLAGS="${CFLAGS} -fvisibility-inlines-hidden -stdlib=libc++ -std=c++11"
+        # NOTE: OSX needs '-stdlib=libc++ -std=c++11' in both CXXFLAGS and LDFLAGS
+        # to correctly target c++11 for build systems that don't know about it yet (like libgeos 3.4.2)
+        # But because LDFLAGS is also for C libs we can only put these flags into LDFLAGS per package
+        export LDFLAGS="-Wl,-search_paths_first ${SYSROOT_FLAGS}"
+        export CXX="/usr/bin/clang++"
+        export CC="/usr/bin/clang"
     fi
-
-    MIN_SDK_VERSION_FLAG="-mmacosx-version-min=10.8"
-    SYSROOT_FLAGS="-isysroot ${MASON_SDK_PATH} -arch x86_64 ${MIN_SDK_VERSION_FLAG}"
-    export CFLAGS="${SYSROOT_FLAGS}"
-    export CXXFLAGS="${CFLAGS} -fvisibility-inlines-hidden -stdlib=libc++ -std=c++11"
-    # NOTE: OSX needs '-stdlib=libc++ -std=c++11' in both CXXFLAGS and LDFLAGS
-    # to correctly target c++11 for build systems that don't know about it yet (like libgeos 3.4.2)
-    # But because LDFLAGS is also for C libs we can only put these flags into LDFLAGS per package
-    export LDFLAGS="-Wl,-search_paths_first ${SYSROOT_FLAGS}"
-    export CXX="/usr/bin/clang++"
-    export CC="/usr/bin/clang"
 
 elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_HOST_ARG="--host=arm-apple-darwin"
@@ -209,20 +212,22 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         MASON_ANDROID_PLATFORM="21"
     fi
 
-    export CXXFLAGS="${CFLAGS}"
-
     export MASON_DYNLIB_SUFFIX="so"
     export MASON_PLATFORM_VERSION="${MASON_ANDROID_ABI}-${MASON_ANDROID_PLATFORM}"
     MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
 
     # Installs the native SDK
-    export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r11c
+    export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r10e
     MASON_SDK_ROOT=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
     if [ ! -d ${MASON_SDK_ROOT} ] ; then
         MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}
     fi
     MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
     export PATH=${MASON_SDK_ROOT}/bin:${PATH}
+
+    export CFLAGS="--sysroot=${MASON_SDK_PATH} ${CFLAGS}"
+    export CXXFLAGS="--sysroot=${MASON_SDK_PATH} ${CFLAGS}"
+    export LDFLAGS="--sysroot=${MASON_SDK_PATH} ${LDFLAGS}"
 
     export CXX="${MASON_ANDROID_TOOLCHAIN}-clang++"
     export CC="${MASON_ANDROID_TOOLCHAIN}-clang"

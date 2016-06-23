@@ -141,6 +141,8 @@ function mason_compile {
 
     # attempt to make paths relative in gdal-config
     python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \"\$0\" ))\" && pwd )'))"
+    # hack to re-add -lpq since otherwise it will not end up in --dep-libs
+    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('\$CONFIG_DEP_LIBS','\$CONFIG_DEP_LIBS -lpq'))"
     cat $MASON_PREFIX/bin/gdal-config
 }
 

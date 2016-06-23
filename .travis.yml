@@ -1,22 +1,24 @@
-language: cpp
+language: generic
 
-sudo: false
-
-env:
-  matrix:
-    - MASON_TEST="unit"
-    - MASON_TEST="c_install"
-    - MASON_TEST="c_build"
-    - MASON_TEST="c_install_symlink_includes"
-    - MASON_TEST="cpp11_header_install"
-    - MASON_TEST="cpp11_install"
-    - MASON_TEST="cpp11_build"
-    - MASON_TEST="c_build_android"
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode7.3
+      compiler: clang
+    - os: linux
+      sudo: false
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - libstdc++6
+           - libstdc++-5-dev
 
 install:
-# NOTE: must be absolute path for predictable behavior
-# when packages call out to mason themselves in order to install deps
-- export MASON_DIR=$(pwd)
+- source utils/toolchain.sh
+- ${CC} --version
+- ${CXX} --version
 
 script:
-- ./test/${MASON_TEST}.sh
+- ./test/all.sh

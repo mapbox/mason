@@ -2,7 +2,7 @@
 
 MASON_NAME=leveldb
 MASON_VERSION=1.18
-MASON_HEADER_ONLY=true
+MASON_LIB_FILE=lib/libleveldb.a
 
 . ${MASON_DIR:-~/.mason}/mason.sh
 
@@ -19,6 +19,16 @@ function mason_load_source {
 function mason_compile {
     mkdir -p ${MASON_PREFIX}/include/
     cp -r include/leveldb ${MASON_PREFIX}/include/leveldb
+
+    make -j${MASON_CONCURRENCY}
+}
+
+function mason_ldflags {
+    echo -L${MASON_PREFIX}/lib -lleveldb -lsnappy
+}
+
+function mason_clean {
+    make clean
 }
 
 mason_run "$@"

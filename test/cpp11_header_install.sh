@@ -3,8 +3,8 @@
 set -e -u
 set -o pipefail
 
-./mason install boost 1.57.0
-./mason link boost 1.57.0
+mason install boost 1.57.0
+mason link boost 1.57.0
 
 failure=0
 
@@ -19,8 +19,8 @@ if [[ ! -L mason_packages/.link/include/boost ]]; then
     failure=1
 fi
 
-./mason install sparsehash 2.0.2
-./mason link sparsehash 2.0.2
+mason install sparsehash 2.0.2
+mason link sparsehash 2.0.2
 
 failure=0
 

@@ -16,7 +16,7 @@ if [ -z "${MASON_COMMAND}" ]; then
     exit 1
 fi
 
-ROOTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
+ROOTDIR="$( cd "$( dirname "$(readlink ${BASH_SOURCE[0]})" )" > /dev/null && pwd -P )"
 MASON_DIR=${MASON_DIR:-$ROOTDIR}
 
 if [ "${MASON_COMMAND}" = "env" ]; then

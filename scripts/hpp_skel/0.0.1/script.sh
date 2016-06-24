@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=hpp_skel
-MASON_VERSION=0.0.0
+MASON_VERSION=0.0.1
 MASON_HEADER_ONLY=true
 
 . ${MASON_DIR}/mason.sh
@@ -18,7 +18,7 @@ function mason_load_source {
 
 function mason_compile {
     mkdir -p ${MASON_PREFIX}/include/
-    cp -r include/mapbox ${MASON_PREFIX}/include/mapbox
+    cp -r include ${MASON_PREFIX}/include
 }
 
 mason_run "$@"

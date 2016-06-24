@@ -17,7 +17,7 @@ matrix:
 
 install:
 - |
-  if [[ ${MASON_PLATFORM} == 'osx' ]] || [[ ${MASON_PLATFORM} == 'linux' ]]; then
+  if [[ ${MASON_PLATFORM:-unset} == 'unset' ]] || [[ ${MASON_PLATFORM} == 'osx' ]] || [[ ${MASON_PLATFORM} == 'linux' ]]; then
     echo "Installing clang for OSX/Linux via 'install' target"
     source utils/toolchain.sh
     which ${CC}

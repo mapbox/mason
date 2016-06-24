@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
 MASON_NAME=leveldb
-MASON_VERSION=1.18
+MASON_VERSION=2.0.0
 MASON_LIB_FILE=lib/libleveldb.a
 
 . ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
-        https://github.com/google/leveldb/archive/v${MASON_VERSION}.tar.gz \
-        d90b5cadb7a366a2ab27ec8b5ed1ea9445c9a2df
+        https://github.com/google/leveldb/archive/a7bff697baa062c8f6b8fb760eacf658712b611a.tar.gz \
+        f9fb5e3c97ab59e2a8c24c68eb7af85f17a370ff
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-a7bff697baa062c8f6b8fb760eacf658712b611a
 }
 
 function mason_compile {
@@ -21,13 +21,13 @@ function mason_compile {
     # (dane) we should use -O3 for the fastest code - I presume -O2
     # is being used as safe default since some old compilers were buggy
     # with -O3 back in the day...
-    OPT="-O3 -DNDEBUG" make libleveldb.a -j${MASON_CONCURRENCY}
+    OPT="-O3 -DNDEBUG" make out-static/libleveldb.a -j${MASON_CONCURRENCY}
     # leveldb lacks an install target
     # https://github.com/google/leveldb/pull/2
     mkdir -p ${MASON_PREFIX}/include/
     mkdir -p ${MASON_PREFIX}/lib/
     cp -r include/leveldb ${MASON_PREFIX}/include/leveldb
-    cp libleveldb.a ${MASON_PREFIX}/lib/
+    cp out-static/libleveldb.a ${MASON_PREFIX}/lib/
 }
 
 function mason_ldflags {

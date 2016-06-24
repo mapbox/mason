@@ -16,9 +16,15 @@ matrix:
            - libstdc++-5-dev
 
 install:
-- source utils/toolchain.sh
-- ${CC} --version
-- ${CXX} --version
+- |
+  if [[ ${MASON_PLATFORM} == 'osx' ]] || [[ ${MASON_PLATFORM} == 'linux' ]]; then
+    echo "Installing clang for OSX/Linux via 'install' target"
+    source utils/toolchain.sh
+    which ${CC}
+    ${CC} -v
+    which ${CXX}
+    ${CXX} -v
+  fi
 
 script:
 - ./test/all.sh

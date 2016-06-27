@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=snappy
-MASON_VERSION=2.0.0
+MASON_VERSION=32d6d7d
 MASON_LIB_FILE=lib/libsnappy.a
 MASON_PKGCONFIG_FILE=snappy.pc
 

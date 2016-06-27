@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=leveldb
-MASON_VERSION=2.0.0
+MASON_VERSION=a7bff69
 MASON_LIB_FILE=lib/libleveldb.a
 
 . ${MASON_DIR}/mason.sh

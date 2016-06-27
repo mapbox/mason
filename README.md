@@ -32,6 +32,8 @@ Mason is unlike all of the above package managers because:
 
 ## Installation
 
+#### Symlink
+
 You need to install Mason to your user directory into `~/.mason`.
 
 ```bash
@@ -40,6 +42,35 @@ sudo ln -s ~/.mason/mason /usr/local/bin/mason
 ```
 
 The second line is optional.
+
+#### Submodule
+
+Mason can be added a submodule to your repository instead of creating a global symlink. This is helpful for other contributors to get set up quickly. Make sure to include the final part of the following command `.mason/` so your submodule path has the leading `.` instead of just being `mason/`.
+
+```bash
+git submodule add git@github.com:mapbox/mason.git .mason/
+```
+        
+This will append a few lines to your `.gitmodules` file. Make sure to change the `url` parameter to `https` instead of `git@github` ssh protocol.
+
+```
+[submodule ".mason"]
+    path = .mason
+    url = https://github.com/mapbox/mason.git
+```
+   
+Update your `Makefile` to point to the mason scripts and provide an installation script for the necessary dependencies. The following installs two Mason packages with the `make mason_packages` command.
+
+```Make
+MASON ?= .mason/mason
+
+$(MASON):
+    git submodule update --init
+
+mason_packages: $(MASON)
+    $(MASON) install geometry.hpp 0.7.0
+    $(MASON) install variant 1.1.0
+```
 
 ## Usage
 
@@ -137,13 +168,18 @@ This command only works if the package has already been installed. When run it s
 
 ### `trigger`
 
-In order to ensure that all prebuild binaries are consistent and reproducible, we perform the final build and publish operation on Travis CI. Use the `trigger` command to kick this off:
+In order to ensure that all prebuilt binaries are consistent and reproducible, we perform the final build and publish operation on Travis CI.
+
+First set the `TRAVIS_TOKEN` environment variable by running `travis token`. For details see https://docs.travis-ci.com/user/triggering-builds and https://github.com/travis-ci/travis.rb#readme
+
+
+Then use the `trigger` command to kick this off:
 
 ```bash
 ~ $ mason trigger libuv 0.11.29
 ```
 
-Run this command from the root of a local mason repository checkout. It makes a request to the Travis API to build and publish the specified version of the package, using the Travis configuration in `./scripts/${MASON_NAME}/${MASON_VERSION}/.travis.yml`. It requires the `TRAVIS_TOKEN` environment variable to be set. You can obtain an appropriate value using the [Travis command line client's](https://github.com/travis-ci/travis.rb#readme) `travis token` command.
+Run this command from the root of a local mason repository checkout. It makes a request to the Travis API to build and publish the specified version of the package, using the Travis configuration in `./scripts/${MASON_NAME}/${MASON_VERSION}/.travis.yml`.
 
 
 ## Writing build scripts

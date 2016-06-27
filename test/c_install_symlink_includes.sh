@@ -3,8 +3,8 @@
 set -e -u
 set -o pipefail
 
-./mason install libpng 1.6.16
-./mason link libpng 1.6.16
+mason install libpng 1.6.16
+mason link libpng 1.6.16
 
 failure=0
 

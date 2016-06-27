@@ -27,8 +27,4 @@ install:
   fi
 
 script:
- # put mason at symlink to simulate historically recommended install method
- - mkdir -p custom/path
- - ln -s $(pwd)/mason $(pwd)/custom/path/mason
- - export PATH=$(pwd)/custom/path:${PATH}
- - ./test/all.sh
+- ./test/all.sh

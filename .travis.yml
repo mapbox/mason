@@ -16,9 +16,19 @@ matrix:
            - libstdc++-5-dev
 
 install:
-- source utils/toolchain.sh
-- ${CC} --version
-- ${CXX} --version
+- |
+  if [[ ${MASON_PLATFORM:-unset} == 'unset' ]] || [[ ${MASON_PLATFORM} == 'osx' ]] || [[ ${MASON_PLATFORM} == 'linux' ]]; then
+    echo "Installing clang for OSX/Linux via 'install' target"
+    source utils/toolchain.sh
+    which ${CC}
+    ${CC} -v
+    which ${CXX}
+    ${CXX} -v
+  fi
 
 script:
-- ./test/all.sh
+ # put mason at symlink to simulate historically recommended install method
+ - mkdir -p custom/path
+ - ln -s $(pwd)/mason $(pwd)/custom/path/mason
+ - export PATH=$(pwd)/custom/path:${PATH}
+ - ./test/all.sh

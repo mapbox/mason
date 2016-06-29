@@ -21,6 +21,8 @@ fi
 
 ./mason install sparsehash 2.0.2
 ./mason link sparsehash 2.0.2
+./mason install geometry 0.7.0
+./mason link geometry 0.7.0
 
 failure=0
 
@@ -32,6 +34,16 @@ fi
 
 if [[ -L mason_packages/.link/include/google ]]; then
     echo "include/google is not expected to be a symlink"
+    failure=1
+fi
+
+if [[ ! -d mason_packages/.link/include/mapbox ]]; then
+    echo "could not find expected include/mapbox"
+    failure=1
+fi
+
+if [[ -L mason_packages/.link/include/mapbox ]]; then
+    echo "include/mapbox is not expected to be a symlink"
     failure=1
 fi
 

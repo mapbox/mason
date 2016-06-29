@@ -13,8 +13,8 @@ if [[ ! -d mason_packages/.link/include/libpng16 ]]; then
     failure=1
 fi
 
-if [[ ! -L mason_packages/.link/include/libpng16 ]]; then
-    echo "include/libpng16 is expected to be a symlink"
+if [[ ! -L mason_packages/.link/include/libpng16/png.h ]]; then
+    echo "include/libpng16/png.h is expected to be a symlink"
     failure=1
 fi
 

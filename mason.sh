@@ -370,7 +370,7 @@ function link_dir {
         FOUND_SUBDIR=$(find ${MASON_PREFIX}/$1 -maxdepth 1 -mindepth 1 -name "*" -type d -print)
         # for headers like boost that use include/boost it is most efficient to symlink just the directory
         # skip linking include/google due to https://github.com/mapbox/mason/issues/81
-        if [[ ${FOUND_SUBDIR} ]] && [[ ! ${FOUND_SUBDIR} =~ "google" ]]; then
+        if [[ ${FOUND_SUBDIR} ]] && [[ ! ${FOUND_SUBDIR} =~ "mapbox" ]] && [[ ! ${FOUND_SUBDIR} =~ "google" ]]; then
             for dir in ${FOUND_SUBDIR}; do
                 local SUBDIR_BASENAME=$(basename $dir)
                 # skip man entries to avoid conflicts

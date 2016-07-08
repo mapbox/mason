@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 LIB_VERSION=1.7.0
+CXXABI=-D_GLIBCXX_USE_CXX11_ABI=0
 
 MASON_NAME=gtest
 MASON_VERSION=${LIB_VERSION}
@@ -34,7 +35,7 @@ function mason_compile {
             --disable-shared \
             --disable-dependency-tracking
 
-        make -j${MASON_CONCURRENCY}
+        CXXFLAGS="$CXXFLAGS $CXXABI" make -j${MASON_CONCURRENCY}
     fi
 
     mkdir -p ${MASON_PREFIX}/lib

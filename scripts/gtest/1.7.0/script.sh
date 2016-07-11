@@ -27,6 +27,7 @@ function mason_compile {
         mkdir -p lib/.libs
         libtool -static gtest-all.o -o lib/.libs/libgtest.a
     else
+        export CXXFLAGS="$CXXFLAGS $CXXABI"
         ./configure \
             --prefix=${MASON_PREFIX} \
             ${MASON_HOST_ARG} \
@@ -35,7 +36,7 @@ function mason_compile {
             --disable-shared \
             --disable-dependency-tracking
 
-        CXXFLAGS="$CXXFLAGS $CXXABI" make -j${MASON_CONCURRENCY}
+        make -j${MASON_CONCURRENCY}
     fi
 
     mkdir -p ${MASON_PREFIX}/lib

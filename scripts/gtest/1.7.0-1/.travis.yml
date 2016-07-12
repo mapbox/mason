@@ -10,7 +10,8 @@ matrix:
       env: MASON_PLATFORM=osx
     - os: linux
       compiler: gcc
-      sudo: false
+      dist: trusty
+      sudo: true
       addons:
         apt:
           sources:

@@ -33,6 +33,7 @@ script:
   if [[ ${MASON_PLATFORM} == 'linux' ]]; then
     export CXX=g++-5
     export CC=gcc-5
+    g++-5 --version
   fi
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 

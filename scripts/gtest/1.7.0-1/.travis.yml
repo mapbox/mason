@@ -18,6 +18,7 @@ matrix:
            - ubuntu-toolchain-r-test
           packages:
            - libstdc++-6-dev
+           - libstdc++-5-dev
            - libstdc++6
            - g++-5
       env: MASON_PLATFORM=linux

@@ -2,7 +2,7 @@ set -e
 set -o pipefail
 # set -x
 
-MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
+export MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
 MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
 MASON_IGNORE_OSX_SDK=${MASON_IGNORE_OSX_SDK:-false}
 

@@ -1,5 +1,15 @@
 language: generic
 
+cache:
+  directories:
+  - $HOME/.ccache
+
+env:
+  global:
+   - CCACHE_TEMPDIR=/tmp/.ccache-temp
+   - CCACHE_COMPRESS=1
+   - CASHER_TIME_OUT=1000
+
 matrix:
   include:
     - os: osx

@@ -66,7 +66,20 @@ function mason_load_source {
     setup_release ${MASON_VERSION} ${MASON_BUILD_PATH}
 }
 
+function mason_prepare_compile {
+    ${MASON_DIR}/mason install ccache 3.2.4
+    MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache 3.2.4)
+    ${MASON_DIR}/mason install clang 3.8.0
+    MASON_CLANG=$(${MASON_DIR}/mason prefix clang 3.8.0)
+    ${MASON_DIR}/mason install cmake 3.5.2
+    MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake 3.5.2)
+    ${MASON_DIR}/mason install ninja 1.7.1
+    MASON_NINJA=$(${MASON_DIR}/mason prefix ninja 1.7.1)
+}
+
 function mason_compile {
+    export CXX="${MASON_CLANG}/bin/clang++"
+    export CC="${MASON_CLANG}/bin/clang"
     CLANG_GIT_REV=$(git -C tools/clang/ rev-list --max-count=1 HEAD)
     mkdir -p ./build
     cd ./build
@@ -74,12 +87,15 @@ function mason_compile {
     ## TODO: CLANG_DEFAULT_CXX_STDLIB and CLANG_APPEND_VC_REV not available in clang-3.8 cmake files
     if [[ $(uname -s) == 'Darwin' ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCLANG_DEFAULT_CXX_STDLIB=libc++"
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DC_INCLUDE_DIRS=:/usr/include:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DC_INCLUDE_DIRS=:/usr/include:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/:/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include/"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/"
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.11"
     fi
-    cmake ../ -G Ninja -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
+    ${MASON_CMAKE}/bin/cmake ../ -G Ninja -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
      -DCMAKE_BUILD_TYPE=Release \
+     -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
+     -DCMAKE_CXX_COMPILER="$CXX" \
+     -DCMAKE_C_COMPILER="$CC" \
      -DLLVM_ENABLE_ASSERTIONS=OFF \
      -DCLANG_VENDOR=mapbox/mason \
      -DCLANG_REPOSITORY_STRING=https://github.com/mapbox/mason \
@@ -88,9 +104,10 @@ function mason_compile {
      -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
      -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
      -DLLVM_OPTIMIZED_TABLEGEN=ON \
+     -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja \
      ${CMAKE_EXTRA_ARGS}
-    ninja -j${MASON_CONCURRENCY} -k5
-    ninja install -k5
+    ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY} -k5
+    ${MASON_NINJA}/bin/ninja install -k5
     cd ${MASON_PREFIX}/bin/
     ln -s "clang++" "clang++-3.8"
 }

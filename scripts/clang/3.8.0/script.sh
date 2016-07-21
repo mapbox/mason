@@ -91,6 +91,7 @@ function mason_compile {
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.11"
     fi
+    CXXFLAGS="${CXXFLAGS//-mmacosx-version-min=10.8}"
     ${MASON_CMAKE}/bin/cmake ../ -G Ninja -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
      -DCMAKE_BUILD_TYPE=Release \
      -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
@@ -109,6 +110,7 @@ function mason_compile {
     ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY} -k5
     ${MASON_NINJA}/bin/ninja install -k5
     cd ${MASON_PREFIX}/bin/
+    rm -f "clang++-3.8"
     ln -s "clang++" "clang++-3.8"
 }
 

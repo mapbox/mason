@@ -40,6 +40,7 @@ matrix:
           packages: [ 'libstdc++-5-dev' ]
 
 install:
+  - git clone --depth 1 https://github.com/mapbox/mason
   - ./.mason/mason install clang 3.8.0
   - export PATH=$(./.mason/mason prefix clang 3.8.0)/bin:${PATH}
   - which clang++

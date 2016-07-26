@@ -364,7 +364,7 @@ function run_lndir() {
     mason_step "Links will be inside ${TARGET_SUBDIR}"
     if hash lndir 2>/dev/null; then
         mason_substep "Using $(which lndir) for symlinking"
-        lndir -silent ${MASON_PREFIX}/ ${TARGET_SUBDIR}
+        lndir -silent ${MASON_PREFIX}/ ${TARGET_SUBDIR} 2>/dev/null
     else
         mason_substep "Using bash fallback for symlinking (install lndir for faster symlinking)"
         bash_lndir ${MASON_PREFIX}/ ${TARGET_SUBDIR}

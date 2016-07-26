@@ -340,64 +340,41 @@ function mason_clean {
     :
 }
 
-function link_files_in_root {
-    if [[ -d "${MASON_PREFIX}/$1/" ]] ; then
-        for i in $(find -H ${MASON_PREFIX}/$1/ -maxdepth 1 -mindepth 1 -name "*" ! -type d -print); do
-            common_part=$(python -c "import os;print(os.path.relpath('$i','${MASON_PREFIX}'))")
-            if [[ $common_part != '.' ]] && [[ ! -e "${MASON_ROOT}/.link/$common_part" ]]; then
-                mason_step "linking ${MASON_ROOT}/.link/$common_part"
-                mkdir -p $(dirname ${MASON_ROOT}/.link/$common_part)
-                ln -sf ${MASON_PREFIX}/$common_part ${MASON_ROOT}/.link/$common_part
-            else
-                mason_success "Already linked file ${MASON_ROOT}/.link/$common_part"
+function bash_lndir() {
+    oldifs=$IFS
+    IFS='
+    '
+    src=$(cd "$1" ; pwd)
+    dst=$(cd "$2" ; pwd)
+    find "$src" -type d |
+    while read dir; do
+            mkdir -p "$dst${dir#$src}"
+    done
+
+    find "$src" -type f -o -type l |
+    while read src_f; do
+            dst_f="$dst${src_f#$src}"
+            if [[ ! -f $dst_f ]]; then
+                ln -s "$src_f" "$dst_f"
             fi
-        done
-    fi
+    done
+    IFS=$oldifs
 }
 
-function link_files_recursively {
-    if [[ -d "${MASON_PREFIX}/$1/" ]] ; then
-        for i in $(find -H ${MASON_PREFIX}/$1/ -name "*" ! -type d -print); do
-            common_part=$(python -c "import os;print(os.path.relpath('$i','${MASON_PREFIX}'))")
-            if [[ $common_part != '.' ]] && [[ ! -e "${MASON_ROOT}/.link/$common_part" ]]; then
-                mason_step "linking ${MASON_ROOT}/.link/$common_part"
-                mkdir -p $(dirname ${MASON_ROOT}/.link/$common_part)
-                ln -sf ${MASON_PREFIX}/$common_part ${MASON_ROOT}/.link/$common_part
-            else
-                mason_success "Already linked file ${MASON_ROOT}/.link/$common_part"
-            fi
-        done
-    fi
-}
 
-function link_dir {
-    if [[ -d ${MASON_PREFIX}/$1 ]]; then
-        FOUND_SUBDIR=$(find ${MASON_PREFIX}/$1 -maxdepth 1 -mindepth 1 -name "*" -type d -print)
-        # for headers like boost that use include/boost it is most efficient to symlink just the directory
-        # skip linking include/google due to https://github.com/mapbox/mason/issues/81
-        if [[ ${FOUND_SUBDIR} ]] && [[ ${FOUND_SUBDIR} == *"include/boost" ]]; then
-            for dir in ${FOUND_SUBDIR}; do
-                local SUBDIR_BASENAME=$(basename $dir)
-                # skip man entries to avoid conflicts
-                if [[ $SUBDIR_BASENAME == "man" || $SUBDIR_BASENAME == "aclocal" || $SUBDIR_BASENAME == "doc" ]]; then
-                    continue;
-                else
-                    local TARGET_SUBDIR="${MASON_ROOT}/.link/$1/${SUBDIR_BASENAME}"
-                    if [[ ! -d ${TARGET_SUBDIR} && ! -L ${TARGET_SUBDIR} ]]; then
-                        mason_step "linking directory ${TARGET_SUBDIR}"
-                        mkdir -p $(dirname ${TARGET_SUBDIR})
-                        ln -s ${MASON_PREFIX}/$1/${SUBDIR_BASENAME} ${TARGET_SUBDIR}
-                    else
-                        mason_success "Already linked directory ${TARGET_SUBDIR}"
-                    fi
-                fi
-            done
-            # still need to link files in the root directory for apps like postgres
-            link_files_in_root include
-        else
-            link_files_recursively include
-        fi
+function run_lndir() {
+    # TODO: cp is fast, but inconsistent across osx
+    #/bin/cp -R -n ${MASON_PREFIX}/* ${TARGET_SUBDIR}
+    mason_step "Linking ${MASON_PREFIX}"
+    mason_step "Links will be inside ${TARGET_SUBDIR}"
+    if hash lndir 2>/dev/null; then
+        mason_substep "Using $(which lndir) for symlinking"
+        lndir -silent ${MASON_PREFIX}/ ${TARGET_SUBDIR} 2>/dev/null
+    else
+        mason_substep "Using bash fallback for symlinking (install lndir for faster symlinking)"
+        bash_lndir ${MASON_PREFIX}/ ${TARGET_SUBDIR}
     fi
+    mason_step "Done linking ${MASON_PREFIX}"
 }
 
 function mason_link {
@@ -405,10 +382,9 @@ function mason_link {
         mason_error "${MASON_PREFIX} not found, please install first"
         exit 0
     fi
-    link_files_recursively lib
-    link_files_recursively bin
-    link_dir include
-    link_dir share
+    TARGET_SUBDIR="${MASON_ROOT}/.link/"
+    mkdir -p ${TARGET_SUBDIR}
+    run_lndir
 }
 
 

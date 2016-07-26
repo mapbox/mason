@@ -14,36 +14,33 @@ if [[ ! -d mason_packages/.link/include/boost ]]; then
     failure=1
 fi
 
-if [[ ! -L mason_packages/.link/include/boost ]]; then
-    echo "include/boost is not a symlink like expected"
-    failure=1
-fi
+# install packages that share namespaces and directories
+# and insure they get placed okay (and don't prevent each other
+# from being symlinked)
 
 ./mason install sparsehash 2.0.2
 ./mason link sparsehash 2.0.2
+./mason install protobuf 2.6.1
+./mason link protobuf 2.6.1
 ./mason install geometry 0.7.0
 ./mason link geometry 0.7.0
+./mason install variant 1.1.0
+./mason link variant 1.1.0
 
-failure=0
-
-# google packages we symlink the files to avoid conflicts
-if [[ ! -d mason_packages/.link/include/google ]]; then
-    echo "could not find expected include/google"
+if [[ ! -d mason_packages/.link/include/google/sparsehash ]]; then
+    echo "could not find expected include/google/sparsehash"
     failure=1
 fi
 
-if [[ -L mason_packages/.link/include/google ]]; then
-    echo "include/google is not expected to be a symlink"
+
+if [[ ! -d mason_packages/.link/include/google/protobuf ]]; then
+    echo "could not find expected include/google/protobuf"
     failure=1
 fi
 
-if [[ ! -d mason_packages/.link/include/mapbox ]]; then
-    echo "could not find expected include/mapbox"
-    failure=1
-fi
 
-if [[ -L mason_packages/.link/include/mapbox ]]; then
-    echo "include/mapbox is not expected to be a symlink"
+if [[ ! -d mason_packages/.link/include/mapbox/geometry ]]; then
+    echo "could not find expected include/mapbox/geometry"
     failure=1
 fi
 

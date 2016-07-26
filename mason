@@ -67,6 +67,8 @@ RUBY
         -H "Authorization: token ${TRAVIS_TOKEN}" \
         -d "$body"
 
+    echo "Now go to https://travis-ci.org/mapbox/mason/builds to view build status"
+
     exit
 fi
 

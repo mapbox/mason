@@ -465,13 +465,13 @@ function mason_config {
         echo "header_only=${MASON_HEADER_ONLY}"
     fi
     if [ ! -z "${MASON_CONFIG_CFLAGS}" ]; then
-        echo "cflags=${MASON_CONFIG_CFLAGS//${MASON_PREFIX}/${PREFIX}}"
+        echo "cflags=${MASON_CONFIG_CFLAGS//${MASON_PREFIX}/${MASON_CONFIG_PREFIX}}"
     fi
     if [ ! -z "${MASON_CONFIG_LDFLAGS}" ]; then
-        echo "ldflags=${MASON_CONFIG_LDFLAGS//${MASON_PREFIX}/${PREFIX}}"
+        echo "ldflags=${MASON_CONFIG_LDFLAGS//${MASON_PREFIX}/${MASON_CONFIG_PREFIX}}"
     fi
     if [ ! -z "${MASON_CONFIG_LIBS}" ]; then
-        echo "libs=${MASON_CONFIG_LIBS//${MASON_PREFIX}/${PREFIX}}"
+        echo "libs=${MASON_CONFIG_LIBS//${MASON_PREFIX}/${MASON_CONFIG_PREFIX}}"
     fi
     mason_config_custom
 }

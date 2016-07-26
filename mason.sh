@@ -291,7 +291,12 @@ function mason_download {
     cd "${MASON_ROOT}/.cache"
     if [ ! -f ${MASON_SLUG} ] ; then
         mason_step "Downloading $1..."
-        curl --retry 3 ${MASON_CURL_ARGS} -f -L "$1" -o ${MASON_SLUG}
+        CURL_RESULT=0
+        curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o ${MASON_SLUG}  || CURL_RESULT=$?
+        if [[ ${CURL_RESULT} != 0 ]]; then
+            mason_error "Failed to download ${1} (returncode: $CURL_RESULT)"
+            exit $RESULT
+        fi
     fi
 
     MASON_HASH=`git hash-object ${MASON_SLUG}`

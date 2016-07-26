@@ -12,7 +12,6 @@ matrix:
           sources:
            - ubuntu-toolchain-r-test
           packages:
-           - libstdc++6
            - libstdc++-5-dev
 
 install:

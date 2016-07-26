@@ -447,6 +447,41 @@ function mason_build {
     #rm -rf ${MASON_ROOT}/.build
 }
 
+function mason_config_custom {
+    # Override this function in your script to add more configuration variables
+    :
+}
+
+function mason_config {
+    local CFLAGS=$(mason_cflags)
+    local LDFLAGS=$(mason_ldflags)
+    local LIBS=$(mason_static_libs)
+    local PREFIX="{prefix}"
+    echo "name=${MASON_NAME}"
+    echo "version=${MASON_VERSION}"
+    echo "platform=${MASON_PLATFORM}"
+    echo "platform_version=${MASON_PLATFORM_VERSION}"
+    if ${MASON_HEADER_ONLY}; then
+        echo "header_only=${MASON_HEADER_ONLY}"
+    fi
+    if [ ! -z "${CFLAGS}" ]; then
+        echo "cflags=${CFLAGS//${MASON_PREFIX}/${PREFIX}}"
+    fi
+    if [ ! -z "${LDFLAGS}" ]; then
+        echo "ldflags=${LDFLAGS//${MASON_PREFIX}/${PREFIX}}"
+    fi
+    if [ ! -z "${LIBS}" ]; then
+        echo "libs=${LIBS//${MASON_PREFIX}/${PREFIX}}"
+    fi
+    mason_config_custom
+}
+
+function mason_write_config {
+    local INI_FILE="${MASON_PREFIX}/mason.ini"
+    echo "`mason_config`" > "${INI_FILE}"
+    mason_substep "Wrote configuration file ${INI_FILE}:"
+    cat ${INI_FILE}
+}
 
 function mason_try_binary {
     MASON_BINARIES_DIR=`dirname "${MASON_BINARIES}"`
@@ -613,12 +648,14 @@ function mason_run {
             mason_check_existing
             mason_clear_existing
             mason_build
+            mason_write_config
             mason_success "Installed system-provided ${MASON_NAME} $(mason_system_version)"
         else
             mason_check_existing
             mason_clear_existing
             mason_try_binary
             mason_build
+            mason_write_config
         fi
     elif [ "$1" == "link" ]; then
         mason_link
@@ -629,10 +666,13 @@ function mason_run {
     elif [ "$1" == "build" ]; then
         mason_clear_existing
         mason_build
+        mason_write_config
     elif [ "$1" == "cflags" ]; then
         mason_cflags
     elif [ "$1" == "ldflags" ]; then
         mason_ldflags
+    elif [ "$1" == "config" ]; then
+        mason_config
     elif [ "$1" == "static_libs" ]; then
         mason_static_libs
     elif [ "$1" == "version" ]; then

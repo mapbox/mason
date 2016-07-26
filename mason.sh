@@ -453,10 +453,10 @@ function mason_config_custom {
 }
 
 function mason_config {
-    local CFLAGS=$(mason_cflags)
-    local LDFLAGS=$(mason_ldflags)
-    local LIBS=$(mason_static_libs)
-    local PREFIX="{prefix}"
+    local MASON_CONFIG_CFLAGS=$(mason_cflags)
+    local MASON_CONFIG_LDFLAGS=$(mason_ldflags)
+    local MASON_CONFIG_LIBS=$(mason_static_libs)
+    local MASON_CONFIG_PREFIX="{prefix}"
     echo "name=${MASON_NAME}"
     echo "version=${MASON_VERSION}"
     echo "platform=${MASON_PLATFORM}"
@@ -464,14 +464,14 @@ function mason_config {
     if ${MASON_HEADER_ONLY}; then
         echo "header_only=${MASON_HEADER_ONLY}"
     fi
-    if [ ! -z "${CFLAGS}" ]; then
-        echo "cflags=${CFLAGS//${MASON_PREFIX}/${PREFIX}}"
+    if [ ! -z "${MASON_CONFIG_CFLAGS}" ]; then
+        echo "cflags=${MASON_CONFIG_CFLAGS//${MASON_PREFIX}/${PREFIX}}"
     fi
-    if [ ! -z "${LDFLAGS}" ]; then
-        echo "ldflags=${LDFLAGS//${MASON_PREFIX}/${PREFIX}}"
+    if [ ! -z "${MASON_CONFIG_LDFLAGS}" ]; then
+        echo "ldflags=${MASON_CONFIG_LDFLAGS//${MASON_PREFIX}/${PREFIX}}"
     fi
-    if [ ! -z "${LIBS}" ]; then
-        echo "libs=${LIBS//${MASON_PREFIX}/${PREFIX}}"
+    if [ ! -z "${MASON_CONFIG_LIBS}" ]; then
+        echo "libs=${MASON_CONFIG_LIBS//${MASON_PREFIX}/${PREFIX}}"
     fi
     mason_config_custom
 }

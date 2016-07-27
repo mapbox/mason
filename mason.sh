@@ -119,7 +119,16 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     fi
 
 elif [ ${MASON_PLATFORM} = 'android' ]; then
-    export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
+    case "${MASON_PLATFORM_VERSION}" in
+        arm-v5-9) export MASON_ANDROID_ABI=arm-v5 ;;
+        arm-v7-9) export MASON_ANDROID_ABI=arm-v7 ;;
+        arm-v8-21) export MASON_ANDROID_ABI=arm-v8 ;;
+        x86-9) export MASON_ANDROID_ABI=x86 ;;
+        x86_64-21) export MASON_ANDROID_ABI=x86 ;;
+        mips-9) export MASON_ANDROID_ABI=mips ;;
+        mips64-21) export MASON_ANDROID_ABI=mips64 ;;
+        *) export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
+    esac
 
     CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-integrated-as -fomit-frame-pointer -fstrict-aliasing -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
     LDFLAGS="-no-canonical-prefixes -Wl,--warn-shared-textrel -Wl,--fatal-warnings"
@@ -467,10 +476,11 @@ function mason_config {
 
     echo "name=${MASON_NAME}"
     echo "version=${MASON_VERSION}"
-    echo "platform=${MASON_PLATFORM}"
-    echo "platform_version=${MASON_PLATFORM_VERSION}"
     if ${MASON_HEADER_ONLY}; then
         echo "header_only=${MASON_HEADER_ONLY}"
+    else
+        echo "platform=${MASON_PLATFORM}"
+        echo "platform_version=${MASON_PLATFORM_VERSION}"
     fi
     for name in include_dirs definitions options ldflags static_libs ; do
         eval value=\$MASON_CONFIG_$(echo ${name} | tr '[:lower:]' '[:upper:]')

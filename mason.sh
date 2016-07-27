@@ -455,8 +455,16 @@ function mason_config_custom {
 function mason_config {
     local MASON_CONFIG_CFLAGS=$(mason_cflags)
     local MASON_CONFIG_LDFLAGS=$(mason_ldflags)
-    local MASON_CONFIG_LIBS=$(mason_static_libs)
+    local MASON_CONFIG_STATIC_LIBS=$(mason_static_libs)
     local MASON_CONFIG_PREFIX="{prefix}"
+
+    # Split up the cflags into include dirs, definitions and options.
+    local LN=$'\n'
+    MASON_CONFIG_CFLAGS="${MASON_CONFIG_CFLAGS// -/${LN}-}"
+    local MASON_CONFIG_INCLUDE_DIRS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE 's/^-(I|isystem) *([^ ]+)/\2/p' | uniq)
+    local MASON_CONFIG_DEFINITIONS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE 's/^-(D) *([^ ]+)/\2/p')
+    local MASON_CONFIG_OPTIONS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE '/^-(D|I|isystem) *([^ ]+)/!p')
+
     echo "name=${MASON_NAME}"
     echo "version=${MASON_VERSION}"
     echo "platform=${MASON_PLATFORM}"
@@ -464,15 +472,12 @@ function mason_config {
     if ${MASON_HEADER_ONLY}; then
         echo "header_only=${MASON_HEADER_ONLY}"
     fi
-    if [ ! -z "${MASON_CONFIG_CFLAGS}" ]; then
-        echo "cflags=${MASON_CONFIG_CFLAGS//${MASON_PREFIX}/${MASON_CONFIG_PREFIX}}"
-    fi
-    if [ ! -z "${MASON_CONFIG_LDFLAGS}" ]; then
-        echo "ldflags=${MASON_CONFIG_LDFLAGS//${MASON_PREFIX}/${MASON_CONFIG_PREFIX}}"
-    fi
-    if [ ! -z "${MASON_CONFIG_LIBS}" ]; then
-        echo "libs=${MASON_CONFIG_LIBS//${MASON_PREFIX}/${MASON_CONFIG_PREFIX}}"
-    fi
+    for name in include_dirs definitions options ldflags static_libs ; do
+        eval value=\$MASON_CONFIG_$(echo ${name} | tr '[:lower:]' '[:upper:]')
+        if [ ! -z "${value}" ]; then
+            echo ${name}=${value//${MASON_PREFIX}/${MASON_CONFIG_PREFIX}}
+        fi
+    done
     mason_config_custom
 }
 

@@ -1,11 +1,22 @@
 string(RANDOM LENGTH 16 MASON_INVOCATION)
 
-if(MASON_PLATFORM AND ANDROID_ABI)
+if(NOT MASON_PLATFORM)
+    if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+        set(MASON_PLATFORM "macos")
+    else()
+        set(MASON_PLATFORM "linux")
+    endif()
+endif()
+
+if(MASON_PLATFORM STREQUAL "ios")
+    execute_process(
+        COMMAND xcrun --sdk iphoneos --show-sdk-version
+        OUTPUT_VARIABLE MASON_PLATFORM_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+elseif(MASON_PLATFORM STREQUAL "android")
     if (ANDROID_ABI STREQUAL "armeabi")
         set(MASON_PLATFORM_VERSION "arm-v5-9")
-    elseif (ANDROID_ABI STREQUAL "armeabi-v7a")
-        set(MASON_PLATFORM_VERSION "arm-v7-9")
-    elseif(ANDROID_ABI STREQAUL "arm64-v8a")
+    elseif(ANDROID_ABI STREQUAL "arm64-v8a")
         set(MASON_PLATFORM_VERSION "arm-v8-21")
     elseif(ANDROID_ABI STREQUAL "x86")
         set(MASON_PLATFORM_VERSION "x86-9")
@@ -16,16 +27,23 @@ if(MASON_PLATFORM AND ANDROID_ABI)
     elseif(ANDROID_ABI STREQUAL "mips64")
         set(MASON_PLATFORM_VERSION "mips64-21")
     else()
-        message(FATAL_ERROR "[Mason] Unknown Android ABI '${ANDROID_ABI}'")
+        set(MASON_PLATFORM_VERSION "arm-v7-9")
     endif()
+else()
+    execute_process(
+        COMMAND uname -m
+        OUTPUT_VARIABLE MASON_PLATFORM_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
 
-if(NOT MASON_PLATFORM OR NOT MASON_PLATFORM_VERSION)
-    message(FATAL_ERROR "[Mason] Please set MASON_PLATFORM and MASON_PLATFORM_VERSION")
+if(MASON_PLATFORM STREQUAL "macos")
+    set(MASON_PLATFORM "osx")
 endif()
 
 set(ENV{MASON_PLATFORM} "${MASON_PLATFORM}")
 set(ENV{MASON_PLATFORM_VERSION} "${MASON_PLATFORM_VERSION}")
+
+include(CMakeParseArguments)
 
 function(mason_use _PACKAGE)
     if(NOT _PACKAGE)
@@ -99,7 +117,9 @@ function(mason_use _PACKAGE)
             # Unpack the package
             message(STATUS "[Mason] Unpacking package to ${_INSTALL_PATH_RELATIVE}...")
             file(MAKE_DIRECTORY "${_INSTALL_PATH}")
-            execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf "${_CACHE_PATH}" WORKING_DIRECTORY "${_INSTALL_PATH}")
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} -E tar xzf "${_CACHE_PATH}"
+                WORKING_DIRECTORY "${_INSTALL_PATH}")
         endif()
 
         # Create a config file if it doesn't exist in the package
@@ -169,16 +189,14 @@ function(mason_use _PACKAGE)
 
         # Store invocation ID to prevent different versions of the same package in one invocation
         set(MASON_CONFIG_${_PACKAGE}_INVOCATION "${MASON_INVOCATION}" CACHE INTERNAL "${_PACKAGE} invocation ID" FORCE)
-
-        message(STATUS "MASON_CONFIG_${_PACKAGE}_INCLUDE_DIRS: ${MASON_CONFIG_${_PACKAGE}_INCLUDE_DIRS}")
-        message(STATUS "MASON_CONFIG_${_PACKAGE}_DEFINITIONS: ${MASON_CONFIG_${_PACKAGE}_DEFINITIONS}")
-        message(STATUS "MASON_CONFIG_${_PACKAGE}_OPTIONS: ${MASON_CONFIG_${_PACKAGE}_OPTIONS}")
-        message(STATUS "MASON_CONFIG_${_PACKAGE}_LIBRARIES: ${MASON_CONFIG_${_PACKAGE}_LIBRARIES}")
     endif()
 endfunction()
 
 macro(target_add_mason_package _TARGET _VISIBILITY _PACKAGE)
-    mason_use("${_PACKAGE}" "${MASON_CONFIG_${_PACKAGE}_VERSION}")
+    if (NOT MASON_CONFIG_${_PACKAGE}_INVOCATION)
+        message(FATAL_ERROR "[Mason] Package ${_PACKAGE} has not been initialized yet")
+    endif()
+
     target_include_directories(${_TARGET} ${_VISIBILITY} "${MASON_CONFIG_${_PACKAGE}_INCLUDE_DIRS}")
     target_compile_definitions(${_TARGET} ${_VISIBILITY} "${MASON_CONFIG_${_PACKAGE}_DEFINITIONS}")
     target_compile_options(${_TARGET} ${_VISIBILITY} "${MASON_CONFIG_${_PACKAGE}_OPTIONS}")

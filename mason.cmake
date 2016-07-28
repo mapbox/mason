@@ -132,7 +132,7 @@ function(mason_use _PACKAGE)
             file(GLOB_RECURSE _PKGCONFIG_FILES "${_INSTALL_PATH}/*.pc")
             foreach(_PKGCONFIG_FILE IN ITEMS ${_PKGCONFIG_FILES})
                 file(READ "${_PKGCONFIG_FILE}" _PKGCONFIG_FILE_CONTENT)
-                string(REGEX REPLACE "^prefix=[^\n]*" "prefix=${_INSTALL_PATH}" _PKGCONFIG_FILE_CONTENT "${_PKGCONFIG_FILE_CONTENT}")
+                string(REGEX REPLACE "(^|\n)prefix=[^\n]*" "\\1prefix=${_INSTALL_PATH}" _PKGCONFIG_FILE_CONTENT "${_PKGCONFIG_FILE_CONTENT}")
                 file(WRITE "${_PKGCONFIG_FILE}" "${_PKGCONFIG_FILE_CONTENT}")
             endforeach()
 

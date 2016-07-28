@@ -1,5 +1,21 @@
 string(RANDOM LENGTH 16 MASON_INVOCATION)
 
+# Directory where Mason packages are located; typically ends with mason_packages
+if (NOT MASON_PACKAGE_DIR)
+    set(MASON_PACKAGE_DIR "${CMAKE_SOURCE_DIR}/mason_packages")
+endif()
+
+# URL prefix of where packages are located.
+if (NOT MASON_REPOSITORY)
+    set(MASON_REPOSITORY "https://mason-binaries.s3.amazonaws.com")
+endif()
+
+# Path to Mason executable
+if (NOT MASON_COMMAND)
+    set(MASON_COMMAND "${CMAKE_SOURCE_DIR}/.mason/mason")
+endif()
+
+# Determine platform
 if(NOT MASON_PLATFORM)
     if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
         set(MASON_PLATFORM "macos")
@@ -8,6 +24,7 @@ if(NOT MASON_PLATFORM)
     endif()
 endif()
 
+# Determine platform version string
 if(MASON_PLATFORM STREQUAL "ios")
     execute_process(
         COMMAND xcrun --sdk iphoneos --show-sdk-version
@@ -60,31 +77,10 @@ function(mason_use _PACKAGE)
         message(FATAL_ERROR "[Mason] Specifying a version is required")
     endif()
 
-    # URL prefix of where packages are located.
-    if (MASON_REPOSITORY)
-        set(_MASON_REPOSITORY "${MASON_REPOSITORY}")
-    else()
-        set(_MASON_REPOSITORY "https://mason-binaries.s3.amazonaws.com")
-    endif()
-
-    # Directory where Mason packages are located; typically ends with mason_packages
-    if (MASON_PACKAGE_DIR)
-        set(_PACKAGE_DIR "${MASON_PACKAGE_DIR}")
-    else()
-        set(_PACKAGE_DIR "${CMAKE_SOURCE_DIR}/mason_packages")
-    endif()
-
-    # Path to Mason executable
-    if (MASON_COMMAND)
-        set(_COMMAND "${MASON_COMMAND}")
-    else()
-        set(_COMMAND "${CMAKE_SOURCE_DIR}/.mason/mason")
-    endif()
-
-    if(MASON_CONFIG_${_PACKAGE}_INVOCATION STREQUAL "${MASON_INVOCATION}")
+    if(MASON_PACKAGE_${_PACKAGE}_INVOCATION STREQUAL "${MASON_INVOCATION}")
         # Check that the previous invocation of mason_use didn't select another version of this package
-        if(NOT MASON_CONFIG_${_PACKAGE}_VERSION STREQUAL ${_VERSION})
-            message(FATAL_ERROR "[Mason] Already using ${_PACKAGE} ${MASON_CONFIG_${_PACKAGE}_VERSION}. Cannot select version ${_VERSION}.")
+        if(NOT MASON_PACKAGE_${_PACKAGE}_VERSION STREQUAL ${_VERSION})
+            message(FATAL_ERROR "[Mason] Already using ${_PACKAGE} ${MASON_PACKAGE_${_PACKAGE}_VERSION}. Cannot select version ${_VERSION}.")
         endif()
     else()
         if(_HEADER_ONLY)
@@ -94,14 +90,14 @@ function(mason_use _PACKAGE)
         endif()
 
         set(_SLUG "${_PLATFORM_ID}/${_PACKAGE}/${_VERSION}")
-        set(_INSTALL_PATH "${_PACKAGE_DIR}/${_SLUG}")
+        set(_INSTALL_PATH "${MASON_PACKAGE_DIR}/${_SLUG}")
         file(RELATIVE_PATH _INSTALL_PATH_RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${_INSTALL_PATH}")
 
         if(NOT EXISTS "${_INSTALL_PATH}")
-            set(_CACHE_PATH "${_PACKAGE_DIR}/.binaries/${_SLUG}.tar.gz")
+            set(_CACHE_PATH "${MASON_PACKAGE_DIR}/.binaries/${_SLUG}.tar.gz")
             if (NOT EXISTS "${_CACHE_PATH}")
                 # Download the package
-                set(_URL "${_MASON_REPOSITORY}/${_SLUG}.tar.gz")
+                set(_URL "${MASON_REPOSITORY}/${_SLUG}.tar.gz")
                 message(STATUS "[Mason] Downloading package ${_URL}...")
                 file(DOWNLOAD "${_URL}" "${_CACHE_PATH}.tmp" STATUS result TLS_VERIFY ON)
                 list(GET result 0 status)
@@ -133,10 +129,14 @@ function(mason_use _PACKAGE)
                 file(WRITE "${_PKGCONFIG_FILE}" "${_PKGCONFIG_FILE_CONTENT}")
             endforeach()
 
+            if(NOT EXISTS "${MASON_COMMAND}")
+                message(FATAL_ERROR "[Mason] Could not find Mason command at ${MASON_COMMAND}")
+            endif()
+
             set(_FAILED)
             set(_ERROR)
             execute_process(
-                COMMAND ${_COMMAND} config ${_PACKAGE} ${_VERSION}
+                COMMAND ${MASON_COMMAND} config ${_PACKAGE} ${_VERSION}
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                 OUTPUT_FILE "${_INSTALL_PATH}/mason.ini"
                 RESULT_VARIABLE _FAILED
@@ -159,46 +159,48 @@ function(mason_use _PACKAGE)
                 string(REPLACE "=" "" _KEY "${_KEY}")
                 string(STRIP "${_KEY}" _KEY)
                 string(TOUPPER "${_KEY}" _KEY)
-                set(MASON_CONFIG_${_PACKAGE}_${_KEY} "${_VALUE}" CACHE STRING "${_PACKAGE} ${_KEY}" FORCE)
+                set(MASON_PACKAGE_${_PACKAGE}_${_KEY} "${_VALUE}" CACHE STRING "${_PACKAGE} ${_KEY}" FORCE)
+                mark_as_advanced(MASON_PACKAGE_${_PACKAGE}_${_KEY})
             endif()
         endforeach()
 
         # Compare version in the package to catch errors early on
-        if(NOT _VERSION STREQUAL MASON_CONFIG_${_PACKAGE}_VERSION)
-            message(FATAL_ERROR "[Mason] Package at ${_INSTALL_PATH_RELATIVE} has version '${MASON_CONFIG_${_PACKAGE}_VERSION}', but required '${_VERSION}'")
+        if(NOT _VERSION STREQUAL MASON_PACKAGE_${_PACKAGE}_VERSION)
+            message(FATAL_ERROR "[Mason] Package at ${_INSTALL_PATH_RELATIVE} has version '${MASON_PACKAGE_${_PACKAGE}_VERSION}', but required '${_VERSION}'")
         endif()
 
-        if(NOT _PACKAGE STREQUAL MASON_CONFIG_${_PACKAGE}_NAME)
-            message(FATAL_ERROR "[Mason] Package at ${_INSTALL_PATH_RELATIVE} has name '${MASON_CONFIG_${_PACKAGE}_NAME}', but required '${_NAME}'")
+        if(NOT _PACKAGE STREQUAL MASON_PACKAGE_${_PACKAGE}_NAME)
+            message(FATAL_ERROR "[Mason] Package at ${_INSTALL_PATH_RELATIVE} has name '${MASON_PACKAGE_${_PACKAGE}_NAME}', but required '${_NAME}'")
         endif()
 
         if(NOT _HEADER_ONLY)
-            if(NOT MASON_PLATFORM STREQUAL MASON_CONFIG_${_PACKAGE}_PLATFORM)
-                message(FATAL_ERROR "[Mason] Package at ${_INSTALL_PATH_RELATIVE} has platform '${MASON_CONFIG_${_PACKAGE}_PLATFORM}', but required '${MASON_PLATFORM}'")
+            if(NOT MASON_PLATFORM STREQUAL MASON_PACKAGE_${_PACKAGE}_PLATFORM)
+                message(FATAL_ERROR "[Mason] Package at ${_INSTALL_PATH_RELATIVE} has platform '${MASON_PACKAGE_${_PACKAGE}_PLATFORM}', but required '${MASON_PLATFORM}'")
             endif()
 
-            if(NOT MASON_PLATFORM_VERSION STREQUAL MASON_CONFIG_${_PACKAGE}_PLATFORM_VERSION)
-                message(FATAL_ERROR "[Mason] Package at ${_INSTALL_PATH_RELATIVE} has platform version '${MASON_CONFIG_${_PACKAGE}_PLATFORM_VERSION}', but required '${MASON_PLATFORM_VERSION}'")
+            if(NOT MASON_PLATFORM_VERSION STREQUAL MASON_PACKAGE_${_PACKAGE}_PLATFORM_VERSION)
+                message(FATAL_ERROR "[Mason] Package at ${_INSTALL_PATH_RELATIVE} has platform version '${MASON_PACKAGE_${_PACKAGE}_PLATFORM_VERSION}', but required '${MASON_PLATFORM_VERSION}'")
             endif()
         endif()
 
         # Concatenate the static libs and libraries
-        set(libraries)
-        list(APPEND libraries ${MASON_CONFIG_${_PACKAGE}_STATIC_LIBS} ${MASON_CONFIG_${_PACKAGE}_LDFLAGS})
-        set(MASON_CONFIG_${_PACKAGE}_LIBRARIES "${libraries}" CACHE STRING "${_PACKAGE} libraries" FORCE)
+        set(_LIBRARIES)
+        list(APPEND _LIBRARIES ${MASON_PACKAGE_${_PACKAGE}_STATIC_LIBS} ${MASON_PACKAGE_${_PACKAGE}_LDFLAGS})
+        set(MASON_PACKAGE_${_PACKAGE}_LIBRARIES "${_LIBRARIES}" CACHE STRING "${_PACKAGE} _LIBRARIES" FORCE)
+        mark_as_advanced(MASON_PACKAGE_${_PACKAGE}_LIBRARIES)
 
         # Store invocation ID to prevent different versions of the same package in one invocation
-        set(MASON_CONFIG_${_PACKAGE}_INVOCATION "${MASON_INVOCATION}" CACHE INTERNAL "${_PACKAGE} invocation ID" FORCE)
+        set(MASON_PACKAGE_${_PACKAGE}_INVOCATION "${MASON_INVOCATION}" CACHE INTERNAL "${_PACKAGE} invocation ID" FORCE)
     endif()
 endfunction()
 
 macro(target_add_mason_package _TARGET _VISIBILITY _PACKAGE)
-    if (NOT MASON_CONFIG_${_PACKAGE}_INVOCATION)
+    if (NOT MASON_PACKAGE_${_PACKAGE}_INVOCATION)
         message(FATAL_ERROR "[Mason] Package ${_PACKAGE} has not been initialized yet")
     endif()
 
-    target_include_directories(${_TARGET} ${_VISIBILITY} "${MASON_CONFIG_${_PACKAGE}_INCLUDE_DIRS}")
-    target_compile_definitions(${_TARGET} ${_VISIBILITY} "${MASON_CONFIG_${_PACKAGE}_DEFINITIONS}")
-    target_compile_options(${_TARGET} ${_VISIBILITY} "${MASON_CONFIG_${_PACKAGE}_OPTIONS}")
-    target_link_libraries(${_TARGET} ${_VISIBILITY} "${MASON_CONFIG_${_PACKAGE}_LIBRARIES}")
+    target_include_directories(${_TARGET} ${_VISIBILITY} "${MASON_PACKAGE_${_PACKAGE}_INCLUDE_DIRS}")
+    target_compile_definitions(${_TARGET} ${_VISIBILITY} "${MASON_PACKAGE_${_PACKAGE}_DEFINITIONS}")
+    target_compile_options(${_TARGET} ${_VISIBILITY} "${MASON_PACKAGE_${_PACKAGE}_OPTIONS}")
+    target_link_libraries(${_TARGET} ${_VISIBILITY} "${MASON_PACKAGE_${_PACKAGE}_LIBRARIES}")
 endmacro()

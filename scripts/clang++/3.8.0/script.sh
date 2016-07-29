@@ -20,8 +20,14 @@ function mason_build {
     mkdir -p "${MASON_PREFIX}/include"
     mkdir -p "${MASON_PREFIX}/lib/clang/${MASON_VERSION}"
     cp ${CLANG_PREFIX}/bin/${MASON_NAME} "${MASON_PREFIX}/bin/"
+    cp ${CLANG_PREFIX}/bin/clang "${MASON_PREFIX}/bin/"
     cp -R ${CLANG_PREFIX}/include/c++ "${MASON_PREFIX}/include/c++"
     cp -R ${CLANG_PREFIX}/lib/clang/${MASON_VERSION}/* "${MASON_PREFIX}/lib/clang/${MASON_VERSION}/"
+    cd ${MASON_PREFIX}/bin/
+    rm -f "clang++-3.8"
+    ln -s "clang++" "clang++-3.8"
+    rm -f "clang-3.8"
+    ln -s "clang" "clang-3.8"
 }
 
 mason_run "$@"

@@ -275,7 +275,7 @@ function mason_check_existing {
         fi
     elif [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
         if [ -f "${MASON_PREFIX}/version" ] ; then
-            mason_success "Using system-provided ${MASON_NAME} $(mason_system_version)"
+            mason_success "Using system-provided ${MASON_NAME} $(set -e;mason_system_version)"
             exit 0
         fi
     else
@@ -480,17 +480,20 @@ function mason_config_custom {
 }
 
 function mason_config {
-    local MASON_CONFIG_CFLAGS=$(mason_cflags)
-    local MASON_CONFIG_LDFLAGS=$(mason_ldflags)
-    local MASON_CONFIG_STATIC_LIBS=$(mason_static_libs)
-    local MASON_CONFIG_PREFIX="{prefix}"
+    local MASON_CONFIG_CFLAGS MASON_CONFIG_LDFLAGS MASON_CONFIG_STATIC_LIBS MASON_CONFIG_PREFIX LN
+    local MASON_CONFIG_INCLUDE_DIRS MASON_CONFIG_DEFINITIONS MASON_CONFIG_OPTIONS
+
+    MASON_CONFIG_CFLAGS=$(set -e;mason_cflags)
+    MASON_CONFIG_LDFLAGS=$(set -e;mason_ldflags)
+    MASON_CONFIG_STATIC_LIBS=$(set -e;mason_static_libs)
+    MASON_CONFIG_PREFIX="{prefix}"
 
     # Split up the cflags into include dirs, definitions and options.
-    local LN=$'\n'
+    LN=$'\n'
     MASON_CONFIG_CFLAGS="${MASON_CONFIG_CFLAGS// -/${LN}-}"
-    local MASON_CONFIG_INCLUDE_DIRS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE 's/^-(I|isystem) *([^ ]+)/\2/p' | uniq)
-    local MASON_CONFIG_DEFINITIONS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE 's/^-(D) *([^ ]+)/\2/p')
-    local MASON_CONFIG_OPTIONS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE '/^-(D|I|isystem) *([^ ]+)/!p')
+    MASON_CONFIG_INCLUDE_DIRS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE 's/^-(I|isystem) *([^ ]+)/\2/p' | uniq)
+    MASON_CONFIG_DEFINITIONS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE 's/^-(D) *([^ ]+)/\2/p')
+    MASON_CONFIG_OPTIONS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE '/^-(D|I|isystem) *([^ ]+)/!p')
 
     echo "name=${MASON_NAME}"
     echo "version=${MASON_VERSION}"
@@ -510,7 +513,8 @@ function mason_config {
 }
 
 function mason_write_config {
-    local INI_FILE="${MASON_PREFIX}/mason.ini"
+    local INI_FILE
+    INI_FILE="${MASON_PREFIX}/mason.ini"
     echo "`mason_config`" > "${INI_FILE}"
     mason_substep "Wrote configuration file ${INI_FILE}:"
     cat ${INI_FILE}
@@ -574,13 +578,15 @@ function mason_pkgconfig {
 }
 
 function mason_cflags {
-    local FLAGS=$(`mason_pkgconfig` --static --cflags)
+    local FLAGS
+    FLAGS=$(set -e;`mason_pkgconfig` --static --cflags)
     # Replace double-prefix in case we use a sysroot.
     echo ${FLAGS//${MASON_SYSROOT}${MASON_PREFIX}/${MASON_PREFIX}}
 }
 
 function mason_ldflags {
-    local FLAGS=$(`mason_pkgconfig` --static --libs)
+    local FLAGS
+    FLAGS=$(set -e;`mason_pkgconfig` --static --libs)
     # Replace double-prefix in case we use a sysroot.
     echo ${FLAGS//${MASON_SYSROOT}${MASON_PREFIX}/${MASON_PREFIX}}
 }
@@ -609,8 +615,9 @@ function mason_version {
 }
 
 function mason_list_existing_package {
-    local PREFIX=$1
-    local RESULT=$(aws s3api head-object --bucket mason-binaries --key $PREFIX/$MASON_NAME/$MASON_VERSION.tar.gz 2>/dev/null)
+    local PREFIX RESULT
+    PREFIX=$1
+    RESULT=$(aws s3api head-object --bucket mason-binaries --key $PREFIX/$MASON_NAME/$MASON_VERSION.tar.gz 2>/dev/null)
     if [ ! -z "${RESULT}" ]; then
         printf "%-30s %6.1fM    %s\n" \
             "${PREFIX}" \
@@ -637,6 +644,7 @@ function mason_list_existing {
 }
 
 function mason_publish {
+    local CONTENT_TYPE DATE MD5 SIGNATURE
     if [ ! ${MASON_HEADER_ONLY:-false} = true ] && [ ! -z ${MASON_LIB_FILE:-} ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
         mason_error "Required library file ${MASON_PREFIX}/${MASON_LIB_FILE} doesn't exist."
         exit 1
@@ -659,10 +667,10 @@ function mason_publish {
     (cd "${MASON_ROOT}/.binaries" && ls -lh "${MASON_BINARIES}")
     mason_step "Uploading binary package..."
 
-    local CONTENT_TYPE="application/octet-stream"
-    local DATE="$(LC_ALL=C date -u +"%a, %d %b %Y %X %z")"
-    local MD5="$(openssl md5 -binary < "${MASON_BINARIES_PATH}" | base64)"
-    local SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\nx-amz-acl:public-read\n/${MASON_BUCKET}/${MASON_BINARIES}" | openssl sha1 -binary -hmac "$AWS_SECRET_ACCESS_KEY" | base64)"
+    CONTENT_TYPE="application/octet-stream"
+    DATE="$(LC_ALL=C date -u +"%a, %d %b %Y %X %z")"
+    MD5="$(openssl md5 -binary < "${MASON_BINARIES_PATH}" | base64)"
+    SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\nx-amz-acl:public-read\n/${MASON_BUCKET}/${MASON_BINARIES}" | openssl sha1 -binary -hmac "$AWS_SECRET_ACCESS_KEY" | base64)"
 
     curl -S -T "${MASON_BINARIES_PATH}" https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
         -H "Date: $DATE" \
@@ -682,7 +690,7 @@ function mason_run {
             mason_clear_existing
             mason_build
             mason_write_config
-            mason_success "Installed system-provided ${MASON_NAME} $(mason_system_version)"
+            mason_success "Installed system-provided ${MASON_NAME} $(set -e;mason_system_version)"
         else
             mason_check_existing
             mason_clear_existing

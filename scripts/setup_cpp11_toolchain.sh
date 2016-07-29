@@ -23,8 +23,9 @@ function main() {
             exit 1
         fi
 
-        local codename=$(lsb_release --codename | cut -d : -f 2 | xargs basename)
-        local release=$(lsb_release --release | cut -d : -f 2 | xargs basename)
+        local codename release
+        codename=$(lsb_release --codename | cut -d : -f 2 | xargs basename)
+        release=$(lsb_release --release | cut -d : -f 2 | xargs basename)
 
         export CPP11_TOOLCHAIN="$(pwd)/toolchain"
         mkdir -p ${CPP11_TOOLCHAIN}
@@ -37,10 +38,11 @@ function main() {
             fi
         }
 
-        local PPA="https://launchpad.net/~ubuntu-toolchain-r/+archive/ubuntu/test/+files"
+        local PPA LLVM_DIST
+        PPA="https://launchpad.net/~ubuntu-toolchain-r/+archive/ubuntu/test/+files"
         # http://llvm.org/apt/precise/dists/llvm-toolchain-${release}-3.5/main/binary-amd64/Packages
         # TODO: cache these for faster downloads
-        local LLVM_DIST="http://llvm.org/apt/${codename}/pool/main/l/llvm-toolchain-3.5"
+        LLVM_DIST="http://llvm.org/apt/${codename}/pool/main/l/llvm-toolchain-3.5"
         if [[ $codename == "precise" ]]; then
             dpack ${LLVM_DIST} clang-3.5_3.5~svn217304-1~exp1_amd64.deb &
             dpack ${LLVM_DIST} libllvm3.5_3.5~svn217304-1~exp1_amd64.deb &

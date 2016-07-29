@@ -37,15 +37,17 @@ function mason_strip_ldflags {
 }
 
 function mason_ldflags {
-    local PREFIX=$(${MASON_PREFIX}/bin/libpng-config --prefix)
-    local FLAGS=$(${MASON_PREFIX}/bin/libpng-config --static --ldflags)
+    local PREFIX FLAGS
+    PREFIX=$(${MASON_PREFIX}/bin/libpng-config --prefix)
+    FLAGS=$(${MASON_PREFIX}/bin/libpng-config --static --ldflags)
     # Replace hard-coded prefix with the current one.
     mason_strip_ldflags ${FLAGS//${PREFIX}/${MASON_PREFIX}}
 }
 
 function mason_cflags {
-    local PREFIX=$(${MASON_PREFIX}/bin/libpng-config --prefix)
-    local FLAGS=$(${MASON_PREFIX}/bin/libpng-config --static --cflags)
+    local PREFIX FLAGS
+    PREFIX=$(${MASON_PREFIX}/bin/libpng-config --prefix)
+    FLAGS=$(${MASON_PREFIX}/bin/libpng-config --static --cflags)
     # Replace hard-coded prefix with the current one.
     echo ${FLAGS//${PREFIX}/${MASON_PREFIX}}
 }

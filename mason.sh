@@ -287,6 +287,24 @@ function mason_check_existing {
 }
 
 
+function mason_check_installed {
+    # skip installing if it already exists
+    if [ ${MASON_HEADER_ONLY:-false} = true ] ; then
+        if [ -d "${MASON_PREFIX}" ] ; then
+            return 0
+        fi
+    elif [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+        if [ -f "${MASON_PREFIX}/version" ] ; then
+            return 0
+        fi
+    elif [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
+        return 0
+    fi
+    mason_error "Package ${MASON_NAME} ${MASON_VERSION} isn't installed"
+    return 1
+}
+
+
 function mason_clear_existing {
     if [ -d "${MASON_PREFIX}" ]; then
         mason_step "Removing existing package... ${MASON_PREFIX}"
@@ -683,14 +701,19 @@ function mason_run {
         mason_build
         mason_write_config
     elif [ "$1" == "cflags" ]; then
+        mason_check_installed
         mason_cflags
     elif [ "$1" == "ldflags" ]; then
+        mason_check_installed
         mason_ldflags
     elif [ "$1" == "config" ]; then
+        mason_check_installed
         mason_config
     elif [ "$1" == "static_libs" ]; then
+        mason_check_installed
         mason_static_libs
     elif [ "$1" == "version" ]; then
+        mason_check_installed
         mason_version
     elif [ "$1" == "prefix" ]; then
         mason_prefix

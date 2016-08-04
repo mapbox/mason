@@ -8,6 +8,12 @@ matrix:
       compiler: clang
     - os: linux
       compiler: clang
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - libstdc++-5-dev
 
 env:
   global:

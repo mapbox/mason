@@ -5,7 +5,9 @@ HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 
 # key properties unique to this library
 THIS_DIR=$(basename $(dirname $HERE))
-BOOST_LIBRARY=${THIS_DIR#boost_lib}
+# Note: cannot duduce from directory since it is named in a custom way
+#BOOST_LIBRARY=${THIS_DIR#boost_lib}
+BOOST_LIBRARY=regex
 MASON_NAME=boost_lib${BOOST_LIBRARY}
 MASON_LIB_FILE=lib/libboost_${BOOST_LIBRARY}.a
 # hack for inconsistently named test lib

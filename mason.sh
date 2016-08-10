@@ -2,7 +2,7 @@ set -e
 set -o pipefail
 # set -x
 
-MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
+export MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
 MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
 MASON_IGNORE_OSX_SDK=${MASON_IGNORE_OSX_SDK:-false}
 
@@ -119,7 +119,16 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     fi
 
 elif [ ${MASON_PLATFORM} = 'android' ]; then
-    export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
+    case "${MASON_PLATFORM_VERSION}" in
+        arm-v5-9) export MASON_ANDROID_ABI=arm-v5 ;;
+        arm-v7-9) export MASON_ANDROID_ABI=arm-v7 ;;
+        arm-v8-21) export MASON_ANDROID_ABI=arm-v8 ;;
+        x86-9) export MASON_ANDROID_ABI=x86 ;;
+        x86-64-21) export MASON_ANDROID_ABI=x86-64 ;;
+        mips-9) export MASON_ANDROID_ABI=mips ;;
+        mips64-21) export MASON_ANDROID_ABI=mips64 ;;
+        *) export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
+    esac
 
     CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-integrated-as -fomit-frame-pointer -fstrict-aliasing -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
     LDFLAGS="-no-canonical-prefixes -Wl,--warn-shared-textrel -Wl,--fatal-warnings"
@@ -217,7 +226,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
 
     # Installs the native SDK
-    export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r10e
+    export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r12b
     MASON_SDK_ROOT=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
     if [ ! -d ${MASON_SDK_ROOT} ] ; then
         MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}
@@ -266,7 +275,7 @@ function mason_check_existing {
         fi
     elif [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
         if [ -f "${MASON_PREFIX}/version" ] ; then
-            mason_success "Using system-provided ${MASON_NAME} $(mason_system_version)"
+            mason_success "Using system-provided ${MASON_NAME} $(set -e;mason_system_version)"
             exit 0
         fi
     else
@@ -275,6 +284,24 @@ function mason_check_existing {
             exit 0
         fi
     fi
+}
+
+
+function mason_check_installed {
+    # skip installing if it already exists
+    if [ ${MASON_HEADER_ONLY:-false} = true ] ; then
+        if [ -d "${MASON_PREFIX}" ] ; then
+            return 0
+        fi
+    elif [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
+        if [ -f "${MASON_PREFIX}/version" ] ; then
+            return 0
+        fi
+    elif [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ] ; then
+        return 0
+    fi
+    mason_error "Package ${MASON_NAME} ${MASON_VERSION} isn't installed"
+    return 1
 }
 
 
@@ -291,7 +318,12 @@ function mason_download {
     cd "${MASON_ROOT}/.cache"
     if [ ! -f ${MASON_SLUG} ] ; then
         mason_step "Downloading $1..."
-        curl --retry 3 ${MASON_CURL_ARGS} -f -L "$1" -o ${MASON_SLUG}
+        CURL_RESULT=0
+        curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o ${MASON_SLUG}  || CURL_RESULT=$?
+        if [[ ${CURL_RESULT} != 0 ]]; then
+            mason_error "Failed to download ${1} (returncode: $CURL_RESULT)"
+            exit $RESULT
+        fi
     fi
 
     MASON_HASH=`git hash-object ${MASON_SLUG}`
@@ -335,64 +367,41 @@ function mason_clean {
     :
 }
 
-function link_files_in_root {
-    if [[ -d "${MASON_PREFIX}/$1/" ]] ; then
-        for i in $(find -H ${MASON_PREFIX}/$1/ -maxdepth 1 -mindepth 1 -name "*" ! -type d -print); do
-            common_part=$(python -c "import os;print(os.path.relpath('$i','${MASON_PREFIX}'))")
-            if [[ $common_part != '.' ]] && [[ ! -e "${MASON_ROOT}/.link/$common_part" ]]; then
-                mason_step "linking ${MASON_ROOT}/.link/$common_part"
-                mkdir -p $(dirname ${MASON_ROOT}/.link/$common_part)
-                ln -sf ${MASON_PREFIX}/$common_part ${MASON_ROOT}/.link/$common_part
-            else
-                mason_success "Already linked file ${MASON_ROOT}/.link/$common_part"
+function bash_lndir() {
+    oldifs=$IFS
+    IFS='
+    '
+    src=$(cd "$1" ; pwd)
+    dst=$(cd "$2" ; pwd)
+    find "$src" -type d |
+    while read dir; do
+            mkdir -p "$dst${dir#$src}"
+    done
+
+    find "$src" -type f -o -type l |
+    while read src_f; do
+            dst_f="$dst${src_f#$src}"
+            if [[ ! -f $dst_f ]]; then
+                ln -s "$src_f" "$dst_f"
             fi
-        done
-    fi
+    done
+    IFS=$oldifs
 }
 
-function link_files_recursively {
-    if [[ -d "${MASON_PREFIX}/$1/" ]] ; then
-        for i in $(find -H ${MASON_PREFIX}/$1/ -name "*" ! -type d -print); do
-            common_part=$(python -c "import os;print(os.path.relpath('$i','${MASON_PREFIX}'))")
-            if [[ $common_part != '.' ]] && [[ ! -e "${MASON_ROOT}/.link/$common_part" ]]; then
-                mason_step "linking ${MASON_ROOT}/.link/$common_part"
-                mkdir -p $(dirname ${MASON_ROOT}/.link/$common_part)
-                ln -sf ${MASON_PREFIX}/$common_part ${MASON_ROOT}/.link/$common_part
-            else
-                mason_success "Already linked file ${MASON_ROOT}/.link/$common_part"
-            fi
-        done
-    fi
-}
 
-function link_dir {
-    if [[ -d ${MASON_PREFIX}/$1 ]]; then
-        FOUND_SUBDIR=$(find ${MASON_PREFIX}/$1 -maxdepth 1 -mindepth 1 -name "*" -type d -print)
-        # for headers like boost that use include/boost it is most efficient to symlink just the directory
-        # skip linking include/google due to https://github.com/mapbox/mason/issues/81
-        if [[ ${FOUND_SUBDIR} ]] && [[ ! ${FOUND_SUBDIR} =~ "google" ]]; then
-            for dir in ${FOUND_SUBDIR}; do
-                local SUBDIR_BASENAME=$(basename $dir)
-                # skip man entries to avoid conflicts
-                if [[ $SUBDIR_BASENAME == "man" || $SUBDIR_BASENAME == "aclocal" || $SUBDIR_BASENAME == "doc" ]]; then
-                    continue;
-                else
-                    local TARGET_SUBDIR="${MASON_ROOT}/.link/$1/${SUBDIR_BASENAME}"
-                    if [[ ! -d ${TARGET_SUBDIR} && ! -L ${TARGET_SUBDIR} ]]; then
-                        mason_step "linking directory ${TARGET_SUBDIR}"
-                        mkdir -p $(dirname ${TARGET_SUBDIR})
-                        ln -s ${MASON_PREFIX}/$1/${SUBDIR_BASENAME} ${TARGET_SUBDIR}
-                    else
-                        mason_success "Already linked directory ${TARGET_SUBDIR}"
-                    fi
-                fi
-            done
-            # still need to link files in the root directory for apps like postgres
-            link_files_in_root include
-        else
-            link_files_recursively include
-        fi
+function run_lndir() {
+    # TODO: cp is fast, but inconsistent across osx
+    #/bin/cp -R -n ${MASON_PREFIX}/* ${TARGET_SUBDIR}
+    mason_step "Linking ${MASON_PREFIX}"
+    mason_step "Links will be inside ${TARGET_SUBDIR}"
+    if hash lndir 2>/dev/null; then
+        mason_substep "Using $(which lndir) for symlinking"
+        lndir -silent ${MASON_PREFIX}/ ${TARGET_SUBDIR} 2>/dev/null
+    else
+        mason_substep "Using bash fallback for symlinking (install lndir for faster symlinking)"
+        bash_lndir ${MASON_PREFIX}/ ${TARGET_SUBDIR}
     fi
+    mason_step "Done linking ${MASON_PREFIX}"
 }
 
 function mason_link {
@@ -400,10 +409,9 @@ function mason_link {
         mason_error "${MASON_PREFIX} not found, please install first"
         exit 0
     fi
-    link_files_recursively lib
-    link_files_recursively bin
-    link_dir include
-    link_dir share
+    TARGET_SUBDIR="${MASON_ROOT}/.link/"
+    mkdir -p ${TARGET_SUBDIR}
+    run_lndir
 }
 
 
@@ -466,6 +474,51 @@ function mason_build {
     #rm -rf ${MASON_ROOT}/.build
 }
 
+function mason_config_custom {
+    # Override this function in your script to add more configuration variables
+    :
+}
+
+function mason_config {
+    local MASON_CONFIG_CFLAGS MASON_CONFIG_LDFLAGS MASON_CONFIG_STATIC_LIBS MASON_CONFIG_PREFIX LN
+    local MASON_CONFIG_INCLUDE_DIRS MASON_CONFIG_DEFINITIONS MASON_CONFIG_OPTIONS
+
+    MASON_CONFIG_CFLAGS=$(set -e;mason_cflags)
+    MASON_CONFIG_LDFLAGS=$(set -e;mason_ldflags)
+    MASON_CONFIG_STATIC_LIBS=$(set -e;mason_static_libs)
+    MASON_CONFIG_PREFIX="{prefix}"
+
+    # Split up the cflags into include dirs, definitions and options.
+    LN=$'\n'
+    MASON_CONFIG_CFLAGS="${MASON_CONFIG_CFLAGS// -/${LN}-}"
+    MASON_CONFIG_INCLUDE_DIRS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE 's/^-(I|isystem) *([^ ]+)/\2/p' | uniq)
+    MASON_CONFIG_DEFINITIONS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE 's/^-(D) *([^ ]+)/\2/p')
+    MASON_CONFIG_OPTIONS=$(echo -n "${MASON_CONFIG_CFLAGS}" | sed -nE '/^-(D|I|isystem) *([^ ]+)/!p')
+
+    echo "name=${MASON_NAME}"
+    echo "version=${MASON_VERSION}"
+    if ${MASON_HEADER_ONLY}; then
+        echo "header_only=${MASON_HEADER_ONLY}"
+    else
+        echo "platform=${MASON_PLATFORM}"
+        echo "platform_version=${MASON_PLATFORM_VERSION}"
+    fi
+    for name in include_dirs definitions options ldflags static_libs ; do
+        eval value=\$MASON_CONFIG_$(echo ${name} | tr '[:lower:]' '[:upper:]')
+        if [ ! -z "${value}" ]; then
+            echo ${name}=${value//${MASON_PREFIX}/${MASON_CONFIG_PREFIX}}
+        fi
+    done
+    mason_config_custom
+}
+
+function mason_write_config {
+    local INI_FILE
+    INI_FILE="${MASON_PREFIX}/mason.ini"
+    echo "`mason_config`" > "${INI_FILE}"
+    mason_substep "Wrote configuration file ${INI_FILE}:"
+    cat ${INI_FILE}
+}
 
 function mason_try_binary {
     MASON_BINARIES_DIR=`dirname "${MASON_BINARIES}"`
@@ -525,13 +578,15 @@ function mason_pkgconfig {
 }
 
 function mason_cflags {
-    local FLAGS=$(`mason_pkgconfig` --static --cflags)
+    local FLAGS
+    FLAGS=$(set -e;`mason_pkgconfig` --static --cflags)
     # Replace double-prefix in case we use a sysroot.
     echo ${FLAGS//${MASON_SYSROOT}${MASON_PREFIX}/${MASON_PREFIX}}
 }
 
 function mason_ldflags {
-    local FLAGS=$(`mason_pkgconfig` --static --libs)
+    local FLAGS
+    FLAGS=$(set -e;`mason_pkgconfig` --static --libs)
     # Replace double-prefix in case we use a sysroot.
     echo ${FLAGS//${MASON_SYSROOT}${MASON_PREFIX}/${MASON_PREFIX}}
 }
@@ -560,8 +615,9 @@ function mason_version {
 }
 
 function mason_list_existing_package {
-    local PREFIX=$1
-    local RESULT=$(aws s3api head-object --bucket mason-binaries --key $PREFIX/$MASON_NAME/$MASON_VERSION.tar.gz 2>/dev/null)
+    local PREFIX RESULT
+    PREFIX=$1
+    RESULT=$(aws s3api head-object --bucket mason-binaries --key $PREFIX/$MASON_NAME/$MASON_VERSION.tar.gz 2>/dev/null)
     if [ ! -z "${RESULT}" ]; then
         printf "%-30s %6.1fM    %s\n" \
             "${PREFIX}" \
@@ -588,6 +644,7 @@ function mason_list_existing {
 }
 
 function mason_publish {
+    local CONTENT_TYPE DATE MD5 SIGNATURE
     if [ ! ${MASON_HEADER_ONLY:-false} = true ] && [ ! -z ${MASON_LIB_FILE:-} ] && [ ! -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
         mason_error "Required library file ${MASON_PREFIX}/${MASON_LIB_FILE} doesn't exist."
         exit 1
@@ -610,10 +667,10 @@ function mason_publish {
     (cd "${MASON_ROOT}/.binaries" && ls -lh "${MASON_BINARIES}")
     mason_step "Uploading binary package..."
 
-    local CONTENT_TYPE="application/octet-stream"
-    local DATE="$(LC_ALL=C date -u +"%a, %d %b %Y %X %z")"
-    local MD5="$(openssl md5 -binary < "${MASON_BINARIES_PATH}" | base64)"
-    local SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\nx-amz-acl:public-read\n/${MASON_BUCKET}/${MASON_BINARIES}" | openssl sha1 -binary -hmac "$AWS_SECRET_ACCESS_KEY" | base64)"
+    CONTENT_TYPE="application/octet-stream"
+    DATE="$(LC_ALL=C date -u +"%a, %d %b %Y %X %z")"
+    MD5="$(openssl md5 -binary < "${MASON_BINARIES_PATH}" | base64)"
+    SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\nx-amz-acl:public-read\n/${MASON_BUCKET}/${MASON_BINARIES}" | openssl sha1 -binary -hmac "$AWS_SECRET_ACCESS_KEY" | base64)"
 
     curl -S -T "${MASON_BINARIES_PATH}" https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
         -H "Date: $DATE" \
@@ -632,12 +689,14 @@ function mason_run {
             mason_check_existing
             mason_clear_existing
             mason_build
-            mason_success "Installed system-provided ${MASON_NAME} $(mason_system_version)"
+            mason_write_config
+            mason_success "Installed system-provided ${MASON_NAME} $(set -e;mason_system_version)"
         else
             mason_check_existing
             mason_clear_existing
             mason_try_binary
             mason_build
+            mason_write_config
         fi
     elif [ "$1" == "link" ]; then
         mason_link
@@ -648,13 +707,21 @@ function mason_run {
     elif [ "$1" == "build" ]; then
         mason_clear_existing
         mason_build
+        mason_write_config
     elif [ "$1" == "cflags" ]; then
+        mason_check_installed
         mason_cflags
     elif [ "$1" == "ldflags" ]; then
+        mason_check_installed
         mason_ldflags
+    elif [ "$1" == "config" ]; then
+        mason_check_installed
+        mason_config
     elif [ "$1" == "static_libs" ]; then
+        mason_check_installed
         mason_static_libs
     elif [ "$1" == "version" ]; then
+        mason_check_installed
         mason_version
     elif [ "$1" == "prefix" ]; then
         mason_prefix

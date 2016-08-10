@@ -1,13 +1,19 @@
-language: cpp
-
-sudo: false
+language: generic
 
 matrix:
   include:
     - os: osx
+      osx_image: xcode7.3
       compiler: clang
     - os: linux
-      compiler: clang
+      sudo: false
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - libstdc++6
+           - libstdc++-5-dev
 
 env:
   global:
@@ -16,7 +22,6 @@ env:
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
-- ./mason link ${MASON_NAME} ${MASON_VERSION}
 
 after_success:
 - ./mason publish ${MASON_NAME} ${MASON_VERSION}

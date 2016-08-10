@@ -23,6 +23,11 @@ function mason_compile {
     rm -rf .mason
     ln -s ${MASON_DIR} .mason
 
+    # Force Linux Makefiles when cross-compiling for Android
+    if [[ ${MASON_PLATFORM:-} == 'android' ]] ; then
+        export GYP_FLAVOR_SUFFIX=-linux
+    fi
+
     # build
     INSTALL_PREFIX=${MASON_PREFIX} ./configure
     CXXFLAGS="-fPIC ${CFLAGS:-} ${CXXFLAGS:-}" make install

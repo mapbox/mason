@@ -19,8 +19,8 @@ function mason_load_source {
 
 function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
-    ${MASON_DIR}/mason install jpeg_turbo 1.4.2
-    MASON_JPEG=$(${MASON_DIR}/mason prefix jpeg_turbo 1.4.2)
+    ${MASON_DIR}/mason install jpeg_turbo 1.5.0
+    MASON_JPEG=$(${MASON_DIR}/mason prefix jpeg_turbo 1.5.0)
     SYSTEM_ZLIB="/usr"
 }
 

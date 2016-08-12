@@ -17,37 +17,42 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    echo ${MASON_ROOT}/.build
-    cd ${MASON_ROOT}
-    OSMIUM_INCLUDE_DIR=${MASON_ROOT}/osmcode-libosmium-8623f1e/include
-    curl --retry 3 -f -# -L "https://github.com/osmcode/libosmium/tarball/v2.7.2" -o osmium.tar.gz
-    tar -xzf osmium.tar.gz
-
-    cd $(dirname ${MASON_ROOT})
-    ${MASON_DIR}/mason install boost 1.57.0
-    ${MASON_DIR}/mason link boost 1.57.0
-    ${MASON_DIR}/mason install boost_libprogram_options 1.57.0
-    ${MASON_DIR}/mason link boost_libprogram_options 1.57.0
-    ${MASON_DIR}/mason install protobuf 2.6.1
-    ${MASON_DIR}/mason link protobuf 2.6.1
+    BOOST_VERSION=1.61.0
+    ${MASON_DIR}/mason install cmake 3.5.2
+    MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake 3.5.2)
+    ${MASON_DIR}/mason install boost ${BOOST_VERSION}
+    ${MASON_DIR}/mason link boost ${BOOST_VERSION}
+    ${MASON_DIR}/mason install boost_libprogram_options ${BOOST_VERSION}
+    ${MASON_DIR}/mason link boost_libprogram_options ${BOOST_VERSION}
+    ${MASON_DIR}/mason install libosmium 2.8.0
+    ${MASON_DIR}/mason link libosmium 2.8.0
+    ${MASON_DIR}/mason install protozero 1.4.0
+    ${MASON_DIR}/mason link protozero 1.4.0
+    ${MASON_DIR}/mason install utfcpp 2.3.4
+    ${MASON_DIR}/mason link utfcpp 2.3.4
     ${MASON_DIR}/mason install zlib 1.2.8
     ${MASON_DIR}/mason link zlib 1.2.8
     ${MASON_DIR}/mason install expat 2.1.0
     ${MASON_DIR}/mason link expat 2.1.0
-    ${MASON_DIR}/mason install osmpbf 1.3.3
-    ${MASON_DIR}/mason link osmpbf 1.3.3
-    ${MASON_DIR}/mason install bzip 1.0.6
-    ${MASON_DIR}/mason link bzip 1.0.6
+    ${MASON_DIR}/mason install bzip2 1.0.6
+    ${MASON_DIR}/mason link bzip2 1.0.6
+    MASON_HOME=${MASON_ROOT}/.link/
+
 }
 
 function mason_compile {
-    mkdir build
-    cd build
-    CMAKE_PREFIX_PATH=${MASON_ROOT}/.link \
-    cmake \
-        -DOSMIUM_INCLUDE_DIR=${OSMIUM_INCLUDE_DIR} \
+    rm -rf ./build/
+    mkdir ./build
+    cd ./build
+    echo $MASON_HOME
+    ${MASON_CMAKE}/bin/cmake ../ \
         -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
-        ..
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBoost_NO_SYSTEM_PATHS=ON \
+        -DBoost_USE_STATIC_LIBS=ON \
+        -DOSMIUM_INCLUDE_DIR=${MASON_HOME}/include \
+        -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
+        -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib
     make install
 }
 

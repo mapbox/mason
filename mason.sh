@@ -67,26 +67,28 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
 
 elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_HOST_ARG="--host=arm-apple-darwin"
-    export MASON_PLATFORM_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
+    export MASON_PLATFORM_VERSION="8.0" # Deployment target version
 
+    MASON_SDK_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer
-    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneOS${MASON_PLATFORM_VERSION}.sdk"
-    MIN_SDK_VERSION_FLAG="-miphoneos-version-min=7.0"
+    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneOS${MASON_SDK_VERSION}.sdk"
+
+    MIN_SDK_VERSION_FLAG="-miphoneos-version-min=${MASON_PLATFORM_VERSION}"
     export MASON_IOS_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH}"
-    if [[ ${MASON_PLATFORM_VERSION%%.*} -ge 9 ]]; then
+    if [[ ${MASON_SDK_VERSION%%.*} -ge 9 ]]; then
         export MASON_IOS_CFLAGS="${MASON_IOS_CFLAGS} -fembed-bitcode"
         export MASON_DYNLIB_SUFFIX="tbd"
     else
         export MASON_DYNLIB_SUFFIX="dylib"
     fi
 
-    if [ `xcrun --sdk iphonesimulator --show-sdk-version` != ${MASON_PLATFORM_VERSION} ]; then
+    if [ `xcrun --sdk iphonesimulator --show-sdk-version` != ${MASON_SDK_VERSION} ]; then
         mason_error "iPhone Simulator SDK version doesn't match iPhone SDK version"
         exit 1
     fi
 
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneSimulator.platform/Developer
-    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneSimulator${MASON_PLATFORM_VERSION}.sdk"
+    MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneSimulator${MASON_SDK_VERSION}.sdk"
     export MASON_ISIM_CFLAGS="${MIN_SDK_VERSION_FLAG} -isysroot ${MASON_SDK_PATH}"
 
 elif [ ${MASON_PLATFORM} = 'linux' ]; then

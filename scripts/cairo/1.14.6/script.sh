@@ -20,10 +20,10 @@ function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
     ${MASON_DIR}/mason install libpng 1.6.24
     MASON_PNG=$(${MASON_DIR}/mason prefix libpng 1.6.24)
-    ${MASON_DIR}/mason install freetype 2.6
-    MASON_FREETYPE=$(${MASON_DIR}/mason prefix freetype 2.6)
-    ${MASON_DIR}/mason install pixman 0.32.6
-    MASON_PIXMAN=$(${MASON_DIR}/mason prefix pixman 0.32.6)
+    ${MASON_DIR}/mason install freetype 2.6.5
+    MASON_FREETYPE=$(${MASON_DIR}/mason prefix freetype 2.6.5)
+    ${MASON_DIR}/mason install pixman 0.34.0
+    MASON_PIXMAN=$(${MASON_DIR}/mason prefix pixman 0.34.0)
 }
 
 function mason_compile {

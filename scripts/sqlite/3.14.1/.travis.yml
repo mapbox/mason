@@ -1,5 +1,3 @@
-language: generic
-
 matrix:
   include:
     - os: osx
@@ -26,9 +24,3 @@ matrix:
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=mips
     - os: linux
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=mips-64
-
-script:
-- ./mason build ${MASON_NAME} ${MASON_VERSION}
-
-after_success:
-- ./mason publish ${MASON_NAME} ${MASON_VERSION}

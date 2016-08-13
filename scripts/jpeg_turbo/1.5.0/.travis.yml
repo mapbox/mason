@@ -1,5 +1,3 @@
-language: generic
-
 matrix:
   include:
     - os: osx
@@ -12,9 +10,3 @@ matrix:
            - ubuntu-toolchain-r-test
           packages:
            - libstdc++-5-dev
-
-script:
-- ./mason build ${MASON_NAME} ${MASON_VERSION}
-
-after_success:
-- ./mason publish ${MASON_NAME} ${MASON_VERSION}

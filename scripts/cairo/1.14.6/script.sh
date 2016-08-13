@@ -8,10 +8,10 @@ MASON_LIB_FILE=lib/libcairo.a
 
 function mason_load_source {
     mason_download \
-        http://cairographics.org/releases/${MASON_NAME}-${MASON_VERSION}.tar.gz \
-        ecf18db1e89d99799783757d9026a74012dfafcb
+        http://cairographics.org/releases/${MASON_NAME}-${MASON_VERSION}.tar.xz \
+        b19d7d7b4e290eb6377ddc3688984cb66da036cb
 
-    mason_extract_tar_gz
+    mason_extract_tar_xz
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
 }
@@ -27,12 +27,8 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    mason_step "Loading patch 'https://github.com/mapbox/mason/blob/${MASON_SLUG}/patch.diff'..."
-    curl --retry 3 -s -f -# -L \
-      https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
-      -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)
-    # patch cairo to avoid needing pkg-config as a build dep
-    patch -N -p1 < ./patch.diff
+    mason_step "Loading patch"
+    patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     CFLAGS="${CFLAGS} -Wno-enum-conversion -I${MASON_PIXMAN}/include/pixman-1 -I${MASON_FREETYPE}/include/freetype2 -I${MASON_PNG}/include/"
     LDFLAGS="-L${MASON_PIXMAN}/lib -lpixman-1 -L${MASON_FREETYPE}/lib -lfreetype -L${MASON_PNG}/lib -lpng"
     CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} ./autogen.sh \

@@ -140,7 +140,11 @@ function mason_compile {
     make install
 
     # attempt to make paths relative in gdal-config
-    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \"\$0\" ))\" && pwd )'))"
+    # TODO: remove libpg.a from CONFIG_DEP_LIBS on linux?
+    # fix the path to -lgdal to be relative (CONFIG_LIBS,CONFIG_PREFIX,CONFIG_CFLAGS)
+    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \$( realpath \"\$0\" ) ))\" && pwd )'))"
+    # fix the path to dep libs (CONFIG_DEP_LIBS)
+    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('${MASON_ROOT}/${MASON_PLATFORM_ID}','\$( cd \"\$( dirname \$( dirname \$( dirname \$( dirname \$( realpath \"\$0\" ) ) ) ))\" && pwd )'))"
     # hack to re-add -lpq since otherwise it will not end up in --dep-libs
     python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('\$CONFIG_DEP_LIBS','\$CONFIG_DEP_LIBS -lpq'))"
     cat $MASON_PREFIX/bin/gdal-config

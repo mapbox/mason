@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/hpp-skel/archive/v${MASON_VERSION}.tar.gz \
-        b4cfcae25b3b27afe8d2677f76ffe4edc770db7e
+        77a58e9b1071cab2edebca12f04b22b85f1a7085
 
     mason_extract_tar_gz
 

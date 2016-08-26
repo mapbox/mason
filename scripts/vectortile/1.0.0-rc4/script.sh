@@ -21,4 +21,12 @@ function mason_compile {
     cp -r include ${MASON_PREFIX}/include
 }
 
+function mason_cflags {
+    echo "-I${MASON_PREFIX}/include"
+}
+
+function mason_ldflags {
+    :
+}
+
 mason_run "$@"

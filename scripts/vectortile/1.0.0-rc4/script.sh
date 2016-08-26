@@ -18,7 +18,7 @@ function mason_load_source {
 
 function mason_compile {
     mkdir -p ${MASON_PREFIX}/include/
-    cp -r include ${MASON_PREFIX}/include
+    cp -r include/mapbox ${MASON_PREFIX}/include/mapbox
 }
 
 function mason_cflags {

@@ -7,6 +7,12 @@ matrix:
     - os: linux
       compiler: clang
       sudo: false
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - libstdc++-5-dev
 
 env:
   global:

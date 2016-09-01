@@ -2,8 +2,8 @@
 
 MASON_NAME=protobuf
 MASON_VERSION=3.0.0
-MASON_LIB_FILE=libprotofbuf.a
-MASON_PKGCONFIG_FILE=lib/pkgconfig/libprotofbuf.pc
+MASON_LIB_FILE=lib/libprotobuf.a
+MASON_PKGCONFIG_FILE=lib/pkgconfig/protobuf.pc
 
 . ${MASON_DIR}/mason.sh
 

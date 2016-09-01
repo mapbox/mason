@@ -26,10 +26,7 @@ endif()
 
 # Determine platform version string
 if(MASON_PLATFORM STREQUAL "ios")
-    execute_process(
-        COMMAND xcrun --sdk iphoneos --show-sdk-version
-        OUTPUT_VARIABLE MASON_PLATFORM_VERSION
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(MASON_PLATFORM_VERSION "8.0") # Deployment target version
 elseif(MASON_PLATFORM STREQUAL "android")
     if (ANDROID_ABI STREQUAL "armeabi")
         set(MASON_PLATFORM_VERSION "arm-v5-9")

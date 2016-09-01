@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=hpp_skel
-MASON_VERSION=0.0.1
+MASON_VERSION=0.0.2
 MASON_HEADER_ONLY=true
 
 . ${MASON_DIR}/mason.sh
@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/hpp-skel/archive/v${MASON_VERSION}.tar.gz \
-        2876991412fcfd41bd7d606e78025e2d3f6e319b
+        77a58e9b1071cab2edebca12f04b22b85f1a7085
 
     mason_extract_tar_gz
 

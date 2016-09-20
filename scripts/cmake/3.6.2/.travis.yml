@@ -7,15 +7,11 @@ matrix:
       compiler: clang
     - os: linux
       compiler: clang
-      env: CXX=clang++-3.5 CC=clang-3.5
       sudo: false
       addons:
         apt:
-          sources:
-           - ubuntu-toolchain-r-test
-           - llvm-toolchain-precise-3.5
-          packages:
-           - clang-3.5
+          sources: [ 'ubuntu-toolchain-r-test' ]
+          packages: [ 'libstdc++-5-dev' ]
 
 env:
   global:
@@ -24,6 +20,4 @@ env:
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
-
-after_success:
 - ./mason publish ${MASON_NAME} ${MASON_VERSION}

@@ -133,7 +133,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     esac
 
     CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-integrated-as -fomit-frame-pointer -fstrict-aliasing -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
-    LDFLAGS="-no-canonical-prefixes -Wl,--warn-shared-textrel -Wl,--fatal-warnings"
+    LDFLAGS="-no-canonical-prefixes -Wl,--warn-shared-textrel -Wl,--fatal-warnings -Wl,-z,now -Wl,-z,relro"
     export CPPFLAGS="-D__ANDROID__"
 
     if [ ${MASON_ANDROID_ABI} = 'arm-v8' ]; then

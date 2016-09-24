@@ -102,7 +102,22 @@ function mason_compile {
     # we link to libc++ even on linux to avoid runtime dependency on libstdc++:
     # https://github.com/mapbox/mason/issues/252
     export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS//-mmacosx-version-min=10.8}"
+    # llvm may request c++14 instead so let's not force c++11
+    export CXXFLAGS="-fvisibility=hidden -stdlib=libc++ ${CXXFLAGS//-std=c++11}"
     export LDFLAGS="-stdlib=libc++ ${LDFLAGS//-mmacosx-version-min=10.8}"
+
+    if [[ $(uname -s) == 'Linux' ]]; then
+        # to help the build find libc++.so during linking of clang++
+        # we need to help the linker find the libc++ and libc++abi that
+        # are built during the first stages of the build
+        export LD_LIBRARY_PATH=$(pwd)/lib
+    #else
+         # ninja
+    #    export DYLD_LIBRARY_PATH=$(pwd)/lib
+    fi
+    # TODO: test this
+    #-DLLVM_ENABLE_LTO=ON \
+
     ${MASON_CMAKE}/bin/cmake ../ -G Ninja -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
      -DCMAKE_BUILD_TYPE=Release \
      -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
@@ -116,11 +131,18 @@ function mason_compile {
      -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
      -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja \
      ${CMAKE_EXTRA_ARGS}
-    ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY} -k5
-    ${MASON_NINJA}/bin/ninja install -k5
+    # make libc++ and libc++abi first
+    # this ensures that the LD_LIBRARY_PATH above will be valid
+    # and that clang++ on linux will be able to link itself to
+    # this same instance of libc++
+    ${MASON_NINJA}/bin/ninja cxx -v -j${MASON_CONCURRENCY}
+    # then make everything else
+    ${MASON_NINJA}/bin/ninja -v -j${MASON_CONCURRENCY}
+    # install it all
+    ${MASON_NINJA}/bin/ninja install
+    # set up symlinks for clang++ to match what llvm.org binaries provide
     cd ${MASON_PREFIX}/bin/
     MAJOR_MINOR=$(echo $MASON_VERSION | cut -d '.' -f1-2)
-    # set up symlinks for clang++ to match what llvm.org binaries provide
     rm -f "clang++-${MAJOR_MINOR}"
     ln -s "clang++" "clang++-${MAJOR_MINOR}"
 }

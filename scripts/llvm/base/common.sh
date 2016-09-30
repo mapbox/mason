@@ -135,6 +135,9 @@ function mason_compile {
      -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
      -DCMAKE_CXX_COMPILER="$CXX" \
      -DCMAKE_C_COMPILER="$CC" \
+     -DLIBCXX_ENABLE_ASSERTIONS=OFF \
+     -DLIBCXX_ENABLE_SHARED=OFF \
+     -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
      -DLLVM_ENABLE_ASSERTIONS=OFF \
      -DCLANG_VENDOR="mapbox/mason" \
      -DCLANG_REPOSITORY_STRING="https://github.com/mapbox/mason" \

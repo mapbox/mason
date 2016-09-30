@@ -65,10 +65,10 @@ To support c++11 we'd normally need to upgrade libstdc++ which would make it pro
 To accomplish this (c++11 build of clang++ and linking to libc++ instead of an upgraded libstdc++) we did:
 
 ```sh
-./mason install clang 3.8.0
-CLANG_38_PREFIX=$(./mason prefix clang 3.8.0)
-export CXX=${CLANG_38_PREFIX}/clang++-3.8
-export CC=${CLANG_38_PREFIX}/clang-3.8
+./mason install clang++ 3.8.1
+CLANG_38_PREFIX=$(./mason prefix clang++ 3.8.1)
+export CXX=${CLANG_38_PREFIX}/bin/clang++-3.8
+export CC=${CLANG_38_PREFIX}/bin/clang-3.8
 ./mason build llvm 3.9.0
 ```
 

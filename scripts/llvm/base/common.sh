@@ -51,6 +51,7 @@ function setup_release() {
     curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/libunwind-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libunwind      
     curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/lld-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld               
     curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/clang-tools-extra-${MASON_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra 
+    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/lldb-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb
 }
 
 function mason_load_source {
@@ -80,6 +81,8 @@ function mason_prepare_compile {
 function mason_compile {
     export CXX="${CXX:-clang++}"
     export CC="${CC:-clang}"
+    # knock out lldb doc building, to remove doxygen dependency
+    perl -i -p -e "s/add_subdirectory\(docs\)//g;" tools/lldb/CMakeLists.txt
     mkdir -p ./build
     cd ./build
     CMAKE_EXTRA_ARGS=""
@@ -103,7 +106,8 @@ function mason_compile {
     # https://github.com/mapbox/mason/issues/252
     export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS//-mmacosx-version-min=10.8}"
     # llvm may request c++14 instead so let's not force c++11
-    export CXXFLAGS="-fvisibility=hidden -stdlib=libc++ ${CXXFLAGS//-std=c++11}"
+    # TODO: -fvisibility=hidden breaks just lldb
+    export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS//-std=c++11}"
     export LDFLAGS="-stdlib=libc++ ${LDFLAGS//-mmacosx-version-min=10.8}"
 
     if [[ $(uname -s) == 'Linux' ]]; then
@@ -129,15 +133,17 @@ function mason_compile {
      -DCLANG_VENDOR_UTI="org.mapbox.llvm" \
      -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
      -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+     -DLLDB_DISABLE_PYTHON=1 -DLLDB_DISABLE_CURSES=1 -DLLDB_DISABLE_LIBEDIT=1 -DLLVM_ENABLE_TERMINFO=0 \
      -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja \
      ${CMAKE_EXTRA_ARGS}
+
     # make libc++ and libc++abi first
     # this ensures that the LD_LIBRARY_PATH above will be valid
     # and that clang++ on linux will be able to link itself to
     # this same instance of libc++
     ${MASON_NINJA}/bin/ninja cxx -v -j${MASON_CONCURRENCY}
     # then make everything else
-    ${MASON_NINJA}/bin/ninja -v -j${MASON_CONCURRENCY}
+    ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}
     # install it all
     ${MASON_NINJA}/bin/ninja install
     # set up symlinks for clang++ to match what llvm.org binaries provide

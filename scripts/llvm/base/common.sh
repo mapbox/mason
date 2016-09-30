@@ -5,6 +5,14 @@ MASON_LIB_FILE=bin/clang
 
 . ${MASON_DIR}/mason.sh
 
+function get_md5() {
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        md5 -q $1
+    else
+        md5sum $1 | cut -d ' ' -f1
+    fi
+}
+
 # we use this custom function rather than "mason_download" since we need to easily grab multiple packages
 function curl_get_and_uncompress() {
     local URL=${1}
@@ -22,7 +30,7 @@ function curl_get_and_uncompress() {
     else
         mason_substep "already downloaded $1 to ${local_file}"
     fi
-    MD5_SUM=$(md5 -q ${local_file})
+    MD5_SUM=$(get_md5 -q ${local_file})
     if [[ ${EXPECTED_MD5:-false} == false ]]; then
         mason_error "Warning: no expected m5, actual was ${MD5_SUM}"
     else

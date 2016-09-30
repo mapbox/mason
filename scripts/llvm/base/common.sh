@@ -30,7 +30,7 @@ function curl_get_and_uncompress() {
     else
         mason_substep "already downloaded $1 to ${local_file}"
     fi
-    MD5_SUM=$(get_md5 -q ${local_file})
+    MD5_SUM=$(get_md5 ${local_file})
     if [[ ${EXPECTED_MD5:-false} == false ]]; then
         mason_error "Warning: no expected m5, actual was ${MD5_SUM}"
     else

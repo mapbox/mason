@@ -66,7 +66,7 @@ To accomplish this (c++11 build of clang++ and linking to libc++ instead of an u
 
 ```sh
 ./mason install clang++ 3.8.1
-CLANG_38_PREFIX=$(./mason prefix clang++ 3.8.1)
+CLANG_38_PREFIX=$(./mason prefix clang 3.8.0)
 export CXX=${CLANG_38_PREFIX}/bin/clang++-3.8
 export CC=${CLANG_38_PREFIX}/bin/clang-3.8
 ./mason build llvm 3.9.0

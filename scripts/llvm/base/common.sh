@@ -66,6 +66,7 @@ function mason_load_source {
     mkdir -p "${MASON_ROOT}/.cache"
     cd "${MASON_ROOT}/.cache"
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/llvm-${MASON_VERSION}
+    mkdir -p "${MASON_ROOT}/.build"
     if [[ -d ${MASON_BUILD_PATH}/ ]]; then
         rm -rf ${MASON_BUILD_PATH}/
     fi
@@ -115,7 +116,7 @@ function mason_compile {
     export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS//-mmacosx-version-min=10.8}"
     # llvm may request c++14 instead so let's not force c++11
     # TODO: -fvisibility=hidden breaks just lldb
-    export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS//-std=c++11}"
+    export CXXFLAGS="${CXXFLAGS//-std=c++11}"
     export LDFLAGS="-stdlib=libc++ ${LDFLAGS//-mmacosx-version-min=10.8}"
 
     if [[ $(uname -s) == 'Linux' ]]; then

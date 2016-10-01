@@ -114,20 +114,14 @@ function mason_compile {
     # we link to libc++ even on linux to avoid runtime dependency on libstdc++:
     # https://github.com/mapbox/mason/issues/252
     export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS//-mmacosx-version-min=10.8}"
+    export LDFLAGS="-stdlib=libc++ ${LDFLAGS//-mmacosx-version-min=10.8}"
+    if [[ $(uname -s) == 'Linux' ]]; then
+        export LDFLAGS="${LDFLAGS} -Wl,--start-group -L$(pwd)/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
+    fi
     # llvm may request c++14 instead so let's not force c++11
     # TODO: -fvisibility=hidden breaks just lldb
     export CXXFLAGS="${CXXFLAGS//-std=c++11}"
-    export LDFLAGS="-stdlib=libc++ ${LDFLAGS//-mmacosx-version-min=10.8}"
 
-    if [[ $(uname -s) == 'Linux' ]]; then
-        # to help the build find libc++.so during linking of clang++
-        # we need to help the linker find the libc++ and libc++abi that
-        # are built during the first stages of the build
-        export LD_LIBRARY_PATH=$(pwd)/lib
-    #else
-         # ninja
-    #    export DYLD_LIBRARY_PATH=$(pwd)/lib
-    fi
     # TODO: test this
     #-DLLVM_ENABLE_LTO=ON \
 
@@ -137,6 +131,8 @@ function mason_compile {
      -DCMAKE_CXX_COMPILER="$CXX" \
      -DCMAKE_C_COMPILER="$CC" \
      -DLIBCXX_ENABLE_ASSERTIONS=OFF \
+     -DLIBCXXABI_ENABLE_SHARED=OFF \
+     -DLIBUNWIND_ENABLE_SHARED=OFF \
      -DLIBCXX_ENABLE_SHARED=OFF \
      -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
      -DLLVM_ENABLE_ASSERTIONS=OFF \
@@ -153,7 +149,12 @@ function mason_compile {
     # this ensures that the LD_LIBRARY_PATH above will be valid
     # and that clang++ on linux will be able to link itself to
     # this same instance of libc++
+    ${MASON_NINJA}/bin/ninja unwind -v -j${MASON_CONCURRENCY}
+    ${MASON_NINJA}/bin/ninja cxxabi -v -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja cxx -v -j${MASON_CONCURRENCY}
+    # not move the host compilers libc++ and libc++abi shared libs out of the way
+    mkdir backup_shlibs
+    mv $(dirname $(dirname $CXX))/lib/*cxx*so backup_shlibs/
     # then make everything else
     ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}
     # install it all
@@ -163,6 +164,8 @@ function mason_compile {
     MAJOR_MINOR=$(echo $MASON_VERSION | cut -d '.' -f1-2)
     rm -f "clang++-${MAJOR_MINOR}"
     ln -s "clang++" "clang++-${MAJOR_MINOR}"
+    # restore host compilers sharedlibs
+    cp -r backup_shlibs/* $(dirname $(dirname $CXX))/lib/
 }
 
 function mason_cflags {

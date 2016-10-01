@@ -153,8 +153,8 @@ function mason_compile {
     ${MASON_NINJA}/bin/ninja cxxabi -v -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja cxx -v -j${MASON_CONCURRENCY}
     # not move the host compilers libc++ and libc++abi shared libs out of the way
-    mkdir backup_shlibs
-    mv $(dirname $(dirname $CXX))/lib/*cxx*so backup_shlibs/
+    mkdir -p /tmp/backup_shlibs
+    mv $(dirname $(dirname $CXX))/lib/*c++*so /tmp/backup_shlibs/
     # then make everything else
     ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}
     # install it all

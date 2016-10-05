@@ -10,15 +10,15 @@ MASON_VERSION=$(basename $HERE)
 source ${HERE}/../../${MASON_NAME}/base/common.sh
 
 function setup_release() {
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/llvm-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/                        f2093e98060532449eb7d2fcfd0bc6c6
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/cfe-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang             29e1d86bee422ab5345f5e9fb808d2dc
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/compiler-rt-${MASON_VERSION}.src.tar.xz"       ${MASON_BUILD_PATH}/projects/compiler-rt    b7ea34c9d744da16ffc0217b6990d095
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/libcxx-${MASON_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/libcxx         0a11efefd864ce6f321194e441f7e569
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/libcxxabi-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libcxxabi      d02642308e22e614af6b061b9b4fedfa
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/libunwind-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libunwind      3e5c87c723a456be599727a444b1c166
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/lld-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld               c23c895c0d855a0dc426af686538a95e
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/clang-tools-extra-${MASON_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra f4f663068c77fc742113211841e94d5e
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/lldb-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb              968d053c3c3d7297983589164c6999e9
+    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/llvm-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/                        00f5268479117c9c7f90d0f9e2f06485875f5444
+    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/cfe-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang             465e70cfb1d8b3fb5d1f6577933f7b5014aca3bd
+    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/compiler-rt-${MASON_VERSION}.src.tar.xz"       ${MASON_BUILD_PATH}/projects/compiler-rt    7a2ea8a7257a739330d8f7cfe2bcb70939476f31
+    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/libcxx-${MASON_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/libcxx         248635c4821b9f2e4b620364c21a2596eed514cd
+    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/libcxxabi-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libcxxabi      04ffa28577ec3d935dcd69d137a2e478e71f2704
+    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/libunwind-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libunwind      32e17eaf6a5b769c244480bd32ab3c9cbdf6c97d
+    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/lld-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld               e1829cd47a5c44ad6c68957056afe63879ad9610
+    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/clang-tools-extra-${MASON_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra 8e7e118a769c76e70d5fb2ede66c8f5a2952f8d9
+    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/lldb-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb              988766cbb3d4a295b33dd11f51f7f20811bfa8f2
 }
 
 mason_run "$@"

@@ -5,14 +5,6 @@ MASON_LIB_FILE=bin/clang
 
 . ${MASON_DIR}/mason.sh
 
-function get_md5() {
-    if [[ $(uname -s) == 'Darwin' ]]; then
-        md5 -q $1
-    else
-        md5sum $1 | cut -d ' ' -f1
-    fi
-}
-
 # we use this custom function rather than "mason_download" since we need to easily grab multiple packages
 function curl_get_and_uncompress() {
     local URL=${1}
@@ -21,7 +13,7 @@ function curl_get_and_uncompress() {
         mason_error "TO_DIR unset"
         exit 1
     fi
-    local EXPECTED_MD5=${3:-false}
+    local EXPECTED_HASH=${3:-false}
     local file_basename=$(basename ${URL})
     local local_file=$(pwd)/${file_basename}
     if [ ! -f ${local_file} ] ; then
@@ -30,15 +22,15 @@ function curl_get_and_uncompress() {
     else
         mason_substep "already downloaded $1 to ${local_file}"
     fi
-    MD5_SUM=$(get_md5 ${local_file})
-    if [[ ${EXPECTED_MD5:-false} == false ]]; then
-        mason_error "Warning: no expected m5, actual was ${MD5_SUM}"
+    OBJECT_HASH=$(git hash-object ${local_file})
+    if [[ ${EXPECTED_HASH:-false} == false ]]; then
+        mason_error "Warning: no expected hash provided by script.sh, actual was ${OBJECT_HASH}"
     else
-        if [[ $3 != ${MD5_SUM} ]]; then
-            mason_error "Error: md5 mismatch ${EXPECTED_MD5} (expected) != ${MD5_SUM} (actual)"
+        if [[ $3 != ${OBJECT_HASH} ]]; then
+            mason_error "Error: hash mismatch ${EXPECTED_HASH} (expected) != ${OBJECT_HASH} (actual)"
             exit 1
         else
-            mason_success "Success: md5 matched: ${EXPECTED_MD5} (expected) == ${MD5_SUM} (actual)"
+            mason_success "Success: hash matched: ${EXPECTED_HASH} (expected) == ${OBJECT_HASH} (actual)"
         fi
     fi
     mason_step "uncompressing ${local_file}"
@@ -49,7 +41,7 @@ function curl_get_and_uncompress() {
 
 }
 
-# Note: override this function to set custom md5
+# Note: override this function to set custom hash
 function setup_release() {
     curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/llvm-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/                        
     curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/cfe-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang             
@@ -70,7 +62,7 @@ function mason_load_source {
     if [[ -d ${MASON_BUILD_PATH}/ ]]; then
         rm -rf ${MASON_BUILD_PATH}/
     fi
-    # NOTE: this setup_release can be overridden per package to assert on different md5
+    # NOTE: this setup_release can be overridden per package to assert on different hash
     setup_release
 }
 

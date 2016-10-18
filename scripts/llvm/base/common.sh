@@ -6,7 +6,7 @@ MASON_LIB_FILE=bin/clang
 . ${MASON_DIR}/mason.sh
 
 # we use this custom function rather than "mason_download" since we need to easily grab multiple packages
-function curl_get_and_uncompress() {
+function get_llvm_project() {
     local URL=${1}
     local TO_DIR=${2}
     if [[ ${TO_DIR:-false} == false ]]; then
@@ -15,43 +15,54 @@ function curl_get_and_uncompress() {
     fi
     local EXPECTED_HASH=${3:-false}
     local file_basename=$(basename ${URL})
-    local local_file=$(pwd)/${file_basename}
-    if [ ! -f ${local_file} ] ; then
-        mason_step "Downloading $1 to ${local_file}"
-        curl --retry 3 -f -L -O "${URL}"
-    else
-        mason_substep "already downloaded $1 to ${local_file}"
-    fi
-    OBJECT_HASH=$(git hash-object ${local_file})
-    if [[ ${EXPECTED_HASH:-false} == false ]]; then
-        mason_error "Warning: no expected hash provided by script.sh, actual was ${OBJECT_HASH}"
-    else
-        if [[ $3 != ${OBJECT_HASH} ]]; then
-            mason_error "Error: hash mismatch ${EXPECTED_HASH} (expected) != ${OBJECT_HASH} (actual)"
-            exit 1
+    local local_checkout=$(pwd)/${file_basename}
+    if [[ ${URL} =~ '.git' ]]; then
+        if [ ! -d ${local_checkout} ] ; then
+            mason_step "cloning ${URL} to ${local_checkout}"
+            git clone --depth 1 ${URL} ${local_checkout}
         else
-            mason_success "Success: hash matched: ${EXPECTED_HASH} (expected) == ${OBJECT_HASH} (actual)"
+            mason_substep "already cloned ${URL}, pulling to update"
+            (cd ${local_checkout} && git pull)
         fi
+        mason_step "moving ${local_checkout} into place at ${TO_DIR}"
+        cp -r ${local_checkout} ${TO_DIR}
+    else
+        if [ ! -f ${local_file} ] ; then
+            mason_step "Downloading ${URL} to ${local_file}"
+            curl --retry 3 -f -L -O "${URL}"
+        else
+            mason_substep "already downloaded $1 to ${local_file}"
+        fi
+        OBJECT_HASH=$(git hash-object ${local_file})
+        if [[ ${EXPECTED_HASH:-false} == false ]]; then
+            mason_error "Warning: no expected hash provided by script.sh, actual was ${OBJECT_HASH}"
+        else
+            if [[ $3 != ${OBJECT_HASH} ]]; then
+                mason_error "Error: hash mismatch ${EXPECTED_HASH} (expected) != ${OBJECT_HASH} (actual)"
+                exit 1
+            else
+                mason_success "Success: hash matched: ${EXPECTED_HASH} (expected) == ${OBJECT_HASH} (actual)"
+            fi
+        fi
+        mason_step "uncompressing ${local_file}"
+        tar xf ${local_file}
+        local uncompressed_dir=${file_basename/.tar.xz}
+        mason_step "moving ${uncompressed_dir} into place at ${TO_DIR}"
+        mv ${uncompressed_dir} ${TO_DIR}
     fi
-    mason_step "uncompressing ${local_file}"
-    tar xf ${local_file}
-    local uncompressed_dir=${file_basename/.tar.xz}
-    mason_step "moving ${uncompressed_dir} into place at ${TO_DIR}"
-    mv ${uncompressed_dir} ${TO_DIR}
-
 }
 
 # Note: override this function to set custom hash
 function setup_release() {
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/llvm-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/                        
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/cfe-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang             
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/compiler-rt-${MASON_VERSION}.src.tar.xz"       ${MASON_BUILD_PATH}/projects/compiler-rt    
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/libcxx-${MASON_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/libcxx         
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/libcxxabi-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libcxxabi      
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/libunwind-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libunwind      
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/lld-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld               
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/clang-tools-extra-${MASON_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra 
-    curl_get_and_uncompress "http://llvm.org/releases/${MASON_VERSION}/lldb-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/llvm-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/                        
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/cfe-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang             
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/compiler-rt-${MASON_VERSION}.src.tar.xz"       ${MASON_BUILD_PATH}/projects/compiler-rt    
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libcxx-${MASON_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/libcxx         
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libcxxabi-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libcxxabi      
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libunwind-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libunwind      
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/lld-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld               
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/clang-tools-extra-${MASON_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra 
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/lldb-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb
 }
 
 function mason_load_source {

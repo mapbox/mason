@@ -1,0 +1,87 @@
+diff --git a/common.gypi b/common.gypi
+index 811a7b3..8a5152d 100644
+--- a/common.gypi
++++ b/common.gypi
+@@ -308,7 +308,7 @@
+           'GCC_ENABLE_PASCAL_STRINGS': 'NO',        # No -mpascal-strings
+           'GCC_THREADSAFE_STATICS': 'NO',           # -fno-threadsafe-statics
+           'PREBINDING': 'NO',                       # No -Wl,-prebind
+-          'MACOSX_DEPLOYMENT_TARGET': '10.5',       # -mmacosx-version-min=10.5
++          'MACOSX_DEPLOYMENT_TARGET': '10.11',       # -mmacosx-version-min=10.5
+           'USE_HEADERMAP': 'NO',
+           'OTHER_CFLAGS': [
+             '-fno-strict-aliasing',
+@@ -335,7 +335,7 @@
+           ['clang==1', {
+             'xcode_settings': {
+               'GCC_VERSION': 'com.apple.compilers.llvm.clang.1_0',
+-              'CLANG_CXX_LANGUAGE_STANDARD': 'gnu++0x',  # -std=gnu++0x
++              'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',  # -std=gnu++0x
+             },
+           }],
+         ],
+diff --git a/deps/v8/src/compiler/instruction.h b/deps/v8/src/compiler/instruction.h
+index b7c9430..ed9a5d7 100644
+--- a/deps/v8/src/compiler/instruction.h
++++ b/deps/v8/src/compiler/instruction.h
+@@ -1012,7 +1012,7 @@ class InstructionBlock final : public ZoneObject {
+ 
+ typedef ZoneDeque<Constant> ConstantDeque;
+ typedef std::map<int, Constant, std::less<int>,
+-                 zone_allocator<std::pair<int, Constant> > > ConstantMap;
++                 zone_allocator<std::pair<const int, Constant> > > ConstantMap;
+ 
+ typedef ZoneDeque<Instruction*> InstructionDeque;
+ typedef ZoneDeque<ReferenceMap*> ReferenceMapDeque;
+diff --git a/deps/v8/src/compiler/js-type-feedback.h b/deps/v8/src/compiler/js-type-feedback.h
+index 84060f8..0281556 100644
+--- a/deps/v8/src/compiler/js-type-feedback.h
++++ b/deps/v8/src/compiler/js-type-feedback.h
+@@ -33,9 +33,9 @@ class JSTypeFeedbackTable : public ZoneObject {
+  private:
+   friend class JSTypeFeedbackSpecializer;
+   typedef std::map<NodeId, TypeFeedbackId, std::less<NodeId>,
+-                   zone_allocator<TypeFeedbackId> > TypeFeedbackIdMap;
++                   zone_allocator<std::pair<const NodeId, TypeFeedbackId> > > TypeFeedbackIdMap;
+   typedef std::map<NodeId, FeedbackVectorICSlot, std::less<NodeId>,
+-                   zone_allocator<FeedbackVectorICSlot> >
++                   zone_allocator<std::pair<const NodeId, FeedbackVectorICSlot> > >
+       FeedbackVectorICSlotMap;
+ 
+   TypeFeedbackIdMap type_feedback_id_map_;
+diff --git a/deps/v8/src/zone-containers.h b/deps/v8/src/zone-containers.h
+index 8daf0dd..79b168c 100644
+--- a/deps/v8/src/zone-containers.h
++++ b/deps/v8/src/zone-containers.h
+@@ -114,12 +114,12 @@ class ZoneSet : public std::set<K, Compare, zone_allocator<K>> {
+ // a zone allocator.
+ template <typename K, typename V, typename Compare = std::less<K>>
+ class ZoneMap
+-    : public std::map<K, V, Compare, zone_allocator<std::pair<K, V>>> {
++    : public std::map<K, V, Compare, zone_allocator<std::pair<const K, V>>> {
+  public:
+   // Constructs an empty map.
+   explicit ZoneMap(Zone* zone)
+-      : std::map<K, V, Compare, zone_allocator<std::pair<K, V>>>(
+-            Compare(), zone_allocator<std::pair<K, V>>(zone)) {}
++      : std::map<K, V, Compare, zone_allocator<std::pair<const K, V>>>(
++            Compare(), zone_allocator<std::pair<const K, V>>(zone)) {}
+ };
+ 
+ 
+diff --git a/src/util.h b/src/util.h
+index 1973f26..469858f 100644
+--- a/src/util.h
++++ b/src/util.h
+@@ -8,11 +8,7 @@
+ #include <stddef.h>
+ #include <stdlib.h>
+ 
+-#ifdef __APPLE__
+-#include <tr1/type_traits>  // NOLINT(build/c++tr1)
+-#else
+ #include <type_traits>  // std::remove_reference
+-#endif
+ 
+ namespace node {
+ 

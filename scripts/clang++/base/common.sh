@@ -8,6 +8,8 @@ function mason_build {
     mkdir -p "${MASON_PREFIX}/bin"
     cp "${CLANG_PREFIX}/bin/${MASON_NAME}" "${MASON_PREFIX}/bin/"
     cp "${CLANG_PREFIX}/bin/clang" "${MASON_PREFIX}/bin/"
+    cp "${CLANG_PREFIX}/bin/llvm-symbolizer" "${MASON_PREFIX}/bin/"
+
     # copy share
     mkdir -p "${MASON_PREFIX}/share"
     cp -r "${CLANG_PREFIX}/share/clang" "${MASON_PREFIX}/share/"

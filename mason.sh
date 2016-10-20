@@ -47,7 +47,7 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
         MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
         MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_SDK_VERSION}.sdk"
 
-        if [[  ${MASON_SDK_VERSION%%.*} -ge 10 && ${MASON_SDK_VERSION##*.} -ge 11 ]]; then
+        if [[ ${MASON_SYSTEM_PACKAGE} && ${MASON_SDK_VERSION%%.*} -ge 10 && ${MASON_SDK_VERSION##*.} -ge 11 ]]; then
             export MASON_DYNLIB_SUFFIX="tbd"
         else
             export MASON_DYNLIB_SUFFIX="dylib"

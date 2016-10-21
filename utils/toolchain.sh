@@ -3,10 +3,10 @@
 set -eu
 set -o pipefail
 
-CLANG_VERSION="3.8.0"
-./mason install clang ${CLANG_VERSION}
-export PATH=$(./mason prefix clang ${CLANG_VERSION})/bin:${PATH}
-export CXX=clang++-3.8
-export CC=clang-3.8
+CLANG_VERSION="3.9.0"
+./mason install clang++ ${CLANG_VERSION}
+export PATH=$(./mason prefix clang++ ${CLANG_VERSION})/bin:${PATH}
+export CXX=clang++-3.9
+export CC=clang-3.9
 
 set +eu

@@ -80,7 +80,6 @@ function mason_prepare_compile {
 function mason_compile {
     export CXX="${MASON_CLANG}/bin/clang++"
     export CC="${MASON_CLANG}/bin/clang"
-    CLANG_GIT_REV=$(git -C tools/clang/ rev-list --max-count=1 HEAD)
     mkdir -p ./build
     cd ./build
     CMAKE_EXTRA_ARGS=""
@@ -100,7 +99,6 @@ function mason_compile {
      -DLLVM_ENABLE_ASSERTIONS=OFF \
      -DCLANG_VENDOR=mapbox/mason \
      -DCLANG_REPOSITORY_STRING=https://github.com/mapbox/mason \
-     -DCLANG_APPEND_VC_REV=$CLANG_GIT_REV \
      -DCLANG_VENDOR_UTI=org.mapbox.clang \
      -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
      -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \

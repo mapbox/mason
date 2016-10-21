@@ -47,7 +47,7 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
         MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
         MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_SDK_VERSION}.sdk"
 
-        if [[  ${MASON_SDK_VERSION%%.*} -ge 10 && ${MASON_SDK_VERSION##*.} -ge 11 ]]; then
+        if [[ ${MASON_SYSTEM_PACKAGE} && ${MASON_SDK_VERSION%%.*} -ge 10 && ${MASON_SDK_VERSION##*.} -ge 11 ]]; then
             export MASON_DYNLIB_SUFFIX="tbd"
         else
             export MASON_DYNLIB_SUFFIX="dylib"
@@ -133,7 +133,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     esac
 
     CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-integrated-as -fomit-frame-pointer -fstrict-aliasing -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
-    LDFLAGS="-no-canonical-prefixes -Wl,--warn-shared-textrel -Wl,--fatal-warnings"
+    LDFLAGS="-no-canonical-prefixes -Wl,--warn-shared-textrel -Wl,--fatal-warnings -Wl,-z,now -Wl,-z,relro"
     export CPPFLAGS="-D__ANDROID__"
 
     if [ ${MASON_ANDROID_ABI} = 'arm-v8' ]; then

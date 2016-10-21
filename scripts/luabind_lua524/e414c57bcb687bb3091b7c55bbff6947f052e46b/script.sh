@@ -20,16 +20,18 @@ function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
     ${MASON_DIR}/mason install lua 5.2.4
     MASON_LUA=$(${MASON_DIR}/mason prefix lua 5.2.4)
-    ${MASON_DIR}/mason install boost 1.57.0
-    MASON_BOOST_HEADERS=$(${MASON_DIR}/mason prefix boost 1.57.0)
-    SYSTEM_ZLIB="/usr"
+    ${MASON_DIR}/mason install boost 1.61.0
+    MASON_BOOST_HEADERS=$(${MASON_DIR}/mason prefix boost 1.61.0)
+    ${MASON_DIR}/mason install cmake 3.5.2
+    MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake 3.5.2)
 }
 
 function mason_compile {
+    rm -rf build
     mkdir build
     cd build
-    cmake
-    cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
+    ${MASON_CMAKE}/bin/cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -DLUA_COMPAT_ALL" \
       -DLUA_LIBRARIES=${MASON_LUA}/lib \
       -DLUA_INCLUDE_DIR=${MASON_LUA}/include \
       -DBOOST_INCLUDEDIR=${MASON_BOOST_HEADERS}/include \

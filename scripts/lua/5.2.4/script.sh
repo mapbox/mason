@@ -17,7 +17,9 @@ function mason_load_source {
 }
 
 function mason_compile {
-    make generic CC=$CC CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" INSTALL_TOP=${MASON_PREFIX} install
+    mason_step "Loading patch ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff"
+    patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
+    make generic CC=$CC MYCFLAGS="${CFLAGS}" MYLDFLAGS="${LDFLAGS}" INSTALL_TOP=${MASON_PREFIX} install
 }
 
 function mason_cflags {

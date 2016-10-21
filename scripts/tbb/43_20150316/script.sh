@@ -2,7 +2,8 @@
 
 MASON_NAME=tbb
 MASON_VERSION=43_20150316
-MASON_LIB_FILE=bin/tbb
+echo ${MASON_DYNLIB_SUFFIX}
+MASON_LIB_FILE=lib/libtbb.${MASON_DYNLIB_SUFFIX}
 
 . ${MASON_DIR}/mason.sh
 
@@ -65,8 +66,12 @@ function mason_cflags {
     echo "-I${MASON_PREFIX}/include"
 }
 
+function mason_static_libs {
+    :
+}
+
 function mason_ldflags {
-    echo "-L${MASON_PREFIX}/lib -lluabind"
+    echo "-L${MASON_PREFIX}/lib -ltbb"
 }
 
 function mason_clean {

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 LIB_VERSION=1.7.0
+CXXABI=-D_GLIBCXX_USE_CXX11_ABI=0
 
 MASON_NAME=gtest
 MASON_VERSION=${LIB_VERSION}
@@ -26,6 +27,7 @@ function mason_compile {
         mkdir -p lib/.libs
         libtool -static gtest-all.o -o lib/.libs/libgtest.a
     else
+        export CXXFLAGS="$CXXFLAGS $CXXABI"
         ./configure \
             --prefix=${MASON_PREFIX} \
             ${MASON_HOST_ARG} \

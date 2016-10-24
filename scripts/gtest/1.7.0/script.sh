@@ -25,7 +25,7 @@ function mason_build {
 
     mkdir -p ${MASON_PREFIX}/lib
     mkdir -p ${MASON_PREFIX}/include/gtest
-    cp -v include/gtest/gtest.h ${MASON_PREFIX}/include/gtest
+    cp -rv include ${MASON_PREFIX}
 
     rm -rf build
     mkdir -p build

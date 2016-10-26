@@ -150,6 +150,9 @@ function(mason_use _PACKAGE)
             endif()
         endif()
 
+        set(MASON_PACKAGE_${_PACKAGE}_PREFIX "${_INSTALL_PATH}" CACHE STRING "${_PACKAGE} ${_INSTALL_PATH}" FORCE)
+        mark_as_advanced(MASON_PACKAGE_${_PACKAGE}_PREFIX)
+
         # Load the configuration from the ini file
         file(STRINGS "${_INSTALL_PATH}/mason.ini" _CONFIG_FILE)
         foreach(_LINE IN LISTS _CONFIG_FILE)
@@ -195,6 +198,13 @@ function(mason_use _PACKAGE)
         list(APPEND _LIBRARIES ${MASON_PACKAGE_${_PACKAGE}_STATIC_LIBS} ${MASON_PACKAGE_${_PACKAGE}_LDFLAGS})
         set(MASON_PACKAGE_${_PACKAGE}_LIBRARIES "${_LIBRARIES}" CACHE STRING "${_PACKAGE} _LIBRARIES" FORCE)
         mark_as_advanced(MASON_PACKAGE_${_PACKAGE}_LIBRARIES)
+
+        if(NOT _HEADER_ONLY)
+            string(REGEX MATCHALL "(^| +)-L *([^ ]+)" MASON_PACKAGE_${_PACKAGE}_LIBRARY_DIRS "${MASON_PACKAGE_${_PACKAGE}_LDFLAGS}")
+            string(REGEX REPLACE "(^| +)-L *" "\\1" MASON_PACKAGE_${_PACKAGE}_LIBRARY_DIRS "${MASON_PACKAGE_${_PACKAGE}_LIBRARY_DIRS}")
+            set(MASON_PACKAGE_${_PACKAGE}_LIBRARY_DIRS "${MASON_PACKAGE_${_PACKAGE}_LIBRARY_DIRS}" CACHE STRING "${_PACKAGE} ${MASON_PACKAGE_${_PACKAGE}_LIBRARY_DIRS}" FORCE)
+            mark_as_advanced(MASON_PACKAGE_${_PACKAGE}_LIBRARY_DIRS)
+        endif()
 
         # Store invocation ID to prevent different versions of the same package in one invocation
         set(MASON_PACKAGE_${_PACKAGE}_INVOCATION "${MASON_INVOCATION}" CACHE INTERNAL "${_PACKAGE} invocation ID" FORCE)

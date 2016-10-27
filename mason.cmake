@@ -16,13 +16,21 @@ if (NOT MASON_COMMAND)
 endif()
 
 # Determine platform
+# we call uname -s manually here since
+# CMAKE_HOST_SYSTEM_NAME will not be defined before the project() call
+execute_process(
+    COMMAND uname -s
+    OUTPUT_VARIABLE UNAME_S
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
 if(NOT MASON_PLATFORM)
-    if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+    if (UNAME_S STREQUAL "Darwin")
         set(MASON_PLATFORM "macos")
     else()
         set(MASON_PLATFORM "linux")
     endif()
 endif()
+
 
 # Determine platform version string
 if(MASON_PLATFORM STREQUAL "ios")

@@ -12,4 +12,9 @@ else
     assertEqual "$(pwd)" "$VAL" "got correct result of ./mason env MASON_DIR"
 fi
 
+VAL=$(./mason --version)
+assertEqual "$?" "0" "able to run ./mason --version"
+assertEqual "0.1.0" "$VAL" "got correct result of ./mason --version"
+
+
 exit $CODE

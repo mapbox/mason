@@ -7,6 +7,13 @@ MASON_VERSION=$1 ; shift
 set -e
 set -o pipefail
 
+MASON_RELEASED_VERSION="0.1.0"
+
+if [ "${MASON_COMMAND}" = "--version" ]; then
+    echo ${MASON_RELEASED_VERSION}
+    exit 0
+fi
+
 function usage {
     echo "Usage: $0 <command> <lib> <version>"
 }

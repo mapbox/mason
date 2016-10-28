@@ -37,7 +37,7 @@ function mason_compile {
 }
 
 function mason_cflags {
-    :
+    echo -I${MASON_PREFIX}/include
 }
 
 function mason_ldflags {

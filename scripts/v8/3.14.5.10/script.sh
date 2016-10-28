@@ -20,13 +20,19 @@ function mason_compile {
     git clone --depth 1 https://chromium.googlesource.com/external/gyp build/gyp
     mason_step "Loading patch ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff"
     patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
-    export LDFLAGS="${LDFLAGS:-} -stdlib=libc++"
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        export LDFLAGS="${LDFLAGS:-} -stdlib=libc++"
+    fi
     make x64.release werror=no -j${MASON_CONCURRENCY}
     mkdir -p ${MASON_PREFIX}/include
     mkdir -p ${MASON_PREFIX}/bin
     mkdir -p ${MASON_PREFIX}/lib
     cp -r include/* ${MASON_PREFIX}/include/
-    cp out/x64.release/lib* ${MASON_PREFIX}/lib/
+    if [[ $(uname -s) == 'Darwin' ]]; then
+     cp out/x64.release/lib*.a ${MASON_PREFIX}/lib/
+    else
+     cp out/x64.release/obj.target/tools/gyp/lib*.a ${MASON_PREFIX}/lib/
+    fi
     cp out/x64.release/d8 ${MASON_PREFIX}/bin/
 }
 

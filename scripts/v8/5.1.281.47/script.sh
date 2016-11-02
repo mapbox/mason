@@ -89,6 +89,9 @@ function mason_compile {
     cp -r ${M_GMOCK_PATH}       testing/gmock
     cp -r ${M_SWARMING_PATH}    tools/swarming_client
 
+    # make gyp default to full archives for static libs rather than thin
+    perl -i -p -e "s/\'standalone_static_library\', 0\)/\'standalone_static_library\', 1\)/g;" build/gyp/pylib/gyp/generator/make.py
+
     #PYTHONPATH="$(pwd)/tools/generate_shim_headers:$(pwd)/build:$(pwd)/build/gyp/pylib:" \
     #GYP_GENERATORS=make \
     #build/gyp/gyp --generator-output="out" build/all.gyp \

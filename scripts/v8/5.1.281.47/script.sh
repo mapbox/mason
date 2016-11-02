@@ -116,6 +116,10 @@ function mason_ldflags {
     :
 }
 
+function mason_static_libs {
+    echo ${MASON_PREFIX}/lib/libv8_base.a ${MASON_PREFIX}/lib/libv8_libbase.a ${MASON_PREFIX}/lib/libv8_libplatform.a ${MASON_PREFIX}/lib/libv8_external_snapshot.a
+}
+
 function mason_clean {
     make clean
 }

@@ -15,25 +15,25 @@ function get_llvm_project() {
     fi
     local EXPECTED_HASH=${3:-false}
     local file_basename=$(basename ${URL})
-    local local_checkout=$(pwd)/${file_basename}
+    local local_file_or_checkout=$(pwd)/${file_basename}
     if [[ ${URL} =~ '.git' ]]; then
-        if [ ! -d ${local_checkout} ] ; then
-            mason_step "cloning ${URL} to ${local_checkout}"
-            git clone --depth 1 ${URL} ${local_checkout}
+        if [ ! -d ${local_file_or_checkout} ] ; then
+            mason_step "cloning ${URL} to ${local_file_or_checkout}"
+            git clone --depth 1 ${URL} ${local_file_or_checkout}
         else
             mason_substep "already cloned ${URL}, pulling to update"
-            (cd ${local_checkout} && git pull)
+            (cd ${local_file_or_checkout} && git pull)
         fi
-        mason_step "moving ${local_checkout} into place at ${TO_DIR}"
-        cp -r ${local_checkout} ${TO_DIR}
+        mason_step "moving ${local_file_or_checkout} into place at ${TO_DIR}"
+        cp -r ${local_file_or_checkout} ${TO_DIR}
     else
-        if [ ! -f ${local_file} ] ; then
-            mason_step "Downloading ${URL} to ${local_file}"
+        if [ ! -f ${local_file_or_checkout} ] ; then
+            mason_step "Downloading ${URL} to ${local_file_or_checkout}"
             curl --retry 3 -f -L -O "${URL}"
         else
-            mason_substep "already downloaded $1 to ${local_file}"
+            mason_substep "already downloaded $1 to ${local_file_or_checkout}"
         fi
-        OBJECT_HASH=$(git hash-object ${local_file})
+        export OBJECT_HASH=$(git hash-object ${local_file_or_checkout})
         if [[ ${EXPECTED_HASH:-false} == false ]]; then
             mason_error "Warning: no expected hash provided by script.sh, actual was ${OBJECT_HASH}"
         else
@@ -44,8 +44,8 @@ function get_llvm_project() {
                 mason_success "Success: hash matched: ${EXPECTED_HASH} (expected) == ${OBJECT_HASH} (actual)"
             fi
         fi
-        mason_step "uncompressing ${local_file}"
-        tar xf ${local_file}
+        mason_step "uncompressing ${local_file_or_checkout}"
+        tar xf ${local_file_or_checkout}
         local uncompressed_dir=${file_basename/.tar.xz}
         mason_step "moving ${uncompressed_dir} into place at ${TO_DIR}"
         mv ${uncompressed_dir} ${TO_DIR}
@@ -95,6 +95,7 @@ function mason_compile {
     export CC="${CC:-clang}"
     # knock out lldb doc building, to remove doxygen dependency
     perl -i -p -e "s/add_subdirectory\(docs\)//g;" tools/lldb/CMakeLists.txt
+
     mkdir -p ./build
     cd ./build
     CMAKE_EXTRA_ARGS=""
@@ -122,7 +123,6 @@ function mason_compile {
         export LDFLAGS="${LDFLAGS} -Wl,--start-group -L$(pwd)/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
     fi
     # llvm may request c++14 instead so let's not force c++11
-    # TODO: -fvisibility=hidden breaks just lldb
     export CXXFLAGS="${CXXFLAGS//-std=c++11}"
 
     # TODO: test this
@@ -130,9 +130,11 @@ function mason_compile {
 
     ${MASON_CMAKE}/bin/cmake ../ -G Ninja -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
      -DCMAKE_BUILD_TYPE=Release \
+     -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64" \
      -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
      -DCMAKE_CXX_COMPILER="$CXX" \
      -DCMAKE_C_COMPILER="$CC" \
+     -DLLVM_EXTERNALIZE_DEBUGINFO=ON \
      -DLIBCXX_ENABLE_ASSERTIONS=OFF \
      -DLIBCXXABI_ENABLE_SHARED=OFF \
      -DLIBUNWIND_ENABLE_SHARED=OFF \
@@ -152,6 +154,7 @@ function mason_compile {
     # this ensures that the LD_LIBRARY_PATH above will be valid
     # and that clang++ on linux will be able to link itself to
     # this same instance of libc++
+    ${MASON_NINJA}/bin/ninja lldb -v -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja unwind -v -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja cxxabi -v -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja cxx -v -j${MASON_CONCURRENCY}
@@ -167,7 +170,6 @@ function mason_compile {
     # set up symlinks for clang++ to match what llvm.org binaries provide
     cd ${MASON_PREFIX}/bin/
     MAJOR_MINOR=$(echo $MASON_VERSION | cut -d '.' -f1-2)
-    rm -f "clang++-${MAJOR_MINOR}"
     ln -s "clang++" "clang++-${MAJOR_MINOR}"
     # restore host compilers sharedlibs
     if [[ ${CXX_BOOTSTRAP:-false} != false ]]; then

@@ -707,7 +707,7 @@ function mason_run {
     elif [ "$1" == "publish" ]; then
         mason_publish
     elif [ "$1" == "build" ]; then
-        #mason_clear_existing
+        mason_clear_existing
         mason_build
         mason_write_config
     elif [ "$1" == "cflags" ]; then

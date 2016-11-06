@@ -66,10 +66,10 @@ To accomplish this (c++11 build of clang++ and linking to libc++ instead of an u
 
 ```sh
 ./mason install clang++ 3.9.0
-CLANG_39_PREFIX=$(./mason prefix clang 3.8.0)
-export CXX=${CLANG_38_PREFIX}/bin/clang++-3.9
-export CC=${CLANG_38_PREFIX}/bin/clang-3.9
-./mason build llvm 3.9.0
+CLANG_39_PREFIX=$(./mason prefix clang++ 3.9.0)
+export CXX=${CLANG_39_PREFIX}/bin/clang++-3.9
+export CC=${CLANG_39_PREFIX}/bin/clang-3.9
+CXX_BOOTSTRAP=1 ./mason build llvm 3.9.0
 ```
 
 The reason `LD_LIBRARY_PATH` is set before the build is so that libc++.so can be found during linking. Once linked clang++ automatically uses the right @rpath on macOS and linux to find its own libc++.so at runtime.

@@ -115,6 +115,17 @@ function mason_compile {
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.11"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_CREATE_XCODE_TOOLCHAIN=ON"
     fi
+    MAJOR_MINOR=$(echo $MASON_VERSION | cut -d '.' -f1-2)
+    # workaround glitch with llvm 3.8.1 that cannot build libc++ as only a static lib
+    # error was: libc++.a is not a symlink
+    # -DLIBCXX_ENABLE_SHARED=OFF \
+    if [[ ${MAJOR_MINOR} == "3.8" ]]; then
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_SHARED=ON -DLIBCXXABI_ENABLE_SHARED=ON"
+    else
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXXABI_ENABLE_SHARED=OFF"
+    fi
+
+
     # we link to libc++ even on linux to avoid runtime dependency on libstdc++:
     # https://github.com/mapbox/mason/issues/252
     export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS//-mmacosx-version-min=10.8}"
@@ -136,9 +147,7 @@ function mason_compile {
      -DCMAKE_C_COMPILER="$CC" \
      -DLLVM_EXTERNALIZE_DEBUGINFO=ON \
      -DLIBCXX_ENABLE_ASSERTIONS=OFF \
-     -DLIBCXXABI_ENABLE_SHARED=OFF \
      -DLIBUNWIND_ENABLE_SHARED=OFF \
-     -DLIBCXX_ENABLE_SHARED=OFF \
      -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
      -DLLVM_ENABLE_ASSERTIONS=OFF \
      -DCLANG_VENDOR="mapbox/mason" \
@@ -154,10 +163,17 @@ function mason_compile {
     # this ensures that the LD_LIBRARY_PATH above will be valid
     # and that clang++ on linux will be able to link itself to
     # this same instance of libc++
+    ${MASON_NINJA}/bin/ninja cxxabi -v -j${MASON_CONCURRENCY}
+    if [[ ${MAJOR_MINOR} == "3.8" ]] && [[ ${CXX_BOOTSTRAP:-false} != false ]]; then
+        rm lib/*so
+    fi
+    ${MASON_NINJA}/bin/ninja cxx -v -j${MASON_CONCURRENCY}
+    if [[ ${MAJOR_MINOR} == "3.8" ]] && [[ ${CXX_BOOTSTRAP:-false} != false ]]; then
+        rm lib/*so
+    fi
+
     ${MASON_NINJA}/bin/ninja lldb -v -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja unwind -v -j${MASON_CONCURRENCY}
-    ${MASON_NINJA}/bin/ninja cxxabi -v -j${MASON_CONCURRENCY}
-    ${MASON_NINJA}/bin/ninja cxx -v -j${MASON_CONCURRENCY}
     # no move the host compilers libc++ and libc++abi shared libs out of the way
     if [[ ${CXX_BOOTSTRAP:-false} != false ]]; then
         mkdir -p /tmp/backup_shlibs
@@ -169,7 +185,6 @@ function mason_compile {
     ${MASON_NINJA}/bin/ninja install
     # set up symlinks for clang++ to match what llvm.org binaries provide
     cd ${MASON_PREFIX}/bin/
-    MAJOR_MINOR=$(echo $MASON_VERSION | cut -d '.' -f1-2)
     ln -s "clang++" "clang++-${MAJOR_MINOR}"
     # restore host compilers sharedlibs
     if [[ ${CXX_BOOTSTRAP:-false} != false ]]; then

@@ -24,6 +24,9 @@ function mason_build {
     mkdir -p "${MASON_PREFIX}/lib"
     cp -r ${CLANG_PREFIX}/lib/libc++* "${MASON_PREFIX}/lib/"
     cp -r ${CLANG_PREFIX}/lib/libLTO.* "${MASON_PREFIX}/lib/"
+    if [[ $(uname -s) == 'Linux' ]]; then
+        cp -r ${CLANG_PREFIX}/lib/LLVMgold* "${MASON_PREFIX}/lib/"
+    fi
     mkdir -p "${MASON_PREFIX}/lib/clang"
     cp -R ${CLANG_PREFIX}/lib/clang/${MASON_VERSION} "${MASON_PREFIX}/lib/clang/"
 

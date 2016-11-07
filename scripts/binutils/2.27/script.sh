@@ -28,7 +28,7 @@ function mason_compile {
         --disable-dependency-tracking
 
     make all-gold -j${MASON_CONCURRENCY}
-    make all-gold install
+    make install
 }
 
 function mason_ldflags {

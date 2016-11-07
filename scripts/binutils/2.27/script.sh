@@ -27,7 +27,7 @@ function mason_compile {
         --disable-shared \
         --disable-dependency-tracking
 
-    make all-gold -j${MASON_CONCURRENCY}
+    make -j${MASON_CONCURRENCY}
     make install
 }
 

@@ -124,7 +124,7 @@ function mason_compile {
     MAJOR_MINOR=$(echo $MASON_VERSION | cut -d '.' -f1-2)
 
     if [[ $(uname -s) == 'Linux' ]]; then
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_BINUTILS_INCDIR "
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_BINUTILS_INCDIR=${LLVM_BINUTILS_INCDIR}"
     fi
 
     # we link to libc++ even on linux to avoid runtime dependency on libstdc++:

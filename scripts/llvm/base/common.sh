@@ -96,11 +96,6 @@ function mason_compile {
     # knock out lldb doc building, to remove doxygen dependency
     perl -i -p -e "s/add_subdirectory\(docs\)//g;" tools/lldb/CMakeLists.txt
 
-    # fix static linking bug in llvm < 3.9.0
-    if [[ ${MAJOR_MINOR} == "3.8" ]]; then
-        perl -i -p -e "s/AND PYTHONINTERP_FOUND\)/AND PYTHONINTERP_FOUND AND LIBCXX_ENABLE_SHARED\)/g;" projects/libcxx/CMakeLists.txt
-    fi
-
     mkdir -p ./build
     cd ./build
     CMAKE_EXTRA_ARGS=""
@@ -134,6 +129,8 @@ function mason_compile {
 
     # TODO: test this
     #-DLLVM_ENABLE_LTO=ON \
+
+    # note: LIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON is only needed with llvm < 3.9.0 to avoid libcxx(abi) build breaking when only a static libc++ exists
 
     ${MASON_CMAKE}/bin/cmake ../ -G Ninja -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
      -DCMAKE_BUILD_TYPE=Release \

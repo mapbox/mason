@@ -88,6 +88,12 @@ function mason_prepare_compile {
     MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake ${CMAKE_VERSION})
     ${MASON_DIR}/mason install ninja ${NINJA_VERSION}
     MASON_NINJA=$(${MASON_DIR}/mason prefix ninja ${NINJA_VERSION})
+
+    if [[ $(uname -s) == 'Linux' ]]; then
+        BINUTILS_VERSION=2.27
+        ${MASON_DIR}/mason install binutils ${BINUTILS_VERSION}
+        LLVM_BINUTILS_INCDIR=$(${MASON_DIR}/mason prefix binutils ${BINUTILS_VERSION})/include
+    fi
 }
 
 function mason_compile {
@@ -116,6 +122,10 @@ function mason_compile {
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_CREATE_XCODE_TOOLCHAIN=ON -DLLVM_EXTERNALIZE_DEBUGINFO=ON"
     fi
     MAJOR_MINOR=$(echo $MASON_VERSION | cut -d '.' -f1-2)
+
+    if [[ $(uname -s) == 'Linux' ]]; then
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_BINUTILS_INCDIR "
+    fi
 
     # we link to libc++ even on linux to avoid runtime dependency on libstdc++:
     # https://github.com/mapbox/mason/issues/252

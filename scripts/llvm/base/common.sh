@@ -96,6 +96,11 @@ function mason_compile {
     # knock out lldb doc building, to remove doxygen dependency
     perl -i -p -e "s/add_subdirectory\(docs\)//g;" tools/lldb/CMakeLists.txt
 
+    # fix static linking bug in llvm < 3.9.0
+    if [[ ${MAJOR_MINOR} == "3.8" ]]; then
+        perl -i -p -e "s/AND PYTHONINTERP_FOUND\)/AND PYTHONINTERP_FOUND AND LIBCXX_ENABLE_SHARED\)/g;" projects/libcxx/CMakeLists.txt
+    fi
+
     mkdir -p ./build
     cd ./build
     CMAKE_EXTRA_ARGS=""
@@ -116,15 +121,6 @@ function mason_compile {
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_CREATE_XCODE_TOOLCHAIN=ON -DLLVM_EXTERNALIZE_DEBUGINFO=ON"
     fi
     MAJOR_MINOR=$(echo $MASON_VERSION | cut -d '.' -f1-2)
-    # workaround glitch with llvm 3.8.1 that cannot build libc++ as only a static lib
-    # error was: libc++.a is not a symlink
-    # -DLIBCXX_ENABLE_SHARED=OFF \
-    if [[ ${MAJOR_MINOR} == "3.8" ]]; then
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_SHARED=ON -DLIBCXXABI_ENABLE_SHARED=ON"
-    else
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXXABI_ENABLE_SHARED=OFF"
-    fi
-
 
     # we link to libc++ even on linux to avoid runtime dependency on libstdc++:
     # https://github.com/mapbox/mason/issues/252
@@ -146,6 +142,9 @@ function mason_compile {
      -DCMAKE_CXX_COMPILER="$CXX" \
      -DCMAKE_C_COMPILER="$CC" \
      -DLIBCXX_ENABLE_ASSERTIONS=OFF \
+     -DLIBCXX_ENABLE_SHARED=OFF \
+     -DLIBCXXABI_ENABLE_SHARED=OFF \
+     -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON \
      -DLIBUNWIND_ENABLE_SHARED=OFF \
      -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
      -DLLVM_ENABLE_ASSERTIONS=OFF \
@@ -158,21 +157,15 @@ function mason_compile {
      -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja \
      ${CMAKE_EXTRA_ARGS}
 
+    ${MASON_NINJA}/bin/ninja unwind -j${MASON_CONCURRENCY}
+
     # make libc++ and libc++abi first
     # this ensures that the LD_LIBRARY_PATH above will be valid
     # and that clang++ on linux will be able to link itself to
     # this same instance of libc++
-    ${MASON_NINJA}/bin/ninja cxxabi -v -j${MASON_CONCURRENCY}
-    if [[ ${MAJOR_MINOR} == "3.8" ]] && [[ ${CXX_BOOTSTRAP:-false} != false ]]; then
-        rm lib/*so
-    fi
-    ${MASON_NINJA}/bin/ninja cxx -v -j${MASON_CONCURRENCY}
-    if [[ ${MAJOR_MINOR} == "3.8" ]] && [[ ${CXX_BOOTSTRAP:-false} != false ]]; then
-        rm lib/*so
-    fi
+    ${MASON_NINJA}/bin/ninja cxx -j${MASON_CONCURRENCY}
 
-    ${MASON_NINJA}/bin/ninja lldb -v -j${MASON_CONCURRENCY}
-    ${MASON_NINJA}/bin/ninja unwind -v -j${MASON_CONCURRENCY}
+    ${MASON_NINJA}/bin/ninja lldb -j${MASON_CONCURRENCY}
     # no move the host compilers libc++ and libc++abi shared libs out of the way
     if [[ ${CXX_BOOTSTRAP:-false} != false ]]; then
         mkdir -p /tmp/backup_shlibs

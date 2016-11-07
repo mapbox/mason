@@ -22,12 +22,13 @@ function mason_compile {
     ./configure \
         --prefix=${MASON_PREFIX} \
         --enable-gold \
+        --enable-plugins \
         --enable-static \
         --disable-shared \
         --disable-dependency-tracking
 
-    make -j${MASON_CONCURRENCY}
-    make install
+    make all-gold -j${MASON_CONCURRENCY}
+    make all-gold install
 }
 
 function mason_ldflags {

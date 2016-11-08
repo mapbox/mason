@@ -23,26 +23,24 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    if [[ ${MASON_PLATFORM} == 'ios' && ${MASON_UNAME} = 'Darwin' ]]; then
-      mason_substep "Cross-compiling ICU. Starting with host build of ICU to generate tools."
+    if [[ ${MASON_PLATFORM} == 'ios' || ${MASON_PLATFORM} == 'android' ]]; then
+        mason_substep "Cross-compiling ICU. Starting with host build of ICU to generate tools."
 
-      MASON_CROSS_BUILD=0
-      mason_compile_base
+        pushd ${MASON_ROOT}/..
+        env -i HOME="$HOME" PATH="$PATH" USER="$USER" ${MASON_DIR}/mason build icu ${MASON_VERSION}
+        popd
 
-      # TODO: Copies a bunch of files to a kind of orphaned place, do we need to do something to clean up after the build?
-      #  Copying the whole build directory is the easiest way to do a cross build, but we could limit this to a small subset of files (icucross.mk, the tools directory, probably a few others...)
-      mason_substep "Moving OSX ICU build directory to ${MASON_ROOT}/.build/icu-host"
-      rm -rf ${MASON_ROOT}/.build/icu-host
-      cp -R ${MASON_ROOT}/.build/icu-trunk/source ${MASON_ROOT}/.build/icu-host
-    elif [[ ${MASON_PLATFORM} == 'android' && ${MASON_UNAME} = 'Darwin' ]]; then
-        # mason.sh has already turned on enough android flags that we won't be able to build here, so we could just try calling into mason again to do the build (and then pull stuff out of the .build directory when it's done)
-        # For now rely on the earlier version built for iOS
-        echo ""
+        # TODO: Copies a bunch of files to a kind of orphaned place, do we need to do something to clean up after the build?
+        #  Copying the whole build directory is the easiest way to do a cross build, but we could limit this to a small subset of files (icucross.mk, the tools directory, probably a few others...)
+        #  Also instead of using the regular build steps, we could use a dedicated built target that just builds the tools
+        mason_substep "Moving host ICU build directory to ${MASON_ROOT}/.build/icu-host"
+        rm -rf ${MASON_ROOT}/.build/icu-host
+        cp -R ${MASON_BUILD_PATH}/source ${MASON_ROOT}/.build/icu-host
     fi
 }
 
 function mason_compile {
-    if [[ ( ${MASON_PLATFORM} == 'ios' || ${MASON_PLATFORM} == 'android' ) && ${MASON_UNAME} = 'Darwin' ]]; then
+    if [[ ${MASON_PLATFORM} == 'ios' || ${MASON_PLATFORM} == 'android' ]]; then
         MASON_CROSS_BUILD=1
     fi
     mason_compile_base
@@ -51,7 +49,9 @@ function mason_compile {
 function mason_compile_base {
     pushd  ${MASON_BUILD_PATH}/source
 
-    ICU_CORE_CPP_FLAGS="-DU_CHARSET_IS_UTF8=1 -DUCHAR_TYPE=char16_t"
+    # Using uint_least16_t instead of char16_t because Android Clang doesn't recognize char16_t
+    # I'm being shady and telling users of the library to use char16_t, so there's an implicit raw cast
+    ICU_CORE_CPP_FLAGS="-DU_CHARSET_IS_UTF8=1 -DU_CHAR_TYPE=uint_least16_t"
     ICU_MODULE_CPP_FLAGS="${ICU_CORE_CPP_FLAGS} -DUCONFIG_NO_LEGACY_CONVERSION=1 -DUCONFIG_NO_BREAK_ITERATION=1"
     
     CPPFLAGS="${CPPFLAGS} ${ICU_CORE_CPP_FLAGS} ${ICU_MODULE_CPP_FLAGS} -fvisibility=hidden $(icu_debug_cpp)"

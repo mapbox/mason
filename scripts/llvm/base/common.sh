@@ -125,6 +125,10 @@ function mason_compile {
 
     if [[ $(uname -s) == 'Linux' ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_BINUTILS_INCDIR=${LLVM_BINUTILS_INCDIR}"
+        if [[ ${MAJOR_MINOR} == "3.8" ]]; then
+            # note: LIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON is only needed with llvm < 3.9.0 to avoid libcxx(abi) build breaking when only a static libc++ exists
+            CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON"
+        fi
     fi
 
     # we link to libc++ even on linux to avoid runtime dependency on libstdc++:
@@ -133,6 +137,7 @@ function mason_compile {
     export LDFLAGS="-stdlib=libc++ ${LDFLAGS//-mmacosx-version-min=10.8}"
     if [[ $(uname -s) == 'Linux' ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,--start-group -L$(pwd)/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
+
     fi
     # llvm may request c++14 instead so let's not force c++11
     export CXXFLAGS="${CXXFLAGS//-std=c++11}"
@@ -140,7 +145,6 @@ function mason_compile {
     # TODO: test this
     #-DLLVM_ENABLE_LTO=ON \
 
-    # note: LIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON is only needed with llvm < 3.9.0 to avoid libcxx(abi) build breaking when only a static libc++ exists
 
     ${MASON_CMAKE}/bin/cmake ../ -G Ninja -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
      -DCMAKE_BUILD_TYPE=Release \
@@ -151,7 +155,6 @@ function mason_compile {
      -DLIBCXX_ENABLE_ASSERTIONS=OFF \
      -DLIBCXX_ENABLE_SHARED=OFF \
      -DLIBCXXABI_ENABLE_SHARED=OFF \
-     -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON \
      -DLIBUNWIND_ENABLE_SHARED=OFF \
      -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
      -DLLVM_ENABLE_ASSERTIONS=OFF \

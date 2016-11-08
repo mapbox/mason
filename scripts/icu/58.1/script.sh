@@ -75,7 +75,8 @@ function mason_compile_base {
     --disable-layout \
     --disable-icuio \
     --disable-samples \
-    --disable-dyload
+    --disable-dyload || cat config.log
+
 
     # Must do make clean after configure to clear out object files left over from previous build on different architecture
     make clean

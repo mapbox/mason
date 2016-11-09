@@ -54,6 +54,8 @@ if [ "${MASON_COMMAND}" = "trigger" ]; then
     config = YAML.load_file("scripts/${MASON_NAME}/${MASON_VERSION}/.travis.yml")
     config["env"] ||= {}
     config["env"]["global"] ||= []
+    config["env"]["global"] << {"secure" => "VI6PAoen/TwUM2ynPt8890HKq6zc/e/jTZwYX1D9/BdzkOrTcztxZxO9hP5lsnYeqcNeLXgHpO4LVxm95gjodLLkSXUNW6JndRaiCVHS7dwkN+Oe9XWJajw5z1fRJjnCxhgICfHK/J3H+klKtvOJb2OMDc6W7UAoH/OWGDbBJ5w="}
+    config["env"]["global"] << {"secure" => "BVefSxpbYyQbruXm61pDwnawEN0KdvM865muccfEshAM9pPxd24NoB7JYeUdkktgWnO3QCmy3RTw0ck7DbjHTt0HT6AqXcNFYjCxbLWM+jmQDnDv8bxWas/2XU8jP+vK+OUDsYE5IL7ZevBYPY1dUWv6fOQt7NPKnhoar9KsDoQ="}
     config["env"]["global"] << "MASON_NAME=${MASON_NAME}" << "MASON_VERSION=${MASON_VERSION}"
     puts JSON.pretty_generate(config)
 RUBY

@@ -13,9 +13,6 @@ matrix:
     - os: linux
       compiler: clang
 
-before_install:
-- source ./scripts/setup_cpp11_toolchain.sh
-
 script:
 - if [[ $(uname -s) == 'Darwin' ]]; then brew install cmake; fi
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

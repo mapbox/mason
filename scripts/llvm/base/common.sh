@@ -5,6 +5,8 @@ MASON_LIB_FILE=bin/clang
 
 . ${MASON_DIR}/mason.sh
 
+export BUILD_AND_LINK_LIBCXX=${BUILD_AND_LINK_LIBCXX:-true}
+
 # we use this custom function rather than "mason_download" since we need to easily grab multiple packages
 function get_llvm_project() {
     local URL=${1}
@@ -54,14 +56,16 @@ function get_llvm_project() {
 
 # Note: override this function to set custom hash
 function setup_release() {
-    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/llvm-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/                        
-    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/cfe-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang             
-    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/compiler-rt-${MASON_VERSION}.src.tar.xz"       ${MASON_BUILD_PATH}/projects/compiler-rt    
-    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libcxx-${MASON_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/libcxx         
-    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libcxxabi-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libcxxabi      
-    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libunwind-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libunwind      
-    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/lld-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld               
-    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/clang-tools-extra-${MASON_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra 
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/llvm-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/cfe-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/compiler-rt-${MASON_VERSION}.src.tar.xz"       ${MASON_BUILD_PATH}/projects/compiler-rt
+    if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
+        get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libcxx-${MASON_VERSION}.src.tar.xz"        ${MASON_BUILD_PATH}/projects/libcxx
+        get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libcxxabi-${MASON_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libcxxabi
+        get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libunwind-${MASON_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libunwind
+    fi
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/lld-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld
+    get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/clang-tools-extra-${MASON_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/lldb-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb
 }
 
@@ -125,26 +129,38 @@ function mason_compile {
 
     if [[ $(uname -s) == 'Linux' ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_BINUTILS_INCDIR=${LLVM_BINUTILS_INCDIR}"
-        if [[ ${MAJOR_MINOR} == "3.8" ]]; then
+        if [[ ${MAJOR_MINOR} == "3.8" ]] && [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
             # note: LIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON is only needed with llvm < 3.9.0 to avoid libcxx(abi) build breaking when only a static libc++ exists
             CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON"
         fi
     fi
 
-    # we link to libc++ even on linux to avoid runtime dependency on libstdc++:
-    # https://github.com/mapbox/mason/issues/252
-    export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS//-mmacosx-version-min=10.8}"
-    export LDFLAGS="-stdlib=libc++ ${LDFLAGS//-mmacosx-version-min=10.8}"
-    if [[ $(uname -s) == 'Linux' ]]; then
-        export LDFLAGS="${LDFLAGS} -Wl,--start-group -L$(pwd)/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
-
+    # we strip this since we don't care about older os x for this package
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        export CXXFLAGS="${CXXFLAGS//-mmacosx-version-min=10.8}"
+        export LDFLAGS="${LDFLAGS//-mmacosx-version-min=10.8}"
     fi
+
     # llvm may request c++14 instead so let's not force c++11
     export CXXFLAGS="${CXXFLAGS//-std=c++11}"
+
+    if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
+        # we link to libc++ even on linux to avoid runtime dependency on libstdc++:
+        # https://github.com/mapbox/mason/issues/252
+        export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS}"
+        export LDFLAGS="-stdlib=libc++ ${LDFLAGS}"
+
+        if [[ $(uname -s) == 'Linux' ]]; then
+            export LDFLAGS="${LDFLAGS} -Wl,--start-group -L$(pwd)/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
+        fi
+    fi
 
     # TODO: test this
     #-DLLVM_ENABLE_LTO=ON \
 
+    if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_ASSERTIONS=OFF -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBUNWIND_ENABLE_SHARED=OFF"
+    fi
 
     ${MASON_CMAKE}/bin/cmake ../ -G Ninja -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
      -DCMAKE_BUILD_TYPE=Release \
@@ -152,11 +168,6 @@ function mason_compile {
      -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
      -DCMAKE_CXX_COMPILER="$CXX" \
      -DCMAKE_C_COMPILER="$CC" \
-     -DLIBCXX_ENABLE_ASSERTIONS=OFF \
-     -DLIBCXX_ENABLE_SHARED=OFF \
-     -DLIBCXXABI_ENABLE_SHARED=OFF \
-     -DLIBUNWIND_ENABLE_SHARED=OFF \
-     -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
      -DLLVM_ENABLE_ASSERTIONS=OFF \
      -DCLANG_VENDOR="mapbox/mason" \
      -DCLANG_REPOSITORY_STRING="https://github.com/mapbox/mason" \
@@ -167,20 +178,23 @@ function mason_compile {
      -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja \
      ${CMAKE_EXTRA_ARGS}
 
-    ${MASON_NINJA}/bin/ninja unwind -j${MASON_CONCURRENCY}
+    if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
+        ${MASON_NINJA}/bin/ninja unwind -j${MASON_CONCURRENCY}
 
-    # make libc++ and libc++abi first
-    # this ensures that the LD_LIBRARY_PATH above will be valid
-    # and that clang++ on linux will be able to link itself to
-    # this same instance of libc++
-    ${MASON_NINJA}/bin/ninja cxx -j${MASON_CONCURRENCY}
+        # make libc++ and libc++abi first
+        # this ensures that the LD_LIBRARY_PATH above will be valid
+        # and that clang++ on linux will be able to link itself to
+        # this same instance of libc++
+        ${MASON_NINJA}/bin/ninja cxx -j${MASON_CONCURRENCY}
 
-    ${MASON_NINJA}/bin/ninja lldb -j${MASON_CONCURRENCY}
-    # no move the host compilers libc++ and libc++abi shared libs out of the way
-    if [[ ${CXX_BOOTSTRAP:-false} != false ]]; then
-        mkdir -p /tmp/backup_shlibs
-        mv $(dirname $(dirname $CXX))/lib/*c++*so /tmp/backup_shlibs/
+        ${MASON_NINJA}/bin/ninja lldb -j${MASON_CONCURRENCY}
+        # no move the host compilers libc++ and libc++abi shared libs out of the way
+        if [[ ${CXX_BOOTSTRAP:-false} != false ]]; then
+            mkdir -p /tmp/backup_shlibs
+            mv $(dirname $(dirname $CXX))/lib/*c++*so /tmp/backup_shlibs/
+        fi
     fi
+
     # then make everything else
     ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}
     # install it all
@@ -188,9 +202,11 @@ function mason_compile {
     # set up symlinks for clang++ to match what llvm.org binaries provide
     cd ${MASON_PREFIX}/bin/
     ln -s "clang++" "clang++-${MAJOR_MINOR}"
-    # restore host compilers sharedlibs
-    if [[ ${CXX_BOOTSTRAP:-false} != false ]]; then
-        cp -r /tmp/backup_shlibs/* $(dirname $(dirname $CXX))/lib/
+    if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
+        # restore host compilers sharedlibs
+        if [[ ${CXX_BOOTSTRAP:-false} != false ]]; then
+            cp -r /tmp/backup_shlibs/* $(dirname $(dirname $CXX))/lib/
+        fi
     fi
 }
 

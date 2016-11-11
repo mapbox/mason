@@ -8,6 +8,8 @@ HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 MASON_NAME=$(basename $(dirname $HERE))
 # dynamically take the version of the package from directory
 MASON_VERSION=$(basename $HERE)
+MASON_VERSION=${MASON_VERSION/-libstdcxx/}
+
 # inherit all functions from llvm base
 source ${HERE}/../../${MASON_NAME}/base/common.sh
 

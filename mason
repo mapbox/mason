@@ -43,8 +43,8 @@ elif [ -z "${MASON_VERSION}" ]; then
 fi
 
 if [ "${MASON_COMMAND}" = "trigger" ]; then
-    if [ -z "${TRAVIS_TOKEN}" ]; then
-        echo "TRAVIS_TOKEN is not set."
+    if [ -z "${MASON_TRAVIS_TOKEN}" ]; then
+        echo "MASON_TRAVIS_TOKEN is not set."
         exit 1
     fi
 
@@ -73,7 +73,7 @@ RUBY
         -H "Content-Type: application/json" \
         -H "Accept: application/json" \
         -H "Travis-API-Version: 3" \
-        -H "Authorization: token ${TRAVIS_TOKEN}" \
+        -H "Authorization: token ${MASON_TRAVIS_TOKEN}" \
         -d "$body"
 
     echo "Now go to https://travis-ci.org/mapbox/mason/builds to view build status"

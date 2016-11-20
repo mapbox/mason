@@ -1,24 +1,11 @@
 #!/usr/bin/env bash
 
-BOOST_VERSION1="1.57.0"
-BOOST_VERSION2="1_57_0"
-BOOST_LIBRARY="test"
-BOOST_TOOLSET="clang"
-BOOST_ARCH="x86"
-
-MASON_NAME=boost_lib${BOOST_LIBRARY}_shared
-MASON_VERSION=1.57.0
-
-. ${MASON_DIR}/mason.sh
-
-MASON_LIB_FILE=lib/libboost_unit_test_framework.${MASON_DYNLIB_SUFFIX}
-
 function mason_load_source {
     mason_download \
-        http://downloads.sourceforge.net/project/boost/boost/${BOOST_VERSION1}/boost_${BOOST_VERSION2}.tar.bz2 \
-        397306fa6d0858c4885fbba7d43a0164dcb7f53e
+        http://downloads.sourceforge.net/project/boost/boost/${MASON_VERSION}/boost_${BOOST_VERSION}.tar.bz2 \
+        ${BOOST_SHASUM}
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/boost_${BOOST_VERSION2}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/boost_${BOOST_VERSION}
 
     mason_extract_tar_bz2
 }
@@ -38,13 +25,9 @@ function gen_config() {
 }
 
 function mason_compile {
-    gen_config ${BOOST_TOOLSET} clang++
+    gen_config ${BOOST_TOOLSET} ${BOOST_TOOLSET_CXX}
     if [[ ! -f ./b2 ]] ; then
         ./bootstrap.sh
-    fi
-    CXXFLAGS="${CXXFLAGS} -fvisibility=hidden"
-    if [[ $(uname -s) == 'Darwin' ]]; then
-        LDFLAGS="${LDFLAGS} -stdlib=libc++ -std=c++11"
     fi
     ./b2 \
         --with-${BOOST_LIBRARY} \
@@ -54,21 +37,28 @@ function mason_compile {
         --ignore-site-config --user-config=user-config.jam \
         architecture="${BOOST_ARCH}" \
         toolset="${BOOST_TOOLSET}" \
-        link=shared \
+        link=static \
         variant=release \
         linkflags="${LDFLAGS:-" "}" \
         cxxflags="${CXXFLAGS:-" "}" \
         stage
     mkdir -p $(dirname ${MASON_PREFIX}/${MASON_LIB_FILE})
-    mv stage/* ${MASON_PREFIX}/
+    mv stage/${MASON_LIB_FILE} ${MASON_PREFIX}/${MASON_LIB_FILE}
+}
+
+function mason_prefix {
+    echo "${MASON_PREFIX}"
+}
+
+function mason_cflags {
+    echo "-I${MASON_PREFIX}/include"
 }
 
 function mason_ldflags {
-    echo "-lboost_${BOOST_LIBRARY}"
+    local LOCAL_LDFLAGS
+    LOCAL_LDFLAGS="-L${MASON_PREFIX}/lib"
+    if [[ ${BOOST_LIBRARY:-false} != false ]]; then
+        LOCAL_LDFLAGS="${LOCAL_LDFLAGS} -l${BOOST_LIBRARY}"
+    fi
+    echo $LOCAL_LDFLAGS
 }
-
-function mason_clean {
-    make clean
-}
-
-mason_run "$@"

@@ -10,8 +10,6 @@ matrix:
       osx_image: xcode7.3
       compiler: clang
 
-before_install:
-
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 

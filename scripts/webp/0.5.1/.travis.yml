@@ -15,8 +15,6 @@ matrix:
           sources: [ 'ubuntu-toolchain-r-test' ]
           packages: [ 'libstdc++-5-dev' ]
 
-before_install:
-
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 

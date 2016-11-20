@@ -22,8 +22,6 @@ matrix:
       compiler: clang
       env: CXX=clang++-3.7
 
-before_install:
-
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 

@@ -17,8 +17,6 @@ addons:
     packages:
      - clang-3.5
 
-before_install:
-
 script:
 - export CXX="clang++-3.5"
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

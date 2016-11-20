@@ -24,8 +24,6 @@ matrix:
     - os: linux
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=mips-64
 
-before_install:
-
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 

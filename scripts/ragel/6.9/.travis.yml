@@ -9,8 +9,6 @@ matrix:
     - os: osx
     - os: linux
 
-before_install:
-
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 

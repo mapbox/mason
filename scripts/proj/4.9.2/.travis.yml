@@ -10,8 +10,6 @@ matrix:
     - os: linux
       compiler: clang
 
-before_install:
-
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 

@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/wagyu/archive/${MASON_VERSION}.tar.gz \
-        7516c3391a91b624ca75e2bf04d537a9
+        fd8197ef6258338683b0fe583dca7b0957b98339
 
     mason_extract_tar_gz
 

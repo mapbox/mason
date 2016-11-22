@@ -13,7 +13,7 @@ function mason_load_source {
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/geometry.hpp-${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/wagyu-${MASON_VERSION}
 }
 
 function mason_compile {

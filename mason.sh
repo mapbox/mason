@@ -433,6 +433,7 @@ function mason_build {
         for ARCH in ${SIMULATOR_TARGETS} ; do
             mason_substep "Building for iOS Simulator ${ARCH}..."
             export CFLAGS="${MASON_ISIM_CFLAGS} -arch ${ARCH}"
+            export CXXFLAGS="${MASON_ISIM_CFLAGS} -arch ${ARCH}"
             cd "${MASON_BUILD_PATH}"
             mason_compile
             cd "${MASON_PREFIX}"
@@ -444,6 +445,7 @@ function mason_build {
         for ARCH in ${DEVICE_TARGETS} ; do
             mason_substep "Building for iOS ${ARCH}..."
             export CFLAGS="${MASON_IOS_CFLAGS} -arch ${ARCH}"
+            export CXXFLAGS="${MASON_IOS_CFLAGS} -arch ${ARCH}"
             cd "${MASON_BUILD_PATH}"
             mason_compile
             cd "${MASON_PREFIX}"
@@ -575,8 +577,11 @@ function mason_try_binary {
 
 
 function mason_pkgconfig {
-    echo pkg-config \
-        ${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}
+    MASON_PKGCONFIG_FILES=""
+    for pkgconfig_file in ${MASON_PKGCONFIG_FILE}; do
+        MASON_PKGCONFIG_FILES="${MASON_PKGCONFIG_FILES} ${MASON_PREFIX}/${pkgconfig_file}"
+    done
+    echo pkg-config ${MASON_PKGCONFIG_FILES}
 }
 
 function mason_cflags {

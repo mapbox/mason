@@ -2,7 +2,6 @@
 
 MASON_NAME=tbb
 MASON_VERSION=43_20150316
-echo ${MASON_DYNLIB_SUFFIX}
 MASON_LIB_FILE=lib/libtbb.${MASON_DYNLIB_SUFFIX}
 
 . ${MASON_DIR}/mason.sh
@@ -49,6 +48,13 @@ function mason_compile {
 
     if [[ $(uname -s) == "Darwin" ]]; then
         cp $(pwd)/build/BUILDPREFIX_release/lib*.* ${MASON_PREFIX}/lib/
+        # add rpath so that apps building against this lib can embed location to this lib
+        # by passing '-rpath ${MASON_PREFIX}/lib/'
+        # https://wincent.com/wiki/@executable_path,_@load_path_and_@rpath
+        install_name_tool -id @rpath/libtbb.dylib ${MASON_PREFIX}/lib/libtbb.dylib
+        install_name_tool -id @rpath/libtbbmalloc.dylib ${MASON_PREFIX}/lib/libtbbmalloc.dylib
+        install_name_tool -id @rpath/libtbbmalloc_proxy.dylib ${MASON_PREFIX}/lib/libtbbmalloc_proxy.dylib
+        install_name_tool -change libtbbmalloc.dylib @rpath/libtbbmalloc.dylib ${MASON_PREFIX}/lib/libtbbmalloc_proxy.dylib
     else
         # the linux libraries are funky: the lib.so.2 is the real lib
         # and the lib.so is an ascii text file, so we need to only copy

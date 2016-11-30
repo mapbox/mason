@@ -23,6 +23,7 @@ function mason_compile {
         --enable-plugins \
         --enable-static \
         --disable-shared \
+        --disable-werror \
         --disable-dependency-tracking
 
     make -j${MASON_CONCURRENCY}

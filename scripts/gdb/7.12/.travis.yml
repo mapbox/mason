@@ -13,6 +13,7 @@ matrix:
            - ubuntu-toolchain-r-test
           packages:
            - g++-5
+           - texinfo
 
 # override install to prefer g++ instead of clang++
 install:

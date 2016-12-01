@@ -142,9 +142,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
         export CFLAGS="-target aarch64-none-linux-android -D_LITTLE_ENDIAN ${CFLAGS}"
-
-        # Using bfd for aarch64: https://code.google.com/p/android/issues/detail?id=204151
-        export LDFLAGS="-target aarch64-none-linux-android -fuse-ld=bfd ${LDFLAGS}"
+        export LDFLAGS="-target aarch64-none-linux-android -fuse-ld=gold ${LDFLAGS}"
 
         export JNIDIR="arm64-v8a"
         MASON_ANDROID_ARCH="arm64"
@@ -228,7 +226,7 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
 
     # Installs the native SDK
-    export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r12b
+    export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r13b
     MASON_SDK_ROOT=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
     if [ ! -d ${MASON_SDK_ROOT} ] ; then
         MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}

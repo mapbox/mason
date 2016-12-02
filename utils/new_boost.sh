@@ -46,6 +46,7 @@ for lib in $(find scripts/ -maxdepth 1 -type dir -name 'boost_lib*' -print); do
     fi
 done
 
+./mason trigger boost ${NEW_VERSION}
 for lib in $(find scripts/ -maxdepth 1 -type dir -name 'boost_lib*' -print); do
     echo "running ./mason build $(basename $lib) ${NEW_VERSION}"
     ./mason trigger $(basename $lib) ${NEW_VERSION}

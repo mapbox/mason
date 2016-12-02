@@ -132,17 +132,15 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
         *) export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
     esac
 
-    CFLAGS="-fpic -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-integrated-as -fomit-frame-pointer -fstrict-aliasing -Wno-invalid-command-line-argument -Wno-unused-command-line-argument"
-    LDFLAGS="-no-canonical-prefixes -Wl,--warn-shared-textrel -Wl,--fatal-warnings -Wl,-z,now -Wl,-z,relro"
+    CFLAGS="-g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security"
+    LDFLAGS="-Wl,--build-id -Wl,--warn-shared-textrel -Wl,--fatal-warnings -Wl,--no-undefined -Wl,-z,noexecstack -Qunused-arguments -Wl,-z,relro -Wl,-z,now"
     export CPPFLAGS="-D__ANDROID__"
 
     if [ ${MASON_ANDROID_ABI} = 'arm-v8' ]; then
         MASON_ANDROID_TOOLCHAIN="aarch64-linux-android"
-        MASON_ANDROID_CROSS_COMPILER="aarch64-linux-android-4.9"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        export CFLAGS="-target aarch64-none-linux-android -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target aarch64-none-linux-android -fuse-ld=gold ${LDFLAGS}"
+        CFLAGS="-target aarch64-none-linux-android ${CFLAGS}"
 
         export JNIDIR="arm64-v8a"
         MASON_ANDROID_ARCH="arm64"
@@ -150,11 +148,10 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
     elif [ ${MASON_ANDROID_ABI} = 'arm-v7' ]; then
         MASON_ANDROID_TOOLCHAIN="arm-linux-androideabi"
-        MASON_ANDROID_CROSS_COMPILER="arm-linux-androideabi-4.9"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        export CFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=softfp -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target armv7-none-linux-androideabi -march=armv7-a -Wl,--fix-cortex-a8 -fuse-ld=gold ${LDFLAGS}"
+        CFLAGS="-target armv7-none-linux-androideabi ${CFLAGS} -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -fno-integrated-as -mthumb"
+        LDFLAGS="${LDFLAGS} -Wl,--fix-cortex-a8 -Wl,--exclude-libs,libunwind.a"
 
         export JNIDIR="armeabi-v7a"
         MASON_ANDROID_ARCH="arm"
@@ -162,11 +159,10 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
     elif [ ${MASON_ANDROID_ABI} = 'arm-v5' ]; then
         MASON_ANDROID_TOOLCHAIN="arm-linux-androideabi"
-        MASON_ANDROID_CROSS_COMPILER="arm-linux-androideabi-4.9"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        export CFLAGS="-target armv5te-none-linux-androideabi -march=armv5te -mtune=xscale -msoft-float -D_LITTLE_ENDIAN ${CFLAGS}"
-        export LDFLAGS="-target armv5te-none-linux-androideabi -march=armv5te -fuse-ld=gold ${LDFLAGS}"
+        CFLAGS="-target armv5te-none-linux-androideabi ${CFLAGS} -march=armv5te -mtune=xscale -msoft-float -fno-integrated-as -mthumb"
+        LDFLAGS="${LDFLAGS} -Wl,--exclude-libs,libunwind.a"
 
         export JNIDIR="armeabi"
         MASON_ANDROID_ARCH="arm"
@@ -174,11 +170,9 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
     elif [ ${MASON_ANDROID_ABI} = 'x86' ]; then
         MASON_ANDROID_TOOLCHAIN="i686-linux-android"
-        MASON_ANDROID_CROSS_COMPILER="x86-4.9"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        export CFLAGS="-target i686-none-linux-android -march=i686 -msse3 -mfpmath=sse ${CFLAGS}"
-        export LDFLAGS="-target i686-none-linux-android -march=i686 -fuse-ld=gold ${LDFLAGS}"
+        CFLAGS="-target i686-none-linux-android ${CFLAGS}"
 
         export JNIDIR="x86"
         MASON_ANDROID_ARCH="x86"
@@ -186,23 +180,19 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
     elif [ ${MASON_ANDROID_ABI} = 'x86-64' ]; then
         MASON_ANDROID_TOOLCHAIN="x86_64-linux-android"
-        MASON_ANDROID_CROSS_COMPILER="x86_64-4.9"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
         export JNIDIR="x86_64"
-        export CFLAGS="-target x86_64-none-linux-android -march=x86-64 -msse4.2 -mpopcnt -m64 -mtune=intel ${CFLAGS}"
-        export LDFLAGS="-target x86_64-none-linux-android -march=x86-64 -fuse-ld=gold ${LDFLAGS}"
+        CFLAGS="-target x86_64-none-linux-android ${CFLAGS}"
 
         MASON_ANDROID_ARCH="x86_64"
         MASON_ANDROID_PLATFORM="21"
 
     elif [ ${MASON_ANDROID_ABI} = 'mips' ]; then
         MASON_ANDROID_TOOLCHAIN="mipsel-linux-android"
-        MASON_ANDROID_CROSS_COMPILER="mipsel-linux-android-4.9"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        export CFLAGS="-target mipsel-none-linux-android ${CFLAGS}"
-        export LDFLAGS="-target mipsel-none-linux-android ${LDFLAGS}"
+        CFLAGS="-target mipsel-none-linux-android ${CFLAGS} -mips32"
 
         export JNIDIR="mips"
         MASON_ANDROID_ARCH="mips"
@@ -210,11 +200,9 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
 
     elif [ ${MASON_ANDROID_ABI} = 'mips-64' ]; then
         MASON_ANDROID_TOOLCHAIN="mips64el-linux-android"
-        MASON_ANDROID_CROSS_COMPILER="mips64el-linux-android-4.9"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        export CFLAGS="-target mips64el-none-linux-android ${CFLAGS}"
-        export LDFLAGS="-target mips64el-none-linux-android ${LDFLAGS}"
+        CFLAGS="-target mips64el-none-linux-android ${CFLAGS}"
 
         export JNIDIR="mips64"
         MASON_ANDROID_ARCH="mips64"

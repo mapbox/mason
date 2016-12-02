@@ -8,7 +8,6 @@ source ${HERE}/base.sh
 # this package is the one that is header-only
 MASON_NAME=boost
 MASON_HEADER_ONLY=true
-unset MASON_LIB_FILE
 
 # setup mason env
 . ${MASON_DIR}/mason.sh
@@ -49,6 +48,14 @@ function mason_compile {
 >    return ::open(name, (int)mode,S_IRUSR|S_IWUSR);
 "
 
+}
+
+function mason_ldflags {
+    :
+}
+
+function mason_static_libs {
+    :
 }
 
 mason_run "$@"

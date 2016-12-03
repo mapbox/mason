@@ -58,7 +58,7 @@ function mason_ldflags {
     local LOCAL_LDFLAGS
     LOCAL_LDFLAGS="-L${MASON_PREFIX}/lib"
     if [[ ${BOOST_LIBRARY:-false} != false ]]; then
-        LOCAL_LDFLAGS="${LOCAL_LDFLAGS} -l${BOOST_LIBRARY}"
+        LOCAL_LDFLAGS="${LOCAL_LDFLAGS} -lboost_${BOOST_LIBRARY}"
     fi
     echo $LOCAL_LDFLAGS
 }

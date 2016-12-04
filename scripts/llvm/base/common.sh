@@ -199,15 +199,22 @@ function mason_compile {
     ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}
     # install it all
     ${MASON_NINJA}/bin/ninja install
-    # set up symlinks for clang++ to match what llvm.org binaries provide
+
+    # install the asan_symbolizer.py tool
+    cp -a ../projects/compiler-rt/lib/asan/scripts/asan_symbolize.py ${MASON_PREFIX}/bin/
+
+    # set up symlinks for to match what llvm.org binaries provide
     cd ${MASON_PREFIX}/bin/
     ln -s "clang++" "clang++-${MAJOR_MINOR}"
+    ln -s "asan_symbolize.py" "asan_symbolize"
+
+    # restore host compilers sharedlibs
     if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
-        # restore host compilers sharedlibs
         if [[ ${CXX_BOOTSTRAP:-false} != false ]]; then
             cp -r /tmp/backup_shlibs/* $(dirname $(dirname $CXX))/lib/
         fi
     fi
+
 }
 
 function mason_cflags {

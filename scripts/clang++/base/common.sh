@@ -21,12 +21,17 @@ function mason_build {
     # copy share
     mkdir -p "${MASON_PREFIX}/share"
     cp -r "${CLANG_PREFIX}/share/clang" "${MASON_PREFIX}/share/"
-    # copy include/c++
+
     mkdir -p "${MASON_PREFIX}/include"
-    cp -r "${CLANG_PREFIX}/include/c++" "${MASON_PREFIX}/include/"
-    # copy libs
     mkdir -p "${MASON_PREFIX}/lib"
-    cp -r ${CLANG_PREFIX}/lib/libc++* "${MASON_PREFIX}/lib/"
+
+    # if custom libc++ was built
+    if [[ $(uname -s) == 'Linux' ]]; then
+        cp -r "${CLANG_PREFIX}/include/c++" "${MASON_PREFIX}/include/"
+        cp -r ${CLANG_PREFIX}/lib/libc++* "${MASON_PREFIX}/lib/"
+    fi
+
+    # copy libs
     cp -r ${CLANG_PREFIX}/lib/libLTO.* "${MASON_PREFIX}/lib/"
     if [[ $(uname -s) == 'Linux' ]]; then
         cp -r ${CLANG_PREFIX}/lib/LLVMgold* "${MASON_PREFIX}/lib/"

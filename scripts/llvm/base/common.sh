@@ -5,7 +5,22 @@ MASON_LIB_FILE=bin/clang
 
 . ${MASON_DIR}/mason.sh
 
-export BUILD_AND_LINK_LIBCXX=${BUILD_AND_LINK_LIBCXX:-true}
+export MAJOR_MINOR=$(echo ${MASON_VERSION} | cut -d '.' -f1-2)
+
+if [[ $(uname -s) == 'Darwin' ]]; then
+    export BUILD_AND_LINK_LIBCXX=false
+    # TODO: could also use LIBCXX_INSTALL_SUPPORT_HEADERS, LIBCXX_INSTALL_LIBRARY, LIBCXX_INSTALL_HEADERS
+    # avoids this kind of problem with include-what-you-use:
+    : '
+    /Library/Developer/CommandLineTools/usr/include/c++/v1/cstdlib:167:44: error: declaration conflicts with target of using declaration already in scope
+    inline _LIBCPP_INLINE_VISIBILITY long      abs(     long __x) _NOEXCEPT {return  labs(__x);}
+                                               ^
+    /Users/dane/.mason/mason_packages/osx-x86_64/llvm/3.9.0/bin/../include/c++/v1/stdlib.h:115:44: note: target of using declaration
+    inline _LIBCPP_INLINE_VISIBILITY long      abs(     long __x) _NOEXCEPT {return  labs(__x);}
+    '
+else
+    export BUILD_AND_LINK_LIBCXX=${BUILD_AND_LINK_LIBCXX:-true}
+fi
 
 # we use this custom function rather than "mason_download" since we need to easily grab multiple packages
 function get_llvm_project() {
@@ -47,10 +62,11 @@ function get_llvm_project() {
             fi
         fi
         mason_step "uncompressing ${local_file_or_checkout}"
-        tar xf ${local_file_or_checkout}
-        local uncompressed_dir=${file_basename/.tar.xz}
-        mason_step "moving ${uncompressed_dir} into place at ${TO_DIR}"
-        mv ${uncompressed_dir} ${TO_DIR}
+        mkdir -p ./checkout
+        rm -rf ./checkout/*
+        tar xf ${local_file_or_checkout} --strip-components=1 --directory=./checkout
+        mkdir -p ${TO_DIR}
+        mv checkout/* ${TO_DIR}/
     fi
 }
 
@@ -67,6 +83,7 @@ function setup_release() {
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/lld-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/clang-tools-extra-${MASON_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/lldb-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb
+    get_llvm_project "https://github.com/include-what-you-use/include-what-you-use/archive/clang_${MAJOR_MINOR}.tar.gz" ${MASON_BUILD_PATH}/tools/clang/tools/include-what-you-use
 }
 
 function mason_load_source {
@@ -106,6 +123,18 @@ function mason_compile {
     # knock out lldb doc building, to remove doxygen dependency
     perl -i -p -e "s/add_subdirectory\(docs\)//g;" tools/lldb/CMakeLists.txt
 
+    if [[ ${MAJOR_MINOR} == "3.8" ]]; then
+        # workaround https://llvm.org/bugs/show_bug.cgi?id=25565
+        perl -i -p -e "s/set\(codegen_deps intrinsics_gen\)/set\(codegen_deps intrinsics_gen attributes_inc\)/g;" lib/CodeGen/CMakeLists.txt
+
+        # note: LIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON is only needed with llvm < 3.9.0 to avoid libcxx(abi) build breaking when only a static libc++ exists
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON"
+    fi
+
+    if [[ -d tools/clang/tools/include-what-you-use ]]; then
+        echo  'add_subdirectory(include-what-you-use)' >> tools/clang/tools/CMakeLists.txt
+    fi
+
     mkdir -p ./build
     cd ./build
     CMAKE_EXTRA_ARGS=""
@@ -125,8 +154,6 @@ function mason_compile {
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.11"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_CREATE_XCODE_TOOLCHAIN=ON -DLLVM_EXTERNALIZE_DEBUGINFO=ON"
     fi
-    MAJOR_MINOR=$(echo $MASON_VERSION | cut -d '.' -f1-2)
-
     if [[ $(uname -s) == 'Linux' ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_BINUTILS_INCDIR=${LLVM_BINUTILS_INCDIR}"
         if [[ ${MAJOR_MINOR} == "3.8" ]] && [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then

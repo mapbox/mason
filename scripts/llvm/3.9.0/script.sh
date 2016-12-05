@@ -21,6 +21,7 @@ function setup_release() {
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/lld-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld               e1829cd47a5c44ad6c68957056afe63879ad9610
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/clang-tools-extra-${MASON_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra 8e7e118a769c76e70d5fb2ede66c8f5a2952f8d9
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/lldb-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb              988766cbb3d4a295b33dd11f51f7f20811bfa8f2
+    get_llvm_project "https://github.com/include-what-you-use/include-what-you-use/archive/clang_${MAJOR_MINOR}.tar.gz" ${MASON_BUILD_PATH}/tools/clang/tools/include-what-you-use 7e5c73ce1a2fdd1ffd29fad1ae2628d0134368c6
 }
 
 mason_run "$@"

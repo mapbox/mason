@@ -22,6 +22,7 @@ function setup_release() {
     get_llvm_project "http://llvm.org/git/lld.git"               ${MASON_BUILD_PATH}/tools/lld
     get_llvm_project "http://llvm.org/git/clang-tools-extra.git" ${MASON_BUILD_PATH}/tools/clang/tools/extra
     get_llvm_project "http://llvm.org/git/lldb.git"              ${MASON_BUILD_PATH}/tools/lldb
+    get_llvm_project "https://github.com/include-what-you-use/include-what-you-use.git"  ${MASON_BUILD_PATH}/tools/clang/tools/include-what-you-use
 }
 
 mason_run "$@"

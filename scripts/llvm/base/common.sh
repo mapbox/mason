@@ -205,6 +205,11 @@ function mason_compile {
      -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja \
      ${CMAKE_EXTRA_ARGS}
 
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        # https://reviews.llvm.org/D13605
+        ${MASON_NINJA}/bin/ninja install-xcode-toolchain -j${MASON_CONCURRENCY}
+    fi
+
     if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
         ${MASON_NINJA}/bin/ninja unwind -j${MASON_CONCURRENCY}
 

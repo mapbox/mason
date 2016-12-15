@@ -110,6 +110,7 @@ function mason_compile {
     else
       cp out/x64.release/obj.target/tools/gyp/lib*.a ${MASON_PREFIX}/lib/
     fi
+    strip -S ${MASON_PREFIX}/lib/*
 }
 
 function mason_cflags {

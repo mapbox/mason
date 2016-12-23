@@ -27,6 +27,7 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install libosmium 2.10.3
     ${MASON_DIR}/mason link libosmium 2.10.3
     ${MASON_DIR}/mason install boost 1.62.0
+    ${MASON_DIR}/mason link boost 1.62.0
     ${MASON_DIR}/mason install zlib 1.2.8
     ${MASON_DIR}/mason link zlib 1.2.8
     ${MASON_DIR}/mason install expat 2.2.0

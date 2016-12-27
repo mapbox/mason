@@ -10,7 +10,3 @@ matrix:
            - ubuntu-toolchain-r-test
           packages:
            - libstdc++-5-dev
-
-script:
-- ./mason build ${MASON_NAME} ${MASON_VERSION}
-- ./mason publish ${MASON_NAME} ${MASON_VERSION}

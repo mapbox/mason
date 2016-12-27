@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/expat.pc
 
 function mason_load_source {
     mason_download \
-        https://downloads.sourceforge.net/project/expat/expat/${MASON_VERSION}/expat-${MASON_VERSION}.tar.bz2 \
+        http://downloads.sourceforge.net/project/${MASON_NAME}/${MASON_NAME}/${MASON_VERSION}/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
         de632147cebfb22e51c8ef35fe0f8badcd424a47
 
     mason_extract_tar_bz2

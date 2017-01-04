@@ -21,11 +21,12 @@ function mason_compile {
     make -j${MASON_CONCURRENCY} VERBOSE=1
     make install
     # remove non-essential things to save on package size
-    rm ${MASON_PREFIX}/bin/ccmake
-    rm ${MASON_PREFIX}/bin/cmakexbuild
-    rm ${MASON_PREFIX}/bin/cpack
-    rm ${MASON_PREFIX}/bin/ctest
+    rm -f ${MASON_PREFIX}/bin/ccmake
+    rm -f ${MASON_PREFIX}/bin/cmakexbuild
+    rm -f ${MASON_PREFIX}/bin/cpack
+    rm -f ${MASON_PREFIX}/bin/ctest
     rm -rf ${MASON_PREFIX}/share/cmake-*/Help
+    ls -lh ${MASON_PREFIX}/bin/
 }
 
 function mason_cflags {

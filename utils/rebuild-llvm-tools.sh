@@ -4,14 +4,14 @@ set -eu
 set -o pipefail
 
 packages=(llvm clang++ clang-tidy clang-format lldb llvm-cov include-what-you-use)
-versions=(3.8.1 3.9.1 4.0.0)
+versions=(3.9.1 4.0.0 3.8.1)
 
 if [[ $(uname -s) == 'Linux' ]]; then
     CLANG_BOOTSTRAP_VERSION="3.8.1"
     ./mason install clang++ ${CLANG_BOOTSTRAP_VERSION}
-    CLANG_39_PREFIX=$(./mason prefix clang++ ${CLANG_BOOTSTRAP_VERSION})
-    export CXX=${CLANG_39_PREFIX}/bin/clang++
-    export CC=${CLANG_39_PREFIX}/bin/clang
+    CLANG_PREFIX=$(./mason prefix clang++ ${CLANG_BOOTSTRAP_VERSION})
+    export CXX=${CLANG_PREFIX}/bin/clang++
+    export CC=${CLANG_PREFIX}/bin/clang
 fi
 
 function build() {

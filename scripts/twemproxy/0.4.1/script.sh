@@ -2,7 +2,7 @@
 
 MASON_NAME=twemproxy
 MASON_VERSION=0.4.1
-MASON_LIB_FILE=bin/osmium
+MASON_LIB_FILE=sbin/nutcracker
 
 . ${MASON_DIR}/mason.sh
 
@@ -19,16 +19,15 @@ function mason_load_source {
 
 function mason_compile {
     autoreconf -ivf
+    # NOTE: CFLAGS overrides internal default
+    # which in this case is desirable because it allows us to override the internal
+    # default of -O2
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
     ./configure \
       --prefix=${MASON_PREFIX} \
       --disable-debug --disable-dependency-tracking
-    make
+    make -j${MASON_CONCURRENCY}
     make install
-}
-
-function mason_clean {
-    make clean
 }
 
 function mason_cflags {

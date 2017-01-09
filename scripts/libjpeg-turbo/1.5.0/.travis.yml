@@ -10,6 +10,12 @@ matrix:
     - os: linux
       env: MASON_PLATFORM_VERSION=cortex_a9
     - os: linux
+      env: MASON_PLATFORM_VERSION=i686
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test' ]
+          packages: [ 'libstdc++-5-dev', 'yasm' ]
+    - os: linux
       env: MASON_PLATFORM=linux
       compiler: clang
       addons:

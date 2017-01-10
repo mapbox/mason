@@ -19,23 +19,10 @@ function mason_load_source {
 
 function mason_compile {
     ./configure \
-        --prefix=${MASON_PREFIX}
+        --prefix=${MASON_PREFIX} \
+        --shared
 
     make install -j${MASON_CONCURRENCY}
-}
-
-function mason_strip_ldflags {
-    shift # -L...
-    shift # -lz
-    echo "$@"
-}
-
-function mason_ldflags {
-    mason_strip_ldflags $(`mason_pkgconfig` --static --libs)
-}
-
-function mason_clean {
-    make clean
 }
 
 mason_run "$@"

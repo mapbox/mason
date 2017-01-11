@@ -1,3 +1,13 @@
+# Mason releases
+
+## 0.5.0
+
+ - Various fixes to support cross compiling
+ - Support for cross compiling to cortex_a9 on travis
+ - Added vector-tile 1.0.0-rc4, zlib_shared 1.2.8
+ - Fixes to zlib 1.2.8 ldflags
+
+Changes: https://github.com/mapbox/mason/compare/v0.4.0...v0.5.0
 
 ## 0.4.0
 

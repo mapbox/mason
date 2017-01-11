@@ -4,8 +4,6 @@ sudo: false
 
 matrix:
   include:
-    - os: osx
-      compiler: clang
     - os: linux
       compiler: clang
 

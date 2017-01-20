@@ -24,11 +24,16 @@ function mason_prepare_compile {
 
 function mason_compile {
     git clone --depth 1 https://chromium.googlesource.com/external/gyp.git tools/gyp
+    export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS}"
     export LDFLAGS="-stdlib=libc++ ${LDFLAGS}"
     ./gyp_llnode -Dlldb_build_dir=${LLVM_PATH} -Dlldb_dir=${LLVM_PATH}
     make -C out/ -j${MASON_CONCURRENCY} V=1
     mkdir -p ${MASON_PREFIX}/lib
-    cp ./out/Release/llnode* ${MASON_PREFIX}/lib/
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        cp ./out/Release/llnode* ${MASON_PREFIX}/lib/
+    else
+        cp ./out/Release/lib.target/llnode* ${MASON_PREFIX}/lib/
+    fi
 }
 
 function mason_cflags {

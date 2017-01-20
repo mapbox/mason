@@ -24,11 +24,11 @@ function mason_prepare_compile {
 
 function mason_compile {
     git clone --depth 1 https://chromium.googlesource.com/external/gyp.git tools/gyp
-    export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS}"
-    export LDFLAGS="-stdlib=libc++ ${LDFLAGS}"
     # ../src/llv8.cc:256:43: error: expected ')'
      #snprintf(tmp, sizeof(tmp), " fn=0x%016" PRIx64, fn.raw());
-    perl -i -p -e "s/#include <vector>/#include <vector>\n#include <cstdint>/g;" src/llscan.cc
+    # need to define STDC macros since libc++ adheres to spec: http://en.cppreference.com/w/cpp/types/integer
+    export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS} -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS"
+    export LDFLAGS="-stdlib=libc++ ${LDFLAGS}"
     ./gyp_llnode -Dlldb_build_dir=${LLVM_PATH} -Dlldb_dir=${LLVM_PATH}
     make -C out/ -j${MASON_CONCURRENCY} V=1
     mkdir -p ${MASON_PREFIX}/lib
@@ -44,7 +44,7 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    -L${MASON_PREFIX} -llnode
+    echo -L${MASON_PREFIX} -llnode
 }
 
 function mason_static_libs {

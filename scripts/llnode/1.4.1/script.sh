@@ -26,6 +26,9 @@ function mason_compile {
     git clone --depth 1 https://chromium.googlesource.com/external/gyp.git tools/gyp
     export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS}"
     export LDFLAGS="-stdlib=libc++ ${LDFLAGS}"
+    # ../src/llv8.cc:256:43: error: expected ')'
+     #snprintf(tmp, sizeof(tmp), " fn=0x%016" PRIx64, fn.raw());
+    perl -i -p -e "s/#include <vector>/#include <vector>\n#include <cstdint>/g;" src/llscan.cc
     ./gyp_llnode -Dlldb_build_dir=${LLVM_PATH} -Dlldb_dir=${LLVM_PATH}
     make -C out/ -j${MASON_CONCURRENCY} V=1
     mkdir -p ${MASON_PREFIX}/lib

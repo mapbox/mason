@@ -29,6 +29,11 @@ function mason_compile {
     # need to define STDC macros since libc++ adheres to spec: http://en.cppreference.com/w/cpp/types/integer
     export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS} -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS"
     export LDFLAGS="-stdlib=libc++ ${LDFLAGS}"
+    # per the llvm package, on linux we statically link libc++ for full portability
+    # while on osx we use the system libc++
+    if [[ -f ${LLVM_PATH}/lib/libc++.a ]]; then
+        export LDFLAGS="-Wl,--whole-archive ${LLVM_PATH}/lib/libc++.a ${LLVM_PATH}/lib/libc++abi.a ${LDFLAGS}"
+    fi
     ./gyp_llnode -Dlldb_build_dir=${LLVM_PATH} -Dlldb_dir=${LLVM_PATH}
     make -C out/ -j${MASON_CONCURRENCY} V=1
     mkdir -p ${MASON_PREFIX}/lib

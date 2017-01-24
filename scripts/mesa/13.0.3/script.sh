@@ -16,9 +16,7 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    LLVM_VERSION=3.8.1-libstdcxx
-    ${MASON_DIR}/mason install llvm ${LLVM_VERSION}
-    MASON_LLVM=$(${MASON_DIR}/mason prefix llvm ${LLVM_VERSION})
+    true
 }
 
 function mason_compile {
@@ -44,8 +42,7 @@ function mason_compile {
         --with-dri-drivers=swrast \
         --with-gallium-drivers=swrast \
         --with-egl-platforms=x11,drm,surfaceless \
-        --disable-llvm-shared-libs \
-        --with-llvm-prefix=${MASON_LLVM} \
+        --with-llvm-prefix=/usr/lib/llvm-3.8 \
         --with-sha1=libcrypto
 
     make

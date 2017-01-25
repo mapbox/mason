@@ -20,8 +20,6 @@ matrix:
            - libxcb1-dev
            - libdrm-dev
            - valgrind
-           - llvm-3.8-dev
-           - libllvm3.8v4
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

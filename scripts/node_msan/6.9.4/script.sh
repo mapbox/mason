@@ -47,6 +47,9 @@ function mason_compile {
     fi
     export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
     export LDFLAGS="${LDFLAGS} -std=c++11 -stdlib=libc++"
+    if [[ $(uname -s) == 'Linux' ]]; then
+        export LDFLAGS="${LDFLAGS} -lc++abi"
+    fi
 
     echo "making binary"
     BUILDTYPE=Debug PREFIX=${MASON_PREFIX} CONFIG_FLAGS="--debug" make binary -j${MASON_CONCURRENCY}

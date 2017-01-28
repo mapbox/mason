@@ -25,8 +25,8 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install clang++ ${CLANG_VERSION}
     MASON_CLANG=$(${MASON_DIR}/mason prefix clang++ ${CLANG_VERSION})
     export CXX="${MASON_CCACHE}/bin/ccache ${MASON_CLANG}/bin/clang++"
+    export CC="${MASON_CCACHE}/bin/ccache ${MASON_CLANG}/bin/clang"
     export LINK=${MASON_CLANG}/bin/clang++
-    export CC=${MASON_CLANG}/bin/clang
 }
 
 function mason_compile {

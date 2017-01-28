@@ -25,8 +25,8 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install clang++ ${CLANG_VERSION}
     MASON_CLANG=$(${MASON_DIR}/mason prefix clang++ ${CLANG_VERSION})
     export CXX="${MASON_CCACHE}/bin/ccache ${MASON_CLANG}/bin/clang++"
+    export CC="${MASON_CCACHE}/bin/ccache ${MASON_CLANG}/bin/clang"
     export LINK=${MASON_CLANG}/bin/clang++
-    export CC=${MASON_CLANG}/bin/clang
 }
 
 function mason_compile {
@@ -51,7 +51,7 @@ function mason_compile {
     export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
     export LDFLAGS="${LDFLAGS} -std=c++11 -stdlib=libc++"
     if [[ $(uname -s) == 'Linux' ]]; then
-    export LDFLAGS="${LDFLAGS} -lc++abi"
+        export LDFLAGS="${LDFLAGS} -lc++abi"
     fi
 
     echo "making binary"

@@ -33,9 +33,9 @@ function mason_compile {
     mason_step "Loading patch"
     patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     SANITIZERS="-fsanitize=address,integer,undefined"
-    if [[ $(uname -s) == 'Linux' ]]; then
-        SANITIZERS="${SANITIZERS},thread,memory"
-    fi
+    #if [[ $(uname -s) == 'Linux' ]]; then
+        #SANITIZERS="${SANITIZERS},thread,memory"
+    #fi
     export CXXFLAGS="${CXXFLAGS} ${SANITIZERS}"
     export CFLAGS="${CFLAGS} ${SANITIZERS}"
     export LDFLAGS="${LDFLAGS} ${SANITIZERS}"

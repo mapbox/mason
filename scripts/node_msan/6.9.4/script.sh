@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MASON_NAME=node_asan
+MASON_NAME=node_msan
 MASON_VERSION=6.9.4
 MASON_LIB_FILE=bin/node
 

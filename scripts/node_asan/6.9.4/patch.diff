@@ -1,0 +1,47 @@
+diff --git a/common.gypi b/common.gypi
+index 9e89dc0..41b7c44 100644
+--- a/common.gypi
++++ b/common.gypi
+@@ -352,7 +352,7 @@
+           'GCC_ENABLE_PASCAL_STRINGS': 'NO',        # No -mpascal-strings
+           'GCC_THREADSAFE_STATICS': 'NO',           # -fno-threadsafe-statics
+           'PREBINDING': 'NO',                       # No -Wl,-prebind
+-          'MACOSX_DEPLOYMENT_TARGET': '10.7',       # -mmacosx-version-min=10.7
++          'MACOSX_DEPLOYMENT_TARGET': '10.11',       # -mmacosx-version-min=10.7
+           'USE_HEADERMAP': 'NO',
+           'OTHER_CFLAGS': [
+             '-fno-strict-aliasing',
+diff --git a/deps/v8/src/lookup.h b/deps/v8/src/lookup.h
+index 3fbd9b4..961303c 100644
+--- a/deps/v8/src/lookup.h
++++ b/deps/v8/src/lookup.h
+@@ -179,7 +179,7 @@ class LookupIterator final BASE_EMBEDDED {
+   Handle<Object> GetReceiver() const { return receiver_; }
+ 
+   Handle<JSObject> GetStoreTarget() const {
+-    DCHECK(receiver->IsJSObject());
++    DCHECK(receiver_->IsJSObject());
+     if (receiver_->IsJSGlobalProxy()) {
+       Map* map = JSGlobalProxy::cast(*receiver_)->map();
+       if (map->has_hidden_prototype()) {
+diff --git a/src/util.h b/src/util.h
+index ecd5b12..095ce03 100644
+--- a/src/util.h
++++ b/src/util.h
+@@ -11,16 +11,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ 
+-// OSX 10.9 defaults to libc++ which provides a C++11 <type_traits> header.
+-#if defined(__APPLE__) && __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1090
+-#define USE_TR1_TYPE_TRAITS
+-#endif
+-
+-#ifdef USE_TR1_TYPE_TRAITS
+-#include <tr1/type_traits>  // NOLINT(build/c++tr1)
+-#else
+ #include <type_traits>  // std::remove_reference
+-#endif
+ 
+ namespace node {
+ 

@@ -20,13 +20,22 @@ function mason_compile {
     wget http://prdownloads.sourceforge.net/scons/scons-local-2.5.1.tar.gz
     tar xvf scons-local-2.5.1.tar.gz
     perl -i -p -e "s/'__attribute__\(\(__stdcall__\)\)'/'\"__attribute__\(\(__stdcall__\)\)\"'/g" SCons/Config/gnu
-    perl -i -p -e "s/'-Wall'/'-Wall','-stdlib=libstdc++','-fpermissive'/g" SCons/Config/gnu
-    perl -i -p -e "s/'-pthread'/'-stdlib=libstdc++'/g" SCons/Config/gnu
-    python scons.py STRIP=0 SKIPUTILS=all PREFIX=./mason_packages/.link makensis
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        perl -i -p -e "s/'-Wall'/'-Wall','-stdlib=libstdc++','-fpermissive'/g" SCons/Config/gnu
+        perl -i -p -e "s/'-pthread'/'-stdlib=libstdc++'/g" SCons/Config/gnu
+    else
+        perl -i -p -e "s/'-Wall'/'-Wall','-fpermissive'/g" SCons/Config/gnu
+    fi
+    python scons.py STRIP=0 SKIPUTILS=all PREFIX=/tmp/makensis-data makensis
     mkdir -p ${MASON_PREFIX}/bin
-    mkdir -p ${MASON_PREFIX}/share/nsis/Stubs/
-    cp ${HOME}/Downloads/nsis-2.51/Stubs/* ${MASON_PREFIX}/share/nsis/Stubs/
     cp build/release/makensis/makensis ${MASON_PREFIX}/bin/
+    mkdir -p ${MASON_PREFIX}/share/nsis/Stubs/
+    wget https://downloads.sourceforge.net/project/nsis/NSIS%202/2.51/nsis-2.51.zip
+    unzip nsis-2.51.zip
+    cp nsis-2.51/Stubs/* ${MASON_PREFIX}/share/nsis/Stubs/
+    # note: upon install this needs to be copied in place:
+    # mkdir -p /tmp/makensis-data/share/nsis/Stubs/
+    # cp -r $(mason prefix nsis 2.51)/share/nsis/Stubs/* to /tmp/makensis-data/share/nsis/Stubs/
 }
 
 function mason_cflags {

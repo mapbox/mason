@@ -35,7 +35,7 @@ function mason_compile {
     cp nsis-2.51/Stubs/* ${MASON_PREFIX}/share/nsis/Stubs/
     # note: upon install this needs to be copied in place:
     # mkdir -p /tmp/makensis-data/share/nsis/Stubs/
-    # cp -r $(mason prefix nsis 2.51)/share/nsis/Stubs/* to /tmp/makensis-data/share/nsis/Stubs/
+    # cp -r $(mason prefix nsis 2.51)/share/nsis/Stubs/* /tmp/makensis-data/share/nsis/Stubs/
 }
 
 function mason_cflags {

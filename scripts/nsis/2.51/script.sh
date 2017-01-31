@@ -25,6 +25,7 @@ function mason_compile {
         perl -i -p -e "s/'-pthread'/'-stdlib=libstdc++'/g" SCons/Config/gnu
     else
         perl -i -p -e "s/'-Wall'/'-Wall','-fpermissive'/g" SCons/Config/gnu
+        perl -i -p -e "s/'-m32'/'-m64'/g" SCons/Config/gnu
     fi
     python scons.py STRIP=0 SKIPUTILS=all PREFIX=/tmp/makensis-data makensis
     mkdir -p ${MASON_PREFIX}/bin

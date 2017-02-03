@@ -17,6 +17,9 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
+    CCACHE_VERSION=3.3.1
+    ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
+    MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
     ${MASON_DIR}/mason install cmake 3.7.1
     ${MASON_DIR}/mason link cmake 3.7.1
     ${MASON_DIR}/mason install utfcpp 2.3.4
@@ -47,11 +50,12 @@ function mason_compile {
     CMAKE_PREFIX_PATH=${MASON_ROOT}/.link \
     ${MASON_ROOT}/.link/bin/cmake \
         -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
+        -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
         -DCMAKE_BUILD_TYPE=Release \
         -DBoost_NO_SYSTEM_PATHS=ON \
         -DBoost_USE_STATIC_LIBS=ON \
         ..
-    make VERBOSE=1
+    make VERBOSE=1 -j${MASON_CONCURRENCY}
     make install
 
 }

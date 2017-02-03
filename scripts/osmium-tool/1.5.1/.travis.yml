@@ -13,7 +13,9 @@ matrix:
            - ubuntu-toolchain-r-test
           packages:
            - libstdc++-5-dev
+           - pandoc
 
 script:
+- if [[ $(uname -s) == 'Darwin' ]]; then brew install pandoc || true; fi;
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 - ./mason publish ${MASON_NAME} ${MASON_VERSION}

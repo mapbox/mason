@@ -1,5 +1,17 @@
 # Mason releases
 
+## 0.6.0
+
+ - Added valgrind 3.12.0, earcut 0.12.1, protozero 1.5.0/1.5.1,
+   libprogram_options 1.62.0-cxx11abi, jemalloc 4.4.0, llnode 1.4.1,
+   Omnibus mesa 13.0.3, cmake 3.7.2, minjur 0.1.0, libosmium, 2.11.0,
+   tippecanoe 1.16.3, sqlite 3.16.2, osmium-tool 1.5.1, apitrace 6a30de1,
+   nsis 3.01, llvm-argdumper and lldb-server to lldb package
+ - Removed valgrind latest, minjur latest, tippecanoe latest
+ - Fixed harfbuzz package (#327), boost_regex_icu variant
+
+Changes: https://github.com/mapbox/mason/compare/v0.5.0...v0.6.0
+
 ## 0.5.0
 
  - Various fixes to support cross compiling

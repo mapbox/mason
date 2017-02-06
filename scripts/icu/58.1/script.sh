@@ -80,7 +80,7 @@ function mason_compile_base {
 
     # Must do make clean after configure to clear out object files left over from previous build on different architecture
     make clean
-    make -j${MASON_CONCURRENCY}
+    make VERBOSE=1 -j${MASON_CONCURRENCY}
     make install
     popd
 }

@@ -52,15 +52,25 @@ function mason_compile_base {
     # Using uint_least16_t instead of char16_t because Android Clang doesn't recognize char16_t
     # I'm being shady and telling users of the library to use char16_t, so there's an implicit raw cast
     ICU_CORE_CPP_FLAGS="-DU_CHARSET_IS_UTF8=1 -DU_CHAR_TYPE=uint_least16_t"
-    ICU_MODULE_CPP_FLAGS="${ICU_CORE_CPP_FLAGS} -DUCONFIG_NO_LEGACY_CONVERSION=1 -DUCONFIG_NO_BREAK_ITERATION=1"
+    ICU_MODULE_CPP_FLAGS="${ICU_CORE_CPP_FLAGS} -DUCONFIG_NO_LEGACY_CONVERSION=1"
     
-    CPPFLAGS="${CPPFLAGS} ${ICU_CORE_CPP_FLAGS} ${ICU_MODULE_CPP_FLAGS} -fvisibility=hidden $(icu_debug_cpp)"
-    #CXXFLAGS="--std=c++0x"
+    export CPPFLAGS="${CPPFLAGS} ${ICU_CORE_CPP_FLAGS} ${ICU_MODULE_CPP_FLAGS} -fvisibility=hidden"
 
     echo "Configuring with ${MASON_HOST_ARG}"
 
+    if [[ ${MASON_BUILD_DEBUG} == 1 ]]; then
+        export CFLAGS="${CFLAGS} -O0 -DDEBUG -g"
+        export CXXFLAGS="${CXXFLAGS} -O0 -DDEBUG -g"
+        ICU_BUILDTYPE_FLAGS="--enable-debug --disable-release"
+    else
+        # note CFLAGS overrides defaults (-O2) so we need to add optimization flags back
+        export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
+        export CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG"
+        ICU_BUILDTYPE_FLAGS="--enable-release --disable-debug"
+    fi
+
     ./configure ${MASON_HOST_ARG} --prefix=${MASON_PREFIX} \
-    $(icu_debug_configure) \
+    ${ICU_BUILDTYPE_FLAGS} \
     $(cross_build_configure) \
     --with-data-packaging=archive \
     --enable-renaming \
@@ -83,20 +93,6 @@ function mason_compile_base {
     make VERBOSE=1 -j${MASON_CONCURRENCY}
     make install
     popd
-}
-
-function icu_debug_cpp {
-    if [ ${MASON_BUILD_DEBUG} ]; then
-        echo "-glldb"
-    fi
-}
-
-function icu_debug_configure {
-    if [ ${MASON_BUILD_DEBUG} == 1 ]; then
-        echo "--enable-debug --disable-release"
-    else
-        echo "--enable-release --disable-debug"
-    fi
 }
 
 function cross_build_configure {

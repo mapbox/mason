@@ -22,7 +22,7 @@ function mason_compile {
     # note CFLAGS overrides defaults
     # -fvisibility=hidden -Wall -Wdeclaration-after-statement -Wextra -Wfloat-conversion -Wformat -Wformat-nonliteral -Wformat -Wformat-security -Wmissing-declarations -Wmissing-prototypes -Wold-style-definition -Wshadow -Wshorten-64-to-32 -Wunreachable-code -Wunused -Wvla -g -O2
     # so we need to add optimization flags back
-    export CFLAGS="${CFLAGS:-} -O3 -DNDEBUG -fvisibility=hidden -Wall -Wdeclaration-after-statement -Wextra -Wfloat-conversion -Wformat -Wformat-nonliteral -Wformat -Wformat-security -Wmissing-declarations -Wmissing-prototypes -Wold-style-definition -Wshadow -Wshorten-64-to-32 -Wunreachable-code -Wunused -Wvla"
+    export CFLAGS="${CFLAGS:-} -O3 -DNDEBUG -fvisibility=hidden -Wall"
 
     # -mfpu=neon is not enabled by default for cortex_a9 because
     # it affects floating point precision. webp is fine with it.

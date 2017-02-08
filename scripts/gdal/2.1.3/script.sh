@@ -51,6 +51,8 @@ function mason_prepare_compile {
     #${MASON_DIR}/mason install iconv system
     #MASON_ICONV=$(${MASON_DIR}/mason prefix iconv system)
     export LIBRARY_PATH=${MASON_LIBPQ}/lib:$LIBRARY_PATH
+    ${MASON_DIR}/mason install ccache 3.3.1
+    MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache 3.3.1)/bin/ccache
 }
 
 function mason_compile {
@@ -84,10 +86,12 @@ function mason_compile {
         CUSTOM_LIBS="${MASON_LIBPQ}/lib/libpq.a -pthread ${CUSTOM_LIBS}"
     fi
 
+    export CXX="${MASON_CCACHE} ${CXX}"
+
     # note: we put ${STDLIB_CXXFLAGS} into CXX instead of LDFLAGS due to libtool oddity:
     # http://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass
     if [[ $(uname -s) == 'Darwin' ]]; then
-        CXX="${CXX} -stdlib=libc++ -std=c++11"
+        export CXX="${CXX} -stdlib=libc++ -std=c++11"
     fi
 
     # note: it might be tempting to build with --without-libtool
@@ -143,20 +147,32 @@ function mason_compile {
     make -j${MASON_CONCURRENCY}
     make install
 
-    # attempt to make paths relative in gdal-config
-    # NOTE: only desiged to work if `gdal-config` is inside `./mason_packages/.link/bin` from
-    # mason link gdal <ver>
+    relativize_gdal_config ${MASON_PREFIX}/bin/gdal-config ${MASON_PREFIX} ${MASON_ROOT}/${MASON_PLATFORM_ID}
+
+}
+
+function relativize_gdal_config() {
+    path_to_gdal_config=${1}
+    prefix_path=${2}
+    build_path=${3}
     RESOLVE_SYMLINK="readlink"
     if [[ $(uname -s) == 'Linux' ]];then
         RESOLVE_SYMLINK="readlink -f"
     fi
-    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('$MASON_PREFIX','\$( cd \"\$( dirname \$( dirname \$( $RESOLVE_SYMLINK \"\$0\" ) ))\" && pwd )'))"
+    mv ${path_to_gdal_config} /tmp/gdal-config-backup
+    # append code at start
+    echo 'if test -L $0; then BASE=$( dirname $( '${RESOLVE_SYMLINK}' "$0" ) ); else BASE=$( dirname "$0" ); fi' > ${path_to_gdal_config}
+    cat /tmp/gdal-config-backup >> ${path_to_gdal_config}
+    chmod +x ${path_to_gdal_config}
+
+    # now modify in place
+    python -c "data=open('${path_to_gdal_config}','r').read();open('${path_to_gdal_config}','w').write(data.replace('${prefix_path}','\$( cd \"\$( dirname \${BASE} )\" && pwd )'))"
     # fix the path to dep libs (CONFIG_DEP_LIBS)
-    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('${MASON_ROOT}/${MASON_PLATFORM_ID}','\$( cd \"\$( dirname \$( dirname \$( dirname \$( dirname \$( $RESOLVE_SYMLINK \"\$0\" ) ) ) ))\" && pwd )'))"
+    python -c "data=open('${path_to_gdal_config}','r').read();open('${path_to_gdal_config}','w').write(data.replace('${build_path}','\$( cd \"\$( dirname \$( dirname \$( dirname \${BASE}  ) ))\" && pwd )'))"
     # hack to re-add -lpq since otherwise it will not end up in --dep-libs
-    python -c "data=open('$MASON_PREFIX/bin/gdal-config','r').read();open('$MASON_PREFIX/bin/gdal-config','w').write(data.replace('\$CONFIG_DEP_LIBS','\$CONFIG_DEP_LIBS -lpq'))"
-    cat $MASON_PREFIX/bin/gdal-config
+    python -c "data=open('${path_to_gdal_config}','r').read();open('${path_to_gdal_config}','w').write(data.replace('\$CONFIG_DEP_LIBS','\$CONFIG_DEP_LIBS -lpq'))"
 }
+
 
 function mason_cflags {
     echo "-I${MASON_PREFIX}/include"

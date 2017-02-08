@@ -2,7 +2,7 @@
 
 MASON_NAME=or-tools
 MASON_VERSION=5.1
-MASON_LIB_FILE=lib/libortools.dylib
+MASON_LIB_FILE=lib/libortools.${MASON_DYNLIB_SUFFIX}
 
 . ${MASON_DIR}/mason.sh
 

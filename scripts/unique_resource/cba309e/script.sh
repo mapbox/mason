@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=unique_resource
-MASON_VERSION=dev
+MASON_VERSION=cba309e
 MASON_HEADER_ONLY=true
 
 GIT_HASH="cba309e92ec79a95be2aa5a324a688a06af8d40a"

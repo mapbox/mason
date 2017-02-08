@@ -29,20 +29,20 @@ function mason_compile {
     CXXFLAGS="${CXXFLAGS} -Wno-attributes"
     # libtbb does not support -fvisibility=hidden
     CXXFLAGS="${CXXFLAGS//-fvisibility=hidden}"
-    #patch -N -p1 <  ${PATCHES}/tbb_compiler_override.diff || true
-    # note: static linking not allowed: http://www.threadingbuildingblocks.org/faq/11
+    export CXXFLAGS="${CXXFLAGS//-fvisibility-inlines-hidden}"
+
     if [[ $(uname -s) == 'Darwin' ]]; then
         # build shared libs first
-      make -j${MASON_CONCURRENCY} tbb_build_prefix=BUILDPREFIX cfg=release arch=intel64 cpp0x=1 stdlib=libc++ compiler=clang tbb_build_dir=$(pwd)/build
+      make -j${MASON_CONCURRENCY} tbb_build_prefix=BUILDPREFIX cfg=release arch=intel64 stdver=c++11 stdlib=libc++ compiler=clang tbb_build_dir=$(pwd)/build
       # prevent ldflags being sent to ar for the static linking, which does not work
       unset LDFLAGS
-      make -j${MASON_CONCURRENCY} tbb_build_prefix=BUILDPREFIX cfg=release arch=intel64 cpp0x=1 stdlib=libc++ compiler=clang tbb_build_dir=$(pwd)/build extra_inc=big_iron.inc
+      make -j${MASON_CONCURRENCY} tbb_build_prefix=BUILDPREFIX cfg=release arch=intel64 stdver=c++11 stdlib=libc++ compiler=clang tbb_build_dir=$(pwd)/build extra_inc=big_iron.inc
     else
       LDFLAGS="${LDFLAGS} "'-Wl,-z,origin -Wl,-rpath=\$$ORIGIN'
-      make -j${MASON_CONCURRENCY} tbb_build_prefix=BUILDPREFIX cfg=release arch=intel64 cpp0x=1 tbb_build_dir=$(pwd)/build
+      make -j${MASON_CONCURRENCY} tbb_build_prefix=BUILDPREFIX cfg=release arch=intel64 stdver=c++11 tbb_build_dir=$(pwd)/build
       # prevent ldflags being sent to ar for the static linking, which does not work
       unset LDFLAGS
-      make -j${MASON_CONCURRENCY} tbb_build_prefix=BUILDPREFIX cfg=release arch=intel64 cpp0x=1 tbb_build_dir=$(pwd)/build extra_inc=big_iron.inc
+      make -j${MASON_CONCURRENCY} tbb_build_prefix=BUILDPREFIX cfg=release arch=intel64 stdver=c++11 tbb_build_dir=$(pwd)/build extra_inc=big_iron.inc
     fi
 
     # custom install

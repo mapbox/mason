@@ -8,12 +8,12 @@ MASON_HEADER_ONLY=true
 
 function mason_load_source {
     mason_download \
-        https://github.com/mapbox/supercluster.hpp/archive/v${MASON_VERSION}.tar.gz \
+        https://github.com/mapbox/supercluster.hpp/archive/v0.2.0.tar.gz \
         48bda562627a3032ba73b8b1ff739dc525544d72
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/supercluster.hpp-${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/supercluster.hpp-0.2.0
 }
 
 function mason_compile {

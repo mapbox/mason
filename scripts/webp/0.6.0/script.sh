@@ -33,13 +33,13 @@ function mason_compile {
         CFLAGS="${CFLAGS:-} -mfloat-abi=softfp -mfpu=neon"
     fi
 
+    # TODO(springmeyer) - why is --enable-swap-16bit-csp enabled?
     ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
         --enable-static \
         --disable-shared \
         --with-pic \
-        --enable-libwebpdecoder \
         --disable-cwebp \
         --disable-dwebp \
         --enable-swap-16bit-csp \

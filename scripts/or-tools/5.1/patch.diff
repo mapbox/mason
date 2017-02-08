@@ -1,5 +1,14 @@
---- makefiles/Makefile.third_party.unix.orig	2017-01-25 09:11:15.000000000 -0800
-+++ makefiles/Makefile.third_party.unix	2017-02-07 18:02:33.000000000 -0800
+--- makefiles/Makefile.third_party.unix.orig	2017-02-08 05:51:21.000000000 -0800
++++ makefiles/Makefile.third_party.unix	2017-02-08 05:39:25.000000000 -0800
+@@ -285,7 +285,7 @@
+ 	cd dependencies/sources/cbc-$(CBC_TAG) && $(SET_PATH) $(SET_COMPILER) ./configure --prefix=$(OR_ROOT_FULL)/dependencies/install --disable-bzlib --without-lapack --enable-static --enable-shared --with-pic ADD_CXXFLAGS="-DCBC_THREAD_SAFE -DCBC_NO_INTERRUPT $(MAC_VERSION)"
+ 
+ dependencies/sources/cbc-$(CBC_TAG)/Makefile.in:
+-	svn co https://projects.coin-or.org/svn/Cbc/releases/$(CBC_TAG) dependencies/sources/cbc-$(CBC_TAG)
++	svn co --trust-server-cert https://projects.coin-or.org/svn/Cbc/releases/$(CBC_TAG) dependencies/sources/cbc-$(CBC_TAG)
+ 
+ # Install pcre (dependency of SWIG).
+ dependencies/install/bin/pcretest: dependencies/sources/pcre-$(PCRE_TAG)/Makefile $(ACLOCAL_TARGET)
 @@ -351,6 +351,8 @@
  
  dependencies/sources/bison-$(BISON_TAG)/Makefile: dependencies/sources/bison-$(BISON_TAG)/configure $(ACLOCAL_TARGET)

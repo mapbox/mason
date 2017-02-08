@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=gdal
-MASON_VERSION=2.1.2
+MASON_VERSION=2.1.3
 MASON_LIB_FILE=lib/libgdal.a
 
 . ${MASON_DIR}/mason.sh

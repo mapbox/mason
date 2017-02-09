@@ -6,7 +6,7 @@ matrix:
       osx_image: xcode8
       compiler: clang
     - os: linux
-      compiler: clang
+      compiler: gcc
       sudo: false
       addons:
         apt:

@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libortools.${MASON_DYNLIB_SUFFIX}
 
 function mason_load_source {
     mason_download \
-        https://github.com/google/or-tools/archive/v5.1.tar.gz \
+        https://github.com/google/or-tools/archive/v${MASON_VERSION}.tar.gz \
         3d30004e60acfb27776fc7a8d135adb2e1924dde
 
     mason_extract_tar_gz
@@ -17,15 +17,16 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    cd ${MASON_ROOT}/.build/or-tools-${MASON_VERSION}
-
-    # The following patch to the build script disables some of the more useless
-    # and heavyweight parts of the build, like building the automake and autoconf
-    # .info docs with TeXinfo.
-    SOURCE="${BASH_SOURCE[0]}"
-    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-    patch -p0 < $DIR/patch.diff
-
+    ${MASON_DIR}/mason install cmake 3.7.2
+    export PATH=$(${MASON_DIR}/mason prefix cmake 3.7.2)/bin:${PATH}
+    ${MASON_DIR}/mason install ccache 3.3.1
+    MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache 3.3.1)/bin/ccache
+    ${MASON_DIR}/mason install gflags 2.1.2
+    MASON_GFLAGS=$(${MASON_DIR}/mason prefix gflags 2.1.2)
+    ${MASON_DIR}/mason install protobuf 3.0.0
+    MASON_PROTOBUF=$(${MASON_DIR}/mason prefix protobuf 3.0.0)
+    ${MASON_DIR}/mason install sparsehash 2.0.2
+    MASON_SPARSEHASH=$(${MASON_DIR}/mason prefix sparsehash 2.0.2)
 }
 
 function mason_cflags {
@@ -37,29 +38,49 @@ function mason_ldflags {
 }
 
 function mason_compile {
+    git init .
+    git add makefiles tools Makefile
+    git commit -a -m "all"
 
-    export CXXFLAGS=-fpermissive
+    # The following patch to the build script disables some of the more useless
+    # and heavyweight parts of the build, like building the automake and autoconf
+    # .info docs with TeXinfo.
+    patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
 
-    make third_party
-    make ortoolslibs
-    make create_dirs
-    make cc_archive
+    export CXXFLAGS="${CXXFLAGS} -fpermissive"
+    export CXX="${MASON_CCACHE} ${CXX}"
+    export CC="${MASON_CCACHE} ${CC}"
+    export CFLAGS="${CFLAGS} -fpermissive"
 
-    OR_ARCHIVE_DIR="temp/$(ls -1 temp | head -1)"
+    make missing_directories
+    mkdir -p $(pwd)/dependencies/install/lib
+    mkdir -p $(pwd)/dependencies/install/bin
+    mkdir -p $(pwd)/dependencies/install/include/google
+    # includes
+    ln -s ${MASON_GFLAGS}/include/gflags $(pwd)/dependencies/install/include/gflags
+    ln -s ${MASON_PROTOBUF}/include/google/protobuf $(pwd)/dependencies/install/include/google/protobuf
+    cp -r ${MASON_SPARSEHASH}/include/google/* $(pwd)/dependencies/install/include/google/
+    cp -r ${MASON_SPARSEHASH}/include/sparsehash $(pwd)/dependencies/install/include/
+    # programs
+    ln -s ${MASON_PROTOBUF}/bin/protoc $(pwd)/dependencies/install/bin/protoc
+    # libraries
+    ln -s ${MASON_GFLAGS}/lib/libgflags.a $(pwd)/dependencies/install/lib/libgflags.a
+    ln -s ${MASON_PROTOBUF}/lib/libprotobuf.a $(pwd)/dependencies/install/lib/libprotobuf.a
 
-    if [[ $(uname -s) == "Linux" ]] ; then
-        bash tools/fix_libraries_on_linux.sh
-    else
-        cp tools/install_libortools_mac.sh ${OR_ARCHIVE_DIR}
-        chmod 775 ${OR_ARCHIVE_DIR}/install_libortools_mac.sh
-        cd ${OR_ARCHIVE_DIR} && bash ./install_libortools_mac.sh && rm install_libortools_mac.sh
+    make ortoolslibs -j${MASON_CONCURRENCY}
+
+    if [[ $(uname -s) == "Darwin" ]] ; then
+        install_name_tool -id @rpath/libortools.dylib lib/libortools.dylib
     fi
 
-    mkdir -p "${MASON_PREFIX}/lib"
+    mkdir -p ${MASON_PREFIX}/lib/
+    cp -r lib/libortools* ${MASON_PREFIX}/lib/
+
     mkdir -p "${MASON_PREFIX}/include"
 
-    cp -r "${OR_ARCHIVE_DIR}/lib" "${MASON_PREFIX}/lib"
-    cp -r "${OR_ARCHIVE_DIR}/include" "${MASON_PREFIX}/include"
+    for i in {algorithms,base,bop,constraint_solver,glop,graph,linear_solver,sat,util}; do
+        cp -r src/$i ${MASON_PREFIX}/include/
+    done
 
 }
 

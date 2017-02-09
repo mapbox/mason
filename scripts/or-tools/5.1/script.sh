@@ -38,6 +38,8 @@ function mason_ldflags {
 
 function mason_compile {
 
+    export CXXFLAGS=-fpermissive
+
     make third_party
     make ortoolslibs
     make create_dirs

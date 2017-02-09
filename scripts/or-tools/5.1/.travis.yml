@@ -11,7 +11,7 @@ matrix:
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'libstdc++-5-dev', 'subversion' ]
+          packages: [ 'subversion', 'git','bison','flex','python-setuptools','python-dev','autoconf','libtool','zlib1g-dev','texinfo','help2man','gawk','g++','curl','texlive','cmake','gettext','m4','unzip']
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

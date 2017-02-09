@@ -10,6 +10,7 @@ matrix:
 
 install:
 - |
+  export
   if [[ ${MASON_PLATFORM:-unset} == 'unset' ]] || [[ ${MASON_PLATFORM} == 'osx' ]] || [[ ${MASON_PLATFORM} == 'linux' ]]; then
     # If platform is Linux or OSX, we might still be cross compiling if the
     # MASON_PLATFORM_VERSION is not the same as the host platform.

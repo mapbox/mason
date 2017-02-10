@@ -52,8 +52,9 @@ function mason_compile_base {
     # Using uint_least16_t instead of char16_t because Android Clang doesn't recognize char16_t
     # I'm being shady and telling users of the library to use char16_t, so there's an implicit raw cast
     ICU_CORE_CPP_FLAGS="-DU_CHARSET_IS_UTF8=1 -DUCHAR_TYPE=uint_least16_t -DU_STATIC_IMPLEMENTATION"
-    ICU_MODULE_CPP_FLAGS="${ICU_CORE_CPP_FLAGS} -DU_USING_ICU_NAMESPACE=0 -DUNISTR_FROM_CHAR_EXPLICIT=explicit -DUCONFIG_NO_LEGACY_CONVERSION=1 -DUCONFIG_NO_FORMATTING -DUCONFIG_NO_TRANSLITERATION -DUCONFIG_NO_REGULAR_EXPRESSIONS"
+    ICU_MODULE_CPP_FLAGS="${ICU_CORE_CPP_FLAGS} -DU_USING_ICU_NAMESPACE=0 -DUNISTR_FROM_CHAR_EXPLICIT=explicit -DUCONFIG_NO_LEGACY_CONVERSION=1 -DUCONFIG_NO_TRANSLITERATION -DUCONFIG_NO_REGULAR_EXPRESSIONS"
     
+    # #if !UCONFIG_NO_FORMATTING && !UCONFIG_NO_CONVERSION break io parts needed for iculslocs.cc
     export CPPFLAGS="${CPPFLAGS} ${ICU_CORE_CPP_FLAGS} ${ICU_MODULE_CPP_FLAGS} -fvisibility=hidden"
 
     echo "Configuring with ${MASON_HOST_ARG}"
@@ -69,6 +70,8 @@ function mason_compile_base {
         ICU_BUILDTYPE_FLAGS="--enable-release --disable-debug"
     fi
 
+    export CXX="ccache ${CXX}"
+    export CC="ccache ${CC}"
     ./configure ${MASON_HOST_ARG} --prefix=${MASON_PREFIX} \
     ${ICU_BUILDTYPE_FLAGS} \
     $(cross_build_configure) \
@@ -77,13 +80,13 @@ function mason_compile_base {
     --enable-strict \
     --enable-static \
     --enable-draft \
+    --enable-icuio \
     --disable-rpath \
     --disable-shared \
     --disable-tests \
     --disable-extras \
     --disable-tracing \
     --disable-layout \
-    --disable-icuio \
     --disable-samples \
     --disable-dyload || cat config.log
 
@@ -92,6 +95,21 @@ function mason_compile_base {
     make clean
     make VERBOSE=1 -j${MASON_CONCURRENCY}
     make install
+
+    # hack to rewrite the .dat to reduce its size
+    # via the amazing tools at https://github.com/nodejs/node/tree/master/tools/icu
+    TMP_BIN=/tmp/icu-bin
+    mkdir -p ${TMP_BIN}
+    rm -rf ${TMP_BIN}/*
+    echo ${CXX:-clang++} ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/iculslocs.cc -O3 -o ${TMP_BIN}/iculslocs -I./common -I./io -I./i18n ${MASON_PREFIX}/lib/libicuuc.a ${MASON_PREFIX}/lib/libicudata.a ${MASON_PREFIX}/lib/libicuio.a ${MASON_PREFIX}/lib/libicui18n.a
+    ${CXX:-clang++} ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/iculslocs.cc -O3 -o ${TMP_BIN}/iculslocs -I./common -I./io -I./i18n ${MASON_PREFIX}/lib/libicuuc.a ${MASON_PREFIX}/lib/libicudata.a ${MASON_PREFIX}/lib/libicuio.a ${MASON_PREFIX}/lib/libicui18n.a
+    cp ${MASON_PREFIX}/sbin/* ${TMP_BIN}/
+    cp ${MASON_PREFIX}/bin/* ${TMP_BIN}/
+    rm -rf tmp2;
+    cp ${MASON_PREFIX}/share/icu/${MASON_VERSION}/icudt${MASON_VERSION/.*}l.dat ${MASON_PREFIX}/share/icu/${MASON_VERSION}/icudt${MASON_VERSION/.*}l.dat_
+    python ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/icutrim.py -D ${MASON_PREFIX}/share/icu/${MASON_VERSION}/icudt${MASON_VERSION/.*}l.dat -F ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/icu_small.json -P ${TMP_BIN} -T tmp2 -O icudt${MASON_VERSION/.*}l.dat
+    mv tmp2/icudt${MASON_VERSION/.*}l.dat ${MASON_PREFIX}/share/icu/${MASON_VERSION}/icudt${MASON_VERSION/.*}l.dat
+
     popd
 }
 

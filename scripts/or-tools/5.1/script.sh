@@ -34,9 +34,6 @@ function mason_ldflags {
 }
 
 function mason_compile {
-    git init .
-    git add makefiles tools Makefile
-    git commit -a -m "all"
 
     # The following patch to the build script disables some of the more useless
     # and heavyweight parts of the build, like building the automake and autoconf

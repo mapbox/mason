@@ -17,10 +17,6 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR}/mason install cmake 3.7.2
-    export PATH=$(${MASON_DIR}/mason prefix cmake 3.7.2)/bin:${PATH}
-    ${MASON_DIR}/mason install ccache 3.3.1
-    MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache 3.3.1)/bin/ccache
     ${MASON_DIR}/mason install gflags 2.1.2
     MASON_GFLAGS=$(${MASON_DIR}/mason prefix gflags 2.1.2)
     ${MASON_DIR}/mason install protobuf 3.0.0

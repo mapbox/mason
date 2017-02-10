@@ -20,8 +20,8 @@ function mason_prepare_compile {
     CCACHE_VERSION=3.3.1
     ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
     MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
-    ${MASON_DIR}/mason install cmake 3.7.1
-    ${MASON_DIR}/mason link cmake 3.7.1
+    ${MASON_DIR}/mason install cmake 3.7.2
+    ${MASON_DIR}/mason link cmake 3.7.2
 }
 
 function mason_compile {

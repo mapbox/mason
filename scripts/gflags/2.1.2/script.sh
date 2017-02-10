@@ -32,7 +32,7 @@ function mason_compile {
     ${MASON_ROOT}/.link/bin/cmake \
         -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
         -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
-        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_BUILD_TYPE=Release \
         ..
     make VERBOSE=1 -j${MASON_CONCURRENCY}
     make install

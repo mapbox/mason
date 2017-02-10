@@ -1,5 +1,38 @@
 # Mason releases
 
+## 0.7.0
+
+ - Added
+    - or-tools 5.1
+    - jni.hpp 3.0.0
+    - libpng 1.6.28
+    - jpeg turbo 1.5.1
+    - freetype 2.7.1
+    - harfbuzz 1.4.2 (links no deps)
+    - harfbuzz 1.4.2-ft (links freetype 2.7.1)
+    - libpq and postgres 9.6.1
+    - webp 0.6.0
+    - protobuf 3.2.0
+    - proj 4.9.3
+    - libtiff 4.0.7
+    - gdal 2.1.3
+    - cairo 1.14.8
+    - geojsonvt 6.2.0
+    - tbb 2017_20161128
+    - kdbush 0.1.1-1
+    - benchmark 1.0.0-1
+    - jni 2.0.0-1
+    - earcut 0.12.2
+    - libgdal 2.1.3 (minimal package of just headers, lib, data)
+
+ - Fixed
+    - gcc 5.3.0-i686 lib file corrected
+    - unique_resource pinned to cba309e
+    - gdal-config to work even if not linked
+    - api-trace now built with g++-5
+
+Changes: https://github.com/mapbox/mason/compare/v0.6.0...v0.7.0
+
 ## 0.6.0
 
  - Added valgrind 3.12.0, earcut 0.12.1, protozero 1.5.0/1.5.1,

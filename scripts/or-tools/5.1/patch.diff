@@ -119,3 +119,27 @@ index 003352c..b3f3ee1 100755
    POST_LIB =
    BISON = dependencies/install/bin/bison
    FLEX = dependencies/install/bin/flex
+diff --git a/src/constraint_solver/constraint_solveri.h b/src/constraint_solver/constraint_solveri.h
+index 1a5efbd..8f1419c 100644
+--- a/src/constraint_solver/constraint_solveri.h
++++ b/src/constraint_solver/constraint_solveri.h
+@@ -63,6 +63,7 @@
+ #include "base/integral_types.h"
+ #include "base/logging.h"
+ #include "base/sysinfo.h"
++#include "base/casts.h"
+ #include "base/timer.h"
+ #include "base/join.h"
+ #include "base/sparse_hash.h"
+@@ -252,9 +253,9 @@ inline uint64 Hash1(int value) { return Hash1(static_cast<uint32>(value)); }
+ 
+ inline uint64 Hash1(void* const ptr) {
+ #if defined(ARCH_K8) || defined(__powerpc64__) || defined(__aarch64__)
+-  return Hash1(reinterpret_cast<uint64>(ptr));
++  return Hash1(bit_cast<uint64>(ptr));
+ #else
+-  return Hash1(reinterpret_cast<uint32>(ptr));
++  return Hash1(bit_cast<uint32>(ptr));
+ #endif
+ }
+ 

@@ -70,16 +70,22 @@ function mason_compile {
     make ortoolslibs -j${MASON_CONCURRENCY}
 
     if [[ $(uname -s) == "Darwin" ]] ; then
-        install_name_tool -id @rpath/libortools.dylib lib/libortools.dylib
+        install_name_tool -id @loader_path/libortools.dylib lib/libortools.dylib
     fi
 
     mkdir -p ${MASON_PREFIX}/lib/
     cp -r lib/libortools* ${MASON_PREFIX}/lib/
 
-    mkdir -p "${MASON_PREFIX}/include"
+    mkdir -p "${MASON_PREFIX}/include/or-tools/"
 
     for i in {algorithms,base,bop,constraint_solver,glop,graph,linear_solver,sat,util}; do
-        cp -r src/$i ${MASON_PREFIX}/include/
+        cp -r src/$i ${MASON_PREFIX}/include/or-tools/
+    done
+
+    for i in {algorithms,base,bop,constraint_solver,glop,graph,linear_solver,sat,util}; do
+        if [[ -d src/gen/$i ]]; then
+            cp -r src/gen/$i/*h ${MASON_PREFIX}/include/or-tools/$i/ || true
+        fi
     done
 
 }

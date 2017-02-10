@@ -3,15 +3,11 @@ language: generic
 matrix:
   include:
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode8.2
       compiler: clang
     - os: linux
-      compiler: gcc
       sudo: false
-      addons:
-        apt:
-          sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'subversion', 'git','bison','flex','python-setuptools','python-dev','autoconf','libtool','zlib1g-dev','texinfo','help2man','gawk','g++','curl','texlive','cmake','gettext','m4','unzip']
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

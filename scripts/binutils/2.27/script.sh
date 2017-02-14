@@ -2,7 +2,7 @@
 
 MASON_NAME=binutils
 MASON_VERSION=2.27
-MASON_LIB_FILE=bin/ld
+MASON_LIB_FILE=lib/libbfd.a
 
 . ${MASON_DIR}/mason.sh
 

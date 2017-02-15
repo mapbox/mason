@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=stxxl
-MASON_VERSION=1.4.1
+MASON_VERSION=1.4.1-1
 MASON_LIB_FILE=lib/libstxxl.a
 
 . ${MASON_DIR}/mason.sh

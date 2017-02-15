@@ -51,7 +51,7 @@ function mason_compile {
 
     echo "making binary"
     # we use `make binary` to hook into PORTABLE=1
-    BUILDTYPE=Debug PREFIX=${MASON_PREFIX} CONFIG_FLAGS="--debug --with-dtrace" make binary -j${MASON_CONCURRENCY}
+    BUILDTYPE=Debug PREFIX=${MASON_PREFIX} CONFIG_FLAGS="--debug" make binary -j${MASON_CONCURRENCY}
     ls
     echo "uncompressing binary"
     tar -xf *.tar.gz

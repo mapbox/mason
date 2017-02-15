@@ -17,7 +17,8 @@ function mason_load_source {
 }
 
 function mason_compile {
-    mkdir build
+    mkdir -p build
+    rm -rf build/*
     cd build
     cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
      -DBUILD_STATIC_LIBS=ON \

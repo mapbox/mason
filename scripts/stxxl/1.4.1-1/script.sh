@@ -16,11 +16,16 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-1.4.1
 }
 
+function mason_prepare_compile {
+    ${MASON_DIR}/mason install cmake 3.7.2
+    MASON_CCACHE=$(${MASON_DIR}/mason prefix cmake 3.7.2)/bin/cmake
+}
+
 function mason_compile {
     mkdir -p build
     rm -rf build/*
     cd build
-    cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
+    ${MASON_CCACHE} ../ -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
      -DBUILD_STATIC_LIBS=ON \
      -DUSE_GNU_PARALLEL=OFF \
      -DCMAKE_BUILD_TYPE=Release

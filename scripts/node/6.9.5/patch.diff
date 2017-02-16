@@ -62,6 +62,19 @@ index 8a3179d..dc01575 100644
              },
            }],
          ],
+diff --git a/deps/v8/src/lookup.h b/deps/v8/src/lookup.h
+index 3fbd9b4..961303c 100644
+--- a/deps/v8/src/lookup.h
++++ b/deps/v8/src/lookup.h
+@@ -179,7 +179,7 @@ class LookupIterator final BASE_EMBEDDED {
+   Handle<Object> GetReceiver() const { return receiver_; }
+ 
+   Handle<JSObject> GetStoreTarget() const {
+-    DCHECK(receiver->IsJSObject());
++    DCHECK(receiver_->IsJSObject());
+     if (receiver_->IsJSGlobalProxy()) {
+       Map* map = JSGlobalProxy::cast(*receiver_)->map();
+       if (map->has_hidden_prototype()) {
 diff --git a/src/util.h b/src/util.h
 index ecd5b12..aa7c41e 100644
 --- a/src/util.h

@@ -30,12 +30,12 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    # init a git repo to avoid the nodejs Makefile
+    # complaining about changes that it detects in the parent directory
+    git init .
+
     mason_step "Loading patch"
-#    git init .
-#    git add .
-#    git commit -a -m "All"
     patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
-#    exit 0
 
     # disable icu
     export BUILD_INTL_FLAGS="--with-intl=none"
@@ -51,7 +51,7 @@ function mason_compile {
 
     echo "making binary"
     # we use `make binary` to hook into PORTABLE=1
-    BUILDTYPE=Debug PREFIX=${MASON_PREFIX} CONFIG_FLAGS="--debug" make binary -j${MASON_CONCURRENCY}
+    V= BUILDTYPE=Debug PREFIX=${MASON_PREFIX} CONFIG_FLAGS="--debug" make binary -j${MASON_CONCURRENCY}
     ls
     echo "uncompressing binary"
     tar -xf *.tar.gz

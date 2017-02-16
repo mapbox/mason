@@ -46,7 +46,7 @@ function mason_compile {
     export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
     export LDFLAGS="${LDFLAGS} -std=c++11 -stdlib=libc++"
     if [[ $(uname -s) == 'Linux' ]]; then
-        export LDFLAGS="${LDFLAGS} -lc++abi"
+        export LDFLAGS="${LDFLAGS} -Wl,--start-group -lc++abi"
     fi
 
     echo "making binary"

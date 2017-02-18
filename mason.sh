@@ -96,14 +96,14 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     export MASON_DYNLIB_SUFFIX="so"
 
     # Assume current system is the target platform
-    if [ ${MASON_PLATFORM_VERSION:-} ] ; then
+    if [ ! ${MASON_PLATFORM_VERSION:-} ] ; then
         export MASON_PLATFORM_VERSION=$(uname -m)
     fi
 
     export CFLAGS="-fPIC"
     export CXXFLAGS="${CFLAGS} -std=c++11"
 
-    if [ `uname -m` != ${MASON_PLATFORM_VERSION} ] ; then
+    if [ $(uname -m) != ${MASON_PLATFORM_VERSION} ] ; then
         # Install the cross compiler
         MASON_XC_PACKAGE_NAME=gcc
         MASON_XC_PACKAGE_VERSION=${MASON_XC_GCC_VERSION:-5.3.0}-${MASON_PLATFORM_VERSION}

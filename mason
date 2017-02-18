@@ -4,7 +4,7 @@ MASON_COMMAND=$1 ; shift
 MASON_NAME=$1 ; shift
 MASON_VERSION=$1 ; shift
 
-set -e
+set -eu
 set -o pipefail
 
 MASON_RELEASED_VERSION="0.7.0"

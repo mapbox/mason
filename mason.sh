@@ -121,7 +121,7 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     fi
 
 elif [ ${MASON_PLATFORM} = 'android' ]; then
-    case "${MASON_PLATFORM_VERSION}" in
+    case "${MASON_PLATFORM_VERSION:-}" in
         arm-v5-9) export MASON_ANDROID_ABI=arm-v5 ;;
         arm-v7-9) export MASON_ANDROID_ABI=arm-v7 ;;
         arm-v8-21) export MASON_ANDROID_ABI=arm-v8 ;;

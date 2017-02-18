@@ -96,8 +96,8 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     export MASON_DYNLIB_SUFFIX="so"
 
     # Assume current system is the target platform
-    if [ -z ${MASON_PLATFORM_VERSION} ] ; then
-        export MASON_PLATFORM_VERSION=`uname -m`
+    if [ ${MASON_PLATFORM_VERSION:-} ] ; then
+        export MASON_PLATFORM_VERSION=$(uname -m)
     fi
 
     export CFLAGS="-fPIC"

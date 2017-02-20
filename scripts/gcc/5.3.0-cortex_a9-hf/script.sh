@@ -20,6 +20,10 @@ function mason_try_binary {
     mason_success "Installed toolchain setup files at ${MASON_PREFIX}"
 }
 
+function mason_build {
+    :
+}
+
 function mason_load_source {
     :
 }

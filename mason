@@ -84,4 +84,8 @@ fi
 . ${MASON_DIR}/mason.sh
 
 export MASON_DIR
-bash "${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/script.sh" "${MASON_COMMAND}" "$@"
+if [ -d "${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}-${MASON_PLATFORM_VERSION}" ]; then
+    bash "${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}-${MASON_PLATFORM_VERSION}/script.sh" "${MASON_COMMAND}" "$@"
+else
+    bash "${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/script.sh" "${MASON_COMMAND}" "$@"
+fi

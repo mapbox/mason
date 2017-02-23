@@ -1,10 +1,11 @@
 # Mason releases
 
-## Upcoming
+## 0.8.0
 
  - Added
     - tippecanoe 1.16.9
-
+    - zeromq 4.2.2
+    - cppzmq 4.2.1
  - Removed
     - tippecanoe 1.9.7 (never worked, never had binaries published)
 

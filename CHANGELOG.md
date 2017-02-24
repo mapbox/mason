@@ -1,5 +1,10 @@
 # Mason releases
 
+## Upcoming
+
+ - Removed
+    - tippecanoe 1.9.7 (never worked, never had binaries published)
+
 ## 0.7.0
 
  - Added

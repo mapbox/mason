@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=wagyu
-MASON_VERSION=0.4.0
+MASON_VERSION=0.4.1
 MASON_HEADER_ONLY=true
 
 . ${MASON_DIR}/mason.sh
@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/wagyu/archive/${MASON_VERSION}.tar.gz \
-        a0c81817a37c8693fea973ce2ab70f9448463533
+        f22ba2f7d00dff6b53b8ba4c5bb7c22c99b06035
 
     mason_extract_tar_gz
 

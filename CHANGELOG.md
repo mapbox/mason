@@ -2,6 +2,9 @@
 
 ## Upcoming
 
+ - Added
+    - tippecanoe 1.16.9
+
  - Removed
     - tippecanoe 1.9.7 (never worked, never had binaries published)
 

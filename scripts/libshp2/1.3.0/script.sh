@@ -17,6 +17,8 @@ function mason_load_source {
 }
 
 function mason_compile {
+    # Add optimization flags since CFLAGS overrides the default (-g -O2)
+    export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
     make all -j${MASON_CONCURRENCY}
 
     mkdir -p ${MASON_PREFIX}/lib

@@ -1,0 +1,92 @@
+diff --git a/common.gypi b/common.gypi
+index 4aa8f91..c014b86 100644
+--- a/common.gypi
++++ b/common.gypi
+@@ -67,7 +67,7 @@
+           'v8_enable_handle_zapping': 1,
+         },
+         'defines': [ 'DEBUG', '_DEBUG' ],
+-        'cflags': [ '-g', '-O0' ],
++        'cflags': [ '-glldb', '-g', '-O0' ],
+         'conditions': [
+           ['target_arch=="x64"', {
+             'msvs_configuration_platform': 'x64',
+@@ -109,13 +109,22 @@
+         },
+         'xcode_settings': {
+           'GCC_OPTIMIZATION_LEVEL': '0', # stop gyp from defaulting to -Os
++          'GCC_GENERATE_DEBUGGING_SYMBOLS':'NO', # avoid adding -gdwarf-2
++          'OTHER_CFLAGS': ['-glldb','-g'], # https://clang.llvm.org/docs/UsersManual.html#controlling-debugger-tuning
++          'OTHER_CPLUSPLUSFLAGS': ['-glldb','-g'] # https://clang.llvm.org/docs/UsersManual.html#controlling-debugger-tuning
+         },
+       },
+       'Release': {
+         'variables': {
+           'v8_enable_handle_zapping': 0,
+         },
+-        'cflags': [ '-O3', '-ffunction-sections', '-fdata-sections' ],
++        'cflags': [ '-O3', '-glldb', '-gline-tables-only' ],
++        'xcode_settings': {
++          'GCC_OPTIMIZATION_LEVEL': '3', # stop gyp from defaulting to -Os
++          'GCC_GENERATE_DEBUGGING_SYMBOLS':'NO', # avoid adding -gdwarf-2
++          'OTHER_CFLAGS': ['-glldb','-g'], # https://clang.llvm.org/docs/UsersManual.html#controlling-debugger-tuning
++          'OTHER_CPLUSPLUSFLAGS': ['-glldb','-gline-tables-only'] # https://clang.llvm.org/docs/UsersManual.html#controlling-debugger-tuning
++        },
+         'conditions': [
+           ['target_arch=="x64"', {
+             'msvs_configuration_platform': 'x64',
+@@ -269,7 +278,7 @@
+       }],
+       [ 'OS in "linux freebsd openbsd solaris android aix"', {
+         'cflags': [ '-Wall', '-Wextra', '-Wno-unused-parameter', ],
+-        'cflags_cc': [ '-fno-rtti', '-fno-exceptions', '-std=gnu++0x' ],
++        'cflags_cc': [ '-fno-rtti', '-fno-exceptions', '-std=c++11' ],
+         'ldflags': [ '-rdynamic' ],
+         'target_conditions': [
+           # The 1990s toolchain on SmartOS can't handle thin archives.
+@@ -352,7 +361,7 @@
+           'GCC_ENABLE_PASCAL_STRINGS': 'NO',        # No -mpascal-strings
+           'GCC_THREADSAFE_STATICS': 'NO',           # -fno-threadsafe-statics
+           'PREBINDING': 'NO',                       # No -Wl,-prebind
+-          'MACOSX_DEPLOYMENT_TARGET': '10.5',       # -mmacosx-version-min=10.5
++          'MACOSX_DEPLOYMENT_TARGET': '10.11',       # -mmacosx-version-min=10.5
+           'USE_HEADERMAP': 'NO',
+           'OTHER_CFLAGS': [
+             '-fno-strict-aliasing',
+@@ -379,7 +388,7 @@
+           ['clang==1', {
+             'xcode_settings': {
+               'GCC_VERSION': 'com.apple.compilers.llvm.clang.1_0',
+-              'CLANG_CXX_LANGUAGE_STANDARD': 'gnu++0x',  # -std=gnu++0x
++              'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',
+             },
+           }],
+         ],
+diff --git a/src/util.h b/src/util.h
+index f96fb77..861d002 100644
+--- a/src/util.h
++++ b/src/util.h
+@@ -8,11 +8,7 @@
+ #include <stddef.h>
+ #include <stdlib.h>
+ 
+-#ifdef __APPLE__
+-#include <tr1/type_traits>  // NOLINT(build/c++tr1)
+-#else
+ #include <type_traits>  // std::remove_reference
+-#endif
+ 
+ namespace node {
+ 
+@@ -27,11 +23,7 @@ inline void* Realloc(void* pointer, size_t size);
+ inline void* Malloc(size_t size);
+ inline void* Calloc(size_t n, size_t size);
+ 
+-#ifdef __APPLE__
+-template <typename T> using remove_reference = std::tr1::remove_reference<T>;
+-#else
+ template <typename T> using remove_reference = std::remove_reference<T>;
+-#endif
+ 
+ #define FIXED_ONE_BYTE_STRING(isolate, string)                                \
+   (node::OneByteString((isolate), (string), sizeof(string) - 1))

@@ -12,6 +12,9 @@
     - zstd 1.1.3
     - wagyu 0.4.0
     - cxx11 ABI version of gtest 1.8.0
+    - node v4.7.3
+    - node v6.9.5
+    - stxxl 1.4.1-1
 
  - Removed
     - tippecanoe 1.9.7 (never worked, never had binaries published)

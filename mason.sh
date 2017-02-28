@@ -310,7 +310,7 @@ function mason_download {
         curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o ${MASON_SLUG}  || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             mason_error "Failed to download ${1} (returncode: $CURL_RESULT)"
-            exit $RESULT
+            exit $CURL_RESULT
         fi
     fi
 

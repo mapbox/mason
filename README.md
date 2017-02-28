@@ -68,7 +68,7 @@ $(MASON):
     git submodule update --init
 
 mason_packages: $(MASON)
-    $(MASON) install geometry.hpp 0.7.0
+    $(MASON) install geometry 0.7.0
     $(MASON) install variant 1.1.0
 ```
 

@@ -2,12 +2,27 @@
 
 ## 0.8.0
 
+ - mason now run with `set -u` to catch undefined variables in scripts
+
  - Added
     - tippecanoe 1.16.9
     - zeromq 4.2.2
     - cppzmq 4.2.1
+    - glfw 2017-02-09-77a8f10
+    - zstd 1.1.3
+    - wagyu 0.4.0
+    - cxx11 ABI version of gtest 1.8.0
+
  - Removed
     - tippecanoe 1.9.7 (never worked, never had binaries published)
+    - gcc 4.9.2-{i686,cortex_a9,cortex_a9-hf}
+    - wagyu 0.1.0
+
+ - Fixed
+    - Man files are now provided for osmium-tool 1.5.1
+    - binutils 2.27 now builds on os x
+
+Changes: https://github.com/mapbox/mason/compare/v0.7.0...v0.8.0
 
 ## 0.7.0
 

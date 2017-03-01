@@ -6,7 +6,7 @@
 
  - Added
     - tippecanoe 1.16.9
-    - zeromq 4.2.2
+    - libzmq 4.2.2
     - cppzmq 4.2.1
     - glfw 2017-02-09-77a8f10
     - zstd 1.1.3

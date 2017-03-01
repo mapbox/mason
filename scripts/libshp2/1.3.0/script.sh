@@ -17,14 +17,28 @@ function mason_load_source {
 }
 
 function mason_compile {
-    # Add optimization flags since CFLAGS overrides the default (-g -O2)
-    export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
-    make all -j${MASON_CONCURRENCY}
 
+    patch Makefile -p1 <<EOF
+--- a/Makefile	2017-03-01 11:10:45.277581411 +0100
++++ b/Makefile	2017-03-01 11:10:04.293351781 +0100
+@@ -1,6 +1,6 @@
+
+-PREFIX	=	/usr/local
+-CFLAGS	=	-g -Wall -fPIC
++PREFIX	?=	/usr/local
++CFLAGS	?=	-g -Wall -fPIC
+ #CFLAGS  =       -g -DUSE_CPL
+ #CC = g++
+
+EOF
+
+    # Add optimization flags since CFLAGS overrides the default (-g -O2)
+    CFLAGS="${CFLAGS} -O3 -DNDEBUG" make all -j${MASON_CONCURRENCY}
+
+    mkdir -p ${MASON_PREFIX}/bin
     mkdir -p ${MASON_PREFIX}/lib
-	  cp libshp.a ${MASON_PREFIX}/lib
     mkdir -p ${MASON_PREFIX}/include
-	  cp shapefil.h ${MASON_PREFIX}/include
+    PREFIX=${MASON_PREFIX} make lib_install bin_install
 }
 
 function mason_cflags {

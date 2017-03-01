@@ -32,20 +32,30 @@ Mason is unlike all of the above package managers because:
 
 ## Installation
 
-#### Symlink
+#### Curl install
 
-You need to install Mason to your user directory into `~/.mason`.
+To install mason locally:
 
-```bash
-git clone -b master --single-branch https://github.com/mapbox/mason.git ~/.mason
-sudo ln -s ~/.mason/mason /usr/local/bin/mason
+```sh
+mkdir ./mason
+curl -sSfL https://github.com/mapbox/mason/archive/v0.8.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=./mason
 ```
 
-The second line is optional.
+Then you can use the `mason` command like: `./mason/mason install <package> <version>`
+
+To install mason globally (to /tmp):
+
+```sh
+curl -sSfL https://github.com/mapbox/mason/archive/v0.8.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=/tmp
+```
+
+Then you can use the `mason` command like: `/tmp/mason install <package> <version>`
 
 #### Submodule
 
-Mason can be added a submodule to your repository instead of creating a global symlink. This is helpful for other contributors to get set up quickly. Make sure to include the final part of the following command `.mason/` so your submodule path has the leading `.` instead of just being `mason/`.
+Mason can also be added a submodule to your repository. This is helpful for other contributors to get set up quickly.
+
+Optionally a convention when using submodules, is to place the submodule at a path starting with `.` to make the directory hidden to most file browsers. If you want your mason folder hidden then make sure to include the final part of the following command `.mason/` so your submodule path has the leading `.` instead of just being `mason/`.
 
 ```bash
 git submodule add git@github.com:mapbox/mason.git .mason/

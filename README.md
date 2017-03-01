@@ -32,6 +32,8 @@ Mason is unlike all of the above package managers because:
 
 ## Installation
 
+There are three recommended ways to install mason: via curl, via a submodule, or via bundling `mason.cmake`
+
 #### Curl install
 
 To install mason locally:
@@ -81,6 +83,24 @@ mason_packages: $(MASON)
     $(MASON) install geometry 0.7.0
     $(MASON) install variant 1.1.0
 ```
+
+#### mason.cmake
+
+Copy the https://raw.githubusercontent.com/mapbox/mason/master/mason.cmake into your cmake project. A common convention is to place it at `<your project>/cmake/mason`
+
+```
+mkdir cmake
+wget -O cmake/mason.cmake https://raw.githubusercontent.com/mapbox/mason/master/mason.cmake
+````
+
+Then in your `CmakeLists.txt` install packages like:
+
+```cmake
+mason_use(<package name> VERSION <package version> HEADER_ONLY)
+```
+
+Note: Leave out `HEADER_ONLY` if the package is a [pre-compiled library](https://github.com/mapbox/cpp/blob/master/glossary.md#precompiled-library). You can see if a package is `HEADER_ONLY` by looking inside the `script.sh` for `MASON_HEADER_ONLY=true` like https://github.com/mapbox/mason/blob/68871660b74023234fa96d482898c820a55bd4bf/scripts/geometry/0.9.0/script.sh#L5
+
 
 ## Usage
 

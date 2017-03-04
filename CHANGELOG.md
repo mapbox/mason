@@ -15,6 +15,7 @@
     - node v4.7.3
     - node v6.9.5
     - stxxl 1.4.1-1
+    - libshp2 1.3.0
 
  - Removed
     - tippecanoe 1.9.7 (never worked, never had binaries published)

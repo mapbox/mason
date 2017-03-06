@@ -32,20 +32,32 @@ Mason is unlike all of the above package managers because:
 
 ## Installation
 
-#### Symlink
+There are three recommended ways to install mason: via curl, via a submodule, or via bundling `mason.cmake`
 
-You need to install Mason to your user directory into `~/.mason`.
+#### Curl install
 
-```bash
-git clone -b master --single-branch https://github.com/mapbox/mason.git ~/.mason
-sudo ln -s ~/.mason/mason /usr/local/bin/mason
+To install mason locally:
+
+```sh
+mkdir ./mason
+curl -sSfL https://github.com/mapbox/mason/archive/v0.8.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=./mason
 ```
 
-The second line is optional.
+Then you can use the `mason` command like: `./mason/mason install <package> <version>`
+
+To install mason globally (to /tmp):
+
+```sh
+curl -sSfL https://github.com/mapbox/mason/archive/v0.8.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=/tmp
+```
+
+Then you can use the `mason` command like: `/tmp/mason install <package> <version>`
 
 #### Submodule
 
-Mason can be added a submodule to your repository instead of creating a global symlink. This is helpful for other contributors to get set up quickly. Make sure to include the final part of the following command `.mason/` so your submodule path has the leading `.` instead of just being `mason/`.
+Mason can also be added a submodule to your repository. This is helpful for other contributors to get set up quickly.
+
+Optionally a convention when using submodules, is to place the submodule at a path starting with `.` to make the directory hidden to most file browsers. If you want your mason folder hidden then make sure to include the final part of the following command `.mason/` so your submodule path has the leading `.` instead of just being `mason/`.
 
 ```bash
 git submodule add git@github.com:mapbox/mason.git .mason/
@@ -71,6 +83,24 @@ mason_packages: $(MASON)
     $(MASON) install geometry 0.7.0
     $(MASON) install variant 1.1.0
 ```
+
+#### mason.cmake
+
+Copy the https://raw.githubusercontent.com/mapbox/mason/master/mason.cmake into your cmake project. A common convention is to place it at `<your project>/cmake/mason`
+
+```
+mkdir cmake
+wget -O cmake/mason.cmake https://raw.githubusercontent.com/mapbox/mason/master/mason.cmake
+````
+
+Then in your `CmakeLists.txt` install packages like:
+
+```cmake
+mason_use(<package name> VERSION <package version> HEADER_ONLY)
+```
+
+Note: Leave out `HEADER_ONLY` if the package is a [pre-compiled library](https://github.com/mapbox/cpp/blob/master/glossary.md#precompiled-library). You can see if a package is `HEADER_ONLY` by looking inside the `script.sh` for `MASON_HEADER_ONLY=true` like https://github.com/mapbox/mason/blob/68871660b74023234fa96d482898c820a55bd4bf/scripts/geometry/0.9.0/script.sh#L5
+
 
 ## Usage
 

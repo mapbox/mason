@@ -1,6 +1,7 @@
 # Release process
 
 - Increment version at the top of `mason`
+- Increment the version in the [Readme](https://github.com/mapbox/mason/blob/master/README.md#installation)
 - Update changelog
 - Ensure tests are passing
 - Tag a release:

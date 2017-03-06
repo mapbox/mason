@@ -572,6 +572,10 @@ function mason_pkgconfig {
 }
 
 function mason_cflags {
+    if [[ ! ${MASON_PKGCONFIG_FILE:-} ]]; then
+        mason_error " The MASON_PKGCONFIG_FILE variable not found in script.sh. Please either provide this variable or override both mason_cflags"
+        exit 1
+    fi
     local FLAGS
     FLAGS=$(set -e;`mason_pkgconfig` --static --cflags)
     # Replace double-prefix in case we use a sysroot.
@@ -579,6 +583,10 @@ function mason_cflags {
 }
 
 function mason_ldflags {
+    if [[ ! ${MASON_PKGCONFIG_FILE:-} ]]; then
+        mason_error " The MASON_PKGCONFIG_FILE variable not found in script.sh. Please either provide this variable or override both mason_cflags"
+        exit 1
+    fi
     local FLAGS
     FLAGS=$(set -e;`mason_pkgconfig` --static --libs)
     # Replace double-prefix in case we use a sysroot.

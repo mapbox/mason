@@ -12,7 +12,7 @@ function mason_load_source {
         https://downloads.sourceforge.net/project/expat/expat/${MASON_VERSION}/expat-${MASON_VERSION}.tar.bz2 \
         b3cebe2010e3679624c44609d08cfd5b1d9a55de
 
-    mason_extract_tar_gz
+    mason_extract_tar_bz2
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
 }

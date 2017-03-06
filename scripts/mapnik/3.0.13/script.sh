@@ -75,8 +75,9 @@ function mason_compile {
     ls -l ${MASON_LINKED_ABS}/include/unicode
     if [[ $(uname -s) == 'Linux' ]]; then
         echo "CUSTOM_LDFLAGS = '-Wl,-z,origin -Wl,-rpath=\\\$\$ORIGIN/../lib/ -Wl,-rpath=\\\$\$ORIGIN/../../'" > config.py
-        echo "CUSTOM_CXXFLAG = '-D_GLIBCXX_USE_CXX11_ABI=0'" >> config.py
+        echo "CUSTOM_CXXFLAGS = '-D_GLIBCXX_USE_CXX11_ABI=0'" >> config.py
     fi
+
     ./configure \
         CXX="${MASON_LINKED_REL}/bin/ccache ${MASON_LINKED_REL}/bin/clang++" \
         CC="${MASON_LINKED_REL}/bin/ccache ${MASON_LINKED_REL}/bin/clang" \

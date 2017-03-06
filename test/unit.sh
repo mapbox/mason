@@ -15,6 +15,4 @@ fi
 VAL=$(./mason --version)
 assertEqual "$?" "0" "able to run ./mason --version"
 
-# TODO - build an intentionally broken package
-
 exit $CODE

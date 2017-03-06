@@ -16,9 +16,20 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
 }
 
+function mason_prepare_compile {
+    ${MASON_DIR}/mason install ccache 3.3.1
+    export PATH=$(${MASON_DIR}/mason prefix ccache 3.3.1)/bin:${PATH}
+}
 function mason_compile {
-    ./configure --prefix=${MASON_PREFIX}
-    make -j${MASON_CONCURRENCY} VERBOSE=1
+    # Add optimization flags since CFLAGS overrides the default (-g -O2)
+    export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
+    export CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG"
+    # TODO - use mason deps
+    ./configure --prefix=${MASON_PREFIX} \
+      --no-system-libs \
+      --parallel=${MASON_CONCURRENCY} \
+      --enable-ccache
+    make -j${MASON_CONCURRENCY} VERBOSE=1 
     make install
     # remove non-essential things to save on package size
     rm -f ${MASON_PREFIX}/bin/ccmake

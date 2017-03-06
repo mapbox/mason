@@ -17,6 +17,8 @@ function mason_load_source {
 }
 
 function mason_compile {
+    # Add optimization flags since CFLAGS overrides the default (-g -O2)
+    export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
     ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
@@ -29,7 +31,7 @@ function mason_compile {
         --disable-gtk
 
     # The -i and -k flags are to workaround osx bug in pixman tests: Undefined symbols for architecture x86_64: "_prng_state
-    make -j${MASON_CONCURRENCY} -i -k
+    V=1 make -j${MASON_CONCURRENCY} -i -k
     make install -i -k
 }
 

@@ -22,6 +22,9 @@ function mason_compile {
       https://raw.githubusercontent.com/mapbox/mason/${MASON_SLUG}/patch.diff \
       -O || (mason_error "Could not find patch for ${MASON_SLUG}" && exit 1)    
     patch -N -p1 < ./patch.diff
+    # Add optimization flags since CFLAGS overrides the default (-g -O2)
+    export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
+    export CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG"
     ./configure --prefix=${MASON_PREFIX} ${MASON_HOST_ARG} \
     --enable-static --disable-shared \
     --disable-dependency-tracking

@@ -585,7 +585,7 @@ function mason_ldflags {
 }
 
 function mason_static_libs {
-    if [ -z "${MASON_LIB_FILE}" ]; then
+    if [ -z "${MASON_LIB_FILE:-}" ]; then
         mason_substep "Linking ${MASON_NAME} ${MASON_VERSION} dynamically"
     elif [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
         echo "${MASON_PREFIX}/${MASON_LIB_FILE}"

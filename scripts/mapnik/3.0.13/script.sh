@@ -2,7 +2,7 @@
 
 MASON_NAME=mapnik
 MASON_VERSION=3.0.13
-MASON_LIB_FILE=lib/libmapnik-wkt.a
+MASON_LIB_FILE=lib/libmapnik.${MASON_DYNLIB_SUFFIX}
 
 . ${MASON_DIR}/mason.sh
 
@@ -69,9 +69,10 @@ function mason_compile {
     which gdal-config
     MASON_LINKED_REL="${MASON_ROOT}/.link"
     MASON_LINKED_ABS="${MASON_ROOT}/.link"
-    ls ${MASON_LINKED_ABS}
-    ls ${MASON_LINKED_ABS}/bin/
-    ls ${MASON_LINKED_ABS}/include/
+    ls -l ${MASON_LINKED_ABS}
+    ls -l ${MASON_LINKED_ABS}/bin/
+    ls -l ${MASON_LINKED_ABS}/include/
+    ls -l ${MASON_LINKED_ABS}/include/unicode
     if [[ $(uname -s) == 'Linux' ]]; then
         echo "CUSTOM_LDFLAGS = '-Wl,-z,origin -Wl,-rpath=\\\$\$ORIGIN/../lib/ -Wl,-rpath=\\\$\$ORIGIN/../../'" > config.py
         echo "CUSTOM_CXXFLAG = '-D_GLIBCXX_USE_CXX11_ABI=0'" >> config.py
@@ -112,6 +113,8 @@ function mason_compile {
         CAIRO_LIBS="${MASON_LINKED_REL}/lib" \
         SQLITE_INCLUDES="${MASON_LINKED_REL}/include" \
         SQLITE_LIBS="${MASON_LINKED_REL}/lib" \
+        GDAL_CONFIG="${MASON_LINKED_REL}/bin/gdal-config" \
+        PG_CONFIG="${MASON_LINKED_REL}/bin/pg_config" \
         BENCHMARK = True \
         CPP_TESTS = True \
         PGSQL2SQLITE = True \

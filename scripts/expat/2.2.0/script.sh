@@ -30,6 +30,14 @@ function mason_compile {
     make install -j${MASON_CONCURRENCY}
 }
 
+function mason_cflags {
+    echo -I${MASON_PREFIX}/include
+}
+
+function mason_ldflags {
+    echo -L${MASON_PREFIX}/include -lexpat
+}
+
 
 function mason_clean {
     make clean

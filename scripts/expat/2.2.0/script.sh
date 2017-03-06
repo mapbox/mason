@@ -35,7 +35,7 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    echo -L${MASON_PREFIX}/include -lexpat
+    echo -L${MASON_PREFIX}/lib -lexpat
 }
 
 

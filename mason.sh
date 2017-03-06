@@ -505,7 +505,8 @@ function mason_config {
 function mason_write_config {
     local INI_FILE
     INI_FILE="${MASON_PREFIX}/mason.ini"
-    echo "`mason_config`" > "${INI_FILE}"
+    MASON_INI_DATA=$(set -e;mason_config)
+    echo "${MASON_INI_DATA}" > "${INI_FILE}"
     mason_substep "Wrote configuration file ${INI_FILE}:"
     cat ${INI_FILE}
 }
@@ -564,24 +565,32 @@ function mason_try_binary {
 
 function mason_pkgconfig {
     MASON_PKGCONFIG_FILES=""
-    for pkgconfig_file in ${MASON_PKGCONFIG_FILE}; do
+    for pkgconfig_file in ${MASON_PKGCONFIG_FILE:-}; do
         MASON_PKGCONFIG_FILES="${MASON_PKGCONFIG_FILES} ${MASON_PREFIX}/${pkgconfig_file}"
     done
     echo pkg-config ${MASON_PKGCONFIG_FILES}
 }
 
 function mason_cflags {
+    if [[ ! ${MASON_PKGCONFIG_FILE:-} ]]; then
+        mason_error " The MASON_PKGCONFIG_FILE variable not found in script.sh. Please either provide this variable or override the mason_cflags function hook"
+        exit 1
+    fi
     local FLAGS
     FLAGS=$(set -e;`mason_pkgconfig` --static --cflags)
     # Replace double-prefix in case we use a sysroot.
-    echo ${FLAGS//${MASON_SYSROOT}${MASON_PREFIX}/${MASON_PREFIX}}
+    echo ${FLAGS//${MASON_SYSROOT:-}${MASON_PREFIX}/${MASON_PREFIX}}
 }
 
 function mason_ldflags {
+    if [[ ! ${MASON_PKGCONFIG_FILE:-} ]]; then
+        mason_error " The MASON_PKGCONFIG_FILE variable not found in script.sh. Please either provide this variable or override the mason_ldflags function hook"
+        exit 1
+    fi
     local FLAGS
     FLAGS=$(set -e;`mason_pkgconfig` --static --libs)
     # Replace double-prefix in case we use a sysroot.
-    echo ${FLAGS//${MASON_SYSROOT}${MASON_PREFIX}/${MASON_PREFIX}}
+    echo ${FLAGS//${MASON_SYSROOT:-}${MASON_PREFIX}/${MASON_PREFIX}}
 }
 
 function mason_static_libs {

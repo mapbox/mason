@@ -31,8 +31,16 @@ function mason_compile {
     make install
 }
 
+function mason_cflags {
+    echo -I${MASON_PREFIX}/include
+}
+
 function mason_ldflags {
     :
+}
+
+function mason_static_libs {
+    echo ${MASON_PREFIX}/${MASON_LIB_FILE}
 }
 
 function mason_clean {

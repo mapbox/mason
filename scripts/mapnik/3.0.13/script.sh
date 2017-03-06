@@ -54,7 +54,7 @@ function mason_prepare_compile {
     install pixman 0.34.0 libpixman-1
     install cairo 1.14.8 libcairo
     install webp 0.6.0 libwebp
-    install libgdal 2.1.3
+    install gdal 2.1.3 libgdal
     install boost 1.63.0
     install boost_libsystem 1.63.0
     install boost_libfilesystem 1.63.0

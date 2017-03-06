@@ -17,8 +17,8 @@ function mason_load_source {
 }
 
 function mason_compile {
-    # we unset CFLAGS otherwise they will clobber defaults inside binutils
-    unset CFLAGS
+    # Add optimization flags since CFLAGS overrides the default (-g -O2)
+    export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
     ./configure \
         --prefix=${MASON_PREFIX} \
         --enable-gold \

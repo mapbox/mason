@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MASON_NAME=unbound_var
+MASON_NAME=broken
 MASON_VERSION=0.0.0
 MASON_LIB_FILE=${UNBOUND_VARIABLE}
 

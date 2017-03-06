@@ -565,7 +565,7 @@ function mason_try_binary {
 
 function mason_pkgconfig {
     MASON_PKGCONFIG_FILES=""
-    for pkgconfig_file in ${MASON_PKGCONFIG_FILE}; do
+    for pkgconfig_file in ${MASON_PKGCONFIG_FILE:-}; do
         MASON_PKGCONFIG_FILES="${MASON_PKGCONFIG_FILES} ${MASON_PREFIX}/${pkgconfig_file}"
     done
     echo pkg-config ${MASON_PKGCONFIG_FILES}

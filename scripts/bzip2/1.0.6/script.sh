@@ -25,7 +25,7 @@ function read_link() {
 }
 
 function mason_compile {
-    make install PREFIX=${MASON_PREFIX} CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
+    make install PREFIX=${MASON_PREFIX} CC="$CC" CFLAGS="$CFLAGS -O3 -DNDEBUG" LDFLAGS="$LDFLAGS"
     # symlinks are not portable, so now we recurse into /bin directory
     # and fix them to be portable by being relative
     cd ${MASON_PREFIX}/bin

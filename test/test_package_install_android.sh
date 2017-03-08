@@ -19,7 +19,7 @@ mason_succeeds "get platform_version" [ "`./mason.sh platform_version test 1.0`"
 mason_succeeds "get include_dirs" [ "`./mason.sh include_dirs test 1.0`" = "`pwd`/mason_packages/android-arm-v7-9/test/1.0/include" ]
 mason_succeeds "get ldflags" [ "`./mason.sh ldflags test 1.0`" = "-lpthread" ]
 mason_succeeds "get static_libs" [ "`./mason.sh static_libs test 1.0`" = "`pwd`/mason_packages/android-arm-v7-9/test/1.0/lib/libtest.a" ]
-mason_succeeds "get defines" [ "`./mason.sh defines test 1.0`" = "" ]
+mason_succeeds "get definitions" [ "`./mason.sh definitions test 1.0`" = "" ]
 
 # Install again and check that we don't output any status messages
 mason_succeeds "install again is noop" [ "$(./mason.sh install test 1.0 2>&1)" = "" ]

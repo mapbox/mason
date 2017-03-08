@@ -14,7 +14,7 @@ mason_succeeds "get name" [ "`./mason.sh name --header-only header-only.hpp 4.2`
 mason_succeeds "get platform" [ "`./mason.sh platform --header-only header-only.hpp 4.2`" = "" ]
 mason_succeeds "get platform_version" [ "`./mason.sh platform_version --header-only header-only.hpp 4.2`" = "" ]
 mason_succeeds "get include_dirs" [ "`./mason.sh include_dirs --header-only header-only.hpp 4.2`" = "`pwd`/mason_packages/headers/header-only.hpp/4.2/include" ]
-mason_succeeds "get defines" [ "`./mason.sh defines --header-only header-only.hpp 4.2`" = "" ]
+mason_succeeds "get definitions" [ "`./mason.sh definitions --header-only header-only.hpp 4.2`" = "" ]
 
 # Install again and check that we don't output any status messages
 mason_succeeds "install again is noop" [ "$(./mason.sh install header-only.hpp 4.2 --header-only 2>&1)" = "" ]

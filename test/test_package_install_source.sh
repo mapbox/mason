@@ -17,7 +17,7 @@ mason_succeeds "var PLATFORM_VERSION" [ "${MASON_PACKAGE_test_PLATFORM_VERSION}"
 mason_succeeds "var INCLUDE_DIRS" [ "${MASON_PACKAGE_test_INCLUDE_DIRS}" = "`pwd`/mason_packages/${TEST_SLUG}/test/1.0/include" ]
 mason_succeeds "var LDFLAGS" [ "${MASON_PACKAGE_test_LDFLAGS}" = "-lpthread" ]
 mason_succeeds "var STATIC_LIBS" [ "${MASON_PACKAGE_test_STATIC_LIBS}" = "`pwd`/mason_packages/${TEST_SLUG}/test/1.0/lib/libtest.a" ]
-mason_succeeds "var DEFINES" [ -z "${MASON_PACKAGE_test_DEFINES+x}" ]
+mason_succeeds "var DEFINITIONS" [ -z "${MASON_PACKAGE_test_DEFINITIONS+x}" ]
 
 # Install again and check that we don't output any status messages
 mason_succeeds "install again is noop" [ "$(mason_use test 1.0 2>&1)" = "" ]

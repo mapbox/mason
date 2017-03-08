@@ -40,18 +40,21 @@ function mason_prepare_compile {
 # https://www.spinics.net/lists/linux-perf-users/msg03040.html
 # https://software.intel.com/en-us/articles/linux-perf-for-intel-vtune-Amplifier-XE
 function mason_compile {
-    # JOBS=${MASON_CONCURRENCY} \
     cd tools/perf
-    # note: LIBELF is needed for symbols + node --perf_basic_prof_only_functions
+    # hack to enable libdw since I could not get the feature checks to work to autodetect libdw correctly
+    patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     # we set NO_LIBUNWIND since libdw is used from elfutils which is faster: https://lwn.net/Articles/579508/
-    make V=1 VF=1 \
+    # note: LIBELF is needed for symbols + node --perf_basic_prof_only_functions
+    make \
+      LIBDW_LDFLAGS="-L${MASON_ELFUTILS}/lib -Wl,--start-group -lelf -lebl -lz -llzma -lbz2" \
+      LIBDW_CFLAGS="-I${MASON_ELFUTILS}/include" \
+      V=1 VF=1 \
       prefix=${MASON_PREFIX} \
       NO_LIBNUMA=1 \
       NO_LIBAUDIT=1 \
-      NOLIBBIONIC=1 \
       NO_LIBUNWIND=1 \
+      NO_BIONIC=1 \
       NO_BACKTRACE=1 \
-      NO_DWARF=1 \
       NO_LIBCRYPTO=1 \
       NO_LIBPERL=1 \
       NO_GTK2=1 \

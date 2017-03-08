@@ -1,0 +1,1 @@
+The Mongoose web server source code is licensed under the GPL 2.0 and is available at https://github.com/cesanta/mongoose.

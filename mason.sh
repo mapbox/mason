@@ -44,6 +44,10 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
 
     if [[ ${MASON_IGNORE_OSX_SDK} == false ]]; then
         MASON_SDK_VERSION=`xcrun --sdk macosx --show-sdk-version`
+        if [[ ! ${MASON_SDK_VERSION} ]]; then
+            mason_error "The command 'xcrun --sdk macosx --show-sdk-version' returned nothing. Is your xcode environment setup correctly?"
+            exit 1
+        fi
         MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
         MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_SDK_VERSION}.sdk"
 
@@ -70,6 +74,10 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_PLATFORM_VERSION="8.0" # Deployment target version
 
     MASON_SDK_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
+    if [[ ! ${MASON_SDK_VERSION} ]]; then
+        mason_error "The command 'xcrun --sdk macosx --show-sdk-version' returned nothing. Is your xcode environment setup correctly?"
+        exit 1
+    fi
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneOS${MASON_SDK_VERSION}.sdk"
 

@@ -109,6 +109,7 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     fi
 
     export CFLAGS="-fPIC"
+    export LDFLAGS=""
     export CXXFLAGS="${CFLAGS} -std=c++11"
 
     if [ $(uname -m) != ${MASON_PLATFORM_VERSION} ] ; then

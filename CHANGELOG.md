@@ -2,8 +2,6 @@
 
 ## 0.8.0
 
- - mason now run with `set -u` to catch undefined variables in scripts
-
  - Added
     - tippecanoe 1.16.9
     - libzmq 4.2.2
@@ -15,7 +13,18 @@
     - node v4.7.3
     - node v6.9.5
     - stxxl 1.4.1-1
-    - libshp2 1.3.0
+    - libshp2 1.3.0 (shapelib)
+    - icu 58.1-min-size (built with -Os)
+    - binutils 2.28
+    - libosmium 2.12.0
+    - osmium-tool 1.6.0
+    - harfbuzz 1.4.4-ft
+    - perf 4.9.9
+    - elfutils 0.168
+    - slang 2.3.1
+    - xz 5.2.3
+    - sdf-glyph-foundry 0.1.0
+    - sdf-glyph-foundry 0.1.1
 
  - Removed
     - tippecanoe 1.9.7 (never worked, never had binaries published)
@@ -25,6 +34,9 @@
  - Fixed
     - Man files are now provided for osmium-tool 1.5.1
     - binutils 2.27 now builds on os x
+    - Unbound variables in sparsehash, bzip2, and harfbuzz packages
+    - mason now run with `set -u` to catch undefined variables in scripts
+    - config generation that fails now stops build
 
 Changes: https://github.com/mapbox/mason/compare/v0.7.0...v0.8.0
 

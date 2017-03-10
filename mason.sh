@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Mason Client Version 1.0.0
+
 # See below for `set -euo pipefail`
 
 # Print file + line number when not in CLI mode

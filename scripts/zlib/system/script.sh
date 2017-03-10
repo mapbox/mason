@@ -14,6 +14,9 @@ else
     MASON_CFLAGS="-I${MASON_PREFIX}/include"
     MASON_LDFLAGS="-L${MASON_PREFIX}/lib"
 
+    # not all platforms currently define MASON_SDK_PATH
+    MASON_SDK_PATH=${MASON_SDK_PATH:-}
+
     if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'android' ]]; then
         ZLIB_INCLUDE_PREFIX="${MASON_SDK_PATH}/usr/include"
         if [[ -d "${MASON_SDK_PATH}/usr/lib64" ]]; then

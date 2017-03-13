@@ -1,3 +1,16 @@
+diff --git a/src/hashtable_test.cc b/src/hashtable_test.cc
+index 21c60a7..ede7c65 100644
+--- a/src/hashtable_test.cc
++++ b/src/hashtable_test.cc
+@@ -901,7 +901,7 @@ TYPED_TEST(HashtableAllTest, Swap) {
+ #ifdef _MSC_VER
+   other_ht.swap(this->ht_);
+ #else
+-  swap(this->ht_, other_ht);
++  std::swap(this->ht_, other_ht);
+ #endif
+ 
+   EXPECT_EQ(this->UniqueKey(1), this->ht_.deleted_key());
 diff --git a/src/sparsehash/internal/sparsehashtable.h b/src/sparsehash/internal/sparsehashtable.h
 index 7ee1391..f54ea51 100644
 --- a/src/sparsehash/internal/sparsehashtable.h

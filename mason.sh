@@ -44,6 +44,10 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
 
     if [[ ${MASON_IGNORE_OSX_SDK} == false ]]; then
         MASON_SDK_VERSION=`xcrun --sdk macosx --show-sdk-version`
+        if [[ ! ${MASON_SDK_VERSION} ]]; then
+            mason_error "The command 'xcrun --sdk macosx --show-sdk-version' returned nothing. Is your xcode environment setup correctly?"
+            exit 1
+        fi
         MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
         MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_SDK_VERSION}.sdk"
 
@@ -70,6 +74,10 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_PLATFORM_VERSION="8.0" # Deployment target version
 
     MASON_SDK_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
+    if [[ ! ${MASON_SDK_VERSION} ]]; then
+        mason_error "The command 'xcrun --sdk macosx --show-sdk-version' returned nothing. Is your xcode environment setup correctly?"
+        exit 1
+    fi
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer
     MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/iPhoneOS${MASON_SDK_VERSION}.sdk"
 
@@ -101,6 +109,7 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     fi
 
     export CFLAGS="-fPIC"
+    export LDFLAGS=""
     export CXXFLAGS="${CFLAGS} -std=c++11"
 
     if [ $(uname -m) != ${MASON_PLATFORM_VERSION} ] ; then
@@ -505,7 +514,8 @@ function mason_config {
 function mason_write_config {
     local INI_FILE
     INI_FILE="${MASON_PREFIX}/mason.ini"
-    echo "`mason_config`" > "${INI_FILE}"
+    MASON_INI_DATA=$(set -e;mason_config)
+    echo "${MASON_INI_DATA}" > "${INI_FILE}"
     mason_substep "Wrote configuration file ${INI_FILE}:"
     cat ${INI_FILE}
 }
@@ -564,28 +574,36 @@ function mason_try_binary {
 
 function mason_pkgconfig {
     MASON_PKGCONFIG_FILES=""
-    for pkgconfig_file in ${MASON_PKGCONFIG_FILE}; do
+    for pkgconfig_file in ${MASON_PKGCONFIG_FILE:-}; do
         MASON_PKGCONFIG_FILES="${MASON_PKGCONFIG_FILES} ${MASON_PREFIX}/${pkgconfig_file}"
     done
     echo pkg-config ${MASON_PKGCONFIG_FILES}
 }
 
 function mason_cflags {
+    if [[ ! ${MASON_PKGCONFIG_FILE:-} ]]; then
+        mason_error " The MASON_PKGCONFIG_FILE variable not found in script.sh. Please either provide this variable or override the mason_cflags function hook"
+        exit 1
+    fi
     local FLAGS
     FLAGS=$(set -e;`mason_pkgconfig` --static --cflags)
     # Replace double-prefix in case we use a sysroot.
-    echo ${FLAGS//${MASON_SYSROOT}${MASON_PREFIX}/${MASON_PREFIX}}
+    echo ${FLAGS//${MASON_SYSROOT:-}${MASON_PREFIX}/${MASON_PREFIX}}
 }
 
 function mason_ldflags {
+    if [[ ! ${MASON_PKGCONFIG_FILE:-} ]]; then
+        mason_error " The MASON_PKGCONFIG_FILE variable not found in script.sh. Please either provide this variable or override the mason_ldflags function hook"
+        exit 1
+    fi
     local FLAGS
     FLAGS=$(set -e;`mason_pkgconfig` --static --libs)
     # Replace double-prefix in case we use a sysroot.
-    echo ${FLAGS//${MASON_SYSROOT}${MASON_PREFIX}/${MASON_PREFIX}}
+    echo ${FLAGS//${MASON_SYSROOT:-}${MASON_PREFIX}/${MASON_PREFIX}}
 }
 
 function mason_static_libs {
-    if [ -z "${MASON_LIB_FILE}" ]; then
+    if [ -z "${MASON_LIB_FILE:-}" ]; then
         mason_substep "Linking ${MASON_NAME} ${MASON_VERSION} dynamically"
     elif [ -f "${MASON_PREFIX}/${MASON_LIB_FILE}" ]; then
         echo "${MASON_PREFIX}/${MASON_LIB_FILE}"

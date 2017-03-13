@@ -18,6 +18,8 @@ function mason_load_source {
 }
 
 function mason_compile {
+    # Add optimization flags since CFLAGS overrides the default (-g -O2)
+    export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
     ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
@@ -26,6 +28,14 @@ function mason_compile {
         --disable-dependency-tracking
 
     make install -j${MASON_CONCURRENCY}
+}
+
+function mason_cflags {
+    echo -I${MASON_PREFIX}/include
+}
+
+function mason_ldflags {
+    echo -L${MASON_PREFIX}/lib -lexpat
 }
 
 

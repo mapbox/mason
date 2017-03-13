@@ -23,9 +23,9 @@ function mason_load_source {
 }
 
 function install() {
+    ${MASON_DIR}/mason install $1 $2
     MASON_PLATFORM_ID=$(${MASON_DIR}/mason env MASON_PLATFORM_ID)
     if [[ ! -d ${MASON_ROOT}/${MASON_PLATFORM_ID}/${1}/${2} ]]; then
-        ${MASON_DIR}/mason install $1 $2
         if [[ ${3:-false} != false ]]; then
             LA_FILE=$(${MASON_DIR}/mason prefix $1 $2)/lib/$3.la
             if [[ -f ${LA_FILE} ]]; then
@@ -54,7 +54,7 @@ function mason_prepare_compile {
     install pixman 0.34.0 libpixman-1
     install cairo 1.14.8 libcairo
     install webp 0.6.0 libwebp
-    install gdal 2.1.3 libgdal
+    install libgdal 2.1.3 libgdal
     install boost 1.63.0
     install boost_libsystem 1.63.0
     install boost_libfilesystem 1.63.0

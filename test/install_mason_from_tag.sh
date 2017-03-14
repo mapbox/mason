@@ -13,5 +13,5 @@ if [[ $(git tag -l) =~ ${TAG_NAME} ]]; then
     # Test installing via curl to /tmp
     curl -sSfL https://github.com/mapbox/mason/archive/v${TAG_NAME}.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=/tmp
     # ensure the command works
-    ./tmp/mason install zlib 1.2.8
+    /tmp/mason install zlib 1.2.8
 fi

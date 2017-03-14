@@ -28,12 +28,13 @@ function publish() {
     done
 }
 
+# to be used by sourcing and running manually
 function new_version() {
     local NEW_VERSION="$1"
     local LAST_VERSION="$2"
     for package in "${!packages[@]}"; do
-        mkdir -p scripts/${package}/${NEW_VERSION}
-        cp -r scripts/${package}/${LAST_VERSION}/. scripts/${package}/${NEW_VERSION}/
+        mkdir -p scripts/${packages[$package]}/${NEW_VERSION}
+        cp -r scripts/${packages[$package]}/${LAST_VERSION}/. scripts/${packages[$package]}/${NEW_VERSION}/
     done
 }
 

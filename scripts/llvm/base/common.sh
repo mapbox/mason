@@ -101,7 +101,7 @@ function mason_load_source {
 
 function mason_prepare_compile {
     CCACHE_VERSION=3.3.1
-    CMAKE_VERSION=3.6.2
+    CMAKE_VERSION=3.7.2
     NINJA_VERSION=1.7.1
 
     ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
@@ -112,7 +112,7 @@ function mason_prepare_compile {
     MASON_NINJA=$(${MASON_DIR}/mason prefix ninja ${NINJA_VERSION})
 
     if [[ $(uname -s) == 'Linux' ]]; then
-        BINUTILS_VERSION=2.27
+        BINUTILS_VERSION=2.28
         ${MASON_DIR}/mason install binutils ${BINUTILS_VERSION}
         LLVM_BINUTILS_INCDIR=$(${MASON_DIR}/mason prefix binutils ${BINUTILS_VERSION})/include
     fi

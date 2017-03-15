@@ -81,12 +81,10 @@ function mason_compile {
     ./configure \
         CXX="${MASON_LINKED_REL}/bin/ccache ${MASON_LINKED_REL}/bin/clang++" \
         CC="${MASON_LINKED_REL}/bin/ccache ${MASON_LINKED_REL}/bin/clang" \
-        PREFIX=${MASON_PREFIX} \
+        PREFIX="${MASON_PREFIX}" \
         PATH_REPLACE="${HOME}/build/mapbox/mason/mason_packages:./mason_packages" \
-        MAPNIK_BUNDLED_SHARE_DIRECTORY=True \
         RUNTIME_LINK="static" \
         INPUT_PLUGINS="all" \
-        PATH="${MASON_LINKED_REL}/bin" \
         PKG_CONFIG_PATH="${MASON_LINKED_REL}/lib/pkgconfig" \
         PATH_REMOVE="/usr:/usr/local" \
         BOOST_INCLUDES="${MASON_LINKED_REL}/include" \
@@ -116,11 +114,11 @@ function mason_compile {
         SQLITE_LIBS="${MASON_LINKED_REL}/lib" \
         GDAL_CONFIG="${MASON_LINKED_REL}/bin/gdal-config" \
         PG_CONFIG="${MASON_LINKED_REL}/bin/pg_config" \
-        BENCHMARK = True \
-        CPP_TESTS = True \
-        PGSQL2SQLITE = True \
+        BENCHMARK=False \
+        CPP_TESTS=False \
+        PGSQL2SQLITE=True \
         XMLPARSER="ptree" \
-        SVG2PNG = True || cat ${MASON_BUILD_PATH}"/config.log"
+        SVG2PNG=True || cat ${MASON_BUILD_PATH}"/config.log"
     #cat config.py
     JOBS=${MASON_CONCURRENCY} make
     make install
@@ -138,20 +136,10 @@ function mason_compile {
         install_name_tool -change ${MASON_PREFIX}"/lib/libmapnik.dylib" @loader_path/../lib/libmapnik.dylib ${MASON_PREFIX}"/bin/mapnik-render"
         install_name_tool -change ${MASON_PREFIX}"/lib/libmapnik.dylib" @loader_path/../lib/libmapnik.dylib ${MASON_PREFIX}"/bin/shapeindex"
     fi
-    # push over GDAL_DATA, ICU_DATA, PROJ_LIB
     # fix mapnik-config entries for deps
     HERE=$(pwd)
     python -c "data=open('$MASON_PREFIX/bin/mapnik-config','r').read();open('$MASON_PREFIX/bin/mapnik-config','w').write(data.replace('$HERE','.').replace('${MASON_ROOT}','./mason_packages'))"
     cat $MASON_PREFIX/bin/mapnik-config
-    mkdir -p ${MASON_PREFIX}/share/gdal
-    mkdir -p ${MASON_PREFIX}/share/proj
-    mkdir -p ${MASON_PREFIX}/share/icu
-    PROJ_LIB=${MASON_LINKED_ABS}/share/proj
-    export ICU_DATA=${MASON_LINKED_ABS}/share/icu/${ICU_VERSION}
-    export GDAL_DATA=${MASON_LINKED_ABS}/share/gdal
-    cp -r ${GDAL_DATA}/ ${MASON_PREFIX}/share/gdal/
-    cp -r ${PROJ_LIB}/ ${MASON_PREFIX}/share/proj/
-    cp -r ${ICU_DATA}/*dat ${MASON_PREFIX}/share/icu/
 }
 
 function mason_cflags {

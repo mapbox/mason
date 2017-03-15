@@ -65,9 +65,6 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    git init .
-    git add .
-    git commit -a -m "all"
     patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     export PATH="${MASON_ROOT}/.link/bin:${PATH}"
     which gdal-config

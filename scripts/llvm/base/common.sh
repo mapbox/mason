@@ -103,7 +103,10 @@ function mason_prepare_compile {
     CCACHE_VERSION=3.3.1
     CMAKE_VERSION=3.7.2
     NINJA_VERSION=1.7.1
+    CLANG_VERSION=3.9.1
 
+    ${MASON_DIR}/mason install clang++ ${CLANG_VERSION}
+    MASON_CLANG=$(${MASON_DIR}/mason prefix clang++ ${CLANG_VERSION})
     ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
     MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
     ${MASON_DIR}/mason install cmake ${CMAKE_VERSION}
@@ -119,8 +122,8 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    export CXX="${CXX:-clang++}"
-    export CC="${CC:-clang}"
+    export CXX="${CXX:-${MASON_CLANG}/bin/clang++}"
+    export CC="${CC:-${MASON_CLANG}/bin/clang}"
     # knock out lldb doc building, to remove doxygen dependency
     perl -i -p -e "s/add_subdirectory\(docs\)//g;" tools/lldb/CMakeLists.txt
 

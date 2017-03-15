@@ -65,6 +65,10 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    git init .
+    git add .
+    git commit -a -m "all"
+    patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     export PATH="${MASON_ROOT}/.link/bin:${PATH}"
     which gdal-config
     MASON_LINKED_REL="${MASON_ROOT}/.link"
@@ -107,7 +111,7 @@ function mason_compile {
         PG_LIBS="${MASON_LINKED_REL}/lib" \
         FREETYPE_INCLUDES="${MASON_LINKED_REL}/include/freetype2" \
         FREETYPE_LIBS="${MASON_LINKED_REL}/lib" \
-        SVG_RENDERER = True \
+        SVG_RENDERER=True \
         CAIRO_INCLUDES="${MASON_LINKED_REL}/include" \
         CAIRO_LIBS="${MASON_LINKED_REL}/lib" \
         SQLITE_INCLUDES="${MASON_LINKED_REL}/include" \
@@ -119,6 +123,7 @@ function mason_compile {
         PGSQL2SQLITE=True \
         XMLPARSER="ptree" \
         SVG2PNG=True || cat ${MASON_BUILD_PATH}"/config.log"
+    file mason_packages/osx-x86_64/icu/55.1/include/unicode/uversion.h || true
     #cat config.py
     JOBS=${MASON_CONCURRENCY} make
     make install

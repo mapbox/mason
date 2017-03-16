@@ -116,7 +116,14 @@ function mason_compile {
         SVG2PNG=True || cat ${MASON_BUILD_PATH}"/config.log"
 
     cat config.py
-    JOBS=${MASON_CONCURRENCY} make
+
+    # limit concurrency on travis to avoid heavy jobs being killed
+    if [[ ${TRAVIS_OS_NAME:-} ]]; then
+        JOBS=4 make
+    else
+        JOBS=${MASON_CONCURRENCY} make
+    fi
+
     make install
     if [[ $(uname -s) == 'Darwin' ]]; then
         install_name_tool -id @loader_path/libmapnik.dylib ${MASON_PREFIX}"/lib/libmapnik.dylib";

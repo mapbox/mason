@@ -67,13 +67,8 @@ function mason_prepare_compile {
 function mason_compile {
     patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     export PATH="${MASON_ROOT}/.link/bin:${PATH}"
-    which gdal-config
     MASON_LINKED_REL="${MASON_ROOT}/.link"
     MASON_LINKED_ABS="${MASON_ROOT}/.link"
-    ls -l ${MASON_LINKED_ABS}
-    ls -l ${MASON_LINKED_ABS}/bin/
-    ls -l ${MASON_LINKED_ABS}/include/
-    ls -l ${MASON_LINKED_ABS}/include/unicode
     if [[ $(uname -s) == 'Linux' ]]; then
         echo "CUSTOM_LDFLAGS = '-Wl,-z,origin -Wl,-rpath=\\\$\$ORIGIN/../lib/ -Wl,-rpath=\\\$\$ORIGIN/../../'" > config.py
         echo "CUSTOM_CXXFLAGS = '-D_GLIBCXX_USE_CXX11_ABI=0'" >> config.py
@@ -83,7 +78,6 @@ function mason_compile {
         CXX="${MASON_LINKED_REL}/bin/ccache ${MASON_LINKED_REL}/bin/clang++" \
         CC="${MASON_LINKED_REL}/bin/ccache ${MASON_LINKED_REL}/bin/clang" \
         PREFIX="${MASON_PREFIX}" \
-        PATH_REPLACE="${HOME}/build/mapbox/mason/mason_packages:./mason_packages" \
         RUNTIME_LINK="static" \
         INPUT_PLUGINS="all" \
         PKG_CONFIG_PATH="${MASON_LINKED_REL}/lib/pkgconfig" \
@@ -120,8 +114,8 @@ function mason_compile {
         PGSQL2SQLITE=True \
         XMLPARSER="ptree" \
         SVG2PNG=True || cat ${MASON_BUILD_PATH}"/config.log"
-    file mason_packages/osx-x86_64/icu/55.1/include/unicode/uversion.h || true
-    #cat config.py
+
+    cat config.py
     JOBS=${MASON_CONCURRENCY} make
     make install
     if [[ $(uname -s) == 'Darwin' ]]; then

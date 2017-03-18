@@ -32,7 +32,7 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    echo $(${MASON_PREFIX}/bin/gdal-config --static --libs)
+    echo $(${MASON_PREFIX}/bin/gdal-config --dep-libs --libs)
 }
 
 function mason_clean {

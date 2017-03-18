@@ -8,7 +8,7 @@ NEW_VERSION="1.63.0"
 
 manual intervention:
 
-  - change/upgrade icu version used by boost_regex
+  - change/upgrade icu version used by boost_regex_icu* variants
   - new libraries available to build?
 
 '

@@ -40,10 +40,6 @@ function finish {
   cleanup
 }
 
-function pause(){
-   read -p "$*"
-}
-
 trap finish EXIT
 
 cleanup

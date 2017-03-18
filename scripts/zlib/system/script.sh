@@ -15,16 +15,16 @@ else
     MASON_LDFLAGS="-L${MASON_PREFIX}/lib"
 
     if [[ ${MASON_PLATFORM} = 'osx' || ${MASON_PLATFORM} = 'android' ]]; then
-        ZLIB_INCLUDE_PREFIX="${MASON_SDK_PATH}/usr/include"
-        if [[ -d "${MASON_SDK_PATH}/usr/lib64" ]]; then
-            ZLIB_LIBRARY="${MASON_SDK_PATH}/usr/lib64/libz.${MASON_DYNLIB_SUFFIX}"
+        ZLIB_INCLUDE_PREFIX="${MASON_SDK_PATH:-}/usr/include"
+        if [[ -d "${MASON_SDK_PATH:-}/usr/lib64" ]]; then
+            ZLIB_LIBRARY="${MASON_SDK_PATH:-}/usr/lib64/libz.${MASON_DYNLIB_SUFFIX}"
         else
-            ZLIB_LIBRARY="${MASON_SDK_PATH}/usr/lib/libz.${MASON_DYNLIB_SUFFIX}"
+            ZLIB_LIBRARY="${MASON_SDK_PATH:-}/usr/lib/libz.${MASON_DYNLIB_SUFFIX}"
         fi
         MASON_LDFLAGS="${MASON_LDFLAGS} -lz"
     else
-        ZLIB_INCLUDE_PREFIX="${MASON_SDK_PATH}`pkg-config zlib --variable=includedir`"
-        ZLIB_LIBRARY="${MASON_SDK_PATH}`pkg-config zlib --variable=libdir`/libz.${MASON_DYNLIB_SUFFIX}"
+        ZLIB_INCLUDE_PREFIX="${MASON_SDK_PATH:-}`pkg-config zlib --variable=includedir`"
+        ZLIB_LIBRARY="${MASON_SDK_PATH:-}`pkg-config zlib --variable=libdir`/libz.${MASON_DYNLIB_SUFFIX}"
         MASON_CFLAGS="${MASON_CFLAGS} `pkg-config zlib --cflags-only-other`"
         MASON_LDFLAGS="${MASON_LDFLAGS} `pkg-config zlib --libs-only-other --libs-only-l`"
     fi
@@ -42,7 +42,7 @@ fi
 
 function mason_system_version {
     if [[ ${MASON_PLATFORM} = 'ios' ]]; then
-        FLAGS="-I${MASON_SDK_PATH}/usr/include"
+        FLAGS="-I${MASON_SDK_PATH:-}/usr/include"
     else
         FLAGS=$(mason_cflags)
     fi

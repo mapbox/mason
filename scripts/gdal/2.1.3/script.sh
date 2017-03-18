@@ -42,8 +42,8 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install expat 2.2.0
     MASON_EXPAT=$(${MASON_DIR}/mason prefix expat 2.2.0)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
-    ${MASON_DIR}/mason install libpq 9.6.1
-    MASON_LIBPQ=$(${MASON_DIR}/mason prefix libpq 9.6.1)
+    ${MASON_DIR}/mason install libpq 9.6.2
+    MASON_LIBPQ=$(${MASON_DIR}/mason prefix libpq 9.6.2)
     # depends on sudo apt-get install zlib1g-dev
     ${MASON_DIR}/mason install zlib system
     MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib system)

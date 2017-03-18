@@ -38,7 +38,7 @@ function install() {
     ${MASON_DIR}/mason link $1 $2
 }
 
-ICU_VERSION="55.1"
+ICU_VERSION="57.1"
 
 function mason_prepare_compile {
     install jpeg_turbo 1.5.1 libjpeg
@@ -57,7 +57,7 @@ function mason_prepare_compile {
     install boost_libsystem 1.63.0
     install boost_libfilesystem 1.63.0
     install boost_libprogram_options 1.63.0
-    install boost_libregex_icu 1.63.0
+    install boost_libregex_icu57 1.63.0
     install freetype 2.7.1 libfreetype
     install harfbuzz 1.4.2-ft libharfbuzz
 }

@@ -49,9 +49,7 @@ function mason_compile {
 function mason_compile_base {
     pushd  ${MASON_BUILD_PATH}/source
 
-    # Using uint_least16_t instead of char16_t because Android Clang doesn't recognize char16_t
-    # I'm being shady and telling users of the library to use char16_t, so there's an implicit raw cast
-    ICU_CORE_CPP_FLAGS="-DU_CHARSET_IS_UTF8=1 -DUCHAR_TYPE=uint_least16_t -DU_STATIC_IMPLEMENTATION"
+    ICU_CORE_CPP_FLAGS="-DU_CHARSET_IS_UTF8=1 -DU_STATIC_IMPLEMENTATION"
     ICU_MODULE_CPP_FLAGS="${ICU_CORE_CPP_FLAGS} -DU_USING_ICU_NAMESPACE=0 -DUNISTR_FROM_CHAR_EXPLICIT=explicit -DUCONFIG_NO_LEGACY_CONVERSION=1 -DUCONFIG_NO_FORMATTING -DUCONFIG_NO_TRANSLITERATION -DUCONFIG_NO_REGULAR_EXPRESSIONS"
     
     export CPPFLAGS="${CPPFLAGS:-} ${ICU_CORE_CPP_FLAGS} ${ICU_MODULE_CPP_FLAGS} -fvisibility=hidden"

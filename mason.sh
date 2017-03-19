@@ -75,7 +75,7 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
 
     MASON_SDK_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
     if [[ ! ${MASON_SDK_VERSION} ]]; then
-        mason_error "The command 'xcrun --sdk macosx --show-sdk-version' returned nothing. Is your xcode environment setup correctly?"
+        mason_error "The command 'xcrun --sdk iphoneos --show-sdk-version' returned nothing. Is your xcode environment setup correctly?"
         exit 1
     fi
     MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/iPhoneOS.platform/Developer

@@ -38,14 +38,14 @@ function install() {
     ${MASON_DIR}/mason link $1 $2
 }
 
-ICU_VERSION="55.1"
+ICU_VERSION="57.1"
 
 function mason_prepare_compile {
     install jpeg_turbo 1.5.1 libjpeg
     install libpng 1.6.28 libpng
     install libtiff 4.0.7 libtiff
-    install libpq 9.6.1
-    install sqlite 3.16.2 libsqlite3
+    install libpq 9.6.2
+    install sqlite 3.17.0 libsqlite3
     install expat 2.2.0 libexpat
     install icu ${ICU_VERSION}
     install proj 4.9.3 libproj
@@ -57,7 +57,7 @@ function mason_prepare_compile {
     install boost_libsystem 1.63.0
     install boost_libfilesystem 1.63.0
     install boost_libprogram_options 1.63.0
-    install boost_libregex_icu 1.63.0
+    install boost_libregex_icu57 1.63.0
     install freetype 2.7.1 libfreetype
     install harfbuzz 1.4.2-ft libharfbuzz
 }

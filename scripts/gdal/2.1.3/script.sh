@@ -42,15 +42,15 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install expat 2.2.0
     MASON_EXPAT=$(${MASON_DIR}/mason prefix expat 2.2.0)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
-    ${MASON_DIR}/mason install libpq 9.6.1
-    MASON_LIBPQ=$(${MASON_DIR}/mason prefix libpq 9.6.1)
+    ${MASON_DIR}/mason install libpq 9.6.2
+    MASON_LIBPQ=$(${MASON_DIR}/mason prefix libpq 9.6.2)
     # depends on sudo apt-get install zlib1g-dev
     ${MASON_DIR}/mason install zlib system
     MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib system)
     # depends on sudo apt-get install libc6-dev
     #${MASON_DIR}/mason install iconv system
     #MASON_ICONV=$(${MASON_DIR}/mason prefix iconv system)
-    export LIBRARY_PATH=${MASON_LIBPQ}/lib:$LIBRARY_PATH
+    export LIBRARY_PATH=${MASON_LIBPQ}/lib:${LIBRARY_PATH:-}
     ${MASON_DIR}/mason install ccache 3.3.1
     MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache 3.3.1)/bin/ccache
 }
@@ -63,6 +63,7 @@ function mason_compile {
 
     # note CFLAGS overrides defaults so we need to add optimization flags back
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
+    export CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG"
 
     CUSTOM_LIBS="-L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj -L${MASON_PNG}/lib -lpng -L${MASON_EXPAT}/lib -lexpat"
     CUSTOM_CFLAGS="${CFLAGS} -I${MASON_LIBPQ}/include -I${MASON_TIFF}/include -I${MASON_JPEG}/include -I${MASON_PROJ}/include -I${MASON_PNG}/include -I${MASON_EXPAT}/include"
@@ -179,7 +180,7 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    echo $(${MASON_PREFIX}/bin/gdal-config --static --libs)
+    echo $(${MASON_PREFIX}/bin/gdal-config --dep-libs --libs)
 }
 
 function mason_clean {

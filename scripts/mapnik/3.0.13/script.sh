@@ -130,7 +130,7 @@ function mason_compile {
             echo $f;
             echo `basename $f`;
             install_name_tool -id plugins/input/`basename $f` $f;
-            install_name_tool -change ${MASON_PREFIX}"/lib/libmapnik.dylib" @loader_path/../../lib/libmapnik.dylib $f;
+            install_name_tool -change ${MASON_PREFIX}"/lib/libmapnik.dylib" @loader_path/../../../lib/libmapnik.dylib $f;
         done;
         # command line tools
         install_name_tool -change ${MASON_PREFIX}"/lib/libmapnik.dylib" @loader_path/../lib/libmapnik.dylib ${MASON_PREFIX}"/bin/mapnik-index"

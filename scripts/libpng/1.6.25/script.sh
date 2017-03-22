@@ -34,8 +34,8 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    export CFLAGS="${CFLAGS:-} ${MASON_ZLIB_CFLAGS} -O3"
-    export LDFLAGS="${CFLAGS:-} ${MASON_ZLIB_LDFLAGS}"
+    export CFLAGS="${CFLAGS:-} ${MASON_ZLIB_CFLAGS:-} -O3"
+    export LDFLAGS="${CFLAGS:-} ${MASON_ZLIB_LDFLAGS:-}"
 
     if [ ${MASON_PLATFORM_VERSION} == "cortex_a9" ] || [ ${MASON_PLATFORM_VERSION} == "i686" ]; then
         # XXX: This hack is because libpng does not respect CFLAGS

@@ -17,16 +17,22 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    CCACHE_VERSION=3.3.1
     CLANG_VERSION=3.9.1
-
-    ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
-    MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
     ${MASON_DIR}/mason install clang++ ${CLANG_VERSION}
     MASON_CLANG=$(${MASON_DIR}/mason prefix clang++ ${CLANG_VERSION})
-    export CXX="${MASON_CCACHE}/bin/ccache ${MASON_CLANG}/bin/clang++"
-    export CC="${MASON_CCACHE}/bin/ccache ${MASON_CLANG}/bin/clang"
     export LINK=${MASON_CLANG}/bin/clang++
+
+    # only run ccache locally / not on travis
+    if [[ ${TRAVIS_OS_NAME:-} ]]; then
+        CCACHE_VERSION=3.3.1
+        ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
+        MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
+        export CXX="${MASON_CCACHE}/bin/ccache ${MASON_CLANG}/bin/clang++"
+        export CC="${MASON_CCACHE}/bin/ccache ${MASON_CLANG}/bin/clang"
+    else
+        export CXX="${MASON_CLANG}/bin/clang++"
+        export CC="${MASON_CLANG}/bin/clang"
+    fi
 }
 
 function mason_compile {

@@ -19,15 +19,13 @@ matrix:
       env: MASON_PLATFORM=osx
       compiler: clang
     - os: linux
-      compiler: gcc
       sudo: false
       addons:
         apt:
           sources:
            - ubuntu-toolchain-r-test
           packages:
-           - libstdc++6
-           - g++-5
+           - libstdc++-5-dev
       env: MASON_PLATFORM=linux
     - os: linux
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=arm-v5
@@ -45,12 +43,7 @@ matrix:
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=mips-64
 
 script:
-- |
-  if [[ ${MASON_PLATFORM} == 'linux' ]]; then
-    export CXX=g++-5
-    export CC=gcc-5
-  fi
+# enable DUAL_ABI per https://github.com/mapbox/mason/issues/319
+- sudo perl -i -p -e "s/# define _GLIBCXX_USE_DUAL_ABI 0/# define _GLIBCXX_USE_DUAL_ABI 1/g;" /usr/include/x86_64-linux-gnu/c++/5/bits/c++config.h
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
-
-after_success:
 - ./mason publish ${MASON_NAME} ${MASON_VERSION}

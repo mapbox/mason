@@ -43,5 +43,7 @@ matrix:
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=mips-64
 
 script:
+# enable DUAL_ABI per https://github.com/mapbox/mason/issues/319
+- sudo perl -i -p -e "s/# define _GLIBCXX_USE_DUAL_ABI 0/# define _GLIBCXX_USE_DUAL_ABI 1/g;" /usr/include/x86_64-linux-gnu/c++/5/bits/c++config.h
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 - ./mason publish ${MASON_NAME} ${MASON_VERSION}

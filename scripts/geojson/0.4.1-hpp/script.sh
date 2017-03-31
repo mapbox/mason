@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/geojson-cpp/archive/v${MASON_VERSION}.tar.gz \
-        b7470e2049b2866e516134abe201d88ab2a69893
+        b50a978d97ecc0c6d32bb442eea4fd67a11cc162
     mason_extract_tar_gz
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/geojson-cpp-${MASON_VERSION}

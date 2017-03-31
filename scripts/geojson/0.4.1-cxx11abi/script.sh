@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 LIB_VERSION=0.4.1
+CXXABI=-D_GLIBCXX_USE_CXX11_ABI=1
 
 MASON_NAME=geojson
 MASON_VERSION=${LIB_VERSION}
@@ -21,7 +22,7 @@ function mason_compile {
     make clean
     # TODO: we should be using mason provided deps here rather than letting the makefile control them
     # otherwise it is not obvious what rapidjson version geojson-cpp is using
-    MASON=${MASON_DIR}/mason make
+    CXXFLAGS="$CXXFLAGS $CXXABI" MASON=${MASON_DIR}/mason make
     mkdir -p ${MASON_PREFIX}/{include,lib}
     cp -r include/mapbox ${MASON_PREFIX}/include/mapbox
     mv build/libgeojson.a ${MASON_PREFIX}/lib

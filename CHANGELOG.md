@@ -1,5 +1,23 @@
 # Mason releases
 
+## 0.9.0
+
+ - Added
+    - mapnik 3.0.13
+    - Android NDK r14
+    - ninja 1.7.2
+    - llvm/clang++ 4.0.0 (official tag, previous package was against dev build)
+    - sqlite 3.17.0
+    - wagyu 0.4.2
+    - geometry 0.9.1
+    - icu 57
+    - postgres 9.6.2
+    - postgis 2.3.2
+    - libxml2 2.9.4
+    - geos 3.6.1
+
+Changes: https://github.com/mapbox/mason/compare/v0.8.0...v0.9.0
+
 ## 0.8.0
 
  - Added

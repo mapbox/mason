@@ -13,7 +13,7 @@ function mason_load_source {
 
     mason_extract_tar_bz2
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-v${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-v3.0.13
 
     #mkdir -p $(dirname ${MASON_BUILD_PATH})
     #if [[ ! -d ${MASON_BUILD_PATH} ]]; then

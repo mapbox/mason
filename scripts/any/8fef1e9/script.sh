@@ -19,8 +19,8 @@ function mason_load_source {
 }
 
 function mason_compile {
-    mkdir -p ${MASON_PREFIX}/include/
-    cp -r any.hpp ${MASON_PREFIX}/include/
+    mkdir -p ${MASON_PREFIX}/include/linb/
+    cp -r any.hpp ${MASON_PREFIX}/include/linb/
 }
 
 function mason_cflags {

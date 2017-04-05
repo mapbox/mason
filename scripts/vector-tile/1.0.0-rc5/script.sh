@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/${MASON_NAME}/archive/v${MASON_VERSION}.tar.gz \
-        5fa5d38bca80af6a0093bf68a0986d27a195354a
+        1da76dd92a7550442d11cfec891fa66f5b23fdd7
 
     mason_extract_tar_gz
 

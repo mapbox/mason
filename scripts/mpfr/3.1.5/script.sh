@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libmpfr.a
 
 function mason_load_source {
     mason_download \
-        https://mirrors.ocf.berkeley.edu/debian/pool/main/m/mpfr4/mpfr4_${MASON_VERSION}.orig.tar.xz \
+        https://ftp.gnu.org/gnu/mpfr/mpfr-${MASON_VERSION}.tar.xz \
         a70e79bba7d23ed2625c39a81a94b5395356e9d0
 
     mason_extract_tar_xz

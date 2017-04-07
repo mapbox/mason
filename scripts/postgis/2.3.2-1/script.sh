@@ -58,12 +58,17 @@ function mason_prepare_compile {
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
     ${MASON_DIR}/mason install zlib system
     MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib system)
+    ${MASON_DIR}/mason install sfcgal 1.3.0
+    MASON_SFCGAL=$(${MASON_DIR}/mason prefix sfcgal 1.3.0)
     #${MASON_DIR}/mason install iconv system
     #MASON_ICONV=$(${MASON_DIR}/mason prefix iconv system)
 }
 
 function mason_compile {
+    mason_step "Loading patch"
+    patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     export LDFLAGS="${LDFLAGS} \
+      -L${MASON_SFCGAL}/lib -lSFCGAL \
       -L${MASON_GDAL}/lib -lgdal \
       -L${MASON_GEOS}/lib -lgeos_c -lgeos\
       -L${MASON_ZLIB}/lib -lz \
@@ -77,6 +82,7 @@ function mason_compile {
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG -I$(pwd)/liblwgeom/ \
       -I$(pwd)/raster/ -I$(pwd)/raster/rt_core/ \
       -I${MASON_TIFF}/include \
+      -I${MASON_SFCGAL}/include \
       -I${MASON_JPEG}/include \
       -I${MASON_PROJ}/include \
       -I${MASON_PNG}/include \
@@ -117,12 +123,12 @@ function mason_compile {
         --with-pgconfig=${MASON_POSTGRES}/bin/pg_config \
         --with-xml2config=${MASON_XML2}/bin/xml2-config \
         --with-gdalconfig=${MASON_GDAL}/bin/gdal-config \
+        --with-sfcgal=${MASON_SFCGAL}/bin/sfcgal-config \
+        --enable-sfcgal \
         --without-json \
         --without-gui \
         --with-topology \
         --with-raster \
-        --with-sfcgal=no \
-        --without-sfcgal \
         --disable-nls || (cat config.log && exit 1)
     # -j${MASON_CONCURRENCY} disabled due to https://trac.osgeo.org/postgis/ticket/3345
     make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"

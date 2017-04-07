@@ -13,7 +13,7 @@ function mason_load_source {
 
     mason_extract_tar_xz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/CGAL-${MASON_VERSION}
 }
 
 function mason_prepare_compile {

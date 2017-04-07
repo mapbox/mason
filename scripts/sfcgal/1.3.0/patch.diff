@@ -1,0 +1,21 @@
+diff --git a/cmake/Modules/FindCGAL.cmake b/cmake/Modules/FindCGAL.cmake
+index d61765e..c99560d 100644
+--- a/cmake/Modules/FindCGAL.cmake
++++ b/cmake/Modules/FindCGAL.cmake
+@@ -23,16 +23,6 @@ if( CGAL_LIBRARY )
+ 	get_filename_component(CGAL_LIBRARY_DIRS ${CGAL_LIBRARY} PATH)
+ endif()
+ 
+-if(CGAL_FIND_VERSION)
+-    message("CGAL_DIR ${CGAL_DIR}")
+-    find_file(version_file version.h HINTS $ENV{CGAL_DIR}/include ${CGAL_DIR}/include ${CGAL_INCLUDE_DIRS} PATH_SUFFIXES CGAL)
+-    file(STRINGS ${version_file} version_str REGEX "# *define +CGAL_VERSION +")
+-    string( REGEX REPLACE "# *define +CGAL_VERSION +" "" CGAL_VERSION ${version_str})
+-    if("${CGAL_VERSION}" VERSION_LESS "${CGAL_FIND_VERSION}")
+-        message(FATAL_ERROR "CGAL " ${CGAL_FIND_VERSION} " is required (found " ${CGAL_VERSION} " in ${version_file})" )
+-    endif()
+-
+-endif()
+ 
+ find_library( CGAL_LIBRARY_DEBUG "CGAL${CGAL_LIBRARY_POSTFIX_DEBUG}" ${CGAL_LIBRARY_DEBUG}
+ 	HINTS ${CGAL_LIBRARY_DIRS}

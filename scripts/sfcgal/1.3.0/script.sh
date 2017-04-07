@@ -58,7 +58,13 @@ function mason_compile {
      -DBOOST_LIBRARYDIR=${MASON_ROOT}/.link/lib \
      -DSFCGAL_USE_STATIC_LIBS=ON
 
-    make -j${MASON_CONCURRENCY} VERBOSE=1
+
+    # limit concurrency on travis to avoid heavy jobs hanging
+    if [[ ${TRAVIS_OS_NAME:-} ]]; then
+        make VERBOSE=1 -j4
+    else
+        make VERBOSE=1 -j${MASON_CONCURRENCY}
+    fi
     make install
 }
 

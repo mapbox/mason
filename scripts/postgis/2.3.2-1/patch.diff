@@ -1,0 +1,20 @@
+diff --git a/configure b/configure
+index 6c170fd..5ec26fa 100755
+--- a/configure
++++ b/configure
+@@ -14014,13 +14014,8 @@ _ACEOF
+ 
+ 
+ 		SFCGAL_STATIC=`$SFCGAL_CONFIG --static`
+-		if test "x$SFCGAL_STATIC" = "xON"; then
+-			{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: The SFCGAL version found is not installed as a dynamic library." >&5
+-$as_echo "$as_me: WARNING: The SFCGAL version found is not installed as a dynamic library." >&2;}
+-		else
+-        		SFCGAL="sfcgal"
+-			HAVE_SFCGAL="yes"
+-		fi
++    SFCGAL="sfcgal"
++    HAVE_SFCGAL="yes"
+ 		if test ! "$POSTGIS_SFCGAL_VERSION" -ge 11; then
+ 			as_fn_error $? "PostGIS requires SFCGAL >= 1.1.0 (found $SFCGAL_VERSION)" "$LINENO" 5
+ 		fi

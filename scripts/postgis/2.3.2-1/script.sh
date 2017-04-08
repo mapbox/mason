@@ -58,6 +58,12 @@ function mason_prepare_compile {
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
     ${MASON_DIR}/mason install zlib system
     MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib system)
+    ${MASON_DIR}/mason install cgal 4.9
+    MASON_CGAL=$(${MASON_DIR}/mason prefix cgal 4.9)
+    ${MASON_DIR}/mason install boost_libdate_time 1.63.0
+    MASON_BOOST_DATE=$(${MASON_DIR}/mason prefix boost_libdate_time 1.63.0)
+    ${MASON_DIR}/mason install boost_libserialization 1.63.0
+    MASON_BOOST_SERIALIZATION=$(${MASON_DIR}/mason prefix boost_libserialization 1.63.0)
     ${MASON_DIR}/mason install sfcgal 1.3.0
     MASON_SFCGAL=$(${MASON_DIR}/mason prefix sfcgal 1.3.0)
     #${MASON_DIR}/mason install iconv system
@@ -68,7 +74,10 @@ function mason_compile {
     mason_step "Loading patch"
     patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     export LDFLAGS="${LDFLAGS} \
+      -L${MASON_CGAL}/lib/ -lCGAL -lCGAL_Core -lCGAL_ImageIO \
       -L${MASON_SFCGAL}/lib -lSFCGAL \
+      -L${MASON_BOOST_DATE}/lib -lboost_date_time \
+      -L${MASON_BOOST_SERIALIZATION}/lib -lboost_serialization \
       -L${MASON_GDAL}/lib -lgdal \
       -L${MASON_GEOS}/lib -lgeos_c -lgeos\
       -L${MASON_ZLIB}/lib -lz \
@@ -80,6 +89,7 @@ function mason_compile {
       -L${MASON_PROJ}/lib -lproj \
       -L${MASON_XML2}/lib -lxml2"
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG -I$(pwd)/liblwgeom/ \
+      -DSFCGAL_USE_STATIC_LIBS \
       -I$(pwd)/raster/ -I$(pwd)/raster/rt_core/ \
       -I${MASON_TIFF}/include \
       -I${MASON_SFCGAL}/include \
@@ -129,7 +139,8 @@ function mason_compile {
         --without-gui \
         --with-topology \
         --with-raster \
-        --disable-nls || (cat config.log && exit 1)
+        --disable-nls
+        # || (cat config.log && exit 1)
     # -j${MASON_CONCURRENCY} disabled due to https://trac.osgeo.org/postgis/ticket/3345
     make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
     make install LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"

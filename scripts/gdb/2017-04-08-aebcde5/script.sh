@@ -10,7 +10,7 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
     git clone git://sourceware.org/git/binutils-gdb.git ${MASON_BUILD_PATH}
     cd ${MASON_BUILD_PATH}
-    git clone aebcde5eb475befba571ca9ae7b6c58126d41160
+    git checkout aebcde5eb475befba571ca9ae7b6c58126d41160
     cd ../
 }
 

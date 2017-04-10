@@ -29,8 +29,7 @@ function mason_compile {
     ./configure --prefix=${MASON_PREFIX} ${MASON_HOST_ARG} \
      --enable-static \
      --disable-shared \
-     --disable-dependency-tracking \
-     --enable-cxx
+     --enable-cxx --with-pic
 
     make -j${MASON_CONCURRENCY} V=1
     # failed on linux with clang-39: t-cxx11.cc:37:3: error: static_assert failed "sorry"

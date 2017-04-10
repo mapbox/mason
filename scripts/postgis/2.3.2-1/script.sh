@@ -64,6 +64,10 @@ function mason_prepare_compile {
     MASON_BOOST_DATE=$(${MASON_DIR}/mason prefix boost_libdate_time 1.63.0)
     ${MASON_DIR}/mason install boost_libserialization 1.63.0
     MASON_BOOST_SERIALIZATION=$(${MASON_DIR}/mason prefix boost_libserialization 1.63.0)
+    ${MASON_DIR}/mason install gmp 6.1.2
+    MASON_GMP=$(${MASON_DIR}/mason prefix gmp 6.1.2)
+    ${MASON_DIR}/mason install mpfr 3.1.5
+    MASON_MPFR=$(${MASON_DIR}/mason prefix mpfr 3.1.5)
     ${MASON_DIR}/mason install sfcgal 1.3.0
     MASON_SFCGAL=$(${MASON_DIR}/mason prefix sfcgal 1.3.0)
     #${MASON_DIR}/mason install iconv system
@@ -76,6 +80,8 @@ function mason_compile {
     export LDFLAGS="${LDFLAGS} \
       -L${MASON_CGAL}/lib/ -lCGAL -lCGAL_Core -lCGAL_ImageIO \
       -L${MASON_SFCGAL}/lib -lSFCGAL \
+      -L${MASON_MPFR}/lib -lmpfr \
+      -L${MASON_GMP}/lib -lgmp \
       -L${MASON_BOOST_DATE}/lib -lboost_date_time \
       -L${MASON_BOOST_SERIALIZATION}/lib -lboost_serialization \
       -L${MASON_GDAL}/lib -lgdal \
@@ -91,6 +97,8 @@ function mason_compile {
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG -I$(pwd)/liblwgeom/ \
       -DSFCGAL_USE_STATIC_LIBS \
       -I$(pwd)/raster/ -I$(pwd)/raster/rt_core/ \
+      -I${MASON_MPFR}/include \
+      -I${MASON_GMP}/include \
       -I${MASON_TIFF}/include \
       -I${MASON_SFCGAL}/include \
       -I${MASON_JPEG}/include \

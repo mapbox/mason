@@ -10,4 +10,5 @@ matrix:
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./scripts/${MASON_NAME}/${MASON_VERSION}/test.sh
 - ./mason publish ${MASON_NAME} ${MASON_VERSION}

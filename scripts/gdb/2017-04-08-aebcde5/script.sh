@@ -15,15 +15,10 @@ function mason_load_source {
 }
 
 function mason_compile {
-    # set -fpermissive to try to work around
-    # location.c:527:16: error: comparison between pointer and integer ('const char *' and 'int')
-    # || *argp == '\0'
-    export CFLAGS="${CFLAGS} -fpermissive"
-    export CXXFLAGS="${CXXFLAGS} -fpermissive"
+    export CFLAGS="${CFLAGS:-} -O3 -DNDEBUG"
+    export CXXFLAGS="${CXXFLAGS:-} -O3 -DNDEBUG"
     ./configure \
      --prefix=${MASON_PREFIX} \
-     --enable-gold \
-     --enable-plugins \
      --enable-static \
      --disable-debug \
      --disable-dependency-tracking \

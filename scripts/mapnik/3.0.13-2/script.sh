@@ -67,12 +67,13 @@ function mason_compile {
     export PATH="${MASON_ROOT}/.link/bin:${PATH}"
     MASON_LINKED_REL="${MASON_ROOT}/.link"
     MASON_LINKED_ABS="${MASON_ROOT}/.link"
+    # NOTE: `-fno-omit-frame-pointer -gline-tables-only` are added per https://github.com/mapbox/cpp/blob/master/glossary.md#profiling-build
     if [[ $(uname -s) == 'Linux' ]]; then
         echo "CUSTOM_LDFLAGS = '${LDFLAGS} -Wl,-z,origin -Wl,-rpath=\\\$\$ORIGIN/../lib/ -Wl,-rpath=\\\$\$ORIGIN/../../'" > config.py
-        echo "CUSTOM_CXXFLAGS = '${CXXFLAGS} -D_GLIBCXX_USE_CXX11_ABI=0'" >> config.py
+        echo "CUSTOM_CXXFLAGS = '${CXXFLAGS} -fno-omit-frame-pointer -gline-tables-only -D_GLIBCXX_USE_CXX11_ABI=0'" >> config.py
     else
         echo "CUSTOM_LDFLAGS = '${LDFLAGS}'" > config.py
-        echo "CUSTOM_CXXFLAGS = '${CXXFLAGS}'" >> config.py
+        echo "CUSTOM_CXXFLAGS = '${CXXFLAGS} -fno-omit-frame-pointer -gline-tables-only'" >> config.py
     fi
 
     ./configure \

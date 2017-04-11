@@ -78,22 +78,22 @@ function mason_compile {
     mason_step "Loading patch"
     patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     export LDFLAGS="${LDFLAGS} \
+      -Wl,--start-group -L${MASON_SFCGAL}/lib -lSFCGAL \
       -L${MASON_CGAL}/lib/ -lCGAL -lCGAL_Core -lCGAL_ImageIO \
-      -L${MASON_SFCGAL}/lib -lSFCGAL \
-      -L${MASON_MPFR}/lib -lmpfr \
       -L${MASON_GMP}/lib -lgmp \
+      -L${MASON_MPFR}/lib -lmpfr \
       -L${MASON_BOOST_DATE}/lib -lboost_date_time \
       -L${MASON_BOOST_SERIALIZATION}/lib -lboost_serialization \
       -L${MASON_GDAL}/lib -lgdal \
-      -L${MASON_GEOS}/lib -lgeos_c -lgeos\
-      -L${MASON_ZLIB}/lib -lz \
+      -L${MASON_GEOS}/lib -lgeos_c -lgeos \
       -L${MASON_TIFF}/lib -ltiff \
       -L${MASON_JPEG}/lib -ljpeg \
       -L${MASON_PROJ}/lib -lproj \
       -L${MASON_PNG}/lib -lpng \
       -L${MASON_EXPAT}/lib -lexpat \
       -L${MASON_PROJ}/lib -lproj \
-      -L${MASON_XML2}/lib -lxml2"
+      -L${MASON_XML2}/lib -lxml2 \
+      -L${MASON_ZLIB}/lib -lz"
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG -I$(pwd)/liblwgeom/ \
       -DSFCGAL_USE_STATIC_LIBS \
       -I$(pwd)/raster/ -I$(pwd)/raster/rt_core/ \

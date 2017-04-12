@@ -128,6 +128,7 @@ function mason_compile {
           -L${MASON_ZLIB}/lib -lz"
     else
         export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a \
+          -L${MASON_GDAL}/lib -lgdal \
           -L${MASON_GEOS}/lib -lgeos_c -lgeos \
           -L${MASON_TIFF}/lib -ltiff \
           -L${MASON_JPEG}/lib -ljpeg \

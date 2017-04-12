@@ -2,6 +2,7 @@
 
 MASON_NAME=apitrace
 MASON_VERSION=6a30de1
+MASON_LIB_FILE=bin/apitrace
 
 . ${MASON_DIR}/mason.sh
 

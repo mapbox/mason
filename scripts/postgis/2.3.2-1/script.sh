@@ -26,6 +26,8 @@ function mason_prepare_compile {
     MASON_XML2=$(${MASON_DIR}/mason prefix libxml2 2.9.4)
     ${MASON_DIR}/mason install geos 3.6.1
     MASON_GEOS=$(${MASON_DIR}/mason prefix geos 3.6.1)
+    ${MASON_DIR}/mason install sfcgal 1.3.0
+    MASON_SFCGAL=$(${MASON_DIR}/mason prefix sfcgal 1.3.0)
     if [[ $(uname -s) == 'Darwin' ]]; then
         FIND="\/Users\/travis\/build\/mapbox\/mason"
     else
@@ -39,7 +41,13 @@ function mason_prepare_compile {
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/lib/libgeos.la
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/lib/libgeos_c.la
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/bin/geos-config
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_SFCGAL}/bin/sfcgal-config
 
+    # knock out -lSFCGAL since this library link will be placed manually, in the right order by the LDFLAGS
+    perl -i -p -e "s/\-lSFCGAL//g;" ${MASON_SFCGAL}/bin/sfcgal-config
+
+    ${MASON_DIR}/mason install ccache 3.3.1
+    MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache 3.3.1)
     ${MASON_DIR}/mason install gdal 2.1.3
     MASON_GDAL=$(${MASON_DIR}/mason prefix gdal 2.1.3)
     ln -sf ${MASON_GDAL}/include ${MASON_GDAL}/include/gdal
@@ -68,8 +76,6 @@ function mason_prepare_compile {
     MASON_GMP=$(${MASON_DIR}/mason prefix gmp 6.1.2)
     ${MASON_DIR}/mason install mpfr 3.1.5
     MASON_MPFR=$(${MASON_DIR}/mason prefix mpfr 3.1.5)
-    ${MASON_DIR}/mason install sfcgal 1.3.0
-    MASON_SFCGAL=$(${MASON_DIR}/mason prefix sfcgal 1.3.0)
     #${MASON_DIR}/mason install iconv system
     #MASON_ICONV=$(${MASON_DIR}/mason prefix iconv system)
 }
@@ -77,23 +83,7 @@ function mason_prepare_compile {
 function mason_compile {
     mason_step "Loading patch"
     patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
-    export LDFLAGS="${LDFLAGS} \
-      -Wl,--start-group -L${MASON_SFCGAL}/lib -lSFCGAL \
-      -L${MASON_CGAL}/lib/ -lCGAL -lCGAL_Core -lCGAL_ImageIO \
-      -L${MASON_GMP}/lib -lgmp \
-      -L${MASON_MPFR}/lib -lmpfr \
-      -L${MASON_BOOST_DATE}/lib -lboost_date_time \
-      -L${MASON_BOOST_SERIALIZATION}/lib -lboost_serialization \
-      -L${MASON_GDAL}/lib -lgdal \
-      -L${MASON_GEOS}/lib -lgeos_c -lgeos \
-      -L${MASON_TIFF}/lib -ltiff \
-      -L${MASON_JPEG}/lib -ljpeg \
-      -L${MASON_PROJ}/lib -lproj \
-      -L${MASON_PNG}/lib -lpng \
-      -L${MASON_EXPAT}/lib -lexpat \
-      -L${MASON_PROJ}/lib -lproj \
-      -L${MASON_XML2}/lib -lxml2 \
-      -L${MASON_ZLIB}/lib -lz"
+
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG -I$(pwd)/liblwgeom/ \
       -DSFCGAL_USE_STATIC_LIBS \
       -I$(pwd)/raster/ -I$(pwd)/raster/rt_core/ \
@@ -111,10 +101,44 @@ function mason_compile {
       -I${MASON_PROJ}/include \
       -I${MASON_XML2}/include/libxml2"
 
+    if [[ $(uname -s) == 'Linux' ]]; then
+        export LDFLAGS="${LDFLAGS} -Wl,--start-group"
+    fi
+
+    export LDFLAGS="${LDFLAGS} \
+      -L${MASON_SFCGAL}/lib -lSFCGAL \
+      -L${MASON_CGAL}/lib/ -lCGAL -lCGAL_Core -lCGAL_ImageIO \
+      -L${MASON_MPFR}/lib -lmpfr \
+      -L${MASON_GMP}/lib -lgmp \
+      -L${MASON_BOOST_DATE}/lib -lboost_date_time \
+      -L${MASON_BOOST_SERIALIZATION}/lib -lboost_serialization"
+
     if [[ $(uname -s) == 'Darwin' ]]; then
-        export LDFLAGS="${LDFLAGS} -Wl,-lc++ -Wl,${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a -liconv"
+        export LDFLAGS="${LDFLAGS} -Wl,-lc++ \
+          -Wl,${MASON_GDAL}/lib/libgdal.a \
+          -Wl,${MASON_POSTGRES}/lib/libpq.a -liconv \
+          -L${MASON_GEOS}/lib -lgeos_c -lgeos \
+          -L${MASON_TIFF}/lib -ltiff \
+          -L${MASON_JPEG}/lib -ljpeg \
+          -L${MASON_PROJ}/lib -lproj \
+          -L${MASON_PNG}/lib -lpng \
+          -L${MASON_EXPAT}/lib -lexpat \
+          -L${MASON_PROJ}/lib -lproj \
+          -L${MASON_XML2}/lib -lxml2 \
+          -L${MASON_ZLIB}/lib -lz"
     else
-        export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a -lgeos_c -lgeos -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm"
+        export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a \
+          -L${MASON_GEOS}/lib -lgeos_c -lgeos \
+          -L${MASON_TIFF}/lib -ltiff \
+          -L${MASON_JPEG}/lib -ljpeg \
+          -L${MASON_PROJ}/lib -lproj \
+          -L${MASON_PNG}/lib -lpng \
+          -L${MASON_EXPAT}/lib -lexpat \
+          -L${MASON_PROJ}/lib -lproj \
+          -L${MASON_XML2}/lib -lxml2 \
+          ${MASON_POSTGRES}/lib/libpq.a \
+          -L${MASON_ZLIB}/lib -lz \
+          -pthread -ldl -lstdc++ -lm"
     fi
 
 
@@ -132,6 +156,8 @@ function mason_compile {
       python -c "${CMD}"
     fi
 
+    export CXX="${MASON_CCACHE}/bin/ccache ${CXX}"
+    export CC="${MASON_CCACHE}/bin/ccache ${CC}"
     ./configure \
         --enable-static --disable-shared \
         --prefix=$(mktemp -d) \
@@ -142,7 +168,6 @@ function mason_compile {
         --with-xml2config=${MASON_XML2}/bin/xml2-config \
         --with-gdalconfig=${MASON_GDAL}/bin/gdal-config \
         --with-sfcgal=${MASON_SFCGAL}/bin/sfcgal-config \
-        --enable-sfcgal \
         --without-json \
         --without-gui \
         --with-topology \

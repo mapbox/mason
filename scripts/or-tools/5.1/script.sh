@@ -88,6 +88,5 @@ function mason_static_libs {
 }
 
 
-echo $DIR
 
 mason_run "$@"

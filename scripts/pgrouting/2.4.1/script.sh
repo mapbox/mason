@@ -61,7 +61,7 @@ function mason_compile {
 
     make VERBOSE=1 -j${MASON_CONCURRENCY}
 
-    mkdir -p ${MASON_PREFIX/lib/
+    mkdir -p ${MASON_PREFIX}/lib/
     touch ${MASON_PREFIX}/lib/worked.txt
     # TODO: currently gets installed inside inside postgres: let's try to package separately or with postgis?
     make install

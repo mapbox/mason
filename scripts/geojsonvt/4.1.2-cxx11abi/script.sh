@@ -29,7 +29,7 @@ function mason_compile {
     fi
 
     # build
-    INSTALL_PREFIX=${MASON_PREFIX} ./configure
+    INSTALL_PREFIX=${MASON_PREFIX} ./configure --with-pic
     CXXFLAGS="-fPIC ${CFLAGS:-} ${CXXFLAGS:-}" make install
 }
 

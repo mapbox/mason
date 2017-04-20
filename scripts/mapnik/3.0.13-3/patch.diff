@@ -1,9 +1,12 @@
 diff --git a/src/expression_grammar.cpp b/src/expression_grammar.cpp
-index 09234a0..23aa90b 100644
+index 09234a0..309205b 100644
 --- a/src/expression_grammar.cpp
 +++ b/src/expression_grammar.cpp
-@@ -26,3 +26,12 @@
+@@ -24,5 +24,15 @@
+ // once by src/expression.cpp and once by mapnik/transform_expression_grammar_impl.hpp
+ #include <mapnik/expression_grammar_impl.hpp>
  #include <string>
++#include <stdexcept>
  
  template struct mapnik::expression_grammar<std::string::const_iterator>;
 +
@@ -13,7 +16,7 @@ index 09234a0..23aa90b 100644
 +void  __throw_out_of_range_fmt(const char* err, ...)
 +{
 +    // Safe and over-simplified version. Ignore the format and print it as-is.
-+    __throw_out_of_range(err);
++    std::__throw_out_of_range(err);
 +}
 \ No newline at end of file
 diff --git a/utils/pgsql2sqlite/build.py b/utils/pgsql2sqlite/build.py

@@ -1,8 +1,8 @@
 diff --git a/utils/pgsql2sqlite/build.py b/utils/pgsql2sqlite/build.py
-index 45d9003..3dac900 100644
+index 45d9003..55c7f3f 100644
 --- a/utils/pgsql2sqlite/build.py
 +++ b/utils/pgsql2sqlite/build.py
-@@ -39,6 +39,20 @@ source = Split(
+@@ -39,6 +39,23 @@ source = Split(
  program_env['CXXFLAGS'] = copy(env['LIBMAPNIK_CXXFLAGS'])
  program_env['LINKFLAGS'] = copy(env['LIBMAPNIK_LINKFLAGS'])
  program_env.Append(CPPDEFINES = env['LIBMAPNIK_DEFINES'])
@@ -20,10 +20,13 @@ index 45d9003..3dac900 100644
 +
 +# Link Library to Dependencies
 +libraries = copy(program_env['LIBS'])
++
++if env['RUNTIME_LINK'] == 'static' and env['PLATFORM'] == 'Linux':
++    libraries.append('dl')
  
  if env['HAS_CAIRO']:
      program_env.PrependUnique(CPPPATH=env['CAIRO_CPPPATHS'])
-@@ -46,9 +60,8 @@ if env['HAS_CAIRO']:
+@@ -46,9 +63,8 @@ if env['HAS_CAIRO']:
  
  program_env.PrependUnique(CPPPATH=['#plugins/input/postgis'])
  
@@ -34,7 +37,7 @@ index 45d9003..3dac900 100644
  
  if env.get('BOOST_LIB_VERSION_FROM_HEADER'):
      boost_version_from_header = int(env['BOOST_LIB_VERSION_FROM_HEADER'].split('_')[1])
-@@ -59,14 +72,6 @@ if env.get('BOOST_LIB_VERSION_FROM_HEADER'):
+@@ -59,14 +75,6 @@ if env.get('BOOST_LIB_VERSION_FROM_HEADER'):
  if env['SQLITE_LINKFLAGS']:
      program_env.Append(LINKFLAGS=env['SQLITE_LINKFLAGS'])
  

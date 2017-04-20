@@ -1,8 +1,26 @@
+diff --git a/src/expression_grammar.cpp b/src/expression_grammar.cpp
+index 09234a0..23aa90b 100644
+--- a/src/expression_grammar.cpp
++++ b/src/expression_grammar.cpp
+@@ -26,3 +26,12 @@
+ #include <string>
+ 
+ template struct mapnik::expression_grammar<std::string::const_iterator>;
++
++// Prevent linking to libstdc++'s __throw_out_of_range_fmt
++// https://github.com/springmeyer/glibcxx-symbol-versioning/blob/master/test_out_of_range.cpp
++void  __throw_out_of_range_fmt(const char*, ...) __attribute__((__noreturn__));
++void  __throw_out_of_range_fmt(const char* err, ...)
++{
++    // Safe and over-simplified version. Ignore the format and print it as-is.
++    __throw_out_of_range(err);
++}
+\ No newline at end of file
 diff --git a/utils/pgsql2sqlite/build.py b/utils/pgsql2sqlite/build.py
-index 45d9003..55c7f3f 100644
+index 45d9003..9d909df 100644
 --- a/utils/pgsql2sqlite/build.py
 +++ b/utils/pgsql2sqlite/build.py
-@@ -39,6 +39,23 @@ source = Split(
+@@ -39,6 +39,20 @@ source = Split(
  program_env['CXXFLAGS'] = copy(env['LIBMAPNIK_CXXFLAGS'])
  program_env['LINKFLAGS'] = copy(env['LIBMAPNIK_LINKFLAGS'])
  program_env.Append(CPPDEFINES = env['LIBMAPNIK_DEFINES'])
@@ -20,13 +38,10 @@ index 45d9003..55c7f3f 100644
 +
 +# Link Library to Dependencies
 +libraries = copy(program_env['LIBS'])
-+
-+if env['RUNTIME_LINK'] == 'static' and env['PLATFORM'] == 'Linux':
-+    libraries.append('dl')
  
  if env['HAS_CAIRO']:
      program_env.PrependUnique(CPPPATH=env['CAIRO_CPPPATHS'])
-@@ -46,9 +63,8 @@ if env['HAS_CAIRO']:
+@@ -46,9 +60,8 @@ if env['HAS_CAIRO']:
  
  program_env.PrependUnique(CPPPATH=['#plugins/input/postgis'])
  
@@ -37,7 +52,7 @@ index 45d9003..55c7f3f 100644
  
  if env.get('BOOST_LIB_VERSION_FROM_HEADER'):
      boost_version_from_header = int(env['BOOST_LIB_VERSION_FROM_HEADER'].split('_')[1])
-@@ -59,14 +75,6 @@ if env.get('BOOST_LIB_VERSION_FROM_HEADER'):
+@@ -59,13 +72,8 @@ if env.get('BOOST_LIB_VERSION_FROM_HEADER'):
  if env['SQLITE_LINKFLAGS']:
      program_env.Append(LINKFLAGS=env['SQLITE_LINKFLAGS'])
  
@@ -48,7 +63,8 @@ index 45d9003..55c7f3f 100644
 -        # TODO - parse back into libraries variable
 -        program_env.ParseConfig('pg_config --libs')
 -        libraries.append('dl')
--
++if env['RUNTIME_LINK'] == 'static' and env['PLATFORM'] == 'Linux':
++    libraries.append('dl')
+ 
  pgsql2sqlite = program_env.Program('pgsql2sqlite', source, LIBS=libraries)
  Depends(pgsql2sqlite, env.subst('../../src/%s' % env['MAPNIK_LIB_NAME']))
- 

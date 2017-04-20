@@ -31,7 +31,7 @@ PYTHON_VERSION=$2
 PYTHON_BASE=$3
 # note: python 3 uses 'm'
 PYTHON_VARIANT=$4
-if [[ ${UNAME} == 'Darwin' ]]; then
+if [[ $(uname -s) == 'Darwin' ]]; then
     echo "
       using python
            : ${PYTHON_VERSION} # version
@@ -42,7 +42,7 @@ if [[ ${UNAME} == 'Darwin' ]]; then
            ;
     " >> $1
 else
-  if [[ ${UNAME} == 'FreeBSD' ]]; then
+  if [[ $(uname -s) == 'FreeBSD' ]]; then
       echo "
         using python
              : ${PYTHON_VERSION} # version

@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/osmcode/${MASON_NAME}/archive/${MASON_VERSION}.tar.gz \
-        1b5750e1bff99779f1ce320d001e3f793d1fcdf1
+        5ad392a2ece2e84f61726bfdf85fbeaf84f808e2
 
     mason_extract_tar_gz
 

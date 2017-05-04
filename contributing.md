@@ -7,7 +7,7 @@
 - Tag a release:
 
 ```
-TAG_NAME=$(cat mason | grep MASON_RELEASED_VERSION= | cut -c25-29)
+TAG_NAME=$(cat mason | grep MASON_RELEASED_VERSION= | cut -d '"' -f2)
 git tag v${TAG_NAME} -a -m "v${TAG_NAME}" && git push --tags
 ```
 

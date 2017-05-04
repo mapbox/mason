@@ -1,5 +1,22 @@
 # Mason releases
 
+## 0.10.0
+
+ - Added
+    - sparsepp 0.95
+    - mapnik 3.0.13-1 (Fixed build settings)
+    - mapnik 3.0.13-2 (variant for profiling)
+    - geojson 0.4.1, geojson 0.4.1-cxx11abi, and geojson 0.4.1-hpp
+    - thelink2012/any 8fef1e9
+    - postgres 9.6.2-1
+    - postgis 9.6.2-1 (all contrib modules enabled)
+    - glfw 2017-04-07-f40d085
+    - gdb 2017-04-08-aebcde5
+ - Fixed
+    - unbound variable in or-tools
+
+Changes: https://github.com/mapbox/mason/compare/v0.9.0...v0.10.0
+
 ## 0.9.0
 
  - Added

@@ -78,6 +78,7 @@ function mason_compile {
         PREFIX="${MASON_PREFIX}" \
         RUNTIME_LINK="static" \
         INPUT_PLUGINS="all" \
+        ENABLE_SONAME=False \
         PKG_CONFIG_PATH="${MASON_LINKED_REL}/lib/pkgconfig" \
         PATH_REMOVE="/usr:/usr/local" \
         BOOST_INCLUDES="${MASON_LINKED_REL}/include" \
@@ -110,7 +111,10 @@ function mason_compile {
         BENCHMARK=False \
         CPP_TESTS=False \
         PGSQL2SQLITE=True \
+        SAMPLE_INPUT_PLUGINS=False \
+        DEMO=False \
         XMLPARSER="ptree" \
+        NO_ATEXIT=True \
         SVG2PNG=True || cat ${MASON_BUILD_PATH}"/config.log"
 
     cat config.py

@@ -18,8 +18,7 @@ function mason_load_source {
     mkdir -p $(dirname ${MASON_BUILD_PATH})
     if [[ ! -d ${MASON_BUILD_PATH} ]]; then
         git clone -b ${MASON_VERSION} --single-branch http://github.com/mapnik/mapnik ${MASON_BUILD_PATH}
-        (cd ${MASON_BUILD_PATH} && git submodule update --init deps/mapbox/variant/
-                                && git submodule update --init deps/mapbox/geometry/)
+        (cd ${MASON_BUILD_PATH} && git submodule update --init deps/mapbox/variant/ && git submodule update --init deps/mapbox/geometry/)
     fi
 }
 

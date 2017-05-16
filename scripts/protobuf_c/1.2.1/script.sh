@@ -26,13 +26,16 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    # note CFLAGS overrides defaults (-O2 -g -DNDEBUG) so we need to add optimization flags back
+    export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
+    export CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG"
     ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
         --enable-static --disable-shared \
         --disable-dependency-tracking
 
-    make install -j${MASON_CONCURRENCY}
+    make V=1 install -j${MASON_CONCURRENCY}
 }
 
 function mason_clean {

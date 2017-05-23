@@ -5,7 +5,7 @@ set -o pipefail
 
 # Test installing based on the recommended method
 # get the latest tag
-TAG_NAME=$(cat mason | grep MASON_RELEASED_VERSION= | cut -c25-29)
+TAG_NAME=$(cat mason | grep MASON_RELEASED_VERSION= | cut -d '"' -f2)
 echo "found ${TAG_NAME}"
 
 # if the current tag is available, test installing it

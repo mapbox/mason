@@ -33,6 +33,10 @@ function mason_compile {
     make install
 }
 
+function mason_cflags {
+    echo -I${MASON_PREFIX}/include
+}
+
 function mason_ldflags {
     echo "-lproj"
 }

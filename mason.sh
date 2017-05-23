@@ -378,7 +378,7 @@ function bash_lndir() {
     find "$src" -type f -o -type l |
     while read src_f; do
             dst_f="$dst${src_f#$src}"
-            if [[ ! -f $dst_f ]]; then
+            if [[ ! -e $dst_f ]]; then
                 ln -s "$src_f" "$dst_f"
             fi
     done

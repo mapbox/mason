@@ -57,7 +57,7 @@ function mason_compile {
 
 function mason_strip_ldflags {
     ldflags=()
-    while [[ $1 ]]
+    while [[ ${1:-} ]]
     do
         case "$1" in
             -lwebp)

@@ -3,6 +3,7 @@
 MASON_NAME=cairo
 MASON_VERSION=1.14.6
 MASON_LIB_FILE=lib/libcairo.a
+MASON_PKGCONFIG_FILE=lib/pkgconfig/cairo.pc
 
 . ${MASON_DIR}/mason.sh
 

@@ -3,6 +3,7 @@
 MASON_NAME=pixman
 MASON_VERSION=0.34.0
 MASON_LIB_FILE=lib/libpixman-1.a
+MASON_PKGCONFIG_FILE=lib/pkgconfig/pixman-1.pc
 
 . ${MASON_DIR}/mason.sh
 
@@ -33,18 +34,6 @@ function mason_compile {
     # The -i and -k flags are to workaround osx bug in pixman tests: Undefined symbols for architecture x86_64: "_prng_state
     V=1 make -j${MASON_CONCURRENCY} -i -k
     make install -i -k
-}
-
-function mason_cflags {
-    echo -I${MASON_PREFIX}/include
-}
-
-function mason_ldflags {
-    echo -L${MASON_PREFIX}/lib -ljpeg
-}
-
-function mason_clean {
-    make clean
 }
 
 mason_run "$@"

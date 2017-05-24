@@ -31,6 +31,8 @@ PYTHON_VERSION=$2
 PYTHON_BASE=$3
 # note: python 3 uses 'm'
 PYTHON_VARIANT=$4
+UNAME=$(uname -s)
+
 if [[ ${UNAME} == 'Darwin' ]]; then
     echo "
       using python

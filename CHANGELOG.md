@@ -1,5 +1,23 @@
 # Mason releases
 
+## 0.11.0
+
+ - Added
+    - libosmium 2.12.1 and libosmium 2.12.2
+    - osmium-tool 1.6.1
+    - additional clang-tidy tools
+    - protobuf 3.3.0
+    - protobuf_c 1.2.1
+    - jemalloc 4.5.0
+    - redis 3.2.9
+    - redis 3.2.9-configurable-malloc
+
+ - Fixed
+    - unbound variables in cairo, pixman, proj, webp, boost python
+    - fixed clang++ package linking when X11 is not installed (no lndir available)
+
+Changes: https://github.com/mapbox/mason/compare/v0.10.0...v0.11.0
+
 ## 0.10.0
 
  - Added

@@ -7,7 +7,7 @@ MASON_VERSION=$1 ; shift
 set -eu
 set -o pipefail
 
-MASON_RELEASED_VERSION="0.10.0"
+MASON_RELEASED_VERSION="0.11.0"
 
 if [ "${MASON_COMMAND}" = "--version" ]; then
     echo ${MASON_RELEASED_VERSION}

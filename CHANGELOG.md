@@ -1,5 +1,13 @@
 # Mason releases
 
+## 0.11.1
+
+ - Added
+    - redis 3.0.7
+
+
+Changes: https://github.com/mapbox/mason/compare/v0.11.0...v0.11.1
+
 ## 0.11.0
 
  - Added

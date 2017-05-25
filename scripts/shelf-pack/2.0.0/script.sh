@@ -22,7 +22,7 @@ function mason_compile {
 }
 
 function mason_cflags {
-    echo -isystem ${MASON_PREFIX}/include -I${MASON_PREFIX}/include
+    echo -I${MASON_PREFIX}/include
 }
 
 function mason_ldflags {

@@ -14,12 +14,6 @@ function mason_load_source {
     mason_extract_tar_bz2
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-v${MASON_VERSION}
-
-    mkdir -p $(dirname ${MASON_BUILD_PATH})
-    if [[ ! -d ${MASON_BUILD_PATH} ]]; then
-        git clone -b ${MASON_VERSION} --single-branch http://github.com/mapnik/mapnik ${MASON_BUILD_PATH}
-        (cd ${MASON_BUILD_PATH} && git submodule update --init deps/mapbox/variant/ && git submodule update --init deps/mapbox/geometry/)
-    fi
 }
 
 function install() {
@@ -67,9 +61,13 @@ function mason_compile {
     export PATH="${MASON_ROOT}/.link/bin:${PATH}"
     MASON_LINKED_REL="${MASON_ROOT}/.link"
     MASON_LINKED_ABS="${MASON_ROOT}/.link"
+
     if [[ $(uname -s) == 'Linux' ]]; then
-        echo "CUSTOM_LDFLAGS = '-Wl,-z,origin -Wl,-rpath=\\\$\$ORIGIN/../lib/ -Wl,-rpath=\\\$\$ORIGIN/../../'" > config.py
-        echo "CUSTOM_CXXFLAGS = '-D_GLIBCXX_USE_CXX11_ABI=0'" >> config.py
+        echo "CUSTOM_LDFLAGS = '${LDFLAGS} -Wl,-z,origin -Wl,-rpath=\\\$\$ORIGIN/../lib/ -Wl,-rpath=\\\$\$ORIGIN/../../'" > config.py
+        echo "CUSTOM_CXXFLAGS = '${CXXFLAGS} -D_GLIBCXX_USE_CXX11_ABI=0'" >> config.py
+    else
+        echo "CUSTOM_LDFLAGS = '${LDFLAGS}'" > config.py
+        echo "CUSTOM_CXXFLAGS = '${CXXFLAGS}'" >> config.py
     fi
 
     ./configure \

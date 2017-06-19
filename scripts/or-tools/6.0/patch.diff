@@ -67,8 +67,8 @@
  ifeq ($(PLATFORM),LINUX)
 -  CCC = g++ -fPIC -std=c++0x -fwrapv
 -  DYNAMIC_LD = g++ -shared
-+  CCC = clang++ -fPIC -std=c++11 -fwrapv
-+  DYNAMIC_LD = clang++ -shared
++  CCC = clang++ -fPIC -std=c++11 -fwrapv -ffunction-sections -fdata-sections
++  DYNAMIC_LD = clang++ -shared -Wl,--gc-sections
    CMAKE = cmake
    ifeq ($(PTRLENGTH),64)
      ARCH = -DARCH_K8
@@ -77,10 +77,10 @@
    LIB_SUFFIX = so
    SWIG_LIB_SUFFIX = so
 -  LINK_CMD = g++ -shared
-+  LINK_CMD = clang++ -shared
++  LINK_CMD = clang++ -shared -Wl,--gc-sections
    LINK_PREFIX = -o # Need the space.
 -  PRE_LIB = -Wl,-rpath $(OR_ROOT_FULL)/lib -L$(OR_ROOT_FULL)/lib -l
-+  PRE_LIB = -Wl,-z,origin -Wl,-rpath=\$$ORIGIN
++  PRE_LIB = 
    POST_LIB =
  endif  # LINUX
  ifeq ($(PLATFORM),MACOSX)

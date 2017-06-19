@@ -73,6 +73,10 @@ function mason_compile {
     mkdir -p ${MASON_PREFIX}/lib/
     cp -r lib/libortools* ${MASON_PREFIX}/lib/
 
+    # Bundle a static archive in addition to the dynamically linked library
+    find objs -type f -iname '*.o' | xargs ar rcs libortools.a
+    mv libortools.a ${MASON_PREFIX}/lib/
+
     path_to_include="${MASON_PREFIX}/include/ortools/"
     mkdir -p $path_to_include
 
@@ -87,7 +91,7 @@ function mason_compile {
 }
 
 function mason_static_libs {
-    :
+    echo ${MASON_PREFIX}/lib/libortools.a
 }
 
 

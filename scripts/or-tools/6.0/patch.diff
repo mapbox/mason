@@ -1,0 +1,86 @@
+--- or-tools-6.0/makefiles/Makefile.third_party.unix.mk	2017-05-16 11:44:07.000000000 +0200
++++ or-tools-6.0-new/makefiles/Makefile.third_party.unix.mk	2017-06-08 15:06:55.515312686 +0200
+@@ -284,12 +284,14 @@
+ 
+ # Install automake
+ dependencies/install/bin/automake: dependencies/sources/automake-$(AUTOMAKE_TAG)/Makefile
+-	cd dependencies/sources/automake-$(AUTOMAKE_TAG) && $(SET_PATH) ./bootstrap.sh
+ 	cd dependencies/sources/automake-$(AUTOMAKE_TAG) && $(SET_PATH) make
+ 	cd dependencies/sources/automake-$(AUTOMAKE_TAG) && $(SET_PATH) make install
+ 
+ 
+ dependencies/sources/automake-$(AUTOMAKE_TAG)/Makefile: dependencies/sources/automake-$(AUTOMAKE_TAG)/configure dependencies/install/bin/autoconf
++	cd dependencies/sources/automake-$(AUTOMAKE_TAG) && $(SET_PATH) ./bootstrap.sh
++	sed -e "s/^INFO_DEPS =.*/INFO_DEPS =/g" -e 's/^.*automake-history.info$$//g' < dependencies/sources/automake-$(AUTOMAKE_TAG)/Makefile.in > dependencies/sources/automake-$(AUTOMAKE_TAG)/Makefile.in.new
++	mv -f dependencies/sources/automake-$(AUTOMAKE_TAG)/Makefile.in.new dependencies/sources/automake-$(AUTOMAKE_TAG)/Makefile.in
+ 	cd dependencies/sources/automake-$(AUTOMAKE_TAG) && $(SET_PATH) ./configure --prefix=$(OR_ROOT_FULL)/dependencies/install
+ 
+ dependencies/sources/automake-$(AUTOMAKE_TAG)/configure: dependencies/archives/automake-$(AUTOMAKE_TAG).tar.gz
+@@ -353,20 +355,20 @@
+ Makefile.local: makefiles/Makefile.third_party.unix.mk
+ 	-$(DEL) Makefile.local
+ 	@echo Generating Makefile.local
+-	@echo JDK_DIRECTORY = $(JDK_DIRECTORY)>> Makefile.local
+-	@echo UNIX_PYTHON_VER = $(DETECTED_PYTHON_VERSION)>> Makefile.local
+-	@echo PATH_TO_CSHARP_COMPILER = $(DETECTED_MCS_BINARY)>> Makefile.local
+-	@echo CLR_KEYFILE = bin/or-tools.snk>> Makefile.local
++	#@echo JDK_DIRECTORY = $(JDK_DIRECTORY)>> Makefile.local
++	#@echo UNIX_PYTHON_VER = $(DETECTED_PYTHON_VERSION)>> Makefile.local
++	#@echo PATH_TO_CSHARP_COMPILER = $(DETECTED_MCS_BINARY)>> Makefile.local
++	#@echo CLR_KEYFILE = bin/or-tools.snk>> Makefile.local
+ 	@echo >> Makefile.local
+-	@echo "# Define UNIX_GLPK_DIR to point to a compiled version of GLPK to use it" >> Makefile.local
+-	@echo "# Define UNIX_SCIP_DIR to point to a compiled version of SCIP to use it ">> Makefile.local
+-	@echo "#   i.e.: <path>/scipoptsuite-4.0.0/scip-4.0.0" >> Makefile.local
+-	@echo "#   compile scip with GMP=false READLINE=false" >> Makefile.local
+-	@echo "# Define UNIX_GUROBI_DIR and GUROBI_LIB_VERSION to use Gurobi" >> Makefile.local
+-	@echo "# Define UNIX_CPLEX_DIR to use CPLEX" >> Makefile.local
++	#@echo "# Define UNIX_GLPK_DIR to point to a compiled version of GLPK to use it" >> Makefile.local
++	#@echo "# Define UNIX_SCIP_DIR to point to a compiled version of SCIP to use it ">> Makefile.local
++	#@echo "#   i.e.: <path>/scipoptsuite-4.0.0/scip-4.0.0" >> Makefile.local
++	#@echo "#   compile scip with GMP=false READLINE=false" >> Makefile.local
++	#@echo "# Define UNIX_GUROBI_DIR and GUROBI_LIB_VERSION to use Gurobi" >> Makefile.local
++	#@echo "# Define UNIX_CPLEX_DIR to use CPLEX" >> Makefile.local
+ 	@echo >> Makefile.local
+ 	@echo UNIX_GFLAGS_DIR = $(OR_ROOT_FULL)/dependencies/install>> Makefile.local
+ 	@echo UNIX_PROTOBUF_DIR = $(OR_ROOT_FULL)/dependencies/install>> Makefile.local
+-	@echo UNIX_SWIG_BINARY = $(OR_ROOT_FULL)/dependencies/install/bin/swig>> Makefile.local
+-	@echo UNIX_CLP_DIR = $(OR_ROOT_FULL)/dependencies/install>> Makefile.local
+-	@echo UNIX_CBC_DIR = $(OR_ROOT_FULL)/dependencies/install>> Makefile.local
++	#@echo UNIX_SWIG_BINARY = $(OR_ROOT_FULL)/dependencies/install/bin/swig>> Makefile.local
++	#@echo UNIX_CLP_DIR = $(OR_ROOT_FULL)/dependencies/install>> Makefile.local
++	#@echo UNIX_CBC_DIR = $(OR_ROOT_FULL)/dependencies/install>> Makefile.local
+--- or-tools-6.0/makefiles/Makefile.unix.mk	2017-05-16 11:44:07.000000000 +0200
++++ or-tools-6.0-new/makefiles/Makefile.unix.mk	2017-06-08 13:37:31.183246962 +0200
+@@ -101,7 +101,7 @@
+ SWIG_INC = $(GLPK_SWIG) $(CLP_SWIG) $(CBC_SWIG) $(SCIP_SWIG) $(GUROBI_SWIG) $(CPLEX_SWIG) -DUSE_GLOP -DUSE_BOP
+ 
+ # Compilation flags
+-DEBUG = -O4 -DNDEBUG
++DEBUG = -O2 -g -D_GLIBCXX_USE_CXX11_ABI=0
+ JNIDEBUG = -O1 -DNDEBUG
+ 
+ # Check wether CBC/CLP need a coin subdir in library.
+@@ -117,8 +117,8 @@
+ endif
+ 
+ ifeq ($(PLATFORM),LINUX)
+-  CCC = g++ -fPIC -std=c++0x -fwrapv
+-  DYNAMIC_LD = g++ -shared
++  CCC = clang++ -fPIC -std=c++11 -fwrapv -ffunction-sections -fdata-sections
++  DYNAMIC_LD = clang++ -shared -Wl,--gc-sections
+   CMAKE = cmake
+   ifeq ($(PTRLENGTH),64)
+     ARCH = -DARCH_K8
+@@ -173,9 +173,9 @@
+   JNI_LIB_EXT = so
+   LIB_SUFFIX = so
+   SWIG_LIB_SUFFIX = so
+-  LINK_CMD = g++ -shared
++  LINK_CMD = clang++ -shared -Wl,--gc-sections
+   LINK_PREFIX = -o # Need the space.
+-  PRE_LIB = -Wl,-rpath $(OR_ROOT_FULL)/lib -L$(OR_ROOT_FULL)/lib -l
++  PRE_LIB = 
+   POST_LIB =
+ endif  # LINUX
+ ifeq ($(PLATFORM),MACOSX)

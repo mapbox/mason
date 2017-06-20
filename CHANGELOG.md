@@ -1,5 +1,26 @@
 # Mason releases
 
+
+## 0.12.0
+
+ - Added
+    - or-tools 6.0
+    - vector-tile 1.0.0-rc5
+    - shelf-pack-cpp v2.0.0
+    - shelf-pack-cpp v2.0.1
+    - cheap-ruler 2.5.0
+    - mapnik 3.0.14
+    - mapnik 3.0.15
+    - ccache 3.3.4
+    - cmake 3.8.2
+    - earcut 0.12.3
+
+ - Removed
+    - icu latest
+    - mapnik latest
+
+Changes: https://github.com/mapbox/mason/compare/v0.11.1...v0.12.0
+
 ## 0.11.1
 
  - Added

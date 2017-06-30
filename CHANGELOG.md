@@ -1,5 +1,14 @@
 # Mason releases
 
+## 0.13.0
+
+ - Added
+    - protozero 1.5.2
+    - vector-tile 1.0.0-rc6
+    - mapnik df0bbe4
+
+Changes: https://github.com/mapbox/mason/compare/v0.12.0...v0.13.0
+
 
 ## 0.12.0
 

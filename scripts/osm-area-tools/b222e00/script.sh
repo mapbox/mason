@@ -64,12 +64,16 @@ function mason_compile {
     rm -rf build
     mkdir -p build
     cd build
+    EXTRA_FLAGS=""
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        EXTRA_FLAGS="-liconv"
+    fi
     CMAKE_PREFIX_PATH=${MASON_ROOT}/.link \
     ${MASON_ROOT}/.link/bin/cmake \
         -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
         -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_EXE_LINKER_FLAGS="${MASON_ROOT}/.link/lib/libtiff.a ${MASON_ROOT}/.link/lib/libpng.a ${MASON_ROOT}/.link/lib/libjpeg.a ${MASON_ROOT}/.link/lib/libproj.a ${MASON_ROOT}/.link/lib/libpq.a -liconv" \
+        -DCMAKE_EXE_LINKER_FLAGS="${MASON_ROOT}/.link/lib/libtiff.a ${MASON_ROOT}/.link/lib/libpng.a ${MASON_ROOT}/.link/lib/libjpeg.a ${MASON_ROOT}/.link/lib/libproj.a ${MASON_ROOT}/.link/lib/libpq.a ${EXTRA_FLAGS}" \
         ..
     # limit concurrency on travis to avoid heavy jobs being killed
     if [[ ${TRAVIS_OS_NAME:-} ]]; then

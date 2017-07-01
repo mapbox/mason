@@ -4,10 +4,10 @@ set -e -u
 set -o pipefail
 
 # ensure building a C++ lib works
-./mason build stxxl 1.4.1
+mason build stxxl 1.4.1
 
 # ensure linking results in expected files
-./mason link stxxl 1.4.1
+mason link stxxl 1.4.1
 
 failure=0
 

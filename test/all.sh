@@ -3,6 +3,13 @@
 set -eu
 set -o pipefail
 
+
+# by default put the local mason on PATH for
+# use in the tests
+if [[ ! ${MASON_CUSTOM_PATH:-} ]]; then
+    export PATH=$(pwd):${PATH}
+fi
+
 $(dirname $0)/unit.sh
 $(dirname $0)/llvm.sh
 $(dirname $0)/c_install.sh

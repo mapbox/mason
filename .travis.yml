@@ -7,6 +7,9 @@ matrix:
       compiler: clang
     - os: linux
       sudo: false
+    - os: linux
+      sudo: false
+      env: SYMLINK_INSTALL=true
 
 install:
 - |
@@ -24,4 +27,12 @@ install:
   fi
 
 script:
-- ./test/all.sh
+- |
+  if [[ ${SYMLINK_INSTALL:-} == true ]]; then
+    mkdir -p custom/path
+    ln -s $(pwd)/mason $(pwd)/custom/path/mason
+    export PATH=$(pwd)/custom/path:${PATH}
+    MASON_CUSTOM_PATH=true ./test/all.sh
+  else
+    ./test/all.sh;
+  fi

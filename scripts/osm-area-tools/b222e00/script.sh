@@ -70,7 +70,7 @@ function mason_compile {
     fi
     LINKER_FLAGS="${MASON_ROOT}/.link/lib/libtiff.a ${MASON_ROOT}/.link/lib/libpng.a ${MASON_ROOT}/.link/lib/libjpeg.a ${MASON_ROOT}/.link/lib/libproj.a ${MASON_ROOT}/.link/lib/libpq.a ${EXTRA_FLAGS}"
     if [[ $(uname -s) == 'Linux' ]]; then
-        LINKER_FLAGS="-Wl,--start-group ${LINKER_FLAGS}"
+        LINKER_FLAGS="-Wl,--start-group ${LINKER_FLAGS} -ldl"
     fi
 
     CMAKE_PREFIX_PATH=${MASON_ROOT}/.link \

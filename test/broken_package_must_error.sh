@@ -20,7 +20,7 @@ RESULT=0
 RETURN=0
 function test_one() {
     place_broken ${1}
-    RESULT=$(./mason build broken 0.0.0 2>&1)
+    RESULT=$(mason build broken 0.0.0 2>&1)
     RETURN=$?
     rm -rf ./scripts/broken
 }

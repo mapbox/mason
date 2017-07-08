@@ -32,15 +32,23 @@ function get_llvm_project() {
         exit 1
     fi
     local EXPECTED_HASH=${3:-false}
+    local CUSTOM_GITSHA=${4:-false}
+    local DEPTH=1
+    if [[ ${CUSTOM_GITSHA:-false} == false ]]; then
+        DEPTH=500
+    fi
     local file_basename=$(basename ${URL})
     local local_file_or_checkout=$(pwd)/${file_basename}
     if [[ ${URL} =~ '.git' ]]; then
         if [ ! -d ${local_file_or_checkout} ] ; then
             mason_step "cloning ${URL} to ${local_file_or_checkout}"
-            git clone --depth 1 ${URL} ${local_file_or_checkout}
+            git clone --depth ${DEPTH} ${URL} ${local_file_or_checkout}
         else
             mason_substep "already cloned ${URL}, pulling to update"
             (cd ${local_file_or_checkout} && git pull)
+        fi
+        if [[ ${CUSTOM_GITSHA:-false} == false ]]; then
+            (cd ${local_file_or_checkout} && git fetch && git checkout ${CUSTOM_GITSHA})
         fi
         mason_step "moving ${local_file_or_checkout} into place at ${TO_DIR}"
         cp -r ${local_file_or_checkout} ${TO_DIR}

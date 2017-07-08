@@ -7,7 +7,7 @@ packages=(llvm clang++ clang-tidy clang-format lldb llvm-cov include-what-you-us
 versions=(3.9.1 4.0.0 3.8.1)
 
 if [[ $(uname -s) == 'Linux' ]]; then
-    CLANG_BOOTSTRAP_VERSION="3.8.1"
+    CLANG_BOOTSTRAP_VERSION="4.0.0"
     ./mason install clang++ ${CLANG_BOOTSTRAP_VERSION}
     CLANG_PREFIX=$(./mason prefix clang++ ${CLANG_BOOTSTRAP_VERSION})
     export CXX=${CLANG_PREFIX}/bin/clang++
@@ -42,10 +42,16 @@ function new_version() {
 function build_all() {
     for ver in "${!versions[@]}"; do
         build ${versions[$ver]}
+    done
+}
+
+function publish_all() {
+    for ver in "${!versions[@]}"; do
         publish ${versions[$ver]}
     done
 }
 
 if [[ ${1:-0} == "all" ]]; then
     build_all
+    publish_all
 fi

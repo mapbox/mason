@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=cheap-ruler
-MASON_VERSION=2.5.2
+MASON_VERSION=2.5.3
 MASON_HEADER_ONLY=true
 
 . ${MASON_DIR}/mason.sh
@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/${MASON_NAME}-cpp/archive/v${MASON_VERSION}.tar.gz \
-        c4c295bcf1269161ad4f1d50518a6d86d147e27b
+        77369c90a1d8c9be3e10b80713b3b147d1b65a5a
 
     mason_extract_tar_gz
 

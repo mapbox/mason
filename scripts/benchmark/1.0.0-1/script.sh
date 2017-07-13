@@ -37,7 +37,7 @@ function mason_compile {
             ..
     else
         cmake \
-            ${MASON_CMAKE_TOOLCHAIN} \
+            ${MASON_CMAKE_TOOLCHAIN:-} \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}" \
             -DBENCHMARK_ENABLE_LTO=ON \

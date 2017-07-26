@@ -24,6 +24,7 @@ else
 fi
 
 # we use this custom function rather than "mason_download" since we need to easily grab multiple packages
+# get_llvm_project [url or git url] [path to download to] <optional hash of download> <optional gitsha to pin to>
 function get_llvm_project() {
     local URL=${1}
     local TO_DIR=${2}

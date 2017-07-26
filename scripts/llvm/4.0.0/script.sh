@@ -13,11 +13,11 @@ function setup_release() {
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/llvm-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/                        c872366ec69fb425ce9336741dba04d9adf16c3e
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/cfe-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang             61ca17979e0c2ec7dc5f66cb54ac0b8ec0e653a9
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/compiler-rt-${MASON_VERSION}.src.tar.xz"       ${MASON_BUILD_PATH}/projects/compiler-rt    bbf0ad69a296548a44019ed953bdfffc3d3f95d5
-    #if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
+    if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
         get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libcxx-${MASON_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/libcxx     ab37f78c83c739d862099a874ad91c3ab295f6b7
         get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libcxxabi-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libcxxabi  d36cb0be6c8fa54534a1cb067bdb4a6b3389d3d3
         get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/libunwind-${MASON_VERSION}.src.tar.xz"         ${MASON_BUILD_PATH}/projects/libunwind  5178ea6b1834a7cd3d6be610709b811255255a11
-    #fi
+    fi
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/lld-${MASON_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld               137e8c9d5d73a0e3dfec1ffd63abb5173473e95b
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/clang-tools-extra-${MASON_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra 9c9ad20062c41f22f4078dcfea38daebfce2c2ed
     get_llvm_project "http://llvm.org/releases/${MASON_VERSION}/lldb-${MASON_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb              5b17f041631670e40718ab89f99f1c8347766d92

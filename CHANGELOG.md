@@ -2,8 +2,6 @@
 
 ## 0.14.0
 
-https://github.com/mapbox/mason/compare/v0.13.0...702a81e4599f99db1a658d6ab805ac5972d2b6a8
-
  - Added
     - libosmium cd8e2ff
     - osm-area-tools b222e00
@@ -18,6 +16,8 @@ https://github.com/mapbox/mason/compare/v0.13.0...702a81e4599f99db1a658d6ab805ac
 
  - Fixed
     - If mason is executed through a symlink, resolve the link
+
+Changes: https://github.com/mapbox/mason/compare/v0.13.0...v0.14.0
 
 ## 0.13.0
 

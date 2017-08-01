@@ -44,4 +44,16 @@ function mason_clean {
     make clean
 }
 
+function mason_cflags {
+    :
+}
+
+function mason_ldflags {
+    :
+}
+
+function mason_static_libs {
+    :
+}
+
 mason_run "$@"

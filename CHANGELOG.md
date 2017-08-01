@@ -1,5 +1,24 @@
 # Mason releases
 
+## 0.14.0
+
+https://github.com/mapbox/mason/compare/v0.13.0...702a81e4599f99db1a658d6ab805ac5972d2b6a8
+
+ - Added
+    - libosmium cd8e2ff
+    - osm-area-tools b222e00
+    - geometry 0.9.2
+    - supercluster 0.2.1
+    -	benchmark 1.0.0, 1.1.0
+    -	cheap-ruler 2.5.2, 2.5.3
+    -	TBB to 2017_U7
+    -	llvm 4.0.1
+    -	tippecanoe 1.21.0
+    - catch 1.9.6
+
+ - Fixed
+    - If mason is executed through a symlink, resolve the link
+
 ## 0.13.0
 
  - Added

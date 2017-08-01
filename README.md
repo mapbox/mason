@@ -40,7 +40,7 @@ To install mason locally:
 
 ```sh
 mkdir ./mason
-curl -sSfL https://github.com/mapbox/mason/archive/v0.13.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=./mason
+curl -sSfL https://github.com/mapbox/mason/archive/v0.14.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=./mason
 ```
 
 Then you can use the `mason` command like: `./mason/mason install <package> <version>`
@@ -48,7 +48,7 @@ Then you can use the `mason` command like: `./mason/mason install <package> <ver
 To install mason globally (to /tmp):
 
 ```sh
-curl -sSfL https://github.com/mapbox/mason/archive/v0.13.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=/tmp
+curl -sSfL https://github.com/mapbox/mason/archive/v0.14.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=/tmp
 ```
 
 Then you can use the `mason` command like: `/tmp/mason install <package> <version>`
@@ -62,7 +62,7 @@ Optionally a convention when using submodules, is to place the submodule at a pa
 ```bash
 git submodule add git@github.com:mapbox/mason.git .mason/
 ```
-        
+
 This will append a few lines to your `.gitmodules` file. Make sure to change the `url` parameter to `https` instead of `git@github` ssh protocol.
 
 ```
@@ -70,7 +70,7 @@ This will append a few lines to your `.gitmodules` file. Make sure to change the
     path = .mason
     url = https://github.com/mapbox/mason.git
 ```
-   
+
 Update your `Makefile` to point to the mason scripts and provide an installation script for the necessary dependencies. The following installs two Mason packages with the `make mason_packages` command.
 
 ```Make

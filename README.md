@@ -62,7 +62,7 @@ Optionally a convention when using submodules, is to place the submodule at a pa
 ```bash
 git submodule add git@github.com:mapbox/mason.git .mason/
 ```
-        
+
 This will append a few lines to your `.gitmodules` file. Make sure to change the `url` parameter to `https` instead of `git@github` ssh protocol.
 
 ```
@@ -70,7 +70,7 @@ This will append a few lines to your `.gitmodules` file. Make sure to change the
     path = .mason
     url = https://github.com/mapbox/mason.git
 ```
-   
+
 Update your `Makefile` to point to the mason scripts and provide an installation script for the necessary dependencies. The following installs two Mason packages with the `make mason_packages` command.
 
 ```Make
@@ -266,7 +266,7 @@ function mason_load_source {
 }
 ```
 
-In that function, you should use `mason_download` as a shortcut to download the tarball. The second argument to is a hash generated with `git hash-object` and used to verify that the source code downloaded matches the expected file. The function also caches downloaded tarballs in the `mason_packages/.cache` folder.
+In that function, you should use `mason_download` as a shortcut to download the tarball. The second argument to is a hash generated with `git hash-object` and used to verify that the source code downloaded matches the expected file. The function also caches downloaded tarballs in the `mason_packages/.cache` folder. You can get the hash object by running `./mason build <package> <version>` locally and this should fail with a message of the expected hash.
 
 `mason_extract_tar_gz` unpacks the archive into the `mason_packages/.build` folder. If the tarball is BZip2 compressed, you can also use `mason_extract_tar_bz2` instead.
 
@@ -335,8 +335,7 @@ Name | Description
 `MASON_LIB_FILE` | Relative path to the library file in the install directory. Example: `lib/libuv.a`
 `MASON_PKGCONFIG_FILE` | Relative path to the pkg-config file in the install directory.  Example: `lib/pkgconfig/libuv.pc`
 `MASON_XCODE_ROOT` | OS X specific; Path to the Xcode Developer directory. Example: `/Applications/Xcode.app/Contents/Developer`
-
-
+`MASON_HEADER_ONLY` | Set to `true` to specify this library as header-only, which bypasses building binaries (default `false`)
 
 ### Customization
 

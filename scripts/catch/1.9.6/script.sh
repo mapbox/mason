@@ -17,7 +17,7 @@ function mason_load_source {
 # nothing to build, just copying single include header file
 function mason_compile {
     mkdir -p ${MASON_PREFIX}/include/
-    cp -r single_include ${MASON_PREFIX}/include
+    cp -r single_include/catch.hpp ${MASON_PREFIX}/include
 }
 
 function mason_cflags {

@@ -155,9 +155,11 @@ B. Run the docker image
 
 We run the docker image to build the package on linux. We map volumes such that the binary will end up on our host machine (to avoid needing to pass publishing credentials to docker).
 
+```
 LLVM_VERSION="4.0.2"
 docker run -it --volume $(pwd):/home/travis/build/mapbox/mason mason-llvm \
   ./mason build llvm ${LLVM_VERSION} && ./utils/llvm.sh build ${LLVM_VERSION}
+```
 
 C. Authenticate your shell with the mason AWS KEYS
 

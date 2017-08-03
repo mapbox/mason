@@ -24,6 +24,7 @@ else
 fi
 
 # we use this custom function rather than "mason_download" since we need to easily grab multiple packages
+# get_llvm_project [url or git url] [path to download to] <optional hash of download> <optional gitsha to pin to>
 function get_llvm_project() {
     local URL=${1}
     local TO_DIR=${2}
@@ -32,15 +33,23 @@ function get_llvm_project() {
         exit 1
     fi
     local EXPECTED_HASH=${3:-false}
+    local CUSTOM_GITSHA=${4:-false}
+    local DEPTH=1
+    if [[ ${CUSTOM_GITSHA:-false} == false ]]; then
+        DEPTH=500
+    fi
     local file_basename=$(basename ${URL})
     local local_file_or_checkout=$(pwd)/${file_basename}
     if [[ ${URL} =~ '.git' ]]; then
         if [ ! -d ${local_file_or_checkout} ] ; then
             mason_step "cloning ${URL} to ${local_file_or_checkout}"
-            git clone --depth 1 ${URL} ${local_file_or_checkout}
+            git clone --depth ${DEPTH} ${URL} ${local_file_or_checkout}
         else
             mason_substep "already cloned ${URL}, pulling to update"
             (cd ${local_file_or_checkout} && git pull)
+        fi
+        if [[ ${CUSTOM_GITSHA:-false} == false ]]; then
+            (cd ${local_file_or_checkout} && git fetch && git checkout ${CUSTOM_GITSHA})
         fi
         mason_step "moving ${local_file_or_checkout} into place at ${TO_DIR}"
         cp -r ${local_file_or_checkout} ${TO_DIR}
@@ -53,7 +62,7 @@ function get_llvm_project() {
         fi
         export OBJECT_HASH=$(git hash-object ${local_file_or_checkout})
         if [[ ${EXPECTED_HASH:-false} == false ]]; then
-            mason_error "Warning: no expected hash provided by script.sh, actual was ${OBJECT_HASH}"
+            mason_error "NOTICE: detected object has of ${OBJECT_HASH}, optionally add this the 'setup_release' function in your script.sh in order to assert this never changes"
         else
             if [[ $3 != ${OBJECT_HASH} ]]; then
                 mason_error "Error: hash mismatch ${EXPECTED_HASH} (expected) != ${OBJECT_HASH} (actual)"
@@ -103,7 +112,7 @@ function mason_prepare_compile {
     CCACHE_VERSION=3.3.1
     CMAKE_VERSION=3.7.2
     NINJA_VERSION=1.7.1
-    CLANG_VERSION=3.9.1
+    CLANG_VERSION=4.0.0
 
     ${MASON_DIR}/mason install clang++ ${CLANG_VERSION}
     MASON_CLANG=$(${MASON_DIR}/mason prefix clang++ ${CLANG_VERSION})
@@ -177,7 +186,7 @@ function mason_compile {
         # because that value will be appended to the sysroot, not exist, and then get thrown out. If the sysroot were / then it would be added
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCLANG_DEFAULT_CXX_STDLIB=libc++"
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.11"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_CREATE_XCODE_TOOLCHAIN=ON -DLLVM_EXTERNALIZE_DEBUGINFO=ON"
     fi
     if [[ $(uname -s) == 'Linux' ]]; then
@@ -188,7 +197,7 @@ function mason_compile {
         fi
     fi
 
-    # we strip this since we don't care about older os x for this package
+    # Strip this since we set CMAKE_OSX_DEPLOYMENT_TARGET above. We assume that we'd only upgrade to use this compiler on recent OS X systems and we want the potential performance benefit of targeting a more recent version
     if [[ $(uname -s) == 'Darwin' ]]; then
         export CXXFLAGS="${CXXFLAGS//-mmacosx-version-min=10.8}"
         export LDFLAGS="${LDFLAGS//-mmacosx-version-min=10.8}"

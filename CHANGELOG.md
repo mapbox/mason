@@ -1,5 +1,19 @@
 # Mason releases
 
+## 0.14.1
+
+ - Added
+    - Detailed readme on how to package llvm in mason
+    - llvm 4.0.1 and subpackages:
+        - clang++
+        - clang-tidy
+        - clang-format
+        - lldb
+        - llvm-cov
+        - include-what-you-use
+
+Changes: https://github.com/mapbox/mason/compare/v0.14.0...v0.14.1
+
 ## 0.14.0
 
  - Added

@@ -28,6 +28,10 @@ function mason_compile {
     # we want -O3 for best performance
     perl -i -p -e "s/-O2 -fno-omit-frame-pointer/-O3/g;" Makefile
     export CXX="${MASON_CCACHE}/bin/ccache ${CXX}"
+    # explicitly ask for SSE support, which will trigger a warning if not available
+    # https://github.com/facebook/rocksdb/blob/9b11d4345a0f01fc3de756e01460bf1b0446f326/INSTALL.md#compilation)
+    # https://github.com/facebook/rocksdb/blob/627c9f1abb263ab8d2072a1ac9d30a6e4bc3dde4/build_tools/build_detect_platform#L471
+    export USE_SSE=1
     INSTALL_PATH=${MASON_PREFIX} V=1 make install-static -j${MASON_CONCURRENCY}
     if [[ $(uname -s) == 'Darwin' ]]; then
         export EXTRA_LDFLAGS="-lc++"

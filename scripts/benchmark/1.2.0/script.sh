@@ -26,7 +26,7 @@ function mason_compile {
     rm -rf build
     mkdir -p build
     cd build
-    ${MASON_CMAKE} \
+    ${MASON_CMAKE}/bin/cmake \
         ${MASON_CMAKE_TOOLCHAIN:-} \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}" \

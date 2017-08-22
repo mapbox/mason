@@ -16,34 +16,23 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/benchmark-${MASON_VERSION}
 }
 
+function mason_prepare_compile {
+    ${MASON_DIR}/mason install cmake 3.5.2
+    MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake 3.5.2)
+    MASON_HOME=${MASON_ROOT}/.link/
+}
+
 function mason_compile {
     rm -rf build
     mkdir -p build
     cd build
-    if [ ${MASON_PLATFORM} == 'ios' ] ; then
-        # Make sure CMake thinks we're cross-compiling and manually set the exit codes
-        # because CMake can't run the test programs
-        echo "set (CMAKE_SYSTEM_NAME Darwin)" > toolchain.cmake
-        cmake \
-            -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake \
-            -DRUN_HAVE_STD_REGEX=1 \
-            -DRUN_HAVE_POSIX_REGEX=0 \
-            -DRUN_HAVE_STEADY_CLOCK=0 \
-            -DCMAKE_CXX_FLAGS="${CFLAGS:-}" \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}" \
-            -DBENCHMARK_ENABLE_LTO=ON \
-            -DBENCHMARK_ENABLE_TESTING=OFF \
-            ..
-    else
-        cmake \
-            ${MASON_CMAKE_TOOLCHAIN:-} \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}" \
-            -DBENCHMARK_ENABLE_LTO=ON \
-            -DBENCHMARK_ENABLE_TESTING=OFF \
-            ..
-    fi
+    ${MASON_CMAKE} \
+        ${MASON_CMAKE_TOOLCHAIN:-} \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}" \
+        -DBENCHMARK_ENABLE_LTO=ON \
+        -DBENCHMARK_ENABLE_TESTING=OFF \
+        ..
 
     make install -j${MASON_CONCURRENCY}
 }

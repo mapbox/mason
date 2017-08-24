@@ -1,5 +1,23 @@
 # Mason releases
 
+## 0.14.2
+
+ - Added
+    - vector-tile 1.0.0-rc7
+    - geojsonvt 6.2.1
+    - polylabel 1.0.3
+    - shelf-pack 2.1.1
+    - supercluster 0.2.2
+    - wagyu 0.4.3
+    - rocksdb 5.4.6
+    - tippecanoe 1.22.1
+
+  - Fixed
+    - webp 0.6.0 now built for iOS
+
+Changes: https://github.com/mapbox/mason/compare/v0.14.0...v0.14.1
+
+
 ## 0.14.1
 
  - Added

@@ -1,0 +1,50 @@
+language: generic
+
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode7
+      env: MASON_PLATFORM=ios
+      compiler: clang
+    - os: osx
+      osx_image: xcode7.2
+      env: MASON_PLATFORM=ios
+      compiler: clang
+    - os: osx
+      osx_image: xcode7.3
+      env: MASON_PLATFORM=ios
+      compiler: clang
+    - os: osx
+      osx_image: xcode7
+      env: MASON_PLATFORM=osx
+      compiler: clang
+    - os: linux
+      sudo: true
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - libstdc++-5-dev
+      before_script:
+        # enable DUAL_ABI per https://github.com/mapbox/mason/issues/319
+        - sudo perl -i -p -e "s/# define _GLIBCXX_USE_DUAL_ABI 0/# define _GLIBCXX_USE_DUAL_ABI 1/g;" /usr/include/x86_64-linux-gnu/c++/5/bits/c++config.h
+      env: MASON_PLATFORM=linux
+    - os: linux
+      env: MASON_PLATFORM=android MASON_ANDROID_ABI=arm-v5
+    - os: linux
+      env: MASON_PLATFORM=android MASON_ANDROID_ABI=arm-v7
+    - os: linux
+      env: MASON_PLATFORM=android MASON_ANDROID_ABI=arm-v8
+    - os: linux
+      env: MASON_PLATFORM=android MASON_ANDROID_ABI=x86
+    - os: linux
+      env: MASON_PLATFORM=android MASON_ANDROID_ABI=x86-64
+    - os: linux
+      env: MASON_PLATFORM=android MASON_ANDROID_ABI=mips
+    - os: linux
+      env: MASON_PLATFORM=android MASON_ANDROID_ABI=mips-64
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

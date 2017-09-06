@@ -19,7 +19,6 @@ function mason_load_source {
 function mason_prepare_compile {
     ${MASON_DIR}/mason install cmake 3.5.2
     MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake 3.5.2)
-    MASON_HOME=${MASON_ROOT}/.link/
 }
 
 function mason_compile {
@@ -34,7 +33,7 @@ function mason_compile {
         -DBENCHMARK_ENABLE_TESTING=OFF \
         ..
 
-    make install -j${MASON_CONCURRENCY}
+    VERBOSE=1 make install -j${MASON_CONCURRENCY}
 }
 
 function mason_cflags {
@@ -42,7 +41,7 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    echo -lpthread
+    :
 }
 
 function mason_static_libs {

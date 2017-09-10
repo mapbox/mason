@@ -2,6 +2,7 @@
 
 MASON_NAME=minjur
 MASON_VERSION=feac70472f46c3145b6bdf7a02fdc37777828318
+MASON_LIB_FILE=bin/minjur
 
 . ${MASON_DIR}/mason.sh
 

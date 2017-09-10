@@ -141,6 +141,8 @@ function mason_compile {
     # between mason and homebrew or source installs
     perl -i -p -e "s/AddPath\(\"\/usr\/local\/include\"\, System\, false\)\;//g;" tools/clang/lib/Frontend/InitHeaderSearch.cpp
 
+    CMAKE_EXTRA_ARGS=""
+
     if [[ ${MAJOR_MINOR} == "3.8" ]]; then
         # workaround https://llvm.org/bugs/show_bug.cgi?id=25565
         perl -i -p -e "s/set\(codegen_deps intrinsics_gen\)/set\(codegen_deps intrinsics_gen attributes_inc\)/g;" lib/CodeGen/CMakeLists.txt
@@ -155,7 +157,6 @@ function mason_compile {
 
     mkdir -p ./build
     cd ./build
-    CMAKE_EXTRA_ARGS=""
     if [[ $(uname -s) == 'Darwin' ]]; then
         : '
         Note: C_INCLUDE_DIRS and DEFAULT_SYSROOT are critical options to understand to ensure C and C++ headers are predictably found.

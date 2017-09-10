@@ -116,7 +116,7 @@ function cross_build_configure {
 }
 
 function mason_cflags {
-    echo "-I${MASON_PREFIX}/include ${CPPFLAGS}"
+    echo "-I${MASON_PREFIX}/include ${CPPFLAGS:-}"
 }
 
 function mason_ldflags {

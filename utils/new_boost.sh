@@ -1,8 +1,8 @@
 set -eu
 set -o pipefail
 
-LAST_VERSION="1.62.0"
-NEW_VERSION="1.63.0"
+LAST_VERSION="1.63.0"
+NEW_VERSION="1.64.0"
 
 : ' 
 
@@ -46,9 +46,12 @@ for lib in $(find scripts/ -maxdepth 1 -type dir -name 'boost_lib*' -print); do
     fi
 done
 
+# run this after pushing branch:
+# TODO: in the past this would get rate limited at 10 but @kkaefer convinced travis to increase our limit to 50
+: '
 ./mason trigger boost ${NEW_VERSION}
-# TODO: this is rate limited so it needs to be run over many hours to avoid travis blocking
 for lib in $(find scripts/ -maxdepth 1 -type dir -name 'boost_lib*' -print); do
-    echo ./mason trigger $(basename $lib) ${NEW_VERSION}
+    #echo ./mason trigger $(basename $lib) ${NEW_VERSION}
 done
+'
 

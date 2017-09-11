@@ -18,7 +18,7 @@ matrix:
           sources:
            - ubuntu-toolchain-r-test
           packages:
-           - libstdc++-5-dev
+           - libstdc++-4.9-dev
     - os: osx
       env: MASON_PLATFORM=android MASON_ANDROID_ABI=arm-v5
     - os: osx

@@ -26,6 +26,8 @@ function usage() {
     echo
     echo "  Publish all the sub-packages:"
     echo "    ./utils/llvm.sh publish <new version>"
+    echo ""
+    echo "See scripts/llvm/base/README.md for more details"
 }
 
 subpackages=(clang++ clang-tidy clang-format lldb llvm-cov include-what-you-use)

@@ -1,5 +1,25 @@
 # Mason releases
 
+## 0.15.0
+
+ - Added
+    - vtzero fa6682b
+    - protozero a0e9109
+    - libosmium 2.13.1
+    - osmium-tool 1.7.1
+    - benchmark 1.2.0
+    - boost 1.65.1
+    - llvm 5.0.0
+    - geojson 0.4.2
+    - gdal 2.2.1
+    - boost 1.64.0
+ - Fixed
+    - v8 5.1.281.47 now build without snapshot functionality
+    - Fixed undefined vars in mesa, minjur, android-ndk, boost python, and apitrace packages
+
+Changes: https://github.com/mapbox/mason/compare/v0.14.2...v0.15.0
+
+
 ## 0.14.2
 
  - Added

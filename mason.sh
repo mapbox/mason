@@ -27,7 +27,6 @@ case ${MASON_UNAME} in
     *)              MASON_CONCURRENCY=1 ;;
 esac
 
-
 function mason_step    { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }
 function mason_substep { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }
 function mason_success { >&2 echo -e "\033[1m\033[32m* $1\033[0m"; }
@@ -49,7 +48,7 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
             exit 1
         fi
         MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
-        MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX${MASON_SDK_VERSION}.sdk"
+        MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX.sdk"
 
         if [[ ${MASON_SYSTEM_PACKAGE:-} && ${MASON_SDK_VERSION%%.*} -ge 10 && ${MASON_SDK_VERSION##*.} -ge 11 ]]; then
             export MASON_DYNLIB_SUFFIX="tbd"

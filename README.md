@@ -243,7 +243,7 @@ Below are details on ways to create packages for:
 
 ### Creating new packages
 
-If you are creating a package for previously unpackaged software start by creating a new directory for your `${package}/${version}`:
+If you are creating a package for previously unpackaged software start by creating a new directory for your `${package}/${version}` from within your mason checkout.
 
 For example if you want to name your package `yourlib` and it is version `1.0.0` you would do:
 
@@ -277,7 +277,7 @@ What you put in those files depend on what type of package you are creating. See
 
 #### Header-only package
 
-For a header-only library, start by copying the `geometry` package:
+For a header-only library, a good example to copy from is the `geometry` package. You can copying the `geometry` package:
 
 ```bash
 cp -r scripts/geometry/0.9.1 scripts/yourlib/1.0.0
@@ -290,7 +290,10 @@ See the [Script structure](#script-structure) section below for details on the `
 - `MASON_NAME`: change it from `geometry` to `yourlib`
 - `MASON_VERSION`: change it from `0.9.1` to your version
 
-Then you will also need to update the hash on line `12`. To do this, it is easiest to run `./mason build yourlib version` and it will fail, but the error message will contain the correct hash. Copy the hash and put it on line `12`.
+Then you will also need to update:
+
+ - The github url on line `11` to match your download url
+ - The hash on line `12`. To do this, it is easiest to run `./mason build yourlib version` and it will fail, but the error message will contain the correct hash. Copy the hash and put it on line `12`.
 
 Now update the `MASON_BUILD_PATH`. You will need to change the text of `geometry.hpp-` to your package name. This will likely work for your entire line:
 

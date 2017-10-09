@@ -48,6 +48,10 @@ if [ ${MASON_PLATFORM} = 'osx' ]; then
             exit 1
         fi
         MASON_SDK_ROOT=${MASON_XCODE_ROOT}/Platforms/MacOSX.platform/Developer
+        # note: as of xcode >= 8.2 there is an unversioned "<Platform>.sdk" directory
+        # such that for 10.12 the `MacOSX10.12.sdk` is a symlink to `MacOSX.sdk`
+        # We use the unversioned directory here so that CFLAGS and CXXFLAGS are portable across
+        # systems that might have a different SDK (e.g. xcode 8.3 vs 8.2)
         MASON_SDK_PATH="${MASON_SDK_ROOT}/SDKs/MacOSX.sdk"
 
         if [[ ${MASON_SYSTEM_PACKAGE:-} && ${MASON_SDK_VERSION%%.*} -ge 10 && ${MASON_SDK_VERSION##*.} -ge 11 ]]; then

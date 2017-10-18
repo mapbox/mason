@@ -16,6 +16,10 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
+    # This line is critical: it ensures that we install deps in
+    # the parent folder rather than within the ./build directory
+    # such that our modifications to the .la files work
+    cd $(dirname ${MASON_ROOT})
     # set up to fix libtool .la files
     # https://github.com/mapbox/mason/issues/61
     if [[ $(uname -s) == 'Darwin' ]]; then

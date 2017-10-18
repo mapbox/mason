@@ -13,7 +13,7 @@ function mason_load_source {
         https://github.com/libexpat/libexpat/archive/${MASON_VERSION2}.tar.gz \
         b1a5faaad5f4801d550df43baeba127ddc6233d4
 
-    mason_extract_tar_bz2
+    mason_extract_tar_gz
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/libexpat-${MASON_VERSION2}
 }

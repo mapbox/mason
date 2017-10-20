@@ -2,14 +2,14 @@ set -eu
 set -o pipefail
 # set -x
 
-export MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
+export MASON_ROOT=${MASON_ROOT:-$(pwd)/mason_packages}
 MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
 MASON_IGNORE_OSX_SDK=${MASON_IGNORE_OSX_SDK:-false}
 
-MASON_UNAME=`uname -s`
+MASON_UNAME=$(uname -s)
 if [ ${MASON_UNAME} = 'Darwin' ]; then
     MASON_PLATFORM=${MASON_PLATFORM:-osx}
-    MASON_XCODE_ROOT=`"xcode-select" -p`
+    MASON_XCODE_ROOT=$("xcode-select" -p)
 elif [ ${MASON_UNAME} = 'Linux' ]; then
     MASON_PLATFORM=${MASON_PLATFORM:-linux}
 fi
@@ -22,7 +22,7 @@ case $- in
 esac
 
 case ${MASON_UNAME} in
-    'Darwin')    MASON_CONCURRENCY=`sysctl -n hw.ncpu` ;;
+    'Darwin')    MASON_CONCURRENCY=$(sysctl -n hw.ncpu) ;;
     'Linux')        MASON_CONCURRENCY=$(lscpu -p | egrep -v '^#' | wc -l) ;;
     *)              MASON_CONCURRENCY=1 ;;
 esac
@@ -39,10 +39,10 @@ esac
 
 if [ ${MASON_PLATFORM} = 'osx' ]; then
     export MASON_HOST_ARG="--host=x86_64-apple-darwin"
-    export MASON_PLATFORM_VERSION=`uname -m`
+    export MASON_PLATFORM_VERSION=$(uname -m)
 
     if [[ ${MASON_IGNORE_OSX_SDK} == false ]]; then
-        MASON_SDK_VERSION=`xcrun --sdk macosx --show-sdk-version`
+        MASON_SDK_VERSION=$(xcrun --sdk macosx --show-sdk-version)
         if [[ ! ${MASON_SDK_VERSION} ]]; then
             mason_error "The command 'xcrun --sdk macosx --show-sdk-version' returned nothing. Is your xcode environment setup correctly?"
             exit 1
@@ -76,7 +76,7 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
     export MASON_HOST_ARG="--host=arm-apple-darwin"
     export MASON_PLATFORM_VERSION="8.0" # Deployment target version
 
-    MASON_SDK_VERSION=`xcrun --sdk iphoneos --show-sdk-version`
+    MASON_SDK_VERSION=$(xcrun --sdk iphoneos --show-sdk-version)
     if [[ ! ${MASON_SDK_VERSION} ]]; then
         mason_error "The command 'xcrun --sdk iphoneos --show-sdk-version' returned nothing. Is your xcode environment setup correctly?"
         exit 1
@@ -93,7 +93,7 @@ elif [ ${MASON_PLATFORM} = 'ios' ]; then
         export MASON_DYNLIB_SUFFIX="dylib"
     fi
 
-    if [ `xcrun --sdk iphonesimulator --show-sdk-version` != ${MASON_SDK_VERSION} ]; then
+    if [ $(xcrun --sdk iphonesimulator --show-sdk-version) != ${MASON_SDK_VERSION} ]; then
         mason_error "iPhone Simulator SDK version doesn't match iPhone SDK version"
         exit 1
     fi
@@ -326,7 +326,7 @@ function mason_download {
         fi
     fi
 
-    MASON_HASH=`git hash-object ${MASON_SLUG}`
+    MASON_HASH=$(git hash-object ${MASON_SLUG})
     if [ "$2" != "${MASON_HASH}" ] ; then
         mason_error "Hash ${MASON_HASH} of file ${MASON_ROOT}/.cache/${MASON_SLUG} doesn't match $2"
         exit 1
@@ -524,7 +524,7 @@ function mason_write_config {
 }
 
 function mason_try_binary {
-    MASON_BINARIES_DIR=`dirname "${MASON_BINARIES}"`
+    MASON_BINARIES_DIR=$(dirname "${MASON_BINARIES}")
     mkdir -p "${MASON_ROOT}/.binaries/${MASON_BINARIES_DIR}"
 
     # try downloading from S3
@@ -558,7 +558,7 @@ function mason_try_binary {
 
         # Try to force the ownership of the unpacked files
         # to the current user using fakeroot if available
-        `which fakeroot` tar xzf "${MASON_BINARIES_PATH}"
+        $(which fakeroot) tar xzf "${MASON_BINARIES_PATH}"
 
         if [ ! -z ${MASON_PKGCONFIG_FILE:-} ] ; then
             if [ -f "${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}" ] ; then
@@ -589,7 +589,7 @@ function mason_cflags {
         exit 1
     fi
     local FLAGS
-    FLAGS=$(set -e;`mason_pkgconfig` --static --cflags)
+    FLAGS=$(set -e;$(mason_pkgconfig) --static --cflags)
     # Replace double-prefix in case we use a sysroot.
     echo ${FLAGS//${MASON_SYSROOT:-}${MASON_PREFIX}/${MASON_PREFIX}}
 }
@@ -600,7 +600,7 @@ function mason_ldflags {
         exit 1
     fi
     local FLAGS
-    FLAGS=$(set -e;`mason_pkgconfig` --static --libs)
+    FLAGS=$(set -e;$(mason_pkgconfig) --static --libs)
     # Replace double-prefix in case we use a sysroot.
     echo ${FLAGS//${MASON_SYSROOT:-}${MASON_PREFIX}/${MASON_PREFIX}}
 }
@@ -674,7 +674,7 @@ function mason_publish {
         exit 1
     fi
 
-    mkdir -p `dirname ${MASON_BINARIES_PATH}`
+    mkdir -p $(dirname ${MASON_BINARIES_PATH})
     cd "${MASON_PREFIX}"
     rm -rf "${MASON_BINARIES_PATH}"
     tar czf "${MASON_BINARIES_PATH}" .

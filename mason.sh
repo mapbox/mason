@@ -650,7 +650,7 @@ function mason_list_existing {
         mason_list_existing_package headers
     else
         for PREFIX in $(jq -r .CommonPrefixes[].Prefix[0:-1] <<< "$(aws s3api list-objects --bucket=mason-binaries --delimiter=/)") ; do
-            if [ ${PREFIX} != "headers" -a ${PREFIX} != "prebuilt" ] ; then
+            if [ ${PREFIX} != "headers" ] && [ ${PREFIX} != "prebuilt" ] ; then
                 mason_list_existing_package ${PREFIX}
             fi
         done

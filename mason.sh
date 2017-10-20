@@ -374,12 +374,12 @@ function bash_lndir() {
     src=$(cd "$1" ; pwd)
     dst=$(cd "$2" ; pwd)
     find "$src" -type d |
-    while read dir; do
+    while read -r dir; do
             mkdir -p "$dst${dir#$src}"
     done
 
     find "$src" -type f -o -type l |
-    while read src_f; do
+    while read -r src_f; do
             dst_f="$dst${src_f#$src}"
             if [[ ! -e $dst_f ]]; then
                 ln -s "$src_f" "$dst_f"

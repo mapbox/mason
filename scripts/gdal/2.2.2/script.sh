@@ -152,7 +152,8 @@ function mason_compile {
         --with-pcre=no \
         --with-liblzma=no \
         --with-netcdf=no \
-        --with-poppler=no
+        --with-poppler=no \
+        --with-sfcgal=no
 
     make -j${MASON_CONCURRENCY}
     make install

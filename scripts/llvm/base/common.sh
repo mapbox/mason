@@ -46,9 +46,9 @@ function get_llvm_project() {
             git clone --depth ${DEPTH} ${URL} ${local_file_or_checkout}
         else
             mason_substep "already cloned ${URL}, pulling to update"
-            (cd ${local_file_or_checkout} && git pull)
+            (cd ${local_file_or_checkout} && echo "pulling ${local_file_or_checkout}" && git pull)
         fi
-        if [[ ${CUSTOM_GITSHA:-false} == false ]]; then
+        if [[ ${CUSTOM_GITSHA:-false} != false ]]; then
             (cd ${local_file_or_checkout} && git fetch && git checkout ${CUSTOM_GITSHA})
         fi
         mason_step "moving ${local_file_or_checkout} into place at ${TO_DIR}"

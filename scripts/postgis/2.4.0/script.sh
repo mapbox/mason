@@ -38,6 +38,9 @@ function mason_prepare_compile {
     XML2_VERSION="2.9.4"
     GEOS_VERSION="3.6.2"
     GDAL_VERSION="2.2.2"
+    JSON_C_VERSION="0.12.1"
+    PROTOBUF_VERSION="3.4.1" # must match the version compiled into protobuf C
+    PROTOBUF_C_VERSION="1.3.0"
     ${MASON_DIR}/mason install postgres ${POSTGRES_VERSION}
     MASON_POSTGRES=$(${MASON_DIR}/mason prefix postgres ${POSTGRES_VERSION})
     ${MASON_DIR}/mason install libxml2 ${XML2_VERSION}
@@ -59,6 +62,15 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install expat ${EXPAT_VERSION}
     MASON_EXPAT=$(${MASON_DIR}/mason prefix expat ${EXPAT_VERSION})
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_EXPAT}/lib/libexpat.la
+    ${MASON_DIR}/mason install json-c ${JSON_C_VERSION}
+    MASON_JSON_C=$(${MASON_DIR}/mason prefix json-c ${JSON_C_VERSION})
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_JSON_C}/lib/libjson-c.la
+    ${MASON_DIR}/mason install protobuf_c ${PROTOBUF_C_VERSION}
+    MASON_PROTOBUF_C=$(${MASON_DIR}/mason prefix protobuf_c ${PROTOBUF_C_VERSION})
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PROTOBUF_C}/lib/libprotobuf-c.la
+    ${MASON_DIR}/mason install protobuf ${PROTOBUF_VERSION}
+    MASON_PROTOBUF=$(${MASON_DIR}/mason prefix protobuf ${PROTOBUF_VERSION})
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PROTOBUF}/lib/libprotobuf-lite.la
     ${MASON_DIR}/mason install libpq ${POSTGRES_VERSION}
     MASON_LIBPQ=$(${MASON_DIR}/mason prefix libpq ${POSTGRES_VERSION})
     ${MASON_DIR}/mason install zlib system
@@ -79,6 +91,9 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    # put protoc-c on path (comes from protobuf_c)
+    export PATH=${MASON_PROTOBUF_C}/bin:${PATH}
+    which protoc-c
     export LDFLAGS="${LDFLAGS} \
       -L${MASON_GDAL}/lib -lgdal \
       -L${MASON_GEOS}/lib -lgeos_c -lgeos\
@@ -87,6 +102,9 @@ function mason_compile {
       -L${MASON_JPEG}/lib -ljpeg \
       -L${MASON_PROJ}/lib -lproj \
       -L${MASON_PNG}/lib -lpng \
+      -L${MASON_JSON_C}/lib -ljson-c \
+      -L${MASON_PROTOBUF_C}/lib -lprotobuf-c \
+      -L${MASON_PROTOBUF}/lib -lprotobuf-lite \
       -L${MASON_EXPAT}/lib -lexpat \
       -L${MASON_PROJ}/lib -lproj \
       -L${MASON_XML2}/lib -lxml2"
@@ -98,6 +116,9 @@ function mason_compile {
       -I${MASON_PNG}/include \
       -I${MASON_EXPAT}/include \
       -I${MASON_GDAL}/include \
+      -I${MASON_JSON_C}/include \
+      -I${MASON_PROTOBUF_C}/include \
+      -I${MASON_PROTOBUF}/include \
       -I${MASON_POSTGRES}/include/server \
       -I${MASON_GEOS}/include \
       -I${MASON_PROJ}/include \
@@ -106,7 +127,7 @@ function mason_compile {
     if [[ $(uname -s) == 'Darwin' ]]; then
         export LDFLAGS="${LDFLAGS} -Wl,-lc++ -Wl,${MASON_GDAL}/lib/libgdal.a -Wl,${MASON_POSTGRES}/lib/libpq.a -liconv"
     else
-        export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a -lgeos_c -lgeos -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm"
+        export LDFLAGS="${LDFLAGS} ${MASON_GDAL}/lib/libgdal.a -lgeos_c -lgeos -lxml2 -lproj -lexpat -lpng -ljson-c -lprotobuf-c -lprotobuf-lite -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm"
     fi
 
 
@@ -120,7 +141,7 @@ function mason_compile {
       perl -i -p -e "s/\-lgeos_c  /\-lgeos_c \-lgeos \-lstdc++ \-lm /g;" configure
       # help GDALAllRegister configure check
       CMD="data=open('./configure','r').read();open('./configure','w')"
-      CMD="${CMD}.write(data.replace('\`\$GDAL_CONFIG --libs\`','\"-lgdal -lgeos_c -lgeos -lxml2 -lproj -lexpat -lpng -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm\"'))"
+      CMD="${CMD}.write(data.replace('\`\$GDAL_CONFIG --libs\`','\"-lgdal -lgeos_c -lgeos -lxml2 -lproj -lexpat -lpng -ljson-c -lprotobuf-c -lprotobuf-lite -ltiff -ljpeg ${MASON_POSTGRES}/lib/libpq.a -pthread -ldl -lz -lstdc++ -lm\"'))"
       python -c "${CMD}"
     fi
 
@@ -133,7 +154,8 @@ function mason_compile {
         --with-pgconfig=${MASON_POSTGRES}/bin/pg_config \
         --with-xml2config=${MASON_XML2}/bin/xml2-config \
         --with-gdalconfig=${MASON_GDAL}/bin/gdal-config \
-        --without-json \
+        --with-jsondir=${MASON_JSON_C} \
+        --with-protobufdir=${MASON_PROTOBUF_C} \
         --without-gui \
         --with-topology \
         --with-raster \

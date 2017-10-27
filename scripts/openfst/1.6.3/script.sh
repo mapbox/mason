@@ -2,7 +2,7 @@
 
 MASON_NAME=openfst
 MASON_VERSION=1.6.3
-MASON_LIB_FILE=lib/libre2.a
+MASON_LIB_FILE=lib/libfst.a
 
 . ${MASON_DIR}/mason.sh
 

@@ -114,6 +114,8 @@ elif [ ${MASON_PLATFORM} = 'linux' ]; then
     export CFLAGS="-fPIC"
     export LDFLAGS=""
     export CXXFLAGS="${CFLAGS} -std=c++11"
+    export CXX="${CXX:-c++}"
+    export CC="${CC:-cc}"
 
     if [ $(uname -m) != ${MASON_PLATFORM_VERSION} ] ; then
         # Install the cross compiler

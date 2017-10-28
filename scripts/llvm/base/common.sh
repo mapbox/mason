@@ -9,6 +9,21 @@ export MASON_BASE_VERSION=${MASON_BASE_VERSION:-${MASON_VERSION}}
 export MAJOR_MINOR=$(echo ${MASON_BASE_VERSION} | cut -d '.' -f1-2)
 
 if [[ $(uname -s) == 'Darwin' ]]; then
+    # ensure codesigning is working before starting
+    # this logic borrowed from homebrew llvm.rb formula
+    TMPDIR=$(mktemp -d)
+    (cd $TMPDIR && \
+        cp /usr/bin/false  llvm_check && \
+        RESULT=0 &&
+        /usr/bin/codesign -f -s lldb_codesign --dryrun llvm_check || RESULT=$? &&
+        if [[ ${RESULT} != 0 ]]; then
+          echo "lldb_codesign identity must be available to build with LLDB."
+          echo "See: https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt"
+          exit 1
+        fi
+    )
+
+
     export BUILD_AND_LINK_LIBCXX=false
     # avoids this kind of problem with include-what-you-use
     # because iwyu hardcodes at https://github.com/include-what-you-use/include-what-you-use/blob/da5c9b17fec571e6b2bbca29145463d7eaa3582e/iwyu_driver.cc#L219

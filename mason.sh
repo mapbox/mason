@@ -318,7 +318,7 @@ function mason_download {
     cd "${MASON_ROOT}/.cache"
     if [ ! -f ${MASON_SLUG} ] ; then
         mason_step "Downloading $1..."
-        CURL_RESULT=0
+        local CURL_RESULT=0
         curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o ${MASON_SLUG}  || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             mason_error "Failed to download ${1} (returncode: $CURL_RESULT)"
@@ -526,21 +526,30 @@ function mason_write_config {
 function mason_try_binary {
     MASON_BINARIES_DIR=`dirname "${MASON_BINARIES}"`
     mkdir -p "${MASON_ROOT}/.binaries/${MASON_BINARIES_DIR}"
+    local FULL_URL="https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
 
     # try downloading from S3
     if [ ! -f "${MASON_BINARIES_PATH}" ] ; then
-        mason_step "Downloading binary package ${MASON_BINARIES}..."
-        curl --retry 3 ${MASON_CURL_ARGS} -f -L \
-            https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
-            -o "${MASON_BINARIES_PATH}.tmp" && \
-            mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}" || \
-            mason_step "Binary not available yet for https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
+        mason_step "Downloading binary package ${FULL_URL}"
+        local CURL_RESULT=0
+        local HTTP_RETURN=0
+        HTTP_RETURN=$(curl -w "%{http_code}" --retry 3 ${MASON_CURL_ARGS} -f -L ${FULL_URL} -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
+        if [[ ${CURL_RESULT} != 0 ]]; then
+            if [[ ${HTTP_RETURN} == "403" ]]; then
+                mason_step "Binary not available for ${FULL_URL}"
+            else
+                mason_error "Failed to download ${FULL_URL} (returncode: ${CURL_RESULT})"
+                exit $CURL_RESULT
+            fi
+        else
+            mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}"
+        fi
     else
         mason_step "Updating binary package ${MASON_BINARIES}..."
-        curl --retry 3 ${MASON_CURL_ARGS} -f -L -z "${MASON_BINARIES_PATH}" \
-            https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES} \
-            -o "${MASON_BINARIES_PATH}.tmp"
-        if [ $? -eq 0 ] ; then
+        local CURL_RESULT=0
+        local HTTP_RETURN=0
+        HTTP_RETURN=$(curl -w "%{http_code}" --retry 3 ${MASON_CURL_ARGS} -f -L -z "${MASON_BINARIES_PATH}" -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
+        if [[ ${CURL_RESULT} != 0 ]]; then
             if [ -f "${MASON_BINARIES_PATH}.tmp" ]; then
                 mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}"
             else

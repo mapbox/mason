@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=geometry
-MASON_VERSION=4ac4cca
+MASON_VERSION=96d3505
 MASON_HEADER_ONLY=true
 
 . ${MASON_DIR}/mason.sh

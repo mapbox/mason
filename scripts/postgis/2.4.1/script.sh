@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=postgis
-MASON_VERSION=2.4.0
+MASON_VERSION=2.4.1
 MASON_LIB_FILE=bin/shp2pgsql
 
 . ${MASON_DIR}/mason.sh
@@ -9,7 +9,7 @@ MASON_LIB_FILE=bin/shp2pgsql
 function mason_load_source {
     mason_download \
         http://download.osgeo.org/postgis/source/postgis-${MASON_VERSION}.tar.gz \
-        70363fffe2eedfcd6fd24908090f66abc2acb9a5
+        2c4bcef6872fe09604bfd10655c136a4e96a528b
 
     mason_extract_tar_gz
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/postgis-${MASON_VERSION}

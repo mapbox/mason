@@ -10,11 +10,6 @@ FROM ubuntu:12.04
 ENV WORKINGDIR /home/travis/build/mapbox/mason/
 WORKDIR ${WORKINGDIR}
 
-COPY mason mason
-COPY mason.sh mason.sh
-COPY scripts scripts
-COPY utils utils
-
 RUN apt-get update -y && \
  apt-get install -y vim python build-essential bash curl git-core ca-certificates software-properties-common python-software-properties --no-install-recommends
 
@@ -26,3 +21,8 @@ RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
 
 # curses needed until https://github.com/mapbox/mason/issues/309 is solved.
 RUN apt-get install -y libstdc++6 xutils-dev libncurses5-dev libz-dev
+
+COPY mason mason
+COPY mason.sh mason.sh
+COPY scripts scripts
+COPY utils utils

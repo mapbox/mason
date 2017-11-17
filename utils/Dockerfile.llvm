@@ -2,7 +2,7 @@ FROM ubuntu:12.04
 
 # Used to build llvm and sub-packages
 # See https://github.com/mapbox/mason/blob/master/scripts/llvm/base/README.md for details
-# docker build -t mason-llvm -f utils/Dockerfile.llvm
+# docker build -t mason-llvm -f utils/Dockerfile.llvm .
 # docker run -it mason-llvm bash
 
 # we mimic the travis path to ensure any hardcoded paths in deps

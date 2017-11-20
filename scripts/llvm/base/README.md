@@ -49,6 +49,8 @@ They are built locally by a Mason contributor, rather than on https://travis-ci.
 
 On MacOS we build for OS X 10.12 as the minimum target. We link llvm against the apple system libc++.
 
+On OS X you additionally have to set up code signing once on the machine that builds llvm: https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt
+
 ### Linux details
 
 On Linux we build using an Ubuntu Precise docker image in order to ensure that binaries can be run on Ubuntu Precise and newer platforms.
@@ -68,6 +70,7 @@ If you would like to create a new llvm package, when a new version is created, y
  - At least 1 hour free to run builds locally
  - A fast internet connection for large uploads (> 1.6 GB)
  - A host machine of either Linux or OS X
+ - If using OS X then the machine needs to be set up for signing (https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt)
 
 Here are the steps to create a new llvm version:
 
@@ -158,7 +161,7 @@ We run the docker image to build the package on linux. We map volumes such that 
 ```
 LLVM_VERSION="4.0.2"
 docker run -it --volume $(pwd):/home/travis/build/mapbox/mason mason-llvm \
-  ./mason build llvm ${LLVM_VERSION} && ./utils/llvm.sh build ${LLVM_VERSION}
+  /bin/bash -c "./mason build llvm ${LLVM_VERSION} && ./utils/llvm.sh build ${LLVM_VERSION}"
 ```
 
 C. Authenticate your shell with the mason AWS KEYS

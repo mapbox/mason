@@ -46,9 +46,9 @@ function get_llvm_project() {
             git clone --depth ${DEPTH} ${URL} ${local_file_or_checkout}
         else
             mason_substep "already cloned ${URL}, pulling to update"
-            (cd ${local_file_or_checkout} && git pull)
+            (cd ${local_file_or_checkout} && echo "pulling ${local_file_or_checkout}" && git pull)
         fi
-        if [[ ${CUSTOM_GITSHA:-false} == false ]]; then
+        if [[ ${CUSTOM_GITSHA:-false} != false ]]; then
             (cd ${local_file_or_checkout} && git fetch && git checkout ${CUSTOM_GITSHA})
         fi
         mason_step "moving ${local_file_or_checkout} into place at ${TO_DIR}"
@@ -131,6 +131,22 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        # ensure codesigning is working before starting
+        # this logic borrowed from homebrew llvm.rb formula
+        TMPDIR=$(mktemp -d)
+        (cd $TMPDIR && \
+            cp /usr/bin/false  llvm_check && \
+            RESULT=0 &&
+            /usr/bin/codesign -f -s lldb_codesign --dryrun llvm_check || RESULT=$? &&
+            if [[ ${RESULT} != 0 ]]; then
+              echo "lldb_codesign identity must be available to build with LLDB."
+              echo "See: https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt"
+              exit 1
+            fi
+        )
+    fi
+
     export CXX="${CXX:-${MASON_CLANG}/bin/clang++}"
     export CC="${CC:-${MASON_CLANG}/bin/clang}"
     # knock out lldb doc building, to remove doxygen dependency

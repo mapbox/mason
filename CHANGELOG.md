@@ -1,5 +1,70 @@
 # Mason releases
 
+## 0.16.0
+- Added
+  - abseilc 56e782
+  - clang-format 6.0.0
+  - clang-tidy 6.0.0
+  - clang++ 6.0.0
+  - earcut 0.12.4
+  - expat 2.2.4
+  - gdal 2.2.2
+  - geojsonvt 6.3.0
+  - geometry 57920c8
+  - geometry 96d3505
+  - geos 3.6.2
+  - gzip a4cfa6a638de351d26834cf2fea373693cdaa927
+  - include-what-you-use 6.0.0
+  - jpeg_turbo 1.5.2
+  - json-c 0.12.1
+  - libgdal 2.2.2
+  - libosmium 2.13.1
+  - libpng 1.6.32
+  - libpq 9.6.5
+  - libtiff 4.0.8
+  - libxml 2.9.6
+  - lldb 6.0.0
+  - llvm-cov 6.0.0
+  - ogr2ogr 2.2.2
+  - openfst 1.6.3
+  - osmium-tool 1.7.1
+  - osmium-tool 1.7.1-1
+  - postgis 2.4.0
+  - postgis 2.4.1
+  - postgres 9.6.5
+  - protobuf 3.4.1
+  - protobuf_c 1.3.0
+  - protozero 1.5.3
+  - protozero 1.6.0
+  - protozero a0e9109
+  - protozero ccf6c39
+  - re2 2017-08-01
+  - spatial-algorithms 2904283
+  - spatial-algorithms 3b46e05
+  - tippecanoe 1.26.0
+  - variant 1.1.5
+  - vector-tile b756a6e
+  - vector-tile 0390175
+  - vtzero 07fe353
+  - vtzero 556fac5
+  - vtzero 7455d08
+  - vtzero e651b70
+  - vtzero fa6682b
+
+- Fixed 
+  - Improve Mason error handling https://github.com/mapbox/mason/commit/1727795f314dbef66fb0f84ee98a82a62e77b5d1
+  - Fix Docker invocation https://github.com/mapbox/mason/commit/66817048a3f5613c14838920df237e781c7a4b99
+  - PKG_CONFIG_PATH env var fix https://github.com/mapbox/mason/pull/493/files
+  - Set BOOST_TOOLSET* from CC and CXX env variables https://github.com/mapbox/mason/pull/499
+  - llvm 6.x / current unreleased HEAD https://github.com/mapbox/mason/pull/497
+  - Change to use OSX sym linked location for SDK [#477](https://github.com/mapbox/mason/pull/477)
+  - Documentation for how to add packages [commit](https://github.com/mapbox/mason/commit/d43bb42c71c2a56eba1c063d1333fbf73e3bd0d4)
+  - cairo 1.14.8 - Remove `-Wmissing-declarations` from CAIRO_CFLAGS_DEFAULTS [#491](https://github.com/mapbox/mason/pull/491)
+  - boost 1.61.0, 1.62.0, 1.63.0, 1.64.0, 1.65.1 - Set BOOST_TOOLSET* from CC and CXX env variables [#499](https://github.com/mapbox/mason/pull/499)
+  - ragel 6.9 - Add -std=gnu++98 to CXXFLAGS [#494](https://github.com/mapbox/mason/pull/494)
+  - harfbuzz 0.9.40, 0.9.41, 1.1.2, 1.2.1, 1.2.6, 1.3.0, 1.4.2-ft, protobuf_c 1.1.0 - Do not assume PKG_CONFIG_PATH to be defined [#493](https://github.com/mapbox/mason/pull/493)
+
+
 ## 0.15.0
 
  - Added

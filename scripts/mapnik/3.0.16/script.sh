@@ -56,7 +56,6 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    #patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     export PATH="${MASON_ROOT}/.link/bin:${PATH}"
     MASON_LINKED_REL="${MASON_ROOT}/.link"
     MASON_LINKED_ABS="${MASON_ROOT}/.link"
@@ -68,6 +67,15 @@ function mason_compile {
         echo "CUSTOM_LDFLAGS = '${LDFLAGS}'" > config.py
         echo "CUSTOM_CXXFLAGS = '${CXXFLAGS}'" >> config.py
     fi
+
+    # setup `mapnik-settings.env` (like bootstrap.sh does)
+    # note: we don't use bootstrap.sh to be able to control
+    # mason versions here and use the mason we are running
+    echo "export PROJ_LIB=${MASON_LINKED_ABS}/share/proj" > mapnik-settings.env
+    echo "export ICU_DATA=${MASON_LINKED_ABS}/share/icu/${ICU_VERSION}" >> mapnik-settings.env
+    echo "export GDAL_DATA=${MASON_LINKED_ABS}/share/gdal" >> mapnik-settings.env
+
+    RESULT=0
 
     ./configure \
         CXX="${CXX}" \
@@ -112,9 +120,14 @@ function mason_compile {
         DEMO=False \
         XMLPARSER="ptree" \
         NO_ATEXIT=True \
-        SVG2PNG=True || cat ${MASON_BUILD_PATH}"/config.log"
+        SVG2PNG=True || RESULT=$?
 
-    cat config.py
+    # if configure failed, dump out config details before exiting
+    if [[ ${RESULT} != 0 ]]; then
+        cat ${MASON_BUILD_PATH}"/config.log"
+        cat config.py
+        false # then fail
+    fi
 
     # limit concurrency on travis to avoid heavy jobs being killed
     if [[ ${TRAVIS_OS_NAME:-} ]]; then

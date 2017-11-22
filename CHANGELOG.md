@@ -1,8 +1,21 @@
 # Mason releases
 
+## 0.17.0
+
+- Added
+  - gdal 2.2.3 and sub-packages:
+    - ogr2ogr 2.2.3
+    - libgdal 2.2.3
+  - mapnik 98c26bc (https://github.com/mapnik/mapnik/commit/98c26bc)
+  - build2 0.6.2 (https://build2.org)
+
+- Changed
+  - Now compiling packages with clang++-5 on travis
+
+
 ## 0.16.0
 - Added
-  - abseilc 56e782
+  - abseil 56e782
   - clang-format 6.0.0
   - clang-tidy 6.0.0
   - clang++ 6.0.0

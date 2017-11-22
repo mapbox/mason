@@ -57,7 +57,7 @@ function mason_prepare_compile {
     MASON_LIBPQ=$(${MASON_DIR}/mason prefix libpq ${POSTGRES_VERSION})
     ${MASON_DIR}/mason install sqlite ${SQLITE_VERSION}
     MASON_SQLITE=$(${MASON_DIR}/mason prefix sqlite ${SQLITE_VERSION})
-    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_SQLITE}/lib/libsqlite.la
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_SQLITE}/lib/libsqlite3.la
     # depends on sudo apt-get install zlib1g-dev
     ${MASON_DIR}/mason install zlib system
     MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib system)
@@ -79,7 +79,7 @@ function mason_compile {
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
     export CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG"
 
-    CUSTOM_LIBS="-L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj -L${MASON_PNG}/lib -lpng -L${MASON_EXPAT}/lib -lexpat"
+    CUSTOM_LIBS="-L${MASON_SQLITE}/lib -lsqlite3 -L${MASON_TIFF}/lib -ltiff -L${MASON_JPEG}/lib -ljpeg -L${MASON_PROJ}/lib -lproj -L${MASON_PNG}/lib -lpng -L${MASON_EXPAT}/lib -lexpat"
     CUSTOM_CFLAGS="${CFLAGS} -I${MASON_LIBPQ}/include -I${MASON_TIFF}/include -I${MASON_JPEG}/include -I${MASON_PROJ}/include -I${MASON_PNG}/include -I${MASON_EXPAT}/include"
 
     # very custom handling for libpq/postgres support

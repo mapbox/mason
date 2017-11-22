@@ -89,6 +89,8 @@ function mason_compile {
         # on Linux passing -Wl will lead to libtool re-positioning libpq.a in the wrong place (no longer after libgdal.a)
         # which leads to unresolved symbols
         CUSTOM_LDFLAGS="${LDFLAGS} ${MASON_LIBPQ_PATH}"
+        # linking statically to libsqlite requires -ldl -pthreads
+        CUSTOM_LDFLAGS="${CUSTOM_LDFLAGS} -ldl -pthread"
     else
         # on OSX not passing -Wl will break libtool archive creation leading to confusing arch errors
         CUSTOM_LDFLAGS="${LDFLAGS} -Wl,${MASON_LIBPQ_PATH}"

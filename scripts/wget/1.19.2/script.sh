@@ -17,7 +17,8 @@ function mason_load_source {
 }
 
 function mason_compile {
-    ./configure
+    ./configure \
+        --prefix ${MASON_PREFIX}
 
     PREFIX=${MASON_PREFIX} \
     CXXFLAGS="${CXXFLAGS}" \

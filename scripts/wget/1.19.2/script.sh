@@ -16,18 +16,24 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
 }
 
-function mason_prepare_compile {
-    ${MASON_DIR}/mason install gnutls 3.5.16
-}
-
-
 function mason_compile {
     ./configure \
         --prefix ${MASON_PREFIX} \
-        --with-libgnutls-prefix ""
+        --with-included-libunistring \
+        --with-ssl=openssl \
+        --without-libuuid \
+        --with-openssl
 
     make -j${MASON_CONCURRENCY}
     make install
+}
+
+function mason_cflags {
+    :
+}
+
+function mason_ldflags {
+    :
 }
 
 function mason_clean {

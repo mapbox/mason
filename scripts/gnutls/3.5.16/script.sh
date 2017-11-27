@@ -1,33 +1,32 @@
 #!/usr/bin/env bash
 
-MASON_NAME=wget
-MASON_VERSION=1.19.2
-MASON_LIB_FILE=bin/wget
+MASON_NAME=gnutls
+MASON_VERSION=3.5.16
+MASON_LIB_FILE=bin/gnutls
 
 . ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
-        http://ftp.gnu.org/gnu/${MASON_NAME}/${MASON_NAME}-${MASON_VERSION}.tar.gz \
-        07a689125eaf3b050cd62fcb98662eeddc4982db
+        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.5/gnutls-3.5.16.tar.xz \
+        0666073d691bd92acc9f7fe7facf7c8a0763b9bc
 
-    mason_extract_tar_gz
+    mason_extract_tar_xz
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
 }
 
-function mason_prepare_compile {
-    ${MASON_DIR}/mason install gnutls 3.5.16
-}
-
-
 function mason_compile {
     ./configure \
         --prefix ${MASON_PREFIX} \
-        --with-libgnutls-prefix ""
+        --with-included-unistring
 
     make -j${MASON_CONCURRENCY}
     make install
+}
+
+function mason_cflags {
+    :
 }
 
 function mason_clean {

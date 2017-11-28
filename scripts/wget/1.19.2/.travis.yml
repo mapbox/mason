@@ -11,7 +11,7 @@ matrix:
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'libstdc++-4.9-dev' ]
+          packages: [ 'libstdc++-4.9-dev', 'libssl-dev' ]
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

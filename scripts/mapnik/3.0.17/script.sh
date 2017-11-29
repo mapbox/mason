@@ -9,7 +9,7 @@ MASON_LIB_FILE=lib/libmapnik.${MASON_DYNLIB_SUFFIX}
 function mason_load_source {
     mason_download \
         https://github.com/mapnik/mapnik/releases/download/v${MASON_VERSION}/mapnik-v${MASON_VERSION}.tar.bz2 \
-        de76236a1ec8a1a1cc3254a44d4ebfb05665f6b0
+        46c506c4d48436b1bcf324a7f6166aa7ab6a59e6
     mason_extract_tar_bz2
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-v${MASON_VERSION}

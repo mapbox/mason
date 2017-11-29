@@ -83,6 +83,7 @@ function mason_compile {
         PREFIX="${MASON_PREFIX}" \
         RUNTIME_LINK="static" \
         INPUT_PLUGINS="all" \
+        ENABLE_GLIBC_WORKAROUND=True \
         ENABLE_SONAME=False \
         PKG_CONFIG_PATH="${MASON_LINKED_REL}/lib/pkgconfig" \
         PATH_REMOVE="/usr:/usr/local" \

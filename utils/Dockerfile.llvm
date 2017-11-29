@@ -20,7 +20,7 @@ RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     apt-get update -y
 
 # curses needed until https://github.com/mapbox/mason/issues/309 is solved.
-RUN apt-get install -y libstdc++6 xutils-dev libncurses5-dev libz-dev
+RUN apt-get install -y libstdc++6 xutils-dev libncurses5-dev libz-dev pkg-config
 
 COPY mason mason
 COPY mason.sh mason.sh

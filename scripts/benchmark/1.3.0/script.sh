@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libbenchmark.a
 
 function mason_load_source {
     mason_download \
-        https://github.com/google/benchmark/archive/v1.3.0.tar.gz \
+        https://github.com/google/benchmark/archive/v${MASON_VERSION}.tar.gz \
             722fe92eb48464b5b99323e70a1031fac3b528da
 
     mason_extract_tar_gz

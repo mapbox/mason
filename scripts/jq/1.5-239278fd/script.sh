@@ -25,8 +25,8 @@ function mason_compile {
         --with-oniguruma=builtin \
         --disable-maintainer-mode
 
-    LDFLAGS="-all-static" ${LDFLAGS:-}
-    make -j${MASON_CONCURRENCY} LDFLAGS=${LDFLAGS}
+    export LDFLAGS="-all-static ${LDFLAGS:-}"
+    make -j${MASON_CONCURRENCY}
 
     make install
 }

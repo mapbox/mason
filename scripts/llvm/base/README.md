@@ -8,6 +8,15 @@ This readme documents:
  - How to create a new llvm package + sub-packages
  - How to use the binary packages
 
+## What is llvm?
+
+LLVM stands for Low Level Virtual Machine. It is an opensource project containing a complete [C++ toolchain (compiler, linker, etc)](https://github.com/mapbox/cpp/blob/master/glossary.md#development-toolchain).
+
+Learn about the llvm toolchain:
+ - By watching https://www.youtube.com/watch?v=uZI_Qla4pNA
+ - Reading about its definition at https://github.com/mapbox/cpp/blob/master/glossary.md#llvm
+ - Exploring <https://llvm.org>
+
 ## How the llvm packages are structured
 
 This llvm/base directory is not a package itself, but two critical building blocks:

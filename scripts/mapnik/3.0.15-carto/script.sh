@@ -15,8 +15,10 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-v${MASON_VERSION}
 
     if [[ ! -d ${MASON_BUILD_PATH} ]]; then
-        mason_step "Cloning source and submodules..."
-        git clone -b v${MASON_VERSION} --depth 1 --single-branch --shallow-submodules --recurse-submodules http://github.com/CartoDB/mapnik ${MASON_BUILD_PATH}
+        mason_step "Cloning source..."
+        git clone -b v${MASON_VERSION} --depth 1 --single-branch http://github.com/CartoDB/mapnik ${MASON_BUILD_PATH}
+        mason_step "Cloning submodules..."
+        (cd ${MASON_BUILD_PATH}; git submodule update --init --depth 1)
     fi
 }
 

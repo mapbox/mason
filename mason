@@ -79,7 +79,7 @@ RUBY
         config = YAML.load_file("scripts/${MASON_NAME}/${MASON_VERSION}/.travis.yml")
         config["env"] ||= {}
         config["env"]["global"] ||= []
-        config["env"]["global"] << "MASON_NAME=${MASON_NAME}" << "MASON_VERSION=${MASON_VERSION}" << MASON_CARTO_VERSION=${MASON_CARTO_VERSION}
+        config["env"]["global"] << "MASON_NAME=${MASON_NAME}" << "MASON_VERSION=${MASON_VERSION}" << "MASON_CARTO_VERSION=${MASON_CARTO_VERSION}"
         puts JSON.pretty_generate(config)
 RUBY
         )

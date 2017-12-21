@@ -12,7 +12,7 @@ if [ "$MASON_VERSION" == "noversion" ]; then
 fi
 
 function mason_load_source {
-    local SRC_URL=https://github.com/CartoDB/mapnik/releases/download/v${MASON_VERSION}/mapnik-v${MASON_VERSION}.tar.bz2
+    local SRC_URL=https://github.com/CartoDB/mapnik/archive/v${MASON_VERSION}.tar.gz
     local CURL_RESULT=0
 
     mkdir -p "${MASON_ROOT}/.cache"
@@ -23,7 +23,7 @@ function mason_load_source {
         exit $CURL_RESULT
     fi
 
-    mason_extract_tar_bz2
+    mason_extract_tar_gz
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-v${MASON_VERSION}
 }

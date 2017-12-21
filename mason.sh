@@ -327,10 +327,12 @@ function mason_download {
         fi
     fi
 
-    MASON_HASH=`git hash-object ${MASON_SLUG}`
-    if [ "$2" != "${MASON_HASH}" ] ; then
-        mason_error "Hash ${MASON_HASH} of file ${MASON_ROOT}/.cache/${MASON_SLUG} doesn't match $2"
-        exit 1
+    if [ "$2" != "skip" ]; then
+        MASON_HASH=`git hash-object ${MASON_SLUG}`
+        if [ "$2" != "${MASON_HASH}" ] ; then
+            mason_error "Hash ${MASON_HASH} of file ${MASON_ROOT}/.cache/${MASON_SLUG} doesn't match $2"
+            exit 1
+        fi
     fi
 }
 

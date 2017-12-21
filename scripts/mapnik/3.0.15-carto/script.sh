@@ -12,12 +12,12 @@ if [ "$MASON_VERSION" == "noversion" ]; then
 fi
 
 function mason_load_source {
-    mason_download \
-        https://github.com/CartoDB/mapnik/archive/v${MASON_VERSION}.tar.gz \
-        skip
-    mason_extract_tar_gz
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-v${MASON_VERSION}
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-${MASON_VERSION}
+    if [[ ! -d ${MASON_BUILD_PATH} ]]; then
+        mason_step "Cloning source and submodules..."
+        git clone -b v${MASON_VERSION} --depth 1 --single-branch --shallow-submodules --recurse-submodules http://github.com/CartoDB/mapnik ${MASON_BUILD_PATH}
+    fi
 }
 
 function install() {

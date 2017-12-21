@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 MASON_NAME=mapnik
-MASON_VERSION=${MAPNIK_CARTO_VERSION:-noversion}
+MASON_VERSION=${MASON_CARTO_VERSION:-noversion}
 MASON_LIB_FILE=lib/libmapnik.${MASON_DYNLIB_SUFFIX}
 
 . ${MASON_DIR}/mason.sh
 
 if [ "$MASON_VERSION" == "noversion" ]; then
-   mason_error "MAPNIK_CARTO_VERSION env var not defined."
+   mason_error "MASON_CARTO_VERSION env var not defined."
    exit 1
 fi
 

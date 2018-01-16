@@ -246,6 +246,21 @@ elif [ ${MASON_PLATFORM} = 'android' ]; then
     export STRIP="${MASON_ANDROID_TOOLCHAIN}-strip"
 fi
 
+MASON_CUSTOM_ARCH=${MASON_CUSTOM_ARCH:-}
+
+if [ ${MASON_CUSTOM_ARCH} = 'haswell' ]; then
+    export CXXFLAGS="${CXXFLAGS} -flto -march=haswell -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul -mavx2"
+    export CFLAGS="${CFLAGS} -flto -march=haswell -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul -mavx2"
+    export LDFLAGS="${LDFLAGS} -flto"
+elif [ ${MASON_CUSTOM_ARCH} = 'core-avx-i' ]; then
+    export CXXFLAGS="${CXXFLAGS} -flto -march=core-avx-i -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul"
+    export CFLAGS="${CFLAGS} -flto -march=core-avx-i -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul"
+    export LDFLAGS="${LDFLAGS} -flto"
+elif [ ${MASON_CUSTOM_ARCH} = 'ivybridge' ]; then
+    export CXXFLAGS="${CXXFLAGS} -flto -march=ivybridge -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul"
+    export CFLAGS="${CFLAGS} -flto -march=ivybridge -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul"
+    export LDFLAGS="${LDFLAGS} -flto"
+fi
 
 # Variable defaults
 MASON_HOST_ARG=${MASON_HOST_ARG:-}
@@ -256,8 +271,10 @@ MASON_HEADER_ONLY=${MASON_HEADER_ONLY:-false}
 MASON_SLUG=${MASON_NAME}-${MASON_VERSION}
 if [[ ${MASON_HEADER_ONLY} == true ]]; then
     MASON_PLATFORM_ID=headers
-else
+elif [ -z ${MASON_CUSTOM_ARCH} ]; then
     MASON_PLATFORM_ID=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}
+else
+    MASON_PLATFORM_ID=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}-${MASON_CUSTOM_ARCH}
 fi
 MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}
 MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}.tar.gz

@@ -4,6 +4,9 @@ matrix:
   include:
     - os: osx
       osx_image: xcode8.2
+    - os: osx
+      osx_image: xcode8.2
+      env: MASON_CUSTOM_ARCH=haswell
     - os: linux
       sudo: false
       addons:

@@ -16,6 +16,26 @@ matrix:
           packages:
            - libstdc++-4.9-dev
            - xutils-dev
+    - os: linux
+      sudo: false
+      env: MASON_CUSTOM_ARCH=core-avx-i
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - libstdc++-4.9-dev
+           - xutils-dev
+    - os: linux
+      sudo: false
+      env: MASON_CUSTOM_ARCH=ivybridge
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - libstdc++-4.9-dev
+           - xutils-dev
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

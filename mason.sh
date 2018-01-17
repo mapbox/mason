@@ -271,14 +271,19 @@ MASON_HEADER_ONLY=${MASON_HEADER_ONLY:-false}
 MASON_SLUG=${MASON_NAME}-${MASON_VERSION}
 if [[ ${MASON_HEADER_ONLY} == true ]]; then
     MASON_PLATFORM_ID=headers
+    MASON_PLATFORM_ID_FALLBACK=headers
 elif [ -z ${MASON_CUSTOM_ARCH} ]; then
     MASON_PLATFORM_ID=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}
+    MASON_PLATFORM_ID_FALLBACK=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}
 else
     MASON_PLATFORM_ID=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}-${MASON_CUSTOM_ARCH}
+    MASON_PLATFORM_ID_FALLBACK=${MASON_PLATFORM}-${MASON_PLATFORM_VERSION}
 fi
 MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}
 MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}.tar.gz
+MASON_BINARIES_FALLBACK=${MASON_PLATFORM_ID_FALLBACK}/${MASON_NAME}/${MASON_VERSION}.tar.gz
 MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
+MASON_BINARIES_PATH_FALLBACK=${MASON_ROOT}/.binaries/${MASON_BINARIES_FALLBACK}
 
 
 
@@ -554,6 +559,23 @@ function mason_try_binary {
         if [[ ${CURL_RESULT} != 0 ]]; then
             if [[ ${HTTP_RETURN} == "403" ]]; then
                 mason_step "Binary not available for ${FULL_URL}"
+                if [[ ${MASON_BINARIES} != ${MASON_BINARIES_FALLBACK} ]]; then
+                    local FULL_URL_FALLBACK="https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES_FALLBACK}"
+                    mason_step "Downloading falllback binary package ${FULL_URL_FALLBACK}"
+                    local CURL_RESULT_FALLBACK=0
+                    local HTTP_RETURN_FALLBACK=0
+                    HTTP_RETURN_FALLBACK=$(curl -w "%{http_code}" --retry 3 ${MASON_CURL_ARGS} -f -L ${FULL_URL_FALLBACK} -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT_FALLBACK=$?
+                    if [[ ${CURL_RESULT_FALLBACK} != 0 ]]; then
+                        if [[ ${HTTP_RETURN_FALLBACK} == "403" ]]; then
+                            mason_step "Binary not available for ${FULL_URL_FALLBACK}"
+                        else
+                            mason_error "Failed to download ${FULL_URL_FALLBACK} (returncode: ${CURL_RESULT_FALLBACK})"
+                            exit $CURL_RESULT_FALLBACK
+                        fi
+                    else
+                        mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}"
+                    fi
+                fi
             else
                 mason_error "Failed to download ${FULL_URL} (returncode: ${CURL_RESULT})"
                 exit $CURL_RESULT

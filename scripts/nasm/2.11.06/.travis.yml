@@ -6,7 +6,18 @@ matrix:
   include:
     - os: osx
       compiler: clang
+    - os: osx
+      compiler: clang
+      env: MASON_CUSTOM_ARCH=haswell
     - os: linux
+      compiler: clang
+    - os: linux
+      sudo: false
+      env: MASON_CUSTOM_ARCH=core-avx-i
+      compiler: clang
+    - os: linux
+      sudo: false
+      env: MASON_CUSTOM_ARCH=ivybridge
       compiler: clang
 
 script:

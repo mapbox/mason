@@ -5,8 +5,18 @@ matrix:
     - os: osx
       osx_image: xcode8.2
       compiler: clang
+    - os: osx
+      osx_image: xcode8.2
+      env: MASON_CUSTOM_ARCH=haswell
+      compiler: clang
     - os: linux
       sudo: false
+    - os: linux
+      sudo: false
+      env: MASON_CUSTOM_ARCH=core-avx-i
+    - os: linux
+      sudo: false
+      env: MASON_CUSTOM_ARCH=ivybridge
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

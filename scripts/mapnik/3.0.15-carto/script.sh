@@ -59,7 +59,7 @@ function mason_prepare_compile {
     install boost_libprogram_options 1.63.0
     install boost_libregex_icu57 1.63.0
     install freetype 2.7.1 libfreetype
-    install harfbuzz 1.4.2-ft libharfbuzz
+    install harfbuzz 1.3.0 libharfbuzz
 }
 
 function mason_compile {

@@ -34,7 +34,8 @@ function mason_compile {
         --enable-static \
         --disable-shared \
         --disable-dependency-tracking
-
+    
+    cat config.log
     make V=1 -j1 # -j1 since build breaks with concurrency
     make install
 }

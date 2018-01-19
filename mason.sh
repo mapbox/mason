@@ -3,7 +3,8 @@ set -o pipefail
 # set -x
 
 export MASON_ROOT=${MASON_ROOT:-`pwd`/mason_packages}
-MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
+MASON_BUCKET=${MASON_BUCKET:-mapnik-carto}
+MASON_UPSTREAM_BUCKET=${MASON_UPSTREAM_BUCKET:-mason-binaries}
 MASON_IGNORE_OSX_SDK=${MASON_IGNORE_OSX_SDK:-false}
 
 MASON_UNAME=`uname -s`
@@ -706,6 +707,11 @@ function mason_publish {
     curl -f -I https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}
 }
 
+function mason_copy_from_upstream {
+    (MASON_BUCKET=$MASON_UPSTREAM_BUCKET mason_try_binary)
+    mason_publish
+}
+
 function mason_run {
     if [ "$1" == "install" ]; then
         if [ ${MASON_SYSTEM_PACKAGE:-false} = true ]; then
@@ -750,6 +756,8 @@ function mason_run {
         mason_prefix
     elif [ "$1" == "existing" ]; then
         mason_list_existing
+    elif [ "$1" == "copy" ]; then
+        mason_copy_from_upstream
     elif [ $1 ]; then
         mason_error "Unknown command '$1'"
         exit 1

@@ -253,9 +253,9 @@ if [ ${MASON_CUSTOM_ARCH} = 'haswell' ]; then
     export CFLAGS="${CFLAGS} -flto -march=haswell -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul -mavx2"
     export LDFLAGS="${LDFLAGS} -flto"
 elif [ ${MASON_CUSTOM_ARCH} = 'core-avx-i' ]; then
-    export CXXFLAGS="${CXXFLAGS} -flto -march=core-avx-i -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul"
-    export CFLAGS="${CFLAGS} -flto -march=core-avx-i -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul"
-    export LDFLAGS="${LDFLAGS} -flto"
+    export CXXFLAGS="${CXXFLAGS} -march=core-avx-i -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul"
+    export CFLAGS="${CFLAGS} -march=core-avx-i -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul"
+    #export LDFLAGS="${LDFLAGS}"
 elif [ ${MASON_CUSTOM_ARCH} = 'ivybridge' ]; then
     export CXXFLAGS="${CXXFLAGS} -flto -march=ivybridge -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul"
     export CFLAGS="${CFLAGS} -flto -march=ivybridge -msse -msse2 -msse3 -mssse3 -mmmx -msse4.1 -msse4.2 -mavx -maes -mpclmul"

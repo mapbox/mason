@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=binutils
-MASON_VERSION=2.28
+MASON_VERSION=2.30
 MASON_LIB_FILE=lib/libbfd.a
 
 . ${MASON_DIR}/mason.sh
@@ -9,7 +9,7 @@ MASON_LIB_FILE=lib/libbfd.a
 function mason_load_source {
     mason_download \
         http://ftp.gnu.org/gnu/binutils/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
-        bea61d1a33e4ed8061f1936ef00a633c7fff096e
+        9bbe52758d123de00bce46d7c657d10aad97bf38
 
     mason_extract_tar_bz2
 

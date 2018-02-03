@@ -9,7 +9,7 @@ MASON_LIB_FILE=lib/libelf.a
 function mason_load_source {
     mason_download \
         https://sourceware.org/elfutils/ftp/${MASON_VERSION}/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
-        a2b4185e2fdca39a9818328017ba0192a6d5d6d4
+        cb9b96544eeadc0677148aeddca16ec314bc9f67
 
     mason_extract_tar_bz2
 

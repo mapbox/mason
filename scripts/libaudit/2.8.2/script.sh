@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MASON_NAME=binutils
+MASON_NAME=libaudit
 MASON_VERSION=2.8.2
 MASON_LIB_FILE=lib/libaudit.a
 
@@ -28,8 +28,6 @@ function mason_compile {
 
     make -j${MASON_CONCURRENCY}
     make install
-    cp include/libiberty.h ${MASON_PREFIX}/include/
-    cp libiberty/libiberty.a ${MASON_PREFIX}/lib/
 }
 
 function mason_cflags {

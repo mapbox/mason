@@ -2,7 +2,7 @@
 
 MASON_NAME=ncurses
 MASON_VERSION=6.1
-MASON_LIB_FILE=lib/libcurses.a
+MASON_LIB_FILE=lib/libncursesw.a
 
 . ${MASON_DIR}/mason.sh
 

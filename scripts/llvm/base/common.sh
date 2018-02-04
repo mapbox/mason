@@ -275,6 +275,14 @@ function mason_compile {
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_ASSERTIONS=OFF -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXX_ENABLE_STATIC=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON -DLIBUNWIND_USE_COMPILER_RT=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBUNWIND_ENABLE_SHARED=OFF"
     fi
 
+    echo "fixing editline"
+    # hack to ensure that lldb finds editline to avoid:
+    # ../tools/lldb/include/lldb/Host/Editline.h:60:10: fatal error: 'histedit.h' file not found
+    # include <histedit.h>
+    cp -r ${MASON_LIBEDIT}/include/* ./tools/lldb/include/
+    # /usr/bin/ld: cannot find -ledit
+    cp -r ${MASON_LIBEDIT}/lib/* ./lib/
+
     echo "creating build directory"
     mkdir -p ./build
     cd ./build

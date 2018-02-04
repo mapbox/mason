@@ -18,7 +18,9 @@ function mason_load_source {
 
 function mason_compile {
     # Add optimization flags since CFLAGS overrides the default (-g -O2)
-    export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
+    # HAVE__SECURE_GETENV allows compatibility with old (circa ubuntu precise) glibc
+    # per https://sourceware.org/glibc/wiki/Tips_and_Tricks/secure_getenv
+    export CFLAGS="${CFLAGS} -O3 -DNDEBUG -DHAVE___SECURE_GETENV=1"
     ./configure \
         --prefix=${MASON_PREFIX} \
         --enable-static \

@@ -172,6 +172,7 @@ We run the docker image to build the package on linux. We map volumes such that 
 docker create -v $(pwd)/ccache:/ccache --name ccache mason-llvm
 
 LLVM_VERSION="4.0.2"
+mkdir ccache
 time docker run -it \
   -e CCACHE_DIR=/ccache \
   -e LLVM_VERSION="${LLVM_VERSION}" \

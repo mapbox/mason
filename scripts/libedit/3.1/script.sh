@@ -20,14 +20,17 @@ function mason_compile {
     # Add optimization flags since CFLAGS overrides the default (-g -O2)
     # HAVE__SECURE_GETENV allows compatibility with old (circa ubuntu precise) glibc
     # per https://sourceware.org/glibc/wiki/Tips_and_Tricks/secure_getenv
-    export CFLAGS="${CFLAGS} -O3 -DNDEBUG -DHAVE___SECURE_GETENV=1"
+    export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
+    if [[ $(uname -s) == 'Linux' ]]; then
+        export CFLAGS="${CFLAGS} -DHAVE___SECURE_GETENV=1"
+    fi
     ./configure \
         --prefix=${MASON_PREFIX} \
         --enable-static \
         --disable-shared \
         --disable-dependency-tracking
 
-    make -j${MASON_CONCURRENCY}
+    V=1 make -j${MASON_CONCURRENCY}
     make install
 }
 

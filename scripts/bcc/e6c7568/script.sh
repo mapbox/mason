@@ -57,12 +57,6 @@ function mason_compile {
     # TODO: remove -include: https://github.com/iovisor/bcc/pull/1573
     ${MASON_NINJA}/bin/ninja libbcc.a -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja install
-
-    # https://github.com/iovisor/bcc/issues/484#issuecomment-278337293
-    # https://github.com/iovisor/bcc/blob/master/QUICKSTART.md
-    # export PYTHONPATH=$(pwd)/mason_packages/linux-x86_64/bcc/e6c7568/lib/python2.7/dist-packages
-    # export LD_LIBRARY_PATH=$(pwd)/mason_packages/linux-x86_64/bcc/e6c7568/lib/
-    # ln -s /lib/modules/3.2.0-126-virtual /lib/modules/4.9.60-linuxkit-aufs
 }
 
 function mason_cflags {

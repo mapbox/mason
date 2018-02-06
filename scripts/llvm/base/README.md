@@ -108,7 +108,7 @@ Top create new version of the llvm package and sub-packages do:
 First add the new package and sub-packages to git
 
 ```
-git add scripts/*/4.0.2/*
+git add scripts/*/4.0.2/
 ```
 
 Now push to github:

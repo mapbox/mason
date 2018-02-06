@@ -134,12 +134,12 @@ elif [ "${MASON_PLATFORM}" = 'linux' ]; then
 
 elif [ "${MASON_PLATFORM}" = 'android' ]; then
     case "${MASON_PLATFORM_VERSION:-}" in
-        arm-v5-9) export MASON_ANDROID_ABI=arm-v5 ;;
-        arm-v7-9) export MASON_ANDROID_ABI=arm-v7 ;;
+        arm-v5-14) export MASON_ANDROID_ABI=arm-v5 ;;
+        arm-v7-14) export MASON_ANDROID_ABI=arm-v7 ;;
         arm-v8-21) export MASON_ANDROID_ABI=arm-v8 ;;
-        x86-9) export MASON_ANDROID_ABI=x86 ;;
+        x86-14) export MASON_ANDROID_ABI=x86 ;;
         x86-64-21) export MASON_ANDROID_ABI=x86-64 ;;
-        mips-9) export MASON_ANDROID_ABI=mips ;;
+        mips-14) export MASON_ANDROID_ABI=mips ;;
         mips64-21) export MASON_ANDROID_ABI=mips64 ;;
         *) export MASON_ANDROID_ABI=${MASON_ANDROID_ABI:-arm-v7}
     esac
@@ -167,7 +167,7 @@ elif [ "${MASON_PLATFORM}" = 'android' ]; then
 
         export JNIDIR="armeabi-v7a"
         MASON_ANDROID_ARCH="arm"
-        MASON_ANDROID_PLATFORM="9"
+        MASON_ANDROID_PLATFORM="14"
 
     elif [ ${MASON_ANDROID_ABI} = 'arm-v5' ]; then
         MASON_ANDROID_TOOLCHAIN="arm-linux-androideabi"
@@ -178,7 +178,7 @@ elif [ "${MASON_PLATFORM}" = 'android' ]; then
 
         export JNIDIR="armeabi"
         MASON_ANDROID_ARCH="arm"
-        MASON_ANDROID_PLATFORM="9"
+        MASON_ANDROID_PLATFORM="14"
 
     elif [ ${MASON_ANDROID_ABI} = 'x86' ]; then
         MASON_ANDROID_TOOLCHAIN="i686-linux-android"
@@ -188,7 +188,7 @@ elif [ "${MASON_PLATFORM}" = 'android' ]; then
 
         export JNIDIR="x86"
         MASON_ANDROID_ARCH="x86"
-        MASON_ANDROID_PLATFORM="9"
+        MASON_ANDROID_PLATFORM="14"
 
     elif [ ${MASON_ANDROID_ABI} = 'x86-64' ]; then
         MASON_ANDROID_TOOLCHAIN="x86_64-linux-android"
@@ -208,7 +208,7 @@ elif [ "${MASON_PLATFORM}" = 'android' ]; then
 
         export JNIDIR="mips"
         MASON_ANDROID_ARCH="mips"
-        MASON_ANDROID_PLATFORM="9"
+        MASON_ANDROID_PLATFORM="14"
 
     elif [ ${MASON_ANDROID_ABI} = 'mips-64' ]; then
         MASON_ANDROID_TOOLCHAIN="mips64el-linux-android"
@@ -226,7 +226,7 @@ elif [ "${MASON_PLATFORM}" = 'android' ]; then
     MASON_API_LEVEL=${MASON_API_LEVEL:-android-$MASON_ANDROID_PLATFORM}
 
     # Installs the native SDK
-    export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r13b
+    export MASON_NDK_PACKAGE_VERSION=${MASON_ANDROID_ARCH}-${MASON_ANDROID_PLATFORM}-r16b
     MASON_SDK_ROOT=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix android-ndk ${MASON_NDK_PACKAGE_VERSION})
     if [ ! -d "${MASON_SDK_ROOT}" ] ; then
         MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason install android-ndk ${MASON_NDK_PACKAGE_VERSION}

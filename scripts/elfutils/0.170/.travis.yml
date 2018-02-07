@@ -1,0 +1,21 @@
+language: generic
+
+matrix:
+  include:
+    - os: linux
+      sudo: false
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - g++-4.9
+
+# note: elfutils must be compiled with gcc (see script.sh)
+install:
+  - export CXX=g++-4.9
+  - export CC=gcc-4.9
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

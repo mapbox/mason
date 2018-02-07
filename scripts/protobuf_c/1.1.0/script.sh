@@ -21,7 +21,7 @@ function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
     ${MASON_DIR}/mason install protobuf 2.6.1
     MASON_PROTOBUF=$(${MASON_DIR}/mason prefix protobuf 2.6.1)
-    export PKG_CONFIG_PATH=${MASON_PROTOBUF}/lib/pkgconfig:${PKG_CONFIG_PATH}
+    export PKG_CONFIG_PATH=${MASON_PROTOBUF}/lib/pkgconfig:${PKG_CONFIG_PATH:-}
 }
 
 function mason_compile {

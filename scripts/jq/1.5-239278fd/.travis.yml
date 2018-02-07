@@ -8,6 +8,7 @@ matrix:
     - os: linux
       compiler: clang
       sudo: false
+      dist: trusty # for more recent automake
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]

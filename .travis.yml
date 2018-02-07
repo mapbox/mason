@@ -1,5 +1,7 @@
 language: generic
 
+dist: precise
+
 matrix:
   include:
     - os: osx

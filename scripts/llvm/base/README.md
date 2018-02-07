@@ -8,6 +8,15 @@ This readme documents:
  - How to create a new llvm package + sub-packages
  - How to use the binary packages
 
+## What is llvm?
+
+LLVM stands for Low Level Virtual Machine. It is an opensource project containing a complete [C++ toolchain (compiler, linker, etc)](https://github.com/mapbox/cpp/blob/master/glossary.md#development-toolchain).
+
+Learn about the llvm toolchain:
+ - By watching https://www.youtube.com/watch?v=uZI_Qla4pNA
+ - Reading about its definition at https://github.com/mapbox/cpp/blob/master/glossary.md#llvm
+ - Exploring <https://llvm.org>
+
 ## How the llvm packages are structured
 
 This llvm/base directory is not a package itself, but two critical building blocks:
@@ -159,9 +168,31 @@ B. Run the docker image
 We run the docker image to build the package on linux. We map volumes such that the binary will end up on our host machine (to avoid needing to pass publishing credentials to docker).
 
 ```
+# first set up ccache sharing
+docker create -v $(pwd)/ccache:/ccache --name ccache mason-llvm
+
 LLVM_VERSION="4.0.2"
-docker run -it --volume $(pwd):/home/travis/build/mapbox/mason mason-llvm \
-  /bin/bash -c "./mason build llvm ${LLVM_VERSION} && ./utils/llvm.sh build ${LLVM_VERSION}"
+mkdir ccache
+time docker run -it \
+  -e CCACHE_DIR=/ccache \
+  -e LLVM_VERSION="${LLVM_VERSION}" \
+  --volumes-from ccache \
+  --volume $(pwd)/mason_packages/linux-x86_64:/home/travis/build/mapbox/mason/mason_packages/linux-x86_64 \
+  --volume $(pwd)/scripts:/home/travis/build/mapbox/mason/scripts \
+  mason-llvm \
+  bash
+```
+
+Then, inside the container run:
+
+```
+./mason build llvm ${LLVM_VERSION} && ./utils/llvm.sh build ${LLVM_VERSION}
+```
+
+Running interactively inside the container is recommended so that you can easily debug a failure. However if you would prefer to execute the commands all at once then pass this as the last argument to the `docker run` command:
+
+```
+/bin/bash -c "./mason build llvm ${LLVM_VERSION} && ./utils/llvm.sh build ${LLVM_VERSION}"
 ```
 
 C. Authenticate your shell with the mason AWS KEYS

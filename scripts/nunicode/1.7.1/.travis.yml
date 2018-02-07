@@ -31,7 +31,7 @@ addons:
     packages: [ 'libstdc++-5-dev', 'cmake', 'cmake-data' ]
 
 install:
-- if [[ $(uname -s) == 'Darwin' ]]; then brew install cmake; fi
+- if [[ $(uname -s) == 'Darwin' && $(which brew) == '' ]]; then brew install cmake; fi
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

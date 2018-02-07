@@ -5,7 +5,7 @@ MASON_VERSION=7.50.2
 MASON_LIB_FILE=lib/libcurl.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libcurl.pc
 
-OPENSSL_VERSION=1.0.2
+OPENSSL_VERSION=1.0.2d
 
 . ${MASON_DIR}/mason.sh
 

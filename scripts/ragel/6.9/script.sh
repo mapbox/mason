@@ -17,6 +17,7 @@ function mason_load_source {
 }
 
 function mason_compile {
+    export CXXFLAGS="${CXXFLAGS//-std=c++11} -std=c++03"
     ./configure --prefix=${MASON_PREFIX} \
      --disable-dependency-tracking
 
@@ -27,6 +28,14 @@ function mason_compile {
 
 function mason_clean {
     make clean
+}
+
+function mason_cflags {
+    echo ""
+}
+
+function mason_ldflags {
+    echo ""
 }
 
 mason_run "$@"

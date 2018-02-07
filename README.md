@@ -40,7 +40,7 @@ To install mason locally:
 
 ```sh
 mkdir ./mason
-curl -sSfL https://github.com/mapbox/mason/archive/v0.15.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=./mason
+curl -sSfL https://github.com/mapbox/mason/archive/v0.17.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=./mason
 ```
 
 Then you can use the `mason` command like: `./mason/mason install <package> <version>`
@@ -48,7 +48,7 @@ Then you can use the `mason` command like: `./mason/mason install <package> <ver
 To install mason globally (to /tmp):
 
 ```sh
-curl -sSfL https://github.com/mapbox/mason/archive/v0.15.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=/tmp
+curl -sSfL https://github.com/mapbox/mason/archive/v0.17.0.tar.gz | tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=/tmp
 ```
 
 Then you can use the `mason` command like: `/tmp/mason install <package> <version>`
@@ -233,7 +233,89 @@ For details see https://docs.travis-ci.com/user/triggering-builds and https://gi
 
 ## Writing build scripts
 
-Each version of each package has its own directory in scripts/${package}/${version}, e.g. [`scripts/libuv/0.11.29`](https://github.com/mapbox/mason/tree/master/scripts/libuv/0.11.29). The directory must contain a file called `script.sh`, which is structured like this:
+Each version of each package has its own directory in `scripts/${package}/${version}`, e.g. [`scripts/libpng/1.6.28`](https://github.com/mapbox/mason/tree/master/scripts/libpng/1.6.28).
+
+Below are details on ways to create packages for:
+
+ - new packages (not previously unpackaged software)
+ - new versions of existing packages
+ - header-only libraries and pre-compiled libraries
+
+### Creating new packages
+
+If you are creating a package for previously unpackaged software start by creating a new directory for your `${package}/${version}` from within your mason checkout.
+
+For example if you want to name your package `yourlib` and it is version `1.0.0` you would do:
+
+```bash
+mkdir -p scripts/yourlib/1.0.0
+```
+
+The directory must contain two files:
+
+    - `script.sh`
+    - `.travis.yml`
+
+What you put in those files depend on what type of package you are creating. See:
+
+ - [Header-only package](#header-only-package)
+ - [Pre-compiled library package](#pre-compiled-library-package)
+
+### Creating new versions of packages
+
+When creating a new package it is recommended to start by copying an existing package.
+
+Each package must contain two files:
+
+    - `script.sh`
+    - `.travis.yml`
+
+What you put in those files depend on what type of package you are creating. See:
+
+ - [Header-only package](#header-only-package)
+ - [Pre-compiled library package](#pre-compiled-library-package)
+
+#### Header-only package
+
+For a header-only library, a good example to copy from is the `geometry` package. You can copying the `geometry` package:
+
+```bash
+cp -r scripts/geometry/0.9.1 scripts/yourlib/1.0.0
+```
+
+You will not need to edit the `.travis.yml`, but you will need to edit the `script.sh`.
+
+See the [Script structure](#script-structure) section below for details on the `script.sh` format. A `script.sh` is simplier for header-only libraries, so here is a shortlist of things you need to change:
+
+- `MASON_NAME`: change it from `geometry` to `yourlib`
+- `MASON_VERSION`: change it from `0.9.1` to your version
+
+Then you will also need to update:
+
+ - The github url on line `11` to match your download url
+ - The hash on line `12`. To do this, it is easiest to run `./mason build yourlib version` and it will fail, but the error message will contain the correct hash. Copy the hash and put it on line `12`.
+
+Now update the `MASON_BUILD_PATH`. You will need to change the text of `geometry.hpp-` to your package name. This will likely work for your entire line:
+
+```
+export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
+```
+
+Now make any adjustments needed to the `mason_compile` section, modifying the copying of headers.
+
+#### Pre-compiled library package
+
+For a compiled library package, start by copying the `libpng` package:
+
+```bash
+cp -r scripts/libpng/1.6.28 scripts/yourlib/1.0.0
+```
+
+See the [Script structure](#script-structure) section below for details on the `script.sh` format.
+
+#### Script structure
+
+This `script.sh` is structured like:
 
 ```bash
 #!/usr/bin/env bash

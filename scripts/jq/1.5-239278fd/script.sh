@@ -9,7 +9,9 @@ MASON_LIB_FILE=bin/jq
 function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
 
-    git clone git://github.com/stedolan/${MASON_NAME}.git ${MASON_BUILD_PATH}
+    if [[ ! -d ${MASON_BUILD_PATH} ]]; then
+        git clone git://github.com/stedolan/${MASON_NAME}.git ${MASON_BUILD_PATH}
+    fi
     cd ${MASON_BUILD_PATH}
     git checkout ${MASON_VERSION}
 

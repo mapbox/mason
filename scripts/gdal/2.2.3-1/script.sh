@@ -43,6 +43,7 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install geos ${GEOS_VERSION}
     MASON_GEOS=$(${MASON_DIR}/mason prefix geos ${GEOS_VERSION})
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/lib/libgeos.la
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/lib/libgeos_c.la
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/bin/geos-config
     ${MASON_DIR}/mason install libtiff ${LIBTIFF_VERSION}
     MASON_TIFF=$(${MASON_DIR}/mason prefix libtiff ${LIBTIFF_VERSION})

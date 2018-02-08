@@ -9,7 +9,7 @@ MASON_VERSION=$(basename $HERE)
 # inherit all functions from llvm base
 source ${HERE}/../../${MASON_NAME}/base/common.sh
 
-function setup_release() {
+function setup_base_tools() {
     get_llvm_project "http://llvm.org/git/llvm.git"              ${MASON_BUILD_PATH}
     get_llvm_project "http://llvm.org/git/clang.git"             ${MASON_BUILD_PATH}/tools/clang
     get_llvm_project "http://llvm.org/git/compiler-rt.git"       ${MASON_BUILD_PATH}/projects/compiler-rt

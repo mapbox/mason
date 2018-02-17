@@ -92,9 +92,11 @@ function setup_base_tools() {
         get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/libcxxabi-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libcxxabi
         get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/libunwind-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libunwind
     fi
+    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/openmp-${MASON_BASE_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/openmp
     get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/lld-${MASON_BASE_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld
     get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/clang-tools-extra-${MASON_BASE_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra
     get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/lldb-${MASON_BASE_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb
+    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/polly-${MASON_BASE_VERSION}.src.tar.xz"             ${MASON_BUILD_PATH}/tools/polly
     # The include-what-you-use project often lags behind llvm releases, causing compile problems when you try to build it within llvm (and I don't know how feasible it is to build separately)
     # Hence this is disabled by default and must be either enabled here or added to a `setup_release` function per package version
     # pulls from a tagged version:
@@ -226,7 +228,7 @@ function mason_compile {
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCLANG_DEFAULT_CXX_STDLIB=libc++"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12"
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_CREATE_XCODE_TOOLCHAIN=ON -DLLVM_EXTERNALIZE_DEBUGINFO=ON"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLDB_CODESIGN_IDENTITY='' -DLLVM_CREATE_XCODE_TOOLCHAIN=OFF -DLLVM_EXTERNALIZE_DEBUGINFO=ON"
     fi
     if [[ $(uname -s) == 'Linux' ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_BINUTILS_INCDIR=${LLVM_BINUTILS_INCDIR}"
@@ -272,7 +274,7 @@ function mason_compile {
     # https://blogs.gentoo.org/gsoc2016-native-clang/2016/05/31/build-gnu-free-executables-with-clang/
 
     if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_ASSERTIONS=OFF -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXX_ENABLE_STATIC=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON -DLIBUNWIND_USE_COMPILER_RT=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBUNWIND_ENABLE_SHARED=OFF"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_ASSERTIONS=OFF -DLIBUNWIND_ENABLE_ASSERTIONS=OFF -DLIBCXXABI_USE_COMPILER_RT=ON -DLIBCXX_USE_COMPILER_RT=ON -DLIBCXXABI_ENABLE_ASSERTIONS=OFF -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXX_ENABLE_STATIC=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON -DSANITIZER_USE_COMPILER_RT=ON -DLIBUNWIND_USE_COMPILER_RT=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBUNWIND_ENABLE_SHARED=OFF"
     fi
 
     echo "fixing editline"
@@ -289,7 +291,7 @@ function mason_compile {
 
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -G Ninja -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja -DLLVM_ENABLE_ASSERTIONS=OFF -DCLANG_VENDOR=mapbox/mason -DCMAKE_CXX_COMPILER_LAUNCHER=${MASON_CCACHE}/bin/ccache"
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} -DCMAKE_BUILD_TYPE=Release -DLLVM_INCLUDE_DOCS=OFF"
-    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_TARGETS_TO_BUILD=BPF;X86 -DCLANG_REPOSITORY_STRING=https://github.com/mapbox/mason -DCLANG_VENDOR_UTI=org.mapbox.llvm"
+    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_TARGETS_TO_BUILD=BPF;X86 -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly -DCLANG_REPOSITORY_STRING=https://github.com/mapbox/mason -DCLANG_VENDOR_UTI=org.mapbox.llvm"
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLDB_RELOCATABLE_PYTHON=1 -DLLDB_DISABLE_PYTHON=1 -DLLVM_ENABLE_TERMINFO=0"
     # look for curses and libedit on linux
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_PREFIX_PATH=${MASON_NCURSES};${MASON_LIBEDIT}"
@@ -325,9 +327,13 @@ function mason_compile {
     # install the asan_symbolizer.py tool
     cp -a ../projects/compiler-rt/lib/asan/scripts/asan_symbolize.py ${MASON_PREFIX}/bin/
 
+    # query llvm-config for actual major.minor
+    # which might be different if we are building from head
+    local CONFIG_MAJOR_MINOR=$(${MASON_PREFIX}/bin/llvm-config --version | cut -d '.' -f1-2)
+
     # set up symlinks to match what llvm.org binaries provide
     (cd ${MASON_PREFIX}/bin/ && \
-        ln -s "clang++" "clang++-${MAJOR_MINOR}" && \
+        ln -s "clang++" "clang++-${CONFIG_MAJOR_MINOR}" && \
         ln -s "asan_symbolize.py" "asan_symbolize")
 
     # symlink so that we use the system libc++ headers on osx

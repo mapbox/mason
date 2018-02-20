@@ -92,9 +92,11 @@ function setup_base_tools() {
         get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/libcxxabi-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libcxxabi
         get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/libunwind-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libunwind
     fi
+    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/openmp-${MASON_BASE_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/openmp
     get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/lld-${MASON_BASE_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld
     get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/clang-tools-extra-${MASON_BASE_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra
     get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/lldb-${MASON_BASE_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb
+    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/polly-${MASON_BASE_VERSION}.src.tar.xz"             ${MASON_BUILD_PATH}/tools/polly
     # The include-what-you-use project often lags behind llvm releases, causing compile problems when you try to build it within llvm (and I don't know how feasible it is to build separately)
     # Hence this is disabled by default and must be either enabled here or added to a `setup_release` function per package version
     # pulls from a tagged version:
@@ -134,6 +136,8 @@ function mason_prepare_compile {
 
     ${MASON_DIR}/mason install clang++ ${CLANG_VERSION}
     MASON_CLANG=$(${MASON_DIR}/mason prefix clang++ ${CLANG_VERSION})
+    ${MASON_DIR}/mason install llvm ${CLANG_VERSION}
+    MASON_LLVM=$(${MASON_DIR}/mason prefix llvm ${CLANG_VERSION})
     ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
     MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
     ${MASON_DIR}/mason install cmake ${CMAKE_VERSION}
@@ -226,7 +230,7 @@ function mason_compile {
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCLANG_DEFAULT_CXX_STDLIB=libc++"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12"
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_CREATE_XCODE_TOOLCHAIN=ON -DLLVM_EXTERNALIZE_DEBUGINFO=ON"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_CREATE_XCODE_TOOLCHAIN=OFF -DLLVM_EXTERNALIZE_DEBUGINFO=ON"
     fi
     if [[ $(uname -s) == 'Linux' ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_BINUTILS_INCDIR=${LLVM_BINUTILS_INCDIR}"
@@ -245,17 +249,6 @@ function mason_compile {
     # llvm may request c++14 instead so let's not force c++11
     export CXXFLAGS="${CXXFLAGS//-std=c++11}"
 
-    if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
-        # we link to libc++ even on linux to avoid runtime dependency on libstdc++:
-        # https://github.com/mapbox/mason/issues/252
-        export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS}"
-        export LDFLAGS="-stdlib=libc++ ${LDFLAGS}"
-
-        if [[ $(uname -s) == 'Linux' ]]; then
-            export LDFLAGS="${LDFLAGS} -Wl,--start-group -L$(pwd)/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
-        fi
-    fi
-
     # on linux the default is to link programs compiled by clang++ to libstdc++ and below we make that explicit.
     if [[ $(uname -s) == 'Linux' ]]; then
         export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCLANG_DEFAULT_CXX_STDLIB=libstdc++"
@@ -272,16 +265,34 @@ function mason_compile {
     # https://blogs.gentoo.org/gsoc2016-native-clang/2016/05/31/build-gnu-free-executables-with-clang/
 
     if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_ASSERTIONS=OFF -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXX_ENABLE_STATIC=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON -DLIBUNWIND_USE_COMPILER_RT=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBUNWIND_ENABLE_SHARED=OFF"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_ASSERTIONS=OFF -DLIBUNWIND_ENABLE_ASSERTIONS=OFF -DLIBCXXABI_USE_COMPILER_RT=ON -DLIBCXX_USE_COMPILER_RT=ON -DLIBCXXABI_ENABLE_ASSERTIONS=OFF -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXX_ENABLE_STATIC=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON -DSANITIZER_USE_COMPILER_RT=ON -DLIBUNWIND_USE_COMPILER_RT=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBUNWIND_ENABLE_SHARED=OFF"
     fi
 
-    echo "fixing editline"
-    # hack to ensure that lldb finds editline to avoid:
-    # ../tools/lldb/include/lldb/Host/Editline.h:60:10: fatal error: 'histedit.h' file not found
-    # include <histedit.h>
-    cp -r ${MASON_LIBEDIT}/include/* ./tools/lldb/include/
-    # /usr/bin/ld: cannot find -ledit
-    cp -r ${MASON_LIBEDIT}/lib/* ./lib/
+
+    if [[ $(uname -s) == 'Linux' ]]; then
+        echo "fixing editline"
+        # hack to ensure that lldb finds editline to avoid:
+        # ../tools/lldb/include/lldb/Host/Editline.h:60:10: fatal error: 'histedit.h' file not found
+        # include <histedit.h>
+        export CXXFLAGS="${CXXFLAGS} -I${MASON_LIBEDIT}/include/ -I${MASON_NCURSES}/include/ -I${MASON_NCURSES}/include/ncursesw/"
+    fi
+
+    if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
+        # we link to libc++ even on linux to avoid runtime dependency on libstdc++:
+        # https://github.com/mapbox/mason/issues/252
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_ENABLE_LIBCXX=ON"
+        if [[ $(uname -s) == 'Linux' ]]; then
+            # does not work on OS X, which hits:
+            # ld.lld: error: unknown argument: -no_deduplicate
+            # https://bugs.llvm.org/show_bug.cgi?id=34792
+            # https://lists.llvm.org/pipermail/llvm-dev/2018-January/120234.html
+            CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_ENABLE_LLD=ON"
+            # enabling LLD will add `-fuse-ld=lld` which only works if lld is on path
+            # so add it here
+            export PATH=${MASON_LLVM}/bin:${PATH}
+        fi
+    fi
+
 
     echo "creating build directory"
     mkdir -p ./build
@@ -289,16 +300,23 @@ function mason_compile {
 
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -G Ninja -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja -DLLVM_ENABLE_ASSERTIONS=OFF -DCLANG_VENDOR=mapbox/mason -DCMAKE_CXX_COMPILER_LAUNCHER=${MASON_CCACHE}/bin/ccache"
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} -DCMAKE_BUILD_TYPE=Release -DLLVM_INCLUDE_DOCS=OFF"
-    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_TARGETS_TO_BUILD=BPF;X86 -DCLANG_REPOSITORY_STRING=https://github.com/mapbox/mason -DCLANG_VENDOR_UTI=org.mapbox.llvm"
+    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_TARGETS_TO_BUILD=BPF;X86 -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly -DCLANG_REPOSITORY_STRING=https://github.com/mapbox/mason -DCLANG_VENDOR_UTI=org.mapbox.llvm"
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLDB_RELOCATABLE_PYTHON=1 -DLLDB_DISABLE_PYTHON=1 -DLLVM_ENABLE_TERMINFO=0"
     # look for curses and libedit on linux
+    # note: python would need swig
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_PREFIX_PATH=${MASON_NCURSES};${MASON_LIBEDIT}"
 
-    # note: python would need swig
-    #  -DLLDB_DISABLE_CURSES=1 -DLLDB_DISABLE_LIBEDIT=1
-
     echo "running cmake configure for llvm+friends build"
-    ${MASON_CMAKE}/bin/cmake ../ ${CMAKE_EXTRA_ARGS} -DCMAKE_CXX_COMPILER="$CXX" -DCMAKE_C_COMPILER="$CC" -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+    if [[ $(uname -s) == 'Linux' ]]; then
+        ${MASON_CMAKE}/bin/cmake ../ ${CMAKE_EXTRA_ARGS} \
+        -DCMAKE_CXX_STANDARD_LIBRARIES="-L${MASON_LIBEDIT}/lib -L${MASON_NCURSES}/lib -L$(pwd)/lib -lc++ -lc++abi -lunwind -pthread -lc -ldl -lrt -rtlib=compiler-rt" \
+        -DCMAKE_CXX_COMPILER="$CXX" -DCMAKE_C_COMPILER="$CC" \
+        -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+    else
+        ${MASON_CMAKE}/bin/cmake ../ ${CMAKE_EXTRA_ARGS} \
+        -DCMAKE_CXX_COMPILER="$CXX" -DCMAKE_C_COMPILER="$CC" \
+        -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+    fi
 
     if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
         ${MASON_NINJA}/bin/ninja unwind -j${MASON_CONCURRENCY}
@@ -325,9 +343,13 @@ function mason_compile {
     # install the asan_symbolizer.py tool
     cp -a ../projects/compiler-rt/lib/asan/scripts/asan_symbolize.py ${MASON_PREFIX}/bin/
 
+    # query llvm-config for actual major.minor
+    # which might be different if we are building from head
+    local CONFIG_MAJOR_MINOR=$(${MASON_PREFIX}/bin/llvm-config --version | cut -d '.' -f1-2)
+
     # set up symlinks to match what llvm.org binaries provide
     (cd ${MASON_PREFIX}/bin/ && \
-        ln -s "clang++" "clang++-${MAJOR_MINOR}" && \
+        ln -s "clang++" "clang++-${CONFIG_MAJOR_MINOR}" && \
         ln -s "asan_symbolize.py" "asan_symbolize")
 
     # symlink so that we use the system libc++ headers on osx
@@ -340,31 +362,34 @@ function mason_compile {
     # Address+Undefined
     echo "now building libc++ with address+undefined sanitizers"
     # https://libcxx.llvm.org/docs/BuildingLibcxx.html
-    ${MASON_CMAKE}/bin/cmake ../ ${CMAKE_EXTRA_ARGS} -DCMAKE_CXX_COMPILER="$CXX" -DCMAKE_C_COMPILER="$CC" -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/asan" -DLLVM_USE_SANITIZER="Address;Undefined" \
-    -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
-    ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
-    ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
+    ${MASON_CMAKE}/bin/cmake ../ \
+        ${CMAKE_EXTRA_ARGS} -DCMAKE_CXX_COMPILER="$CXX" -DCMAKE_C_COMPILER="$CC" -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+        -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/asan" -DLLVM_USE_SANITIZER="Address;Undefined" \
+        -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
+        ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
+        ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
 
     # MemoryWithOrigins
     if [[ $(uname -s) == 'Darwin' ]]; then
         echo "skipping libc++ with memory sanitizer, which is not supported on OS X"
     else
         echo "now building libc++ with memory sanitizer"
-        ${MASON_CMAKE}/bin/cmake ../ ${CMAKE_EXTRA_ARGS} -DCMAKE_CXX_COMPILER="$CXX" -DCMAKE_C_COMPILER="$CC" -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-        -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/msan" -DLLVM_USE_SANITIZER="MemoryWithOrigins" \
-        -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
-        ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
-        ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
+        ${MASON_CMAKE}/bin/cmake ../ \
+            ${CMAKE_EXTRA_ARGS} -DCMAKE_CXX_COMPILER="$CXX" -DCMAKE_C_COMPILER="$CC" -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+            -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/msan" -DLLVM_USE_SANITIZER="MemoryWithOrigins" \
+            -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
+            ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
+            ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
     fi
 
     # Thread
     echo "now building libc++ with thread sanitizer"
-    ${MASON_CMAKE}/bin/cmake ../ ${CMAKE_EXTRA_ARGS} -DCMAKE_CXX_COMPILER="$CXX" -DCMAKE_C_COMPILER="$CC" -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/tsan" -DLLVM_USE_SANITIZER="Thread" \
-    -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
-    ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
-    ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
+    ${MASON_CMAKE}/bin/cmake ../ \
+        ${CMAKE_EXTRA_ARGS} -DCMAKE_CXX_COMPILER="$CXX" -DCMAKE_C_COMPILER="$CC" -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+        -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/tsan" -DLLVM_USE_SANITIZER="Thread" \
+        -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
+        ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
+        ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
 
 }
 

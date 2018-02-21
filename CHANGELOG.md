@@ -1,5 +1,53 @@
 # Mason releases
 
+## 0.18.0
+
+- Added
+  - android-ndk r16b
+  - args 6.2.0
+  - bcc e6c7568
+  - benchmark 1.3.0, 1.3.0-cxx11abi
+  - binutils 2.30
+  - boost 1.66.0 (includes boost_libatomic, boost_libchrono, boost_libdate_time, boost_libfilesystem, boost_libiostreams, boost_libprogram_options, boost_libpython, boost_libregex, boost_libregex_icu, boost_libregex_icu57, boost_listsystem, boost_libtest, boost_libthread)
+  - build2 0.7.0-a.0.1517662481.a542a12b9195bb49
+  - gdal 2.2.3-1 (with geos enabled)
+  - jq 1.5-239278fd
+  - libcurl 7.50.2
+  - libedit 3.1
+  - libnghttp2 1.26.0
+  - llvm 7.0.0. 5.0.1 (includes clang++, clang-format, clang-tidy, include-what-you-use, llvm-cov)
+  - mapnik 3.0.18, 3.0.17, 3.0.16, a2f5969
+  - ncurses 6.1
+  - optional f27e7908
+  - osm-tag-rewriter 1.1.1
+  - perf 4.15
+  - protozero 1.6.1
+  - spatial-algorithms 0.1.0, cdda174
+  - tao_tuple 28626e99
+  - tippecanoe 1.27.6
+  - vector-tile 1.0.1, f4728da
+  - vtzero 533b811, f6efb8e, 7adde32
+  - wget 1.19.2
+
+- Changed
+  - Updated llvm documentation
+  - Updated download path for libpng 1.6.28
+  - Create .ccache directory in container to allow mapping volume
+  - Mason tests default to precise
+  - Various style fixes in mason.sh [#489](https://github.com/mapbox/mason/pull/489)
+  - Advances to llvm packaging [30c4647](https://github.com/mapbox/mason/commit/30c4647d0d80439d8b6017f519d13812a9fe986b)
+    - now building sanitized libc++ (asan, msan, and tsan)
+    - now building libc++/c++abi on all platforms
+    - still not installing libc++ on osx (to avoid conflicts with system)
+    - now ensuring we build using mason clang++
+    - upgraded build dependencies
+    - added support for building lldb against libedit and libncurses
+    - simplify and robustify package installs (no longer by default building iwyu)
+    - longer installing install-xcode-toolchain
+
+Changes: https://github.com/mapbox/mason/compare/v0.17.0...v0.18.0
+
+
 ## 0.17.0
 
 - Added
@@ -64,7 +112,7 @@
   - vtzero e651b70
   - vtzero fa6682b
 
-- Fixed 
+- Fixed
   - Improve Mason error handling https://github.com/mapbox/mason/commit/1727795f314dbef66fb0f84ee98a82a62e77b5d1
   - Fix Docker invocation https://github.com/mapbox/mason/commit/66817048a3f5613c14838920df237e781c7a4b99
   - PKG_CONFIG_PATH env var fix https://github.com/mapbox/mason/pull/493/files

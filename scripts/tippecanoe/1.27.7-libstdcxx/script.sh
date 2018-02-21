@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
 MASON_NAME=tippecanoe
-MASON_VERSION=1.27.7
+MASON_VERSION=1.27.7-libstdcxx
 MASON_LIB_FILE=bin/tippecanoe
 
 . ${MASON_DIR}/mason.sh
 
 function mason_load_source {
     mason_download \
-        https://github.com/mapbox/tippecanoe/archive/${MASON_VERSION}.tar.gz \
+        https://github.com/mapbox/tippecanoe/archive/1.27.7.tar.gz \
         46a839d0cd8664b116063002f6008499a2bec963
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-1.27.7
 }
 
 SQLITE_VERSION=3.16.2

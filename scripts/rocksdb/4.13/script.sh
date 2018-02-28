@@ -20,7 +20,7 @@ function mason_compile {
     # by default -O2 is used for release builds (https://github.com/facebook/rocksdb/commit/1d08140e817d5908889f59046148ed4d3b1039e5)
     # but this is too conservative
     # we want -O3 for best performance
-    perl -i -p -e "s/-O2 -fno-omit-frame-pointer/-O3/g;" Makefile
+    perl -i -p -e "s/-O2 -fno-omit-frame-pointer/-O3 -Wno-expansion-to-defined/g;" Makefile
     INSTALL_PATH=${MASON_PREFIX} V=1 make install-static -j${MASON_CONCURRENCY}
     # remove debug symbols (200 MB -> 10 MB)
     strip -S ${MASON_PREFIX}/${MASON_LIB_FILE}

@@ -7,6 +7,7 @@ MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
 MASON_IGNORE_OSX_SDK=${MASON_IGNORE_OSX_SDK:-false}
 MASON_CXX=${MASON_CXX:-}
 MASON_CC=${MASON_CC:-}
+MASON_CONCURRENCY=${MASON_CONCURRENCY:-}
 
 MASON_UNAME=$(uname -s)
 if [ "${MASON_UNAME}" = 'Darwin' ]; then
@@ -23,11 +24,14 @@ case $- in
     *)   MASON_CURL_ARGS=-s ;; # non-interative
 esac
 
-case ${MASON_UNAME} in
-    'Darwin')    MASON_CONCURRENCY=$(sysctl -n hw.ncpu) ;;
-    'Linux')        MASON_CONCURRENCY=$(lscpu -p | egrep -v '^#' | wc -l) ;;
-    *)              MASON_CONCURRENCY=1 ;;
-esac
+# If MASON_CONCURRENCY not set, use # of cores
+if [[ ! ${MASON_CONCURRENCY:-} ]]; then
+    case ${MASON_UNAME} in
+        'Darwin')    MASON_CONCURRENCY=$(sysctl -n hw.ncpu) ;;
+        'Linux')        MASON_CONCURRENCY=$(lscpu -p | egrep -v '^#' | wc -l) ;;
+        *)              MASON_CONCURRENCY=1 ;;
+    esac
+fi
 
 function mason_step    { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }
 function mason_substep { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }

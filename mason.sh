@@ -214,7 +214,7 @@ elif [ "${MASON_PLATFORM}" = 'android' ]; then
         MASON_ANDROID_TOOLCHAIN="mips64el-linux-android"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        CFLAGS="-target mips64el-none-linux-android ${CFLAGS}"
+        CFLAGS="-target mips64el-none-linux-android ${CFLAGS} -fintegrated-as"
 
         export JNIDIR="mips64"
         MASON_ANDROID_ARCH="mips64"

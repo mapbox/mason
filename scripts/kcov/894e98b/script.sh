@@ -17,14 +17,58 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR}/mason install cmake 3.8.2
-    MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake 3.8.2)
+    LIBEDIT_VERSION="3.1"
+    BINUTILS_VERSION="2.30"
+    CMAKE_VERSION="3.8.2"
+    ZLIB_VERSION="1.2.8"
+    BZIP2_VERSION="1.0.6"
+    ELFUTILS_VERSION="0.170"
+
+    ${MASON_DIR}/mason install cmake ${CMAKE_VERSION}
+    MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake ${CMAKE_VERSION})
+    ${MASON_DIR}/mason install libedit ${LIBEDIT_VERSION}
+    MASON_LIBEDIT=$(${MASON_DIR}/mason prefix libedit ${LIBEDIT_VERSION})
+    ${MASON_DIR}/mason install zlib ${ZLIB_VERSION}
+    MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib ${ZLIB_VERSION})
+    if [[ $(uname -s) == 'Linux' ]]; then
+        ${MASON_DIR}/mason install binutils ${BINUTILS_VERSION}
+        LLVM_BINUTILS_INCDIR=$(${MASON_DIR}/mason prefix binutils ${BINUTILS_VERSION})/include
+        MASON_BINUTILS=$(${MASON_DIR}/mason prefix binutils ${BINUTILS_VERSION})
+        ${MASON_DIR}/mason install bzip2 ${BZIP2_VERSION}
+        MASON_BZIP2=$(${MASON_DIR}/mason prefix bzip2 ${BZIP2_VERSION})
+        ${MASON_DIR}/mason install elfutils ${ELFUTILS_VERSION}
+        MASON_ELFUTILS=$(${MASON_DIR}/mason prefix elfutils ${ELFUTILS_VERSION})
+        #CFLAGS=" ${CFLAGS} -m64 -I${MASON_ZLIB}/include -I${MASON_BINUTILS}/include -I${MASON_BZIP2}/include -I${MASON_ELFUTILS}/include"
+        #LDFLAGS="${LDFLAGS}-L${MASON_BZIP2}/lib -L${MASON_ZLIB}/lib -L${MASON_ELFUTILS}/lib -L${MASON_BINUTILS}/lib"
+
+    fi
 }
 
 function mason_compile {
     mkdir -p build && cd build
-    ${MASON_CMAKE}/bin/cmake .. -DCMAKE_BUILD_TYPE=Relelease
-    make
+    if [[ $(uname -s) == 'Linux' ]]; then
+        ${MASON_CMAKE}/bin/cmake .. \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
+          -DCMAKE_CXX_COMPILER="$CXX" -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${CFLAGS} -I${MASON_BINUTILS}/include" \
+          -DCMAKE_C_FLAGS="${CFLAGS} -I${MASON_BINUTILS}/include" \
+          -DLIBELF_LIBRARY=${MASON_ELFUTILS}/lib/libelf.a \
+          -DLIBELF_INCLUDE_DIR=${MASON_ELFUTILS}/include \
+          -DLIBDW_LIBRARY="${MASON_ELFUTILS}/lib/libdw.a;${MASON_ELFUTILS}/lib/libebl.a" \
+          -DLIBDW_INCLUDE_DIR=${MASON_ELFUTILS}/include \
+          -DLIBBFD_BFD_LIBRARY=${MASON_BINUTILS}/lib/libbfd.a \
+          -DLIBBFD_IBERTY_LIBRARY=${MASON_BINUTILS}/lib/libiberty.a \
+          -DLIBBFD_OPCODES_LIBRARY=${MASON_BINUTILS}/lib/libopcodes.a \
+          -DLIBBFD_INCLUDE_DIRS=${MASON_BINUTILS}/include
+    else
+        ${MASON_CMAKE}/bin/cmake .. \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
+          -DCMAKE_CXX_COMPILER="$CXX" -DCMAKE_C_COMPILER="$CC" \
+          -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+    fi
+    VERBOSE=1 make
     mkdir -p ${MASON_PREFIX}/bin
     cp src/kcov ${MASON_PREFIX}/bin
     # https://github.com/SimonKagstrom/kcov/issues/166

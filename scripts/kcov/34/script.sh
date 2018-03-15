@@ -16,9 +16,14 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
 }
 
+function mason_prepare_compile {
+    ${MASON_DIR}/mason install cmake 3.8.2
+    MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake 3.8.2)
+}
+
 function mason_compile {
-    mkdir build && cd build
-    cmake ..
+    mkdir -p build && cd build
+    ${MASON_CMAKE}/bin/cmake .. -DCMAKE_BUILD_TYPE=Relelease
     make
     mkdir -p ${MASON_PREFIX}/bin
     cp src/kcov ${MASON_PREFIX}/bin

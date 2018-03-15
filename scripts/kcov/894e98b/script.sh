@@ -28,9 +28,9 @@ function mason_prepare_compile {
     MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake ${CMAKE_VERSION})
     ${MASON_DIR}/mason install libedit ${LIBEDIT_VERSION}
     MASON_LIBEDIT=$(${MASON_DIR}/mason prefix libedit ${LIBEDIT_VERSION})
-    ${MASON_DIR}/mason install zlib ${ZLIB_VERSION}
-    MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib ${ZLIB_VERSION})
     if [[ $(uname -s) == 'Linux' ]]; then
+        ${MASON_DIR}/mason install zlib ${ZLIB_VERSION}
+        MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib ${ZLIB_VERSION})
         ${MASON_DIR}/mason install binutils ${BINUTILS_VERSION}
         LLVM_BINUTILS_INCDIR=$(${MASON_DIR}/mason prefix binutils ${BINUTILS_VERSION})/include
         MASON_BINUTILS=$(${MASON_DIR}/mason prefix binutils ${BINUTILS_VERSION})

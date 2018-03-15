@@ -8,10 +8,6 @@ matrix:
     - os: linux
       compiler: clang
       sudo: false
-      addons:
-        apt:
-          sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'binutils-dev', 'libcurl4-openssl-dev', 'zlib1g-dev', 'libdw-dev', 'libiberty-dev' ]
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

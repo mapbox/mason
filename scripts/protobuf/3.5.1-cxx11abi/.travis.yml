@@ -1,0 +1,19 @@
+matrix:
+  include:
+    - os: linux
+      sudo: required
+      dist: xenial
+      addons:
+        apt:
+          packages:
+           - libstdc++-5-dev
+           - g++-5
+
+# override install to prefer g++ instead of clang++
+install:
+- export CXX=g++-5
+- export CC=gcc-5
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

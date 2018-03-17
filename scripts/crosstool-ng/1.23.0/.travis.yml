@@ -1,0 +1,17 @@
+sudo: false
+
+matrix:
+  include:
+    - os: linux
+
+addons:
+  apt:
+    packages:
+     - gperf
+     - help2man
+     - libncurses5-dev
+     - texinfo
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

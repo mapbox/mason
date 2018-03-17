@@ -17,10 +17,10 @@ function mason_build {
         cp -r "${CLANG_PREFIX}/include/c++" "${MASON_PREFIX}/include/"
     fi
 
-    # copy libs
+    # copy c headers
     mkdir -p "${MASON_PREFIX}/lib"
-    mkdir -p "${MASON_PREFIX}/lib/clang"
-    cp -r ${CLANG_PREFIX}/lib/clang/${MASON_VERSION} "${MASON_PREFIX}/lib/clang/"
+    mkdir -p "${MASON_PREFIX}/lib/clang/${MASON_VERSION}/include"
+    cp -r ${CLANG_PREFIX}/lib/clang/${MASON_VERSION}/include "${MASON_PREFIX}/lib/clang/${MASON_VERSION}/"
 
     # copy tidy-related share files
     mkdir -p "${MASON_PREFIX}/share"

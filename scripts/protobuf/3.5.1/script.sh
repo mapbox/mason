@@ -3,7 +3,7 @@
 MASON_NAME=protobuf
 MASON_VERSION=3.5.1
 
-if [ ${MASON_PLATFORM} == 'ios' ]; then
+if [[ ${MASON_PLATFORM} == 'ios' ]]; then
     MASON_LIB_FILE=lib-isim-i386/libprotobuf-lite.a
     MASON_PKGCONFIG_FILE=lib-isim-i386/pkgconfig/protobuf-lite.pc
 else

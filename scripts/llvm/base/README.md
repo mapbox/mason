@@ -24,12 +24,12 @@ This llvm/base directory is not a package itself, but two critical building bloc
  - `scripts/llvm/base/README.md`: this document, that explains how to understand, use, and build the llvm package and sub-packages
  - `scripts/llvm/base/common.sh`: a common set of bash functions that are inherited by each llvm package.
 
-A given llvm package version is what users of mason actually request: e.g. llvm 4.0.0. This package lives at `scripts/llvm/4.0.0/script.sh`.
+A given llvm package version is what users of mason actually request. This package lives at `scripts/llvm/6.0.1/script.sh`.
 
 A user can install that version like:
 
 ```
-mason install llvm 4.0.0
+mason install llvm 6.0.1
 ```
 
 However, if they do they will get over 1.6 GB of binaries. See below to learn about the subpackages.
@@ -85,36 +85,46 @@ Here are the steps to create a new llvm version:
 
 #### Step 1: Note the latest release
 
-Go to http://releases.llvm.org to see the latest release. For our walkthrough below we will assume that the new release is `4.0.2`.
+Go to http://releases.llvm.org to see the latest release. For our walkthrough below we will assume that the new release is `6.0.1`.
 
 #### Step 2: Make sure this release of llvm is not already packaged
 
-Check to see if there is not already a `scripts/llvm/4.0.2`.
+Check to see if there is not already a `scripts/llvm/6.0.1`.
 
 #### Step 3: Create a mason branch
 
-Create a new branch called `llvm-4.0.2`.
+Create a new branch called `llvm-6.0.1`.
 
 #### Step 4: Create the new package
 
 Top create new version of the llvm package and sub-packages do:
 
 ```
-./utils/llvm.sh create 4.0.2 4.0.1
+./utils/llvm.sh create 6.0.1 6.0.0
 ```
+
+If you hit an error of `first arg must point to a version of llvm that does not exist` that means the package already exists. This will happen when someone has already packaged it as a dev release, pulling from `git` head. You can identify if this is the case by looking inside the `./scripts/llvm/<version>/script.sh` to see if you see `http://llvm.org/git/llvm.git` use in the `setup_base_tools` function.
+
+In this case, if you want to override the scripts and replace them with a formal release that does not pull from git you can do:
+
+```
+FORCE_LLVM_OVERWRITE=1 ./utils/llvm.sh create 6.0.1 6.0.0
+```
+
+Note: if you overwrite, we recommend creating a new release to track git HEAD that is named for the upcoming llvm version so that we still have a package tracking LLVM head via git. Currently updating this "HEAD tracking package" is manual (@springmeyer does it), but ideally we automate this in the future.
 
 #### Step 5: Push packages to github and create PR
 
 First add the new package and sub-packages to git
 
 ```
-git add scripts/*/4.0.2/
+git add scripts/*/6.0.1/
 ```
 
 Now push to github:
 
 ```
-git push origin llvm-4.0.2
+git push origin llvm-6.0.1
 ```
 
 Then go create a PR.
@@ -132,13 +142,13 @@ If you are on Linux, then you will first build the package in the linux docker c
 A. First build the llvm package. This may take > 30 minutes.
 
 ```
-./mason build llvm 4.0.2
+./mason build llvm 6.0.1
 ```
 
 B. Then build all the sub-packages. This will be fast since they are simply repackaged binaries.
 
 ```
-./utils/llvm.sh build 4.0.2
+./utils/llvm.sh build 6.0.1
 ```
 
 C. Authenticate your shell with the mason AWS KEYS
@@ -151,8 +161,8 @@ export AWS_SECRET_ACCESS_KEY=<>
 D. Then publish the main llvm package and sub-packages. This may take > 20 min depending on the speed of your internet connection.
 
 ```
-./mason publish llvm 4.0.2
-./utils/llvm.sh publish 4.0.2
+./mason publish llvm 6.0.1
+./utils/llvm.sh publish 6.0.1
 ```
 
 ##### Linux
@@ -171,7 +181,7 @@ We run the docker image to build the package on linux. We map volumes such that 
 # first set up ccache sharing
 docker create -v $(pwd)/ccache:/ccache --name ccache mason-llvm
 
-LLVM_VERSION="4.0.2"
+LLVM_VERSION="6.0.1"
 mkdir -p ccache
 time docker run -it \
   -e CCACHE_DIR=/ccache \
@@ -205,8 +215,8 @@ export AWS_SECRET_ACCESS_KEY=<>
 D. Then publish the main llvm package and sub-packages. This may take > 20 min depending on the speed of your internet connection.
 
 ```
-MASON_PLATFORM=linux ./mason publish llvm 4.0.2
-MASON_PLATFORM=linux ./utils/llvm.sh publish 4.0.2
+MASON_PLATFORM=linux ./mason publish llvm 6.0.1
+MASON_PLATFORM=linux ./utils/llvm.sh publish 6.0.1
 ```
 
 Note: `MASON_PLATFORM=linux` is only needed if your host is OS X.
@@ -221,7 +231,7 @@ The binary packages will work on:
 
 ### LTO support
 
-If you want to use `-flto` support with clang++ you also need to install binutils >= 2.27. To see the exact version of binutils that llvm was built against look inside the `scripts/llvm/base/common.sh` (https://github.com/mapbox/mason/blob/llvm-4.0.1/scripts/llvm/base/common.sh#L127).
+If you want to use `-flto` support with clang++ you also need to install binutils >= 2.27. To see the exact version of binutils that llvm was built against look inside the `scripts/llvm/base/common.sh` (https://github.com/mapbox/mason/blob/llvm-6.0.0/scripts/llvm/base/common.sh#L127).
 
 ### Xcode missing
 

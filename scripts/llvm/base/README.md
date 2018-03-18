@@ -129,6 +129,12 @@ git push origin llvm-6.0.1
 
 Then go create a PR.
 
+#### Step 5b:
+
+Consider IWYU. This package is often behind LLVM releases and therefore does not compile cleanly. It is, therefore, usually disabled in the `setup_release` section of a given versions `script.sh`. But you can consider enabling and pointing at a given gitsha or new release of IWYU to see if it can be made to work (though the compile not will error until your LLVM has progressed so it will slow down your build experience).
+
+For example, at the time of packaging LLVM 6.0.0 this was unresolved: https://github.com/include-what-you-use/include-what-you-use/issues/521
+
 #### Step 6: Build and publish the new llvm package and sub-packages
 
 This step will vary depending on your host operating system.

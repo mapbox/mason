@@ -17,8 +17,8 @@ function mason_load_source {
 }
 
 function mason_compile {
-    export CFLAGS="${CFLAGS:-} -O3 -DNDEBUG"
-    export CXXFLAGS="${CXXFLAGS:-} -O3 -DNDEBUG"
+    export CFLAGS="${CFLAGS:-} -std=c++11 -O3 -DNDEBUG"
+    export CXXFLAGS="${CXXFLAGS:-} -std=c++11 -O3 -DNDEBUG"
     if [[ $(uname -s) == 'Darwin' ]]; then
         export LDFLAGS="${LDFLAGS:-} -stdlib=libc++"
     fi

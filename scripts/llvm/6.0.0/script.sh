@@ -12,7 +12,7 @@ MASON_VERSION=$(basename $HERE)
 source ${HERE}/../../${MASON_NAME}/base/common.sh
 
 function setup_release() {
-    get_llvm_project "https://github.com/include-what-you-use/include-what-you-use.git"  ${MASON_BUILD_PATH}/tools/clang/tools/include-what-you-use "" f1ec249
+    get_llvm_project "https://github.com/include-what-you-use/include-what-you-use.git"  ${MASON_BUILD_PATH}/tools/clang/tools/include-what-you-use "" 4bfe5d6
     # FIX 6.0.0 specific libcxx bug: https://github.com/llvm-mirror/libcxx/commit/68b20ca4d9c4bee2c2ad5a9240599b3e4b78d0ba
     # This will need to be removed in upcoming releases
     (cd ${MASON_BUILD_PATH}/projects/libcxx &&

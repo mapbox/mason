@@ -32,9 +32,12 @@ function mason_compile {
         export LDFLAGS="${LDFLAGS} -llog"
     fi
 
-    export PROTOBUF_XC_ARG=""
     if [ ${MASON_PLATFORM} == 'android' ] || [ ${MASON_PLATFORM} == 'ios' ]; then
-        export PROTOBUF_XC_ARG="${PROTOBUF_XC_ARG} --with-protoc=protoc"
+        local PREFIX=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix ${MASON_NAME} ${MASON_VERSION})
+        if [ ! -d ${PREFIX} ]; then
+            $(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason install ${MASON_NAME} ${MASON_VERSION})
+        fi
+        export PROTOBUF_XC_ARG="--with-protoc=${PREFIX}/bin/protoc"
     fi
 
     if [ ${MASON_PLATFORM} == 'ios' ]; then
@@ -48,7 +51,7 @@ function mason_compile {
     ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
-        ${PROTOBUF_XC_ARG} \
+        ${PROTOBUF_XC_ARG:-} \
         --enable-static --disable-shared \
         --disable-debug --without-zlib \
         --disable-dependency-tracking

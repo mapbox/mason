@@ -66,4 +66,10 @@ function mason_clean {
     make clean
 }
 
+function mason_config_custom {
+    if [ ${MASON_PLATFORM} == 'android' ]; then
+        MASON_CONFIG_LDFLAGS="${MASON_CONFIG_LDFLAGS} -llog"
+    fi
+}
+
 mason_run "$@"

@@ -9,7 +9,7 @@ matrix:
       sudo: false
       addons:
         apt:
-          packages: [ 'flex','bison' ]
+          packages: [ 'flex','bison','libgnutls-dev' ]
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

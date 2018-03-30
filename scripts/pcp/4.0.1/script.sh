@@ -29,10 +29,11 @@ function mason_prepare_compile {
     export CFLAGS="${CFLAGS:-} -I${MASON_LINKED_REL}/include -O3 -DNDEBUG"
     export CXXFLAGS="${CXXFLAGS:-} -I${MASON_LINKED_REL}/include -O3 -DNDEBUG"
     export LDFLAGS="${LDFLAGS:-} -L${MASON_LINKED_REL}/lib"
-    PKGCONFIG_VERSION="0.29.1"
-    ${MASON_DIR}/mason install pkgconfig ${PKGCONFIG_VERSION}
-    export PATH=$(${MASON_DIR}/mason prefix pkgconfig ${PKGCONFIG_VERSION})/bin:${PATH}
-    export PKG_CONFIG_PATH="${MASON_LINKED_REL}/lib/pkgconfig"
+    # breaks being able to find system pkgconfig paths since it looses default
+    # PKGCONFIG_VERSION="0.29.1"
+    # ${MASON_DIR}/mason install pkgconfig ${PKGCONFIG_VERSION}
+    # export PATH=$(${MASON_DIR}/mason prefix pkgconfig ${PKGCONFIG_VERSION})/bin:${PATH}
+    export PKG_CONFIG_PATH="${MASON_LINKED_REL}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 }
 
 function mason_compile {

@@ -33,7 +33,7 @@ function mason_prepare_compile {
     # PKGCONFIG_VERSION="0.29.1"
     # ${MASON_DIR}/mason install pkgconfig ${PKGCONFIG_VERSION}
     # export PATH=$(${MASON_DIR}/mason prefix pkgconfig ${PKGCONFIG_VERSION})/bin:${PATH}
-    export PKG_CONFIG_PATH="${MASON_LINKED_REL}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+    export PKG_CONFIG_PATH="${MASON_LINKED_REL}/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
 }
 
 function mason_compile {

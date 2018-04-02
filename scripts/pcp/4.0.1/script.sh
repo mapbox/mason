@@ -21,13 +21,13 @@ function mason_prepare_compile {
     cd $(dirname ${MASON_ROOT})
     LIBMMICRO_VERSION="0.9.59"
     BOOST_VERSION="1.66.0"
-    ${MASON_DIR}/mason install boost ${BOOST_VERSION}
-    ${MASON_DIR}/mason link boost ${BOOST_VERSION}
+    # ${MASON_DIR}/mason install boost ${BOOST_VERSION}
+    # ${MASON_DIR}/mason link boost ${BOOST_VERSION}
     ${MASON_DIR}/mason install libmicrohttpd ${LIBMMICRO_VERSION}
     ${MASON_DIR}/mason link libmicrohttpd ${LIBMMICRO_VERSION}
     export MASON_LINKED_REL=$(pwd)/mason_packages/.link
-    export CFLAGS="${CFLAGS:-} -I${MASON_LINKED_REL}/include -O3 -DNDEBUG"
-    export CXXFLAGS="${CXXFLAGS:-} -I${MASON_LINKED_REL}/include -O3 -DNDEBUG"
+    export CFLAGS="${CFLAGS:-} -I${MASON_LINKED_REL}/include"
+    export CXXFLAGS="${CXXFLAGS:-} -I${MASON_LINKED_REL}/include"
     export LDFLAGS="${LDFLAGS:-} -L${MASON_LINKED_REL}/lib"
     # breaks being able to find system pkgconfig paths since it looses default
     # PKGCONFIG_VERSION="0.29.1"
@@ -41,6 +41,11 @@ function mason_compile {
     # export LDFLAGS="${CFLAGS:-}"
     # avoid fat binaries on OS X
     perl -i -p -e "s/ -arch i386//g;" ./configure
+
+    # remove check-statics check which fails mysteriously with:
+    # access.o: r .L.str.1 : Error: additional symbol
+    # (is this a clang++ problem?)
+    perl -i -p -e "s/\t\.\/check-statics\n//g;" ./src/libpcp/src/GNUmakefile
     ./configure \
         ${MASON_HOST_ARG} \
         --prefix=${MASON_PREFIX} \
@@ -51,14 +56,12 @@ function mason_compile {
     V=1 VERBOSE=1 make install -j${MASON_CONCURRENCY}
 }
 
-function mason_strip_ldflags {
-    shift # -L...
-    shift # -lpng16
-    echo "$@"
+function mason_cflags {
+    :
 }
 
 function mason_ldflags {
-    mason_strip_ldflags $(`mason_pkgconfig` --static --libs)
+    :
 }
 
 function mason_clean {

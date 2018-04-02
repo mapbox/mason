@@ -2,10 +2,11 @@ This is the expected/enabled features of this perf build:
 
 Taken from https://travis-ci.org/mapbox/mason/builds/336964403#L613
 
+Auto-detecting system features:
 ...                         dwarf: [ on  ]
 ...            dwarf_getlocations: [ on  ]
 ...                         glibc: [ on  ]
-...                          gtk2: [ OFF ]
+...                          gtk2: [ on  ]
 ...                      libaudit: [ OFF ]
 ...                        libbfd: [ on  ]
 ...                        libelf: [ on  ]
@@ -24,7 +25,7 @@ Taken from https://travis-ci.org/mapbox/mason/builds/336964403#L613
 ...                     backtrace: [ on  ]
 ...                fortify-source: [ on  ]
 ...         sync-compare-and-swap: [ on  ]
-...                  gtk2-infobar: [ OFF ]
+...                  gtk2-infobar: [ on  ]
 ...             libelf-getphdrnum: [ on  ]
 ...           libelf-gelf_getnote: [ on  ]
 ...          libelf-getshdrstrndx: [ on  ]
@@ -41,11 +42,11 @@ Taken from https://travis-ci.org/mapbox/mason/builds/336964403#L613
 ...                           sdt: [ on  ]
 ...                         setns: [ on  ]
 Makefile.config:613: Python support disabled by user
-...                        prefix: /home/travis/build/mapbox/mason/mason_packages/linux-x86_64/perf/4.15
-...                        bindir: /home/travis/build/mapbox/mason/mason_packages/linux-x86_64/perf/4.15/bin
-...                        libdir: /home/travis/build/mapbox/mason/mason_packages/linux-x86_64/perf/4.15/lib64
-...                    sysconfdir: /home/travis/build/mapbox/mason/mason_packages/linux-x86_64/perf/4.15/etc
+...                        prefix: /home/travis/build/mapbox/mason/mason_packages/linux-x86_64/perf/4.15.15
+...                        bindir: /home/travis/build/mapbox/mason/mason_packages/linux-x86_64/perf/4.15.15/bin
+...                        libdir: /home/travis/build/mapbox/mason/mason_packages/linux-x86_64/perf/4.15.15/lib64
+...                    sysconfdir: /home/travis/build/mapbox/mason/mason_packages/linux-x86_64/perf/4.15.15/etc
 ...                 LIBUNWIND_DIR: 
 ...                     LIBDW_DIR: 
-...                          JDIR: /usr/lib/jvm/java-1.7.0-openjdk-amd64
+...                          JDIR: /usr/lib/jvm/java-1.6.0-openjdk-amd64
 ...     DWARF post unwind library: libdw

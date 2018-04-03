@@ -28,7 +28,6 @@ function mason_compile {
         ${MASON_HOST_ARG} \
         --enable-static \
         --with-pic \
-        --disable-shared \
         --disable-dependency-tracking \
         --enable-compact-fsts \
         --enable-compress \

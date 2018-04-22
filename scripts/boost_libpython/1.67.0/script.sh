@@ -7,6 +7,9 @@ HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 THIS_DIR=$(basename $(dirname $HERE))
 BOOST_LIBRARY=${THIS_DIR#boost_lib}
 MASON_NAME=boost_lib${BOOST_LIBRARY}
+PYTHON_VERSION="2.7"
+PYTHON_VERSION_NO_DOT=${PYTHON_VERSION/.}
+# NOTE: as of boost 1.67.0 it appears the static library has the python version embedded
 MASON_LIB_FILE=lib/libboost_${BOOST_LIBRARY}.a
 # hack for inconsistently named test lib
 if [[ ${MASON_LIB_FILE} == "lib/libboost_test.a" ]]; then
@@ -26,7 +29,7 @@ source ${BASE_PATH}/common.sh
 function write_python_config() {
 # usage:
 # write_python_config <user-config.jam> <version> <base> <variant>
-PYTHON_VERSION=$2
+local PYTHON_VERSION=$2
 # note: apple pythons need '/System'
 PYTHON_BASE=$3
 # note: python 3 uses 'm'
@@ -71,7 +74,7 @@ function mason_compile {
     # https://github.com/mapnik/mapnik/issues/1968
     mason_step "Loading patch ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff"
     patch -N -p0 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
-    write_python_config user-config.jam "2.7" "/System" ""
+    write_python_config user-config.jam ${PYTHON_VERSION} "/System" ""
     gen_config ${BOOST_TOOLSET} ${BOOST_TOOLSET_CXX}
     if [[ ! -f ./b2 ]] ; then
         ./bootstrap.sh
@@ -90,7 +93,8 @@ function mason_compile {
         cxxflags="${CXXFLAGS:-" "}" \
         stage
     mkdir -p $(dirname ${MASON_PREFIX}/${MASON_LIB_FILE})
-    mv stage/${MASON_LIB_FILE} ${MASON_PREFIX}/${MASON_LIB_FILE}
+    # NOTE: we strip the python version to make linking easier
+    mv stage/lib/libboost_${BOOST_LIBRARY}${PYTHON_VERSION_NO_DOT}.a ${MASON_PREFIX}/${MASON_LIB_FILE}
 }
 
 mason_run "$@"

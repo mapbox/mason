@@ -54,11 +54,11 @@ function create() {
         echo "ERROR: please provide first arg of new version"
         exit 1
     fi
-    if [[ -d ./scripts/llvm/${1} ]]; then
+    if [[ -d ./scripts/llvm/${1} ]] && [[ ${FORCE_LLVM_OVERWRITE:-false} != 1 ]]; then
         usage
         echo
         echo
-        echo "ERROR: first arg must point to a version of llvm that does not exist"
+        echo "ERROR: first arg must point to a version of llvm that does not exist (or pass 'FORCE_LLVM_OVERWRITE=1 ./utils/llvm.sh create'"
         exit 1
     fi
     if [[ ! -d ./scripts/llvm/${2} ]]; then

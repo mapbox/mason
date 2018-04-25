@@ -6,7 +6,8 @@ This readme documents:
  - Which sub-packages depend on the llvm package
  - How the llvm packages are built
  - How to create a new llvm package + sub-packages
- - How to create a new dev llvm package + sub-packages
+ - How to create a new _dev_ llvm package + sub-packages
+ - How to create a release package from a dev package (+ sub-packages)
  - How to use the binary packages
 
 ## What is llvm?
@@ -212,6 +213,12 @@ MASON_PLATFORM=linux ./utils/llvm.sh publish 4.0.2
 
 Note: `MASON_PLATFORM=linux` is only needed if your host is OS X.
 
+#### Step 7: Test and Merge
+
+Once you publish, you should check the PR you created earlier to see if CI tests pass and run any other tests necessary to check your new package. Once tests have passed, merge your PR into master.
+
+You're done!
+
 ## How to create a new dev llvm package + sub-packages
 
 #### Step 1: Create a mason branch
@@ -231,7 +238,7 @@ Since a version number doesn't exist until LLVM makes a release, you should pick
 - Edit the `script.sh` inside the directory of the new package you just created, e.g. from the example above `./scripts/llvm/6.0.0/script.sh`
 - Override the `setup_base_tools` function with something like this https://github.com/mapbox/mason/blob/libzip-1.5.1/scripts/llvm/7.0.0/script.sh#L12-L27. This is where you tell mason to grab LLVM directly from http://llvm.org/git/llvm.git. Note: You can also specify a gitsha with `get_llvm_project` and this is currently being considered to become the recommended way of getting a dev version of LLVM since it is reproducible and easier to debug later.
 
-#### Follow Step 5 and 6 above in the publishing a new package section
+#### Step 4: Follow Steps 5 and 7 above in the publishing a new package section
 
 Following steps 5 and 6 above cover:
 
@@ -239,8 +246,13 @@ Following steps 5 and 6 above cover:
 - Creating a PR
 - Building the new package
 - Publishing it
+- Merging your PR once CI tests pass
 
 Note: When building your package, e.g. `./mason build llvm 6.0.0`, mason will use the URLS you provided in the `setup_base_tools` override.
+
+## How to create a release package from a dev package (+ sub-packages)
+
+Currently this is a WIP, and making this easier to achieve is currently an issue with a documented work-around here: https://github.com/mapbox/mason/issues/578#issuecomment-383735380
 
 ## How to use the binary packages
 

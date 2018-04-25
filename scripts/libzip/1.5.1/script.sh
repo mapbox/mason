@@ -4,6 +4,7 @@ MASON_NAME=libzip
 MASON_VERSION=1.5.1
 MASON_LIB_FILE=lib/libzip.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libzip.pc
+ZLIB_VERSION=1.2.8
 
 . ${MASON_DIR}/mason.sh
 
@@ -18,14 +19,8 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    CMAKE_VERSION=3.8.2
-    CCACHE_VERSION=3.3.1
-    if [[ ${MASON_PLATFORM} == 'android' ]] || [[ ${MASON_PLATFORM} == 'ios' ]]; then
-        MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason install cmake ${CMAKE_VERSION}
-        MASON_CMAKE=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix cmake ${CMAKE_VERSION})
-        ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
-        MASON_PLATFORM= MASON_PLATFORM_VERSION= MASON_CCACHE=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
-    fi
+    ${MASON_DIR}/mason install zlib ${ZLIB_VERSION}
+    MASON_ZLIB=`${MASON_DIR}/mason prefix zlib ${ZLIB_VERSION}`
 }
 
 function mason_compile {
@@ -35,12 +30,13 @@ function mason_compile {
 
     if [ ${MASON_PLATFORM} = 'android' ]; then
         ${MASON_DIR}/utils/android.sh > toolchain.cmake
+        echo ${MASON_ZLIB}
 
-        ${MASON_CMAKE}/bin/cmake ../ \
+        cmake ../ \
+            -DCMAKE_PREFIX_PATH=${MASON_ZLIB} \
             -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake \
             -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
             -DZIP_STATIC=ON -DBUILD_SHARED_LIBS=OFF \
-            -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
             -DCMAKE_BUILD_TYPE=Release \
             ..
     else

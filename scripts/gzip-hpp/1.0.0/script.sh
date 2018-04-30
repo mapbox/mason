@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MASON_NAME=gzip
+MASON_NAME=gzip-hpp
 MASON_VERSION=1.0.0
 MASON_HEADER_ONLY=true
 

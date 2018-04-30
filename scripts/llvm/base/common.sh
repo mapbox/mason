@@ -156,22 +156,6 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    if [[ $(uname -s) == 'Darwin' ]]; then
-        # ensure codesigning is working before starting
-        # this logic borrowed from homebrew llvm.rb formula
-        TMPDIR=$(mktemp -d)
-        (cd $TMPDIR && \
-            cp /usr/bin/false  llvm_check && \
-            RESULT=0 &&
-            /usr/bin/codesign -f -s lldb_codesign --dryrun llvm_check || RESULT=$? &&
-            if [[ ${RESULT} != 0 ]]; then
-              echo "lldb_codesign identity must be available to build with LLDB."
-              echo "See: https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt"
-              exit 1
-            fi
-        )
-    fi
-
     export CXX="${CUSTOM_CXX:-${MASON_CLANG}/bin/clang++}"
     export CC="${CUSTOM_CC:-${MASON_CLANG}/bin/clang}"
     echo "using CXX=${CXX}"
@@ -186,6 +170,11 @@ function mason_compile {
     perl -i -p -e "s/AddPath\(\"\/usr\/local\/include\"\, System\, false\)\;//g;" tools/clang/lib/Frontend/InitHeaderSearch.cpp
 
     CMAKE_EXTRA_ARGS=""
+
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        # don't require codesigning for macOS
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLDB_CODESIGN_IDENTITY=''"
+    fi
 
     if [[ ${MAJOR_MINOR} == "3.8" ]]; then
         # workaround https://llvm.org/bugs/show_bug.cgi?id=25565

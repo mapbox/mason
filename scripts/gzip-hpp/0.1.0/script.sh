@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=gzip-hpp
-MASON_VERSION=1.0.0
+MASON_VERSION=0.1.0
 MASON_HEADER_ONLY=true
 
 . ${MASON_DIR}/mason.sh
@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/gzip-hpp/archive/v${MASON_VERSION}.tar.gz \
-        84a777e2b7ea70d07565caa1f1ed820f5721f63d
+        7bd14b3b9f63a05a7a09264cdda93c741666e835
 
     mason_extract_tar_gz
 

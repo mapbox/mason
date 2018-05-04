@@ -23,9 +23,6 @@ Mason works on both **OS X** and **Linux**.
 # Table of Contents
 
 - [Installation](#installation)
-    + [Curl install](#curl-install)
-    + [Submodule](#submodule)
-    + [mason.cmake](#masoncmake)
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Creating a package](#creating-a-package)
@@ -42,11 +39,11 @@ Mason works on both **OS X** and **Linux**.
 
 There are three recommended ways to install mason, via:
 
-    * curl
-    * a submodule
-    * bundling `mason.cmake`
+* [Curl](#curl)
+* [Submodule](#submodule)
+* [mason.cmake](#masoncmake)
 
-#### Curl install
+#### Curl
 
 To install mason locally:
 
@@ -329,8 +326,8 @@ These are just basic steps to help get you started. Depending on the complexity 
         - url (first parameter): set to the location of your source code archive, e.g. `https://github.com/mapbox/your-lib/archive/v${MASON_VERSION}.tar.gz`
         - checksum (second parameter): set to the checksum you get back after running a checksum function on the source code you want to download. The easiest way to get this checksum is to run `./mason build your-lib 0.1.0` (after setting the `mason_download` url) which will fail with an error message that will contain the correct checksum
     - `mason_compile`
-        - for header-only see []() for an example
-        - for code that needs to be compiled see []() for an example
+        - for header-only see [geometry 0.9.2](https://github.com/mapbox/mason/blob/master/scripts/geometry/0.9.2/script.sh#L19) for an example
+        - for code that needs to be compiled see [zlib 1.2.8](https://github.com/mapbox/mason/blob/master/scripts/zlib/1.2.8/script.sh#L20) for an example
 
     You **may** also need to override the follow Mason functions:
 

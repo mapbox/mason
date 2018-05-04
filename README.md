@@ -438,10 +438,10 @@ Name | Description
 
 These are common Mason function that you might need to override in your package's `script.sh` file depending on the type of library you are packaging. See https://github.com/mapbox/mason/blob/master/mason.sh to view how these functions are implemented by default. There you will find even more `mason_`-functions that you might find useful to override.
 
- `mason_pkgconfig`
- `mason_cflags`
- `mason_ldflags`
- `mason_static_libs`
+ - `mason_pkgconfig`
+ - `mason_cflags`
+ - `mason_ldflags`
+ - `mason_static_libs`
 
 ### System packages
 

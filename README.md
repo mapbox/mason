@@ -1,6 +1,6 @@
 # Mason
 
-Mason is a package manager for C/C++ applications that allows developers to easily install different versions of packages and to streamline build-and-publish workflows.
+Mason is a package manager for C/C++ applications that allows developers to easily install different versions of packages and to streamline build and publishing workflows.
 
 Mason is like:
 
@@ -28,12 +28,11 @@ Mason works on both **OS X** and **Linux**.
 - [Creating a package](#creating-a-package)
     * [Prerequisites](#prerequisites)
     * [Getting started](#getting-started)
-    * [Script structure](#script-structure)
-    * [Mason variables](#mason-variables)
-    * [Mason functions](#mason-functions)
     * [System packages](#system-packages)
+- [Script structure](#script-structure)
+- [Mason variables](#mason-variables)
+- [Mason functions](#mason-functions)
 - [Troubleshooting](#troubleshooting)
-- [Conventions](#conventions)
 
 ## Installation
 
@@ -115,7 +114,7 @@ Note: Leave out `HEADER_ONLY` if the package is a [pre-compiled library](https:/
 By default Mason publishes packages to a Mapbox S3 bucket. If you want to publish to a different bucket we recommend taking the following steps:
 
 1. Fork Mason and rename it to `mason-{your_org}`
-2. Configure Mason against your own s3 bucket
+2. Set [`MASON_BUCKET`](https://github.com/mapbox/mason/blob/2765e4ab50ca2c1865048e8403ef28b696228f7b/mason.sh#L6) to your own s3 bucket
 3. Publish packages to the new location
 
 ## Usage
@@ -270,11 +269,6 @@ There are different steps that you will need to follow depending on the type of 
 
 Check the [list of packages](https://github.com/mapbox/mason/tree/master/scripts) to see if a previous version of your package exists. It's helpful to copy scripts from a previous version rather than creating code from scratch.
 
-If there is no previous version of your package, it is recommended to copy a simple package that has mostly boiler plate code:
-
- - [geometry](https://github.com/mapbox/mason/tree/master/scripts/geometry/0.9.2) for header-only code
- - [libpng](https://github.com/mapbox/mason/tree/master/scripts/libpng/1.6.32) for building and packaging binaries
-
 **Where can Mason download your code?**
 
 Every package needs to tell Mason where to download the code that it will build and publish, for example:
@@ -298,7 +292,12 @@ These are just basic steps to help get you started. Depending on the complexity 
 
 2. Add scripts for building and publishing your package.
 
-    Each package must have the following two files: `script.sh` and `.travis.yml`. Copy these two files from a previous version of your package, or, if one doesn't exist, from a package of the same type (either compiled-code or header-only) that contains mostly boiler-plate code. For more details on where to look, see [Prerequisites](#prerequisites).
+    Each package must have the following two files: `script.sh` and `.travis.yml`. Copy these two files from a previous version of your package.
+
+    If there no previous version of your package exists, it is recommended to copy a simple package that has mostly boiler plate code:
+
+     - [geometry](https://github.com/mapbox/mason/tree/master/scripts/geometry/0.9.2) for header-only code
+     - [libpng](https://github.com/mapbox/mason/tree/master/scripts/libpng/1.6.32) for building and packaging binaries
 
     For example, if you're creating the first package of a library named `your-lib` that is version `0.1.0` you would copy scripts from the `geometry` package:
 
@@ -333,117 +332,11 @@ These are just basic steps to help get you started. Depending on the complexity 
 
     - Other [Mason functions](#mason-functions)
 
-### Script structure
-
-This `script.sh` in each package is structured like:
-
-```bash
-#!/usr/bin/env bash
-
-# This is required for every package.
-MASON_NAME=libuv
-MASON_VERSION=0.11.29
-
-# This is required if Mason will need to build a static library. Specify the relative path in the
-# installation directory.
-MASON_LIB_FILE=lib/libuv.a
-
-# You can specify the relative path to the pkg-config file if Mason needs to build your code before
-# packaging. If the library doesn't have a pkg-config file, you will need to override the functions
-# `mason_cflags` and `mason_ldflags`.
-MASON_PKGCONFIG_FILE=lib/pkgconfig/libuv.pc
-
-# This is required when you need to load the build system to build your code before packaging. You
-# con't need this line if you are packaging header-only code.
-. ${MASON_DIR}/mason.sh
-
-# Overriding this Mason function is required for all pakcages so Mason knows where to obtain your
-# source code.
-function mason_load_source {
-    mason_download \
-        https://github.com/joyent/libuv/archive/v0.11.29.tar.gz \
-        5bf49a8652f680557cbaf335a160187b2da3bf7f
-
-    # This unpacks the archive into the `mason_packages/.build` folder. If the tarball is BZip2
-    # compressed, you can also use `mason_extract_tar_bz2` instead.
-    mason_extract_tar_gz
-
-    # This variable contains the path to the unpacked folder inside the `.build` directory.
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
-}
-
-# Override this Mason function if you need to run code before compiling, e.g. a script that
-# generates configuration files.
-function mason_prepare_compile {
-    ./autogen.sh
-}
-
-# It is required to override the `mason_compile` function because it performs the actual build of
-# the source code (or just copies header files into a package folder to be published later for
-# header-only code). This is an example of how you would configure and make a static library.
-function mason_compile {
-    # You must set the build system's installation prefix to `MASON_PREFIX`. For cross-platform
-    # builds, you have to specify the `MASON_HOST_ARG`, which is empty for regular builds and is set
-    # to the correct host platform for cross-compiles e.g. iOS builds use `--host=arm-apple-darwin`.
-    ./configure \
-        --prefix=${MASON_PREFIX} \
-        ${MASON_HOST_ARG} \
-        --enable-static \
-        --disable-shared \
-        --disable-dependency-tracking
-
-    # If the build system supports building concurrently, you can tell it do do so by providing the
-    # number of parallel tasks from `MASON_CONCURRENCY`.
-    make install -j${MASON_CONCURRENCY}
-}
-
-# Tell Mason how to clean up the build folder. This is required for multi-architecture builds. e.g.
-# iOS builds perform a Simulator (Intel architecture) build first, then an iOS (ARM architecture)
-# build. The results are `lipo`ed into one universal archive file.
-function mason_clean {
-    make clean
-}
-
-# Run everything.
-mason_run "$@"
-```
-
-### Mason variables
-
-Name | Description
----|---
-`MASON_DIR` | The directory where Mason itself is installed. Defaults to the current directory.
-`MASON_ROOT` | Absolute path the `mason_packages` directory. Example: `/Users/user/mason_packages`.
-`MASON_PLATFORM` | Platform of the current invocation. Currently one of `osx`, `ios` or `linux`.
-`MASON_PLATFORM_VERSION` | Version of the platform. It must include the architecture if the produced binaries are architecture-specific (e.g. on Linux). Example: `10.10`
-`MASON_NAME` | Name specified in the `script.sh` file. Example: `libuv`
-`MASON_VERSION` | Version specified in the `script.sh` file. Example: `0.11.29`
-`MASON_SLUG` | Combination of the name and version. Example: `libuv-0.11.29`
-`MASON_PREFIX` | Absolute installation path. Example: `/Users/user/mason_packages/osx-10.10/libuv/0.11.29`
-`MASON_BUILD_PATH` | Absolute path to the build root. Example: `/Users/user/mason_packages/.build/libuv-0.11.29`
-`MASON_BUCKET` | S3 bucket that is used for storing pre-built binary packages. Example: `mason-binaries`
-`MASON_BINARIES` | Relative path to the gzipped tarball in the `.binaries` directory. Example: `osx-10.10/libuv/0.11.29.tar.gz`
-`MASON_BINARIES_PATH` | Absolute path to the gzipped tarball. Example: `/Users/user/mason_packages/.binaries/osx-10.10/libuv/0.11.29.tar.gz`
-`MASON_CONCURRENCY` | Number of CPU cores. Example: `8`
-`MASON_HOST_ARG` | Cross-compilation arguments. Example: `--host=x86_64-apple-darwin`
-`MASON_LIB_FILE` | Relative path to the library file in the install directory. Example: `lib/libuv.a`
-`MASON_PKGCONFIG_FILE` | Relative path to the pkg-config file in the install directory.  Example: `lib/pkgconfig/libuv.pc`
-`MASON_XCODE_ROOT` | OS X specific; Path to the Xcode Developer directory. Example: `/Applications/Xcode.app/Contents/Developer`
-`MASON_HEADER_ONLY` | Set to `true` to specify this library as header-only, which bypasses building binaries (default `false`)
-
-### Mason functions
-
-These are common Mason function that you might need to override in your package's `script.sh` file depending on the type of library you are packaging. See https://github.com/mapbox/mason/blob/master/mason.sh to view how these functions are implemented by default. There you will find even more `mason_`-functions that you might find useful to override.
-
- - `mason_pkgconfig`
- - `mason_cflags`
- - `mason_ldflags`
- - `mason_static_libs`
-
 ### System packages
 
-Some packages ship with operating systems, or can be easily installed with operating-specific package managers. For example, `libpng` is available on most systems and the version you're using doesn't really matter since it is mature and hasn't added any significant new APIs in recent years. To create a system package for it, use this `script.sh` file:
+Some packages ship with operating systems or can be easily installed with operating-specific package managers. For example, `libpng` is available on most systems and the version you're using doesn't really matter since it is mature and hasn't added any significant new APIs in recent years.
 
+The following `script.sh` contains the script code for packaging your system's `libpng`. (Note: To understande this code, make sure to review the [Script structure](#script-structure) section.)
 
 ```bash
 #!/usr/bin/env bash
@@ -494,6 +387,113 @@ mason_run "$@"
 System packages are marked with `MASON_SYSTEM_PACKAGE=true`. We're also first using `pkg-config` to check whether the library is present at all. The `mason_system_version` function creates a small executable which outputs the actual version. It is the only thing that is cached in the installation directory.
 
 We have to override the `mason_cflags` and `mason_ldflags` commands since the regular commands return flags for static libraries, but in the case of system packages, we want to dynamically link against the package.
+
+## Script structure
+
+This `script.sh` in each package is structured like:
+
+```bash
+#!/usr/bin/env bash
+
+# This is required for every package.
+MASON_NAME=libuv
+MASON_VERSION=0.11.29
+
+# This is required if Mason will need to build a static library. Specify the relative path in the
+# installation directory.
+MASON_LIB_FILE=lib/libuv.a
+
+# You can specify the relative path to the pkg-config file if Mason needs to build your code before
+# packaging. If the library doesn't have a pkg-config file, you will need to override the functions
+# `mason_cflags` and `mason_ldflags`.
+MASON_PKGCONFIG_FILE=lib/pkgconfig/libuv.pc
+
+# This is required when you need to load the build system to build your code before packaging. You
+# con't need this line if you are packaging header-only code.
+. ${MASON_DIR}/mason.sh
+
+# Overriding this Mason function is required for all pakcages so Mason knows where to obtain your
+# source code. This function also caches downloaded tarballs in the mason_packages/.cache folder.
+function mason_load_source {
+    mason_download \
+        https://github.com/joyent/libuv/archive/v0.11.29.tar.gz \
+        5bf49a8652f680557cbaf335a160187b2da3bf7f
+
+    # This unpacks the archive into the `mason_packages/.build` folder. If the tarball is BZip2
+    # compressed, you can also use `mason_extract_tar_bz2` instead.
+    mason_extract_tar_gz
+
+    # This variable contains the path to the unpacked folder inside the `.build` directory.
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
+}
+
+# Override this Mason function if you need to run code before compiling, e.g. a script that
+# generates configuration files.
+function mason_prepare_compile {
+    ./autogen.sh
+}
+
+# It is required to override the `mason_compile` function because it performs the actual build of
+# the source code (or just copies header files into a package folder to be published later for
+# header-only code). This is an example of how you would configure and make a static library.
+function mason_compile {
+    # You must set the build system's installation prefix to `MASON_PREFIX`. For cross-platform
+    # builds, you have to specify the `MASON_HOST_ARG`, which is empty for regular builds and is set
+    # to the correct host platform for cross-compiles e.g. iOS builds use `--host=arm-apple-darwin`.
+    ./configure \
+        --prefix=${MASON_PREFIX} \
+        ${MASON_HOST_ARG} \
+        --enable-static \
+        --disable-shared \
+        --disable-dependency-tracking
+
+    # If the build system supports building concurrently, you can tell it do do so by providing the
+    # number of parallel tasks from `MASON_CONCURRENCY`.
+    make install -j${MASON_CONCURRENCY}
+}
+
+# Tell Mason how to clean up the build folder. This is required for multi-architecture builds. e.g.
+# iOS builds perform a Simulator (Intel architecture) build first, then an iOS (ARM architecture)
+# build. The results are `lipo`ed into one universal archive file.
+function mason_clean {
+    make clean
+}
+
+# Run everything.
+mason_run "$@"
+```
+
+## Mason variables
+
+Name | Description
+---|---
+`MASON_DIR` | The directory where Mason itself is installed. Defaults to the current directory.
+`MASON_ROOT` | Absolute path the `mason_packages` directory. Example: `/Users/user/mason_packages`.
+`MASON_PLATFORM` | Platform of the current invocation. Currently one of `osx`, `ios` or `linux`.
+`MASON_PLATFORM_VERSION` | Version of the platform. It must include the architecture if the produced binaries are architecture-specific (e.g. on Linux). Example: `10.10`
+`MASON_NAME` | Name specified in the `script.sh` file. Example: `libuv`
+`MASON_VERSION` | Version specified in the `script.sh` file. Example: `0.11.29`
+`MASON_SLUG` | Combination of the name and version. Example: `libuv-0.11.29`
+`MASON_PREFIX` | Absolute installation path. Example: `/Users/user/mason_packages/osx-10.10/libuv/0.11.29`
+`MASON_BUILD_PATH` | Absolute path to the build root. Example: `/Users/user/mason_packages/.build/libuv-0.11.29`
+`MASON_BUCKET` | S3 bucket that is used for storing pre-built binary packages. Example: `mason-binaries`
+`MASON_BINARIES` | Relative path to the gzipped tarball in the `.binaries` directory. Example: `osx-10.10/libuv/0.11.29.tar.gz`
+`MASON_BINARIES_PATH` | Absolute path to the gzipped tarball. Example: `/Users/user/mason_packages/.binaries/osx-10.10/libuv/0.11.29.tar.gz`
+`MASON_CONCURRENCY` | Number of CPU cores. Example: `8`
+`MASON_HOST_ARG` | Cross-compilation arguments. Example: `--host=x86_64-apple-darwin`
+`MASON_LIB_FILE` | Relative path to the library file in the install directory. Example: `lib/libuv.a`
+`MASON_PKGCONFIG_FILE` | Relative path to the pkg-config file in the install directory.  Example: `lib/pkgconfig/libuv.pc`
+`MASON_XCODE_ROOT` | OS X specific; Path to the Xcode Developer directory. Example: `/Applications/Xcode.app/Contents/Developer`
+`MASON_HEADER_ONLY` | Set to `true` to specify this library as header-only, which bypasses building binaries (default `false`)
+
+## Mason functions
+
+These are common Mason function that you might need to override in your package's `script.sh` file depending on the type of library you are packaging. See https://github.com/mapbox/mason/blob/master/mason.sh to view how these functions are implemented by default. There you will find even more `mason_`-functions that you might find useful to override.
+
+ - `mason_pkgconfig`
+ - `mason_cflags`
+ - `mason_ldflags`
+ - `mason_static_libs`
 
 ## Troubleshooting
 

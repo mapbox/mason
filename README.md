@@ -488,3 +488,5 @@ We have to override the `mason_cflags` and `mason_ldflags` commands since the re
 ## Troubleshooting
 
 Downloaded source tarballs are cached in `mason_packages/.cache`. If for some reason the initial download failed, but it still left a file in that directory, make sure you delete the partial download there.
+
+## Conventions

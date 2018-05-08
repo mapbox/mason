@@ -1,6 +1,6 @@
 # Mason
 
-Mason is a package manager for C/C++ applications that allows developers to easily install different versions of packages and to streamline build and publishing workflows.
+Mason is a cross-platform, command-line package manager for C/C++ applications.
 
 Mason is like:
 
@@ -26,12 +26,15 @@ Mason works on both **OS X** and **Linux**.
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Creating a package](#creating-a-package)
-    * [Prerequisites](#prerequisites)
-    * [Getting started](#getting-started)
-    * [System packages](#system-packages)
-- [Script structure](#script-structure)
-- [Mason variables](#mason-variables)
-- [Mason functions](#mason-functions)
+    - [Prerequisites](#prerequisites)
+    - [Getting started](#getting-started)
+    - [System packages](#system-packages)
+- [Releasing a package](#releasing-a-package)
+- [Using a package](#using-a-package)
+- [Mason internals](#mason-internals)
+    - [Mason scripts](#mason-scripts)
+    - [Mason variables](#mason-variables)
+    - [Mason functions](#mason-functions)
 - [Troubleshooting](#troubleshooting)
 
 ## Installation
@@ -63,7 +66,7 @@ Then you can use the `mason` command like: `/tmp/mason install <package> <versio
 
 #### Submodule
 
-Mason can also be added a submodule to your repository. This is helpful for other contributors to get set up quickly.
+Mason can also be added as a submodule to your repository. This is helpful for other contributors to get set up quickly.
 
 Optionally a convention when using submodules, is to place the submodule at a path starting with `.` to make the directory hidden to most file browsers. If you want your mason folder hidden then make sure to include the final part of the following command `.mason/` so your submodule path has the leading `.` instead of just being `mason/`.
 
@@ -107,7 +110,7 @@ Then in your `CmakeLists.txt` install packages like:
 mason_use(<package name> VERSION <package version> HEADER_ONLY)
 ```
 
-Note: Leave out `HEADER_ONLY` if the package is a [pre-compiled library](https://github.com/mapbox/cpp/blob/master/glossary.md#precompiled-library). You can see if a package is `HEADER_ONLY` by looking inside the `script.sh` for `MASON_HEADER_ONLY=true` like https://github.com/mapbox/mason/blob/68871660b74023234fa96d482898c820a55bd4bf/scripts/geometry/0.9.0/script.sh#L5
+_Note: Leave out `HEADER_ONLY` if the package is a [pre-compiled library](https://github.com/mapbox/cpp/blob/master/glossary.md#precompiled-library). You can see if a package is `HEADER_ONLY` by looking inside the `script.sh` for `MASON_HEADER_ONLY=true` like https://github.com/mapbox/mason/blob/68871660b74023234fa96d482898c820a55bd4bf/scripts/geometry/0.9.0/script.sh#L5_
 
 ## Configuration
 
@@ -138,7 +141,7 @@ The `command` can be one of the following
 * [link](#link) - creates symlinks for packages in `mason_packages/.link`
 * [trigger](#trigger) - trigger a build and publish operation on Travis CI
 
-### install
+#### install
 
 ```bash
 $ mason install libuv 0.11.29
@@ -155,8 +158,7 @@ Next, Mason checks whether there are pre-built binaries available in the S3 buck
 
 If no pre-built binaries are available, Mason is going to build the library according to the script in the `mason_packages/.build` folder, and install into the platform- and library-specific directory.
 
-
-### remove
+#### remove
 
 ```bash
 $ mason remove libuv 0.11.29
@@ -168,15 +170,15 @@ $ mason remove libuv 0.11.29
 
 Removes the specified library/version from the package directory.
 
-### build
+#### build
 
 This command works like the `install` command, except that it *doesn't* check for existing library installations, and that it *doesn't* check for pre-built binaries. I.e. it first removes the current installation and *always* builds the library from source. This is useful when you are working on a build script and want to fresh builds.
 
-### publish
+#### publish
 
 Creates a gzipped tarball of the specified platform/library/version and uploads it to the `mason-binaries` S3 bucket. If you want to use this feature, you need write access to the bucket and need to specify the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
 
-### prefix
+#### prefix
 
 ```bash
 ~ $ mason prefix libuv 0.11.29
@@ -185,7 +187,7 @@ Creates a gzipped tarball of the specified platform/library/version and uploads 
 
 This prints the absolute path to the installation directory of the the library/version. Likely, this folder has the typical `include` and `lib` folders.
 
-### version
+#### version
 
 ```bash
 ~ $ mason version zlib system
@@ -194,7 +196,7 @@ This prints the absolute path to the installation directory of the the library/v
 
 This prints the version of the library, which is only useful when version is `system`. See [System packages](#system-packages) for more details.
 
-### cflags
+#### cflags
 
 ```bash
 ~ $ mason cflags libuv 0.11.29
@@ -203,7 +205,7 @@ This prints the version of the library, which is only useful when version is `sy
 
 Prints the C/C++ compiler flags that are required to compile source code with this library. Likely, this is just the include path, but may also contain other flags.
 
-### ldflags
+#### ldflags
 
 ```bash
 ~ $ mason ldflags libuv 0.11.29
@@ -212,7 +214,7 @@ Prints the C/C++ compiler flags that are required to compile source code with th
 
 Prints the linker flags that are required to link against this library.
 
-### link
+#### link
 
 ```bash
 ~ $ mason link libuv 0.11.29
@@ -220,7 +222,7 @@ Prints the linker flags that are required to link against this library.
 
 This command only works if the package has already been installed. When run it symlinks the versioned `lib`, `include`, `share`, and `bin` folders of the package into a shared structure that is unversioned. For example if `mason prefix libuv 0.11.29` was `./mason_packages/osx-10.10/libuv/0.11.29` then the library would become available at `./mason_packages/.link/lib/libuv.a`
 
-### trigger
+#### trigger
 
 In order to ensure that all prebuilt binaries are consistent and reproducible, we perform the final build and publish operation on Travis CI.
 
@@ -276,11 +278,11 @@ Every package needs to tell Mason where to download the code that it will build 
  - `https://github.com/mapbox/geometry.hpp/archive/v0.9.2.tar.gz` for a Github release: [geometry 0.9.2](https://github.com/mapbox/geometry.hpp/releases/tag/v0.9.2)
  - `https://github.com/mapbox/geometry.hpp/archive/b0e41cc5635ff8d50e7e1edb73cadf1d2a7ddc83.zip` for pre-release code hosted on Github: [geometry b0e41cc](https://github.com/mapbox/geometry.hpp/tree/b0e41cc5635ff8d50e7e1edb73cadf1d2a7ddc83)
 
-Note: Your code doesn't need to be hosted on Github in order for Mason to work. Your code can be hosted anywhere. Another common location is [SourceForge](#https://sourceforge.net/).
+_Note: Your code doesn't need to be hosted on Github in order for Mason to work. Your code can be hosted anywhere. Another common location is [SourceForge](#https://sourceforge.net/)._
 
 ### Getting started
 
-These are just basic steps to help get you started. Depending on the complexity of building your code, you might have to review the [Script structure](#script-structure) section to get a better idea of how to further configure Mason to be able to create your package.
+These are just basic steps to help get you started. Depending on the complexity of building your code, you might have to review the [Mason scripts](#mason-scripts) section to get a better idea of how to further configure Mason to be able to create your package.
 
 1. Create a new directory for your package.
 
@@ -294,7 +296,7 @@ These are just basic steps to help get you started. Depending on the complexity 
 
     Each package must have the following two files: `script.sh` and `.travis.yml`. Copy these two files from a previous version of your package.
 
-    If there no previous version of your package exists, it is recommended to copy a simple package that has mostly boiler plate code:
+    If no previous version of your package exists, it is recommended to copy a simple package that has mostly boiler plate code:
 
      - [geometry](https://github.com/mapbox/mason/tree/master/scripts/geometry/0.9.2) for header-only code
      - [libpng](https://github.com/mapbox/mason/tree/master/scripts/libpng/1.6.32) for building and packaging binaries
@@ -336,7 +338,7 @@ These are just basic steps to help get you started. Depending on the complexity 
 
 Some packages ship with operating systems or can be easily installed with operating-specific package managers. For example, `libpng` is available on most systems and the version you're using doesn't really matter since it is mature and hasn't added any significant new APIs in recent years.
 
-The following `script.sh` contains the script code for packaging your system's `libpng`. (Note: To understande this code, make sure to review the [Script structure](#script-structure) section.)
+The following `script.sh` contains the script code for packaging your system's `libpng`. _Note: To understande this code, make sure to review the [Mason scripts](#mason-scripts) section._
 
 ```bash
 #!/usr/bin/env bash
@@ -388,9 +390,72 @@ System packages are marked with `MASON_SYSTEM_PACKAGE=true`. We're also first us
 
 We have to override the `mason_cflags` and `mason_ldflags` commands since the regular commands return flags for static libraries, but in the case of system packages, we want to dynamically link against the package.
 
-## Script structure
+## Releasing a package
 
-This `script.sh` in each package is structured like:
+Here is an example workflow to help get you started:
+
+1. Create an annotated tag in git for the code you want to package.
+
+    Annotated tags can be stored, checksummed, signed and verified with GNU Privacy Guard (GPG) in Github. To create an annotated tag specify `-a` when running the `tag` command, for example:
+
+    `git tag -a v0.1.0 -m "version 0.1.0"`
+
+2. Share your new tag.
+
+    You have to explicitly push your new tag to a shared Github server. This is the location we will share with Mason when specifying where to download the code to be packaged. Using our example above we would run:
+
+    `git push origin v0.1.0`
+
+    (Or you can push all tags: `git push --tags`.)
+
+3. Create a package.
+
+    We recommend working in a new branch before creating a pacakge. For example if you want to call your new package `my_new_package` version `0.1.0` you could create and checkout a branch like this:
+
+    `git checkout -b my_new_package-0.1.0`
+
+    Now follow the instructions in the [Getting started](#getting-started) section for creating a new package.
+
+4. Test your package.
+
+    Even though we will eventually build the package using Travis, it's a good idea to build locally to check for errors.
+
+     `./mason build my_new_package 0.1.0`
+
+5. Push changes to remote.
+
+    Once you can build, push your changes up to Github remote so that Travis will know what to build and publish in the next step.
+
+    `git push origin my_new_package-0.1.0`
+
+6. Build and Publish your package.
+
+    Use Mason's `trigger` command to tell Travis to build, test, and publish your new package to the S3 bucket specified in Mason. By default this S3 bucket is set to a Mapbox-managed S3 bucket called `mason-binaries`.
+
+    `./mason trigger my_new_package 0.1.0`
+
+7. Check your S3 bucket to see that your package exists.
+
+    The location of your package depends on how you configured Mason (see [Configuration](#configuration)) and the type of package you published. For example if you published your package to the default S3 bucket (`mason-binaries`) and it's a header-only package, you can find your package here:
+
+    `aws s3 ls s3://mason-binaries/headers/my_new_package/0.1.0.tar.gz`
+
+## Using a package
+
+1. First make sure you followed the [Mason installation](#installation) instructions.
+
+2. Depending on which tools you use and how you decide to structure your project, you **may** need to update your Mason install in order to see all the available packages. If you use a structure like:
+
+    * [hpp-skel](https://github.com/mapbox/hpp-skel) - you will need to update your Mason version in `scripts/setup.sh`
+    * [node-cpp-skel](https://github.com/mapbox/node-cpp-skel) - you don't have to update Mason because it'll look directly at the S3 bucket for available packages
+
+3. Now you can just run the [mason install](#install) command providing it the library and version you wish to install.
+
+## Mason internals
+
+### Mason scripts
+
+The `script.sh` file in each package is structured like the following example:
 
 ```bash
 #!/usr/bin/env bash
@@ -463,7 +528,7 @@ function mason_clean {
 mason_run "$@"
 ```
 
-## Mason variables
+### Mason variables
 
 Name | Description
 ---|---
@@ -486,7 +551,7 @@ Name | Description
 `MASON_XCODE_ROOT` | OS X specific; Path to the Xcode Developer directory. Example: `/Applications/Xcode.app/Contents/Developer`
 `MASON_HEADER_ONLY` | Set to `true` to specify this library as header-only, which bypasses building binaries (default `false`)
 
-## Mason functions
+### Mason functions
 
 These are common Mason function that you might need to override in your package's `script.sh` file depending on the type of library you are packaging. See https://github.com/mapbox/mason/blob/master/mason.sh to view how these functions are implemented by default. There you will find even more `mason_`-functions that you might find useful to override.
 

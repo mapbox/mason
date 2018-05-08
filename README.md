@@ -110,11 +110,11 @@ Then in your `CmakeLists.txt` install packages like:
 mason_use(<package name> VERSION <package version> HEADER_ONLY)
 ```
 
-_Note: Leave out `HEADER_ONLY` if the package is a [pre-compiled library](https://github.com/mapbox/cpp/blob/master/glossary.md#precompiled-library). You can see if a package is `HEADER_ONLY` by looking inside the `script.sh` for `MASON_HEADER_ONLY=true` like https://github.com/mapbox/mason/blob/68871660b74023234fa96d482898c820a55bd4bf/scripts/geometry/0.9.0/script.sh#L5_
+_Note: Leave out `HEADER_ONLY` if the package is a [precompiled library](https://github.com/mapbox/cpp/blob/master/glossary.md#precompiled-library). You can see if a package is `HEADER_ONLY` by looking inside the `script.sh` for `MASON_HEADER_ONLY=true` like https://github.com/mapbox/mason/blob/68871660b74023234fa96d482898c820a55bd4bf/scripts/geometry/0.9.0/script.sh#L5_
 
 ## Configuration
 
-By default Mason publishes packages to a Mapbox S3 bucket. If you want to publish to a different bucket we recommend taking the following steps:
+By default Mason publishes packages to a Mapbox-managed S3 bucket. If you want to publish to a different bucket we recommend taking the following steps:
 
 1. Fork Mason and rename it to `mason-{your_org}`
 2. Set [`MASON_BUCKET`](https://github.com/mapbox/mason/blob/2765e4ab50ca2c1865048e8403ef28b696228f7b/mason.sh#L6) to your own s3 bucket
@@ -133,7 +133,7 @@ The `command` can be one of the following
 * [install](#install) - installs the specified library/version
 * [remove](#remove) - removes the specified library/version
 * [build](#build) - forces a build from source (= skip pre-built binary detection)
-* [publish](#publish) - uploads the built binaries to the S3 bucket
+* [publish](#publish) - uploads packages to the S3 bucket
 * [prefix](#prefix) - prints the absolute path to the library installation directory
 * [version](#version) - prints the actual version of the library (only useful when version is `system`)
 * [cflags](#cflags) - prints C/C++ compiler flags
@@ -172,7 +172,7 @@ Removes the specified library/version from the package directory.
 
 #### build
 
-This command works like the `install` command, except that it *doesn't* check for existing library installations, and that it *doesn't* check for pre-built binaries. I.e. it first removes the current installation and *always* builds the library from source. This is useful when you are working on a build script and want to fresh builds.
+This command works like the `install` command, except that it *doesn't* check for existing library installations, and that it *doesn't* check for pre-built binaries, i.e. it first removes the current installation and *always* builds the library from source. This is useful when you are working on a build script and want to fresh builds.
 
 #### publish
 
@@ -224,7 +224,7 @@ This command only works if the package has already been installed. When run it s
 
 #### trigger
 
-In order to ensure that all prebuilt binaries are consistent and reproducible, we perform the final build and publish operation on Travis CI.
+In order to ensure that all pre-built binaries are consistent and reproducible, we perform the final build and publish operation on Travis CI.
 
 First set the `MASON_TRAVIS_TOKEN` environment variable. You can do this either by installing the `travis` gem and running `travis token` or by using `curl` to hit the Travis api directly. See details on this below. **WARNING: be careful to keep this token safe. Cycling it requires emailing support@travis-ci.com. Giving someone an access token is like giving them full access to your Travis account.**
 
@@ -327,8 +327,8 @@ These are just basic steps to help get you started. Depending on the complexity 
         - url (first parameter): set to the location of your source code archive, e.g. `https://github.com/mapbox/your-lib/archive/v${MASON_VERSION}.tar.gz`
         - checksum (second parameter): set to the checksum you get back after running a checksum function on the source code you want to download. The easiest way to get this checksum is to run `./mason build your-lib 0.1.0` (after setting the `mason_download` url) which will fail with an error message that will contain the correct checksum
     - `mason_compile`
-        - for header-only see [geometry 0.9.2](https://github.com/mapbox/mason/blob/master/scripts/geometry/0.9.2/script.sh#L19) for an example
-        - for code that needs to be compiled see [zlib 1.2.8](https://github.com/mapbox/mason/blob/master/scripts/zlib/1.2.8/script.sh#L20) for an example
+        - for header-only see [geometry 0.9.2](https://github.com/mapbox/mason/blob/a7e35b0f632a8b2f0e338acc9dda0cff04d2f752/scripts/geometry/0.9.2/script.sh#L19) for an example
+        - for code that needs to be compiled see [zlib 1.2.8](https://github.com/mapbox/mason/blob/a7e35b0f632a8b2f0e338acc9dda0cff04d2f752/scripts/zlib/1.2.8/script.sh#L20) for an example
 
     You **may** also need to override the follow Mason functions:
 
@@ -430,26 +430,25 @@ Here is an example workflow to help get you started:
 
 6. Build and Publish your package.
 
-    Use Mason's `trigger` command to tell Travis to build, test, and publish your new package to the S3 bucket specified in Mason. By default this S3 bucket is set to a Mapbox-managed S3 bucket called `mason-binaries`.
+    Use Mason's `trigger` command to tell Travis to build, test, and publish your new package to the S3 bucket specified in `mason.sh`.
 
     `./mason trigger my_new_package 0.1.0`
 
-7. Check your S3 bucket to see that your package exists.
-
-    The location of your package depends on how you configured Mason (see [Configuration](#configuration)) and the type of package you published. For example if you published your package to the default S3 bucket (`mason-binaries`) and it's a header-only package, you can find your package here:
-
-    `aws s3 ls s3://mason-binaries/headers/my_new_package/0.1.0.tar.gz`
+7. Check S3 to verify your package exists.
 
 ## Using a package
 
-1. First make sure you followed the [Mason installation](#installation) instructions.
+Mason has two clients for installing and working with packages:
 
-2. Depending on which tools you use and how you decide to structure your project, you **may** need to update your Mason install in order to see all the available packages. If you use a structure like:
+* **Mason cli** - comes bundled with the Mason project, see [Usage](#usage) for commands
 
-    * [hpp-skel](https://github.com/mapbox/hpp-skel) - you will need to update your Mason version in `scripts/setup.sh`
-    * [node-cpp-skel](https://github.com/mapbox/node-cpp-skel) - you don't have to update Mason because it'll look directly at the S3 bucket for available packages
+    For example [hpp-skel](https://github.com/mapbox/hpp-skel) uses the Mason cli client and requires that the Mason version in [scripts/setup.sh](https://github.com/mapbox/hpp-skel/blob/044187fdfc441cf9db57a3c1b03972eee6882a9b/scripts/setup.sh#L6) be updated in order to stay up-to-date with the latest available packages.
 
-3. Now you can just run the [mason install](#install) command providing it the library and version you wish to install.
+* **[mason-js](https://github.com/mapbox/mason-js)** - a separate Node.js client with its own installation and usage instructions
+
+    For example [node-cpp-skel](https://github.com/mapbox/node-cpp-skel) uses the mason-js client and pulls packages directly from S3.
+
+_Note: The install command syntax will differ depending on the client you use._
 
 ## Mason internals
 

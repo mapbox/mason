@@ -35,6 +35,9 @@ function mason_prepare_compile {
         MASON_ZLIB_LDFLAGS="-L$(${MASON_DIR}/mason prefix zlib_shared ${ZLIB_SHARED_VERSION})/lib"
     fi
 
+    ${MASON_DIR}/mason install lz4 1.8.2
+    ${MASON_DIR}/mason link lz4 1.8.2
+
     ${MASON_DIR}/mason install protobuf 3.5.1
     ${MASON_DIR}/mason link protobuf 3.5.1
 
@@ -62,7 +65,6 @@ function mason_prepare_compile {
 
     ${MASON_DIR}/mason install sqlite 3.21.0
     ${MASON_DIR}/mason link sqlite 3.21.0
-
 
     # set up to fix libtool .la files
     # https://github.com/mapbox/mason/issues/61
@@ -100,6 +102,8 @@ export
 
     NOCONFIGURE=1 ./autogen.sh
 
+
+    PKG_CONFIG_PATH="${MASON_ROOT}/.link/lib/pkgconfig" \
     ./configure \
         --prefix="$MASON_PREFIX" \
         ${MASON_HOST_ARG} \

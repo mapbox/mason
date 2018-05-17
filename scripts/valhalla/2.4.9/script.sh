@@ -50,6 +50,8 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason link boost_libfilesystem 1.66.0
     ${MASON_DIR}/mason install boost_libregex_icu57 1.66.0
     ${MASON_DIR}/mason link boost_libregex_icu57 1.66.0
+    ${MASON_DIR}/mason install boost_libregex 1.66.0
+    ${MASON_DIR}/mason link boost_libregex 1.66.0
     ${MASON_DIR}/mason install boost_libdate_time 1.66.0
     ${MASON_DIR}/mason link boost_libdate_time 1.66.0
     ${MASON_DIR}/mason install boost_libiostreams 1.66.0
@@ -76,9 +78,6 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason link geos 3.6.2
     MASON_GEOS=$(${MASON_DIR}/mason prefix geos 3.6.2)
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/bin/geos-config
-   
-
-
 }
 
 function mason_compile {

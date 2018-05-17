@@ -48,8 +48,8 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason link boost_libthread 1.66.0
     ${MASON_DIR}/mason install boost_libfilesystem 1.66.0
     ${MASON_DIR}/mason link boost_libfilesystem 1.66.0
-    ${MASON_DIR}/mason install boost_libregex 1.66.0
-    ${MASON_DIR}/mason link boost_libregex 1.66.0
+    ${MASON_DIR}/mason install boost_libregex_icu57 1.66.0
+    ${MASON_DIR}/mason link boost_libregex_icu57 1.66.0
     ${MASON_DIR}/mason install boost_libdate_time 1.66.0
     ${MASON_DIR}/mason link boost_libdate_time 1.66.0
     ${MASON_DIR}/mason install boost_libiostreams 1.66.0
@@ -57,6 +57,27 @@ function mason_prepare_compile {
 
     ${MASON_DIR}/mason install lua 5.3.0
     ${MASON_DIR}/mason link lua 5.3.0
+
+    ${MASON_DIR}/mason install sqlite 3.21.0
+    ${MASON_DIR}/mason link sqlite 3.21.0
+
+
+    # set up to fix libtool .la files
+    # https://github.com/mapbox/mason/issues/61
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        FIND="\/Users\/travis\/build\/mapbox\/mason"
+    else
+        FIND="\/home\/travis\/build\/mapbox\/mason"
+    fi
+    REPLACE="$(pwd)"
+    REPLACE=${REPLACE////\\/}
+
+    ${MASON_DIR}/mason install geos 3.6.2
+    ${MASON_DIR}/mason link geos 3.6.2
+    MASON_GEOS=$(${MASON_DIR}/mason prefix geos 3.6.2)
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/bin/geos-config
+   
+
 
 }
 
@@ -78,18 +99,25 @@ function mason_compile {
 
 export
 
-    ./autogen.sh
+    NOCONFIGURE=1 ./autogen.sh
 
     ./configure \
-        --with-protobuf-includes="$MASON_ROOT/.link/include" \
-        --with-protobuf-libdir="$MASON_ROOT/.link/lib" \
         --prefix="$MASON_PREFIX" \
         ${MASON_HOST_ARG} \
         --enable-static \
         --with-pic \
         --disable-shared \
         --disable-dependency-tracking \
-        --disable-python-bindings
+        --disable-python-bindings \
+        --with-pkgconfigdir="${MASON_ROOT}/.link/lib/pkgconfig" \
+        --with-protoc="$MASON_ROOT/.link/bin/protoc" \
+        --with-protobuf-includes="$MASON_ROOT/.link/include" \
+        --with-protobuf-libdir="$MASON_ROOT/.link/lib" \
+        --with-boost=$(${MASON_DIR}/mason prefix boost 1.66.0) \
+        --with-boost-libdir="${MASON_ROOT}/.link/lib" \
+        --with-boost-python=no \
+        --with-sqlite3=$(${MASON_DIR}/mason prefix sqlite 3.21.0) \
+        --with-geos=${MASON_GEOS}/bin/geos-config
 
     V=1 VERBOSE=1 make install -j${MASON_CONCURRENCY}
 }
@@ -98,6 +126,10 @@ function mason_strip_ldflags {
     shift # -L...
     shift # -lpng16
     echo "$@"
+}
+
+function mason_cflags {
+    :
 }
 
 function mason_ldflags {

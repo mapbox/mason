@@ -66,6 +66,14 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install sqlite 3.21.0
     ${MASON_DIR}/mason link sqlite 3.21.0
 
+    if [ ${MASON_PLATFORM} = 'osx' ]; then
+        ${MASON_DIR}/mason install libcurl system
+        ${MASON_DIR}/mason link libcurl system
+    else
+        ${MASON_DIR}/mason install libcurl 7.50.2
+        ${MASON_DIR}/mason link libcurl 7.50.2
+    fi
+
     # set up to fix libtool .la files
     # https://github.com/mapbox/mason/issues/61
     if [[ $(uname -s) == 'Darwin' ]]; then

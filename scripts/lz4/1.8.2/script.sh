@@ -18,7 +18,7 @@ function mason_load_source {
 }
 
 function mason_compile {
-    PREFIX=${MASON_PREFIX} make install -C lib
+    PREFIX=${MASON_PREFIX} make BUILD_SHARED=no install -C lib
 }
 
 function mason_clean {

@@ -108,6 +108,8 @@ function mason_compile {
 
 export
 
+    patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
+
     NOCONFIGURE=1 ./autogen.sh
 
 

@@ -136,9 +136,7 @@ export
 }
 
 function mason_strip_ldflags {
-    shift # -L...
-    shift # -lpng16
-    echo "$@"
+    :
 }
 
 function mason_cflags {
@@ -146,7 +144,7 @@ function mason_cflags {
 }
 
 function mason_ldflags {
-    mason_strip_ldflags $(`mason_pkgconfig` --static --libs)
+    :
 }
 
 function mason_clean {

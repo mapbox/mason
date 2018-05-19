@@ -38,8 +38,8 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install lz4 1.8.2
     ${MASON_DIR}/mason link lz4 1.8.2
 
-    ${MASON_DIR}/mason install protobuf 3.5.1
-    ${MASON_DIR}/mason link protobuf 3.5.1
+    ${MASON_DIR}/mason install protobuf 3.5.1-cxx11abi
+    ${MASON_DIR}/mason link protobuf 3.5.1-cxx11abi
 
     ${MASON_DIR}/mason install boost 1.66.0
     ${MASON_DIR}/mason link boost 1.66.0

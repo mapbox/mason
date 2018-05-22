@@ -2,8 +2,8 @@
 
 MASON_NAME=valhalla
 MASON_VERSION=2.4.9
-MASON_LIB_FILE=lib/libpng.a
-#MASON_PKGCONFIG_FILE=lib/pkgconfig/libpng.pc
+MASON_LIB_FILE=lib/libvalhalla.a
+#MASON_PKGCONFIG_FILE=lib/pkgconfig/libvalhalla.pc
 
 
 . ${MASON_DIR}/mason.sh
@@ -91,7 +91,7 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    export CXXFLAGS="-isystem ${MASON_ROOT}/.link/include ${CXXFLAGS:-}"
+    export CXXFLAGS="-isystem ${MASON_ROOT}/.link/include ${CXXFLAGS:-} -D_GLIBCXX_USE_CXX11_ABI=0"
     export CFLAGS="-isystem ${MASON_ROOT}/.link/include ${CFLAGS:-}"
     export LDFLAGS="-L${MASON_ROOT}/.link/lib ${LDFLAGS:-}"
     export PATH="${MASON_ROOT}/.link/bin:${PATH}"
@@ -120,6 +120,8 @@ export
         --enable-static \
         --with-pic \
         --disable-shared \
+        --disable-services \
+        --disable-data_tools \
         --disable-dependency-tracking \
         --disable-python-bindings \
         --with-pkgconfigdir="${MASON_ROOT}/.link/lib/pkgconfig" \

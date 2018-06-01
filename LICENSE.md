@@ -1,5 +1,3 @@
-BSD 2-Clause License
-
 Copyright (c) 2014-2018, Mapbox, Inc.
 All rights reserved.
 

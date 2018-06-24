@@ -117,7 +117,7 @@ _Note: Leave out `HEADER_ONLY` if the package is a [precompiled library](https:/
 By default Mason publishes packages to a Mapbox-managed S3 bucket. If you want to publish to a different bucket we recommend taking the following steps:
 
 1. Fork Mason and rename it to `mason-{your_org}`
-2. Set [`MASON_BUCKET`](https://github.com/mapbox/mason/blob/2765e4ab50ca2c1865048e8403ef28b696228f7b/mason.sh#L6) to your own s3 bucket
+2. Set [`MASON_BUCKET`](https://github.com/mapbox/mason/blob/2765e4ab50ca2c1865048e8403ef28b696228f7b/mason.sh#L6) to your own S3 bucket
 3. Publish packages to the new location
 
 ## Usage
@@ -410,7 +410,7 @@ Here is an example workflow to help get you started:
 
 3. Create a package.
 
-    We recommend working in a new branch before creating a pacakge. For example if you want to call your new package `my_new_package` version `0.1.0` you could create and checkout a branch like this:
+    We recommend working in a new branch before creating a package. For example if you want to call your new package `my_new_package` version `0.1.0` you could create and checkout a branch like this:
 
     `git checkout -b my_new_package-0.1.0`
 
@@ -434,7 +434,7 @@ Here is an example workflow to help get you started:
 
     `./mason trigger my_new_package 0.1.0`
 
-7. Check S3 to verify your package exists.
+7. Check S3 to verify whether your package exists.
 
 ## Using a package
 

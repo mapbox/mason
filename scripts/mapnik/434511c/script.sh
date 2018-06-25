@@ -156,7 +156,7 @@ function mason_compile {
     fi
     # fix mapnik-config entries for deps
     HERE=$(pwd)
-    python -c "data=open('$MASON_PREFIX/bin/mapnik-config','r').read();open('$MASON_PREFIX/bin/mapnik-config','w').write(data.replace('$HERE','.').replace('${MASON_ROOT}','./mason_packages'))"
+    python -c "import re;data=open('$MASON_PREFIX/bin/mapnik-config','r').read();data=re.sub(r'-(isysroot)\s\/([0-9a-zA-Z_\/\-\.]+)', '', data);open('$MASON_PREFIX/bin/mapnik-config','w').write(data.replace('$HERE','.').replace('${MASON_ROOT}','./mason_packages'))"
     cat $MASON_PREFIX/bin/mapnik-config
 }
 

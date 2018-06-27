@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=glfw
-MASON_VERSION=$(basename $PWD)
+MASON_VERSION=2018-06-27-0be4f3f
 MASON_LIB_FILE=lib/libglfw3.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/glfw3.pc
 

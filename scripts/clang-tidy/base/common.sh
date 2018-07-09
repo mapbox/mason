@@ -17,16 +17,19 @@ function mason_build {
         cp -r "${CLANG_PREFIX}/include/c++" "${MASON_PREFIX}/include/"
     fi
 
-    # copy libs
+    # copy c headers
     mkdir -p "${MASON_PREFIX}/lib"
-    mkdir -p "${MASON_PREFIX}/lib/clang"
-    cp -r ${CLANG_PREFIX}/lib/clang/${MASON_VERSION} "${MASON_PREFIX}/lib/clang/"
+    mkdir -p "${MASON_PREFIX}/lib/clang/${MASON_VERSION}/include"
+    cp -r ${CLANG_PREFIX}/lib/clang/${MASON_VERSION}/include "${MASON_PREFIX}/lib/clang/${MASON_VERSION}/"
 
     # copy tidy-related share files
     mkdir -p "${MASON_PREFIX}/share"
     cp -r "${CLANG_PREFIX}/share/clang/run-clang-tidy.py" "${MASON_PREFIX}/share/"
     cp -r "${CLANG_PREFIX}/share/clang/clang-tidy-diff.py" "${MASON_PREFIX}/share/"
     cp -r "${CLANG_PREFIX}/share/clang/run-find-all-symbols.py" "${MASON_PREFIX}/share/"
+    if [[ -d "${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/yaml" ]]; then
+        cp -r "${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/yaml" "${MASON_PREFIX}/share/"
+    fi
 
 }
 

@@ -222,7 +222,7 @@ elif [ "${MASON_PLATFORM}" = 'android' ]; then
         MASON_ANDROID_TOOLCHAIN="mips64el-linux-android"
         export MASON_HOST_ARG="--host=${MASON_ANDROID_TOOLCHAIN}"
 
-        CFLAGS="-target mips64el-none-linux-android ${CFLAGS}"
+        CFLAGS="-target mips64el-none-linux-android ${CFLAGS} -fintegrated-as"
 
         export JNIDIR="mips64"
         MASON_ANDROID_ARCH="mips64"
@@ -513,13 +513,13 @@ function mason_config {
         echo "platform=${MASON_PLATFORM}"
         echo "platform_version=${MASON_PLATFORM_VERSION}"
     fi
+    mason_config_custom
     for name in include_dirs definitions options ldflags static_libs ; do
         eval value=\$MASON_CONFIG_$(echo ${name} | tr '[:lower:]' '[:upper:]')
         if [ ! -z "${value}" ]; then
             echo "${name}=${value//${MASON_PREFIX}/${MASON_CONFIG_PREFIX}}"
         fi
     done
-    mason_config_custom
 }
 
 function mason_write_config {

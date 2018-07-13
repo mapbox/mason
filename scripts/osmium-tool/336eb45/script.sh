@@ -28,8 +28,8 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason link protozero 1.5.1
     ${MASON_DIR}/mason install rapidjson 2016-07-20-369de87
     ${MASON_DIR}/mason link rapidjson 2016-07-20-369de87
-    ${MASON_DIR}/mason install libosmium d86a054
-    ${MASON_DIR}/mason link libosmium d86a054
+    ${MASON_DIR}/mason install libosmium 2.14.0
+    ${MASON_DIR}/mason link libosmium 2.14.0
     BOOST_VERSION=1.63.0
     ${MASON_DIR}/mason install boost ${BOOST_VERSION}
     ${MASON_DIR}/mason link boost ${BOOST_VERSION}

@@ -24,8 +24,8 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason link cmake 3.7.1
     ${MASON_DIR}/mason install utfcpp 2.3.4
     ${MASON_DIR}/mason link utfcpp 2.3.4
-    ${MASON_DIR}/mason install protozero 1.5.1
-    ${MASON_DIR}/mason link protozero 1.5.1
+    ${MASON_DIR}/mason install protozero 1.6.2
+    ${MASON_DIR}/mason link protozero 1.6.2
     ${MASON_DIR}/mason install rapidjson 2016-07-20-369de87
     ${MASON_DIR}/mason link rapidjson 2016-07-20-369de87
     ${MASON_DIR}/mason install libosmium 2.14.0

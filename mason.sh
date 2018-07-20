@@ -5,6 +5,9 @@ set -o pipefail
 export MASON_ROOT=${MASON_ROOT:-$(pwd)/mason_packages}
 MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
 MASON_IGNORE_OSX_SDK=${MASON_IGNORE_OSX_SDK:-false}
+MASON_CXX=${MASON_CXX:-}
+MASON_CC=${MASON_CC:-}
+MASON_CONCURRENCY=${MASON_CONCURRENCY:-}
 
 MASON_UNAME=$(uname -s)
 if [ "${MASON_UNAME}" = 'Darwin' ]; then
@@ -21,11 +24,14 @@ case $- in
     *)   MASON_CURL_ARGS=-s ;; # non-interative
 esac
 
-case ${MASON_UNAME} in
-    'Darwin')    MASON_CONCURRENCY=$(sysctl -n hw.ncpu) ;;
-    'Linux')        MASON_CONCURRENCY=$(lscpu -p | egrep -v '^#' | wc -l) ;;
-    *)              MASON_CONCURRENCY=1 ;;
-esac
+# If MASON_CONCURRENCY not set, use # of cores
+if [[ ! ${MASON_CONCURRENCY:-} ]]; then
+    case ${MASON_UNAME} in
+        'Darwin')    MASON_CONCURRENCY=$(sysctl -n hw.ncpu) ;;
+        'Linux')        MASON_CONCURRENCY=$(lscpu -p | egrep -v '^#' | wc -l) ;;
+        *)              MASON_CONCURRENCY=1 ;;
+    esac
+fi
 
 function mason_step    { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }
 function mason_substep { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }
@@ -68,8 +74,8 @@ if [ "${MASON_PLATFORM}" = 'osx' ]; then
         # to correctly target c++11 for build systems that don't know about it yet (like libgeos 3.4.2)
         # But because LDFLAGS is also for C libs we can only put these flags into LDFLAGS per package
         export LDFLAGS="-Wl,-search_paths_first ${SYSROOT_FLAGS}"
-        export CXX="/usr/bin/clang++"
-        export CC="/usr/bin/clang"
+        export CXX="${MASON_CXX:-/usr/bin/clang++}"
+        export CC="${MASON_CC:-/usr/bin/clang}"
     fi
 
 elif [ "${MASON_PLATFORM}" = 'ios' ]; then
@@ -114,6 +120,8 @@ elif [ "${MASON_PLATFORM}" = 'linux' ]; then
     export CFLAGS="-fPIC"
     export LDFLAGS=""
     export CXXFLAGS="${CFLAGS} -std=c++11"
+    export CXX="${MASON_CXX:-g++}"
+    export CC="${MASON_CC:-gcc}"
 
     if [ "$(uname -m)" != "${MASON_PLATFORM_VERSION}" ] ; then
         # Install the cross compiler

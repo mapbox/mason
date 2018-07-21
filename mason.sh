@@ -7,6 +7,8 @@ MASON_BUCKET=${MASON_BUCKET:-mason-binaries}
 MASON_IGNORE_OSX_SDK=${MASON_IGNORE_OSX_SDK:-false}
 MASON_CXX=${MASON_CXX:-}
 MASON_CC=${MASON_CC:-}
+MASON_CXXFLAGS=${MASON_CXXFLAGS:-}
+MASON_CFLAGS=${MASON_CFLAGS:-}
 MASON_CONCURRENCY=${MASON_CONCURRENCY:-}
 
 MASON_UNAME=$(uname -s)
@@ -68,8 +70,8 @@ if [ "${MASON_PLATFORM}" = 'osx' ]; then
 
         MIN_SDK_VERSION_FLAG="-mmacosx-version-min=10.8"
         SYSROOT_FLAGS="-isysroot ${MASON_SDK_PATH} -arch x86_64 ${MIN_SDK_VERSION_FLAG}"
-        export CFLAGS="${SYSROOT_FLAGS}"
-        export CXXFLAGS="${CFLAGS} -fvisibility-inlines-hidden -stdlib=libc++ -std=c++11"
+        export CFLAGS="${SYSROOT_FLAGS} ${MASON_CFLAGS}"
+        export CXXFLAGS="${CFLAGS} ${MASON_CXXFLAGS} -fvisibility-inlines-hidden -stdlib=libc++ -std=c++11"
         # NOTE: OSX needs '-stdlib=libc++ -std=c++11' in both CXXFLAGS and LDFLAGS
         # to correctly target c++11 for build systems that don't know about it yet (like libgeos 3.4.2)
         # But because LDFLAGS is also for C libs we can only put these flags into LDFLAGS per package
@@ -117,9 +119,9 @@ elif [ "${MASON_PLATFORM}" = 'linux' ]; then
         export MASON_PLATFORM_VERSION=$(uname -m)
     fi
 
-    export CFLAGS="-fPIC"
+    export CFLAGS="-fPIC {MASON_CFLAGS}"
     export LDFLAGS=""
-    export CXXFLAGS="${CFLAGS} -std=c++11"
+    export CXXFLAGS="${CFLAGS} ${MASON_CXXFLAGS} -std=c++11"
     export CXX="${MASON_CXX:-g++}"
     export CC="${MASON_CC:-gcc}"
 
@@ -242,8 +244,8 @@ elif [ "${MASON_PLATFORM}" = 'android' ]; then
     MASON_SDK_PATH="${MASON_SDK_ROOT}/sysroot"
     export PATH=${MASON_SDK_ROOT}/bin:${PATH}
 
-    export CFLAGS="--sysroot=${MASON_SDK_PATH} ${CFLAGS}"
-    export CXXFLAGS="--sysroot=${MASON_SDK_PATH} ${CFLAGS}"
+    export CFLAGS="--sysroot=${MASON_SDK_PATH} ${CFLAGS} ${MASON_CFLAGS}"
+    export CXXFLAGS="--sysroot=${MASON_SDK_PATH} ${CFLAGS} ${MASON_CXXFLAGS}"
     export LDFLAGS="--sysroot=${MASON_SDK_PATH} ${LDFLAGS}"
 
     export CXX="${MASON_ANDROID_TOOLCHAIN}-clang++"
@@ -438,8 +440,8 @@ function mason_build {
 
         for ARCH in ${SIMULATOR_TARGETS} ; do
             mason_substep "Building for iOS Simulator ${ARCH}..."
-            export CFLAGS="${MASON_ISIM_CFLAGS} -arch ${ARCH}"
-            export CXXFLAGS="${MASON_ISIM_CFLAGS} -arch ${ARCH}"
+            export CFLAGS="${MASON_ISIM_CFLAGS} -arch ${ARCH} ${MASON_CFLAGS}"
+            export CXXFLAGS="${MASON_ISIM_CFLAGS} -arch ${ARCH} ${MASON_CXXFLAGS}"
             cd "${MASON_BUILD_PATH}"
             mason_compile
             cd "${MASON_PREFIX}"
@@ -450,8 +452,8 @@ function mason_build {
 
         for ARCH in ${DEVICE_TARGETS} ; do
             mason_substep "Building for iOS ${ARCH}..."
-            export CFLAGS="${MASON_IOS_CFLAGS} -arch ${ARCH}"
-            export CXXFLAGS="${MASON_IOS_CFLAGS} -arch ${ARCH}"
+            export CFLAGS="${MASON_IOS_CFLAGS} -arch ${ARCH} ${MASON_CFLAGS}"
+            export CXXFLAGS="${MASON_IOS_CFLAGS} -arch ${ARCH} ${MASON_CXXFLAGS}"
             cd "${MASON_BUILD_PATH}"
             mason_compile
             cd "${MASON_PREFIX}"

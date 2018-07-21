@@ -43,6 +43,11 @@ function mason_compile {
     export CXXFLAGS="${CXXFLAGS} -std=c++11"
     export LDFLAGS="${LDFLAGS} -std=c++11"
 
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
+        export LDFLAGS="${LDFLAGS} -stdlib=libc++"
+    fi
+
     echo "making binary"
     # we use `make binary` to hook into PORTABLE=1
     V=1 BUILDTYPE=Debug PREFIX=${MASON_PREFIX} CONFIG_FLAGS="--debug" make binary -j${MASON_CONCURRENCY}

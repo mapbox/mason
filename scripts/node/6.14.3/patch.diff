@@ -1,0 +1,110 @@
+diff --git a/common.gypi b/common.gypi
+index 8a3179d..dc01575 100644
+--- a/common.gypi
++++ b/common.gypi
+@@ -67,7 +67,7 @@
+           'v8_enable_handle_zapping': 1,
+         },
+         'defines': [ 'DEBUG', '_DEBUG' ],
+-        'cflags': [ '-g', '-O0' ],
++        'cflags': [ '-glldb', '-g', '-O0' ],
+         'conditions': [
+           ['target_arch=="x64"', {
+             'msvs_configuration_platform': 'x64',
+@@ -108,13 +108,22 @@
+         },
+         'xcode_settings': {
+           'GCC_OPTIMIZATION_LEVEL': '0', # stop gyp from defaulting to -Os
++          'GCC_GENERATE_DEBUGGING_SYMBOLS':'NO', # avoid adding -gdwarf-2
++          'OTHER_CFLAGS': ['-glldb','-g'], # https://clang.llvm.org/docs/UsersManual.html#controlling-debugger-tuning
++          'OTHER_CPLUSPLUSFLAGS': ['-glldb','-g'] # https://clang.llvm.org/docs/UsersManual.html#controlling-debugger-tuning
+         },
+       },
+       'Release': {
+         'variables': {
+           'v8_enable_handle_zapping': 0,
+         },
+-        'cflags': [ '-O3' ],
++        'cflags': [ '-O3', '-glldb', '-gline-tables-only'],
++        'xcode_settings': {
++          'GCC_OPTIMIZATION_LEVEL': '3', # stop gyp from defaulting to -Os
++          'GCC_GENERATE_DEBUGGING_SYMBOLS':'NO', # avoid adding -gdwarf-2
++          'OTHER_CFLAGS': ['-glldb','-g'], # https://clang.llvm.org/docs/UsersManual.html#controlling-debugger-tuning
++          'OTHER_CPLUSPLUSFLAGS': ['-glldb','-gline-tables-only'] # https://clang.llvm.org/docs/UsersManual.html#controlling-debugger-tuning
++        },
+         'conditions': [
+           ['target_arch=="x64"', {
+             'msvs_configuration_platform': 'x64',
+@@ -268,7 +277,7 @@
+       }],
+       [ 'OS in "linux freebsd openbsd solaris android aix"', {
+         'cflags': [ '-Wall', '-Wextra', '-Wno-unused-parameter', ],
+-        'cflags_cc': [ '-fno-rtti', '-fno-exceptions', '-std=gnu++0x' ],
++        'cflags_cc': [ '-fno-rtti', '-fno-exceptions', '-std=c++11' ],
+         'ldflags': [ '-rdynamic' ],
+         'target_conditions': [
+           # The 1990s toolchain on SmartOS can't handle thin archives.
+@@ -352,7 +361,7 @@
+           'GCC_ENABLE_PASCAL_STRINGS': 'NO',        # No -mpascal-strings
+           'GCC_THREADSAFE_STATICS': 'NO',           # -fno-threadsafe-statics
+           'PREBINDING': 'NO',                       # No -Wl,-prebind
+-          'MACOSX_DEPLOYMENT_TARGET': '10.7',       # -mmacosx-version-min=10.7
++          'MACOSX_DEPLOYMENT_TARGET': '10.11',       # -mmacosx-version-min=10.7
+           'USE_HEADERMAP': 'NO',
+           'OTHER_CFLAGS': [
+             '-fno-strict-aliasing',
+@@ -384,7 +393,7 @@
+           ['clang==1', {
+             'xcode_settings': {
+               'GCC_VERSION': 'com.apple.compilers.llvm.clang.1_0',
+-              'CLANG_CXX_LANGUAGE_STANDARD': 'gnu++0x',  # -std=gnu++0x
++              'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',
+             },
+           }],
+         ],
+diff --git a/deps/v8/src/lookup.h b/deps/v8/src/lookup.h
+index 3fbd9b4..961303c 100644
+--- a/deps/v8/src/lookup.h
++++ b/deps/v8/src/lookup.h
+@@ -179,7 +179,7 @@ class LookupIterator final BASE_EMBEDDED {
+   Handle<Object> GetReceiver() const { return receiver_; }
+ 
+   Handle<JSObject> GetStoreTarget() const {
+-    DCHECK(receiver->IsJSObject());
++    DCHECK(receiver_->IsJSObject());
+     if (receiver_->IsJSGlobalProxy()) {
+       Map* map = JSGlobalProxy::cast(*receiver_)->map();
+       if (map->has_hidden_prototype()) {
+diff --git a/src/util.h b/src/util.h
+index ecd5b12..aa7c41e 100644
+--- a/src/util.h
++++ b/src/util.h
+@@ -11,16 +11,8 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ 
+-// OSX 10.9 defaults to libc++ which provides a C++11 <type_traits> header.
+-#if defined(__APPLE__) && __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1090
+-#define USE_TR1_TYPE_TRAITS
+-#endif
+ 
+-#ifdef USE_TR1_TYPE_TRAITS
+-#include <tr1/type_traits>  // NOLINT(build/c++tr1)
+-#else
+ #include <type_traits>  // std::remove_reference
+-#endif
+ 
+ namespace node {
+ 
+@@ -47,11 +39,7 @@ NO_RETURN void Abort();
+ NO_RETURN void Assert(const char* const (*args)[4]);
+ void DumpBacktrace(FILE* fp);
+ 
+-#ifdef USE_TR1_TYPE_TRAITS
+-template <typename T> using remove_reference = std::tr1::remove_reference<T>;
+-#else
+ template <typename T> using remove_reference = std::remove_reference<T>;
+-#endif
+ 
+ #define FIXED_ONE_BYTE_STRING(isolate, string)                                \
+   (node::OneByteString((isolate), (string), sizeof(string) - 1))

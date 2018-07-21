@@ -119,7 +119,7 @@ elif [ "${MASON_PLATFORM}" = 'linux' ]; then
         export MASON_PLATFORM_VERSION=$(uname -m)
     fi
 
-    export CFLAGS="-fPIC {MASON_CFLAGS}"
+    export CFLAGS="-fPIC ${MASON_CFLAGS}"
     export LDFLAGS=""
     export CXXFLAGS="${CFLAGS} ${MASON_CXXFLAGS} -std=c++11"
     export CXX="${MASON_CXX:-g++}"

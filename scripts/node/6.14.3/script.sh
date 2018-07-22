@@ -8,12 +8,12 @@ MASON_LIB_FILE=bin/node
 
 function mason_load_source {
     mason_download \
-        https://nodejs.org/dist/v${MASON_VERSION}/node-v${MASON_VERSION}.tar.gz \
-        9b4ccac632aa0261fe46dd7dd12c1da77fac5460
+        https://github.com/nodejs/node/archive/v${MASON_VERSION}.tar.gz \
+        ee37fb7e5594b3240df99e6fdea2cc55e887e77d
 
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/node-v${MASON_VERSION}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/node-${MASON_VERSION}
 }
 
 function mason_prepare_compile {

@@ -14,6 +14,7 @@ function mason_build {
     cp -a "${CLANG_PREFIX}/bin/clang-${MAJOR_MINOR}" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/llvm-symbolizer" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/llvm-ar" "${MASON_PREFIX}/bin/"
+    cp -a "${CLANG_PREFIX}/bin/llvm-nm" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/llvm-ranlib" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/asan_symbolize" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/asan_symbolize.py" "${MASON_PREFIX}/bin/"

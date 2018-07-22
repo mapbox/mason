@@ -32,7 +32,7 @@ function mason_compile {
     git init .
 
     mason_step "Loading patch"
-    #patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
+    patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
 
     # disable icu
     export BUILD_INTL_FLAGS="--with-intl=none"

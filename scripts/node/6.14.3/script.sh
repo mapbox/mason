@@ -51,7 +51,7 @@ function mason_compile {
     echo "making binary"
     # we use `make binary` to hook into PORTABLE=1
     # note, pass V=1 to see compile args (default off to avoid breaking the 4 GB log limit on travis)
-    V=0 BUILDTYPE=Debug PREFIX=${MASON_PREFIX} CONFIG_FLAGS="--debug" make binary -j${MASON_CONCURRENCY}
+    V= BUILDTYPE=Debug PREFIX=${MASON_PREFIX} CONFIG_FLAGS="--debug" make binary -j${MASON_CONCURRENCY}
     ls
     echo "uncompressing binary"
     tar -xf *.tar.gz

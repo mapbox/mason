@@ -38,7 +38,10 @@ function mason_compile {
     export BUILD_INTL_FLAGS="--with-intl=none"
     export BUILD_DOWNLOAD_FLAGS=" "
     export DISABLE_V8_I18N=1
-    export TAG=v${MASON_VERSION}
+    export TAG=
+    export BUILDTYPE=Debug
+    export DISTTYPE=release
+    export CONFIG_FLAGS="--debug"
 
     export CXXFLAGS="${CXXFLAGS} -std=c++11"
     export LDFLAGS="${LDFLAGS} -std=c++11"
@@ -51,7 +54,7 @@ function mason_compile {
     echo "making binary"
     # we use `make binary` to hook into PORTABLE=1
     # note, pass V=1 to see compile args (default off to avoid breaking the 4 GB log limit on travis)
-    V= BUILDTYPE=Debug PREFIX=${MASON_PREFIX} CONFIG_FLAGS="--debug" make binary -j${MASON_CONCURRENCY}
+    V=  PREFIX=${MASON_PREFIX}  make binary -j${MASON_CONCURRENCY}
     ls
     echo "uncompressing binary"
     tar -xf *.tar.gz

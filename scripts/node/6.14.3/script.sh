@@ -41,7 +41,7 @@ function mason_compile {
     export TAG=
     export BUILDTYPE=Debug
     export DISTTYPE=release
-    export CONFIG_FLAGS="--debug"
+    export CONFIG_FLAGS="--debug --shared-zlib"
 
     export CXXFLAGS="${CXXFLAGS} -std=c++11"
     export LDFLAGS="${LDFLAGS} -std=c++11"

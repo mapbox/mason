@@ -39,9 +39,9 @@ function mason_compile {
     export BUILD_DOWNLOAD_FLAGS=" "
     export DISABLE_V8_I18N=1
     export TAG=
-    export BUILDTYPE=Debug
+    export BUILDTYPE=Release
     export DISTTYPE=release
-    export CONFIG_FLAGS="--debug --shared-zlib"
+    export CONFIG_FLAGS="--shared-zlib"
 
     export CXXFLAGS="${CXXFLAGS} -std=c++11"
     export LDFLAGS="${LDFLAGS} -std=c++11"
@@ -62,8 +62,6 @@ function mason_compile {
     mkdir -p ${MASON_PREFIX}
     echo "copying over"
     cp -r node-v${MASON_VERSION}*/* ${MASON_PREFIX}/
-    # the release does not package the node debug binary `node_g` so we manually copy over now
-    cp out/Debug/node ${MASON_PREFIX}/bin/node_g
 }
 
 function mason_cflags {

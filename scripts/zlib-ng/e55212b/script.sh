@@ -2,8 +2,8 @@
 
 MASON_NAME=zlib-ng
 MASON_VERSION=013b23b
-MASON_LIB_FILE=lib/libz-ng.a
-MASON_PKGCONFIG_FILE=lib/pkgconfig/zlib-ng.pc
+MASON_LIB_FILE=lib/libz.a
+MASON_PKGCONFIG_FILE=lib/pkgconfig/zlib.pc
 
 . ${MASON_DIR}/mason.sh
 
@@ -22,7 +22,8 @@ function mason_compile {
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
     ./configure \
         --prefix=${MASON_PREFIX} \
-        --shared
+        --shared \
+        --zlib-compat --64
     make install -j${MASON_CONCURRENCY}
 }
 

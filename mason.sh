@@ -368,24 +368,34 @@ function mason_clean {
 }
 
 function bash_lndir() {
-    oldifs=$IFS
-    IFS='
-    '
-    src=$(cd "$1" ; pwd)
-    dst=$(cd "$2" ; pwd)
-    find "$src" -type d |
-    while read -r dir; do
-            mkdir -p "$dst${dir#$src}"
-    done
+    local src dst
+    src=$(cd -- "$1" && pwd)
+    dst=$(cd -- "$2" && pwd)
 
-    find "$src" -type f -o -type l |
-    while read -r src_f; do
-            dst_f="$dst${src_f#$src}"
-            if [[ ! -e $dst_f ]]; then
-                ln -s "$src_f" "$dst_f"
-            fi
-    done
-    IFS=$oldifs
+    find "$src" -mindepth 1 -type d -exec \
+        /usr/bin/env src="$src" dst="$dst" bash -c \
+        '
+            mkdir -p -- "${@/#"$src"/$dst}"
+            for src_dir
+            do
+                dst_dir="${src_dir/#"$src"/$dst}"
+                export dst_dir
+
+                # OSX ln does not support -t (--target-directory),
+                # that is why -exec sh -c "ln -sf -- files... dir"
+                # is used instead of -exec ln -sft dir files...
+
+                find "$src_dir" -maxdepth 1 \
+                    \( -type f -o -type l \) \
+                    \! -name "*~" \
+                    -exec /bin/sh -c \
+                    "
+                        ln -sf -- \"\$@\" \"\$dst_dir/\"
+
+                    " sh_lnfiles "{""}" +
+            done
+
+        ' bash_lndir '{}' +
 }
 
 

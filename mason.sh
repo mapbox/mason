@@ -404,11 +404,17 @@ function run_lndir() {
     #/bin/cp -R -n ${MASON_PREFIX}/* ${TARGET_SUBDIR}
     mason_step "Linking ${MASON_PREFIX}"
     mason_step "Links will be inside ${TARGET_SUBDIR}"
-    if hash lndir 2>/dev/null; then
-        mason_substep "Using $(which lndir) for symlinking"
-        lndir -silent "${MASON_PREFIX}/" "${TARGET_SUBDIR}" 2>/dev/null
+    local cp_help=$(cp --help 2>/dev/null)
+    if [[ $cp_help =~ [[:space:]]--symbolic-link[[:space:]] &&
+          $cp_help =~ [[:space:]]--target-directory= ]]
+    then
+        mason_substep "Using 'cp' for symlinking"
+        find "${MASON_PREFIX}" -mindepth 1 -type d -prune -exec \
+            cp -RPfp --symbolic-link \
+                --target-directory="${TARGET_SUBDIR}" \
+                -- '{}' +
     else
-        mason_substep "Using bash fallback for symlinking (install lndir for faster symlinking)"
+        mason_substep "Using bash fallback for symlinking (GNU cp needed for faster symlinking)"
         bash_lndir "${MASON_PREFIX}/" "${TARGET_SUBDIR}"
     fi
     mason_step "Done linking ${MASON_PREFIX}"

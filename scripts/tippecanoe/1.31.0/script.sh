@@ -9,7 +9,7 @@ MASON_LIB_FILE=bin/tippecanoe
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/tippecanoe/archive/${MASON_VERSION}.tar.gz \
-        5c881c11ef59c6fa89f44c16e094bdd5c0fedfc
+        3216cbbba0e7023eb3048fd8caf35fc3f0739025
 
     mason_extract_tar_gz
 

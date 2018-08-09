@@ -6,12 +6,15 @@ matrix:
       osx_image: xcode9.4
     - os: linux
       sudo: false
+      compiler: clang
       env: MASON_PLATFORM_VERSION=cortex_a9
     - os: linux
       sudo: false
+      compiler: clang
       env: MASON_PLATFORM_VERSION=i686
     - os: linux
       sudo: false
+      compiler: clang
       env: MASON_PLATFORM_VERSION=x86_64
     - os: linux
       sudo: false

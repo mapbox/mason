@@ -22,8 +22,8 @@ function mason_load_source {
 function mason_compile {
     # Note: setting CFLAGS overrides the default in sqlite of `-g -O2`
     # hence we add back the preferred optimization
-    export CFLAGS="${CFLAGS} -Os -flto -DNDEBUG"
-    export LDFLAGS="${LDFLAGS} -flto"
+    export CFLAGS="${CFLAGS} -Os -flto -fPIC -DNDEBUG"
+    export LDFLAGS="${LDFLAGS} -flto -fPIC"
 
     # We need to use -O2 rather than -Os in LDFLAGS because of
     # a toolchain issue: https://github.com/android-ndk/ndk/issues/721

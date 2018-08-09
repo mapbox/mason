@@ -22,20 +22,7 @@ function mason_load_source {
 function mason_compile {
     # Note: setting CFLAGS overrides the default in sqlite of `-g -O2`
     # hence we add back the preferred optimization
-    export CFLAGS="${CFLAGS} -Os -flto -fPIC -DNDEBUG"
-    export LDFLAGS="${LDFLAGS} -flto -fPIC"
-
-    # We need to use -O2 rather than -Os in LDFLAGS because of
-    # a toolchain issue: https://github.com/android-ndk/ndk/issues/721
-    if [ ${MASON_PLATFORM} == "linux" ] || [ ${MASON_PLATFORM} == "android" ]; then
-        export LDFLAGS="${LDFLAGS} -O2"
-    fi
-
-    if [ ${MASON_PLATFORM} == "linux" ] && [ ${MASON_PLATFORM_VERSION} == "x86_64" ]; then
-        export LDFLAGS="${LDFLAGS} -fuse-ld=gold"
-    fi
-
-    ./configure \
+    CFLAGS="${CFLAGS} -Os -DNDEBUG" ./configure \
         --prefix=${MASON_PREFIX} \
         ${MASON_HOST_ARG} \
         --enable-static \

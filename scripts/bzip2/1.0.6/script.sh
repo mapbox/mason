@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libbz2.a
 
 function mason_load_source {
     mason_download \
-        http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz \
+        https://src.fedoraproject.org/repo/pkgs/bzip2/bzip2-1.0.6.tar.gz/00b516f4704d4a7cb50a1d97e6e8e15b/bzip2-1.0.6.tar.gz \
         e47e9034c4116f467618cfaaa4d3aca004094007
 
     mason_extract_tar_gz

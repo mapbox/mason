@@ -18,7 +18,8 @@ function mason_load_source {
 
 function mason_compile {
     # Add optimization flags since CFLAGS overrides the default (-g -O2)
-    export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
+    export CFLAGS="${CFLAGS} -O3 -DNDEBUG -Wno-c++11-narrowing"
+    export CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG -Wno-c++11-narrowing"
     ./configure \
         --prefix=${MASON_PREFIX} \
         --enable-gold \

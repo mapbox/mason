@@ -12,7 +12,7 @@ if [[ $(uname -s) == 'Darwin' ]]; then
     export BUILD_AND_LINK_LIBCXX=true
 
     # not installing libcxx avoids this kind of problem with include-what-you-use
-    export INSTALL_LIBCXX=false
+    export INSTALL_LIBCXX=true
     # because iwyu hardcodes at https://github.com/include-what-you-use/include-what-you-use/blob/da5c9b17fec571e6b2bbca29145463d7eaa3582e/iwyu_driver.cc#L219
     : '
     /Library/Developer/CommandLineTools/usr/include/c++/v1/cstdlib:167:44: error: declaration conflicts with target of using declaration already in scope
@@ -131,7 +131,7 @@ function mason_prepare_compile {
     NINJA_VERSION=1.7.2
     CLANG_VERSION=5.0.0
     LIBEDIT_VERSION=3.1
-    BINUTILS_VERSION=2.30
+    BINUTILS_VERSION=2.31
     NCURSES_VERSION=6.1
 
     ${MASON_DIR}/mason install clang++ ${CLANG_VERSION}

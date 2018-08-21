@@ -14,7 +14,7 @@ function mason_build {
 
     # copy c++ headers (on osx these are a symlink to the system headers)
     if [[ -d "${CLANG_PREFIX}/include/c++" ]]; then
-        cp -r "${CLANG_PREFIX}/include/c++" "${MASON_PREFIX}/include/"
+        cp -a "${CLANG_PREFIX}/include/c++" "${MASON_PREFIX}/include/"
     fi
 
     # copy c headers

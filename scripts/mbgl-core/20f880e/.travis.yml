@@ -1,0 +1,26 @@
+language: generic
+
+addons:
+  apt:
+    sources: [ 'ubuntu-toolchain-r-test' ]
+    packages: [ 'libstdc++-5-dev',
+                'libxi-dev',
+                'libglu1-mesa-dev',
+                'x11proto-randr-dev',
+                'x11proto-xext-dev',
+                'libxrandr-dev',
+                'x11proto-xf86vidmode-dev',
+                'libxxf86vm-dev',
+                'libxcursor-dev',
+                'libxinerama-dev' ]
+
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode9.2
+    - os: linux
+      sudo: false
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

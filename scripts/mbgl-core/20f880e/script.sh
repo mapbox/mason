@@ -44,8 +44,8 @@ function mason_compile {
     mkdir -p ${MASON_PREFIX}/lib
     cp libmbgl-core.a ${MASON_PREFIX}/lib/
     cp -r ../include ${MASON_PREFIX}/
-    cp -r ../platform ${MASON_PREFIX}/share/
-    cp -r ../src ${MASON_PREFIX}/share/
+    cp -r ../platform ${MASON_PREFIX}/include/mbgl/
+    cp -r ../src ${MASON_PREFIX}/include/mbgl/
 }
 
 function mason_cflags {

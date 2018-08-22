@@ -46,6 +46,7 @@ function mason_compile {
     cp -r ../include ${MASON_PREFIX}/
     cp -r ../platform ${MASON_PREFIX}/include/mbgl/
     cp -r ../src ${MASON_PREFIX}/include/mbgl/
+    cp -r ../vendor ${MASON_PREFIX}/include/mbgl/
 }
 
 function mason_cflags {

@@ -38,10 +38,14 @@ function mason_compile {
       -DCMAKE_CXX_COMPILER_LAUNCHER=${MASON_CCACHE}/bin/ccache \
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DCMAKE_C_COMPILER="$CC"
-    pwd
-    ls
     ${MASON_NINJA}/bin/ninja mbgl-core -j4
-    ${MASON_NINJA}/bin/ninja install
+    mkdir -p ${MASON_PREFIX}/include
+    mkdir -p ${MASON_PREFIX}/share
+    mkdir -p ${MASON_PREFIX}/lib
+    cp libmbgl-core.a ${MASON_PREFIX}/lib/
+    cp -r ../include ${MASON_PREFIX}/
+    cp -r ../platform ${MASON_PREFIX}/share/
+    cp -r ../src ${MASON_PREFIX}/share/
 }
 
 function mason_cflags {

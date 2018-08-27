@@ -533,7 +533,7 @@ Name | Description
 ---|---
 `MASON_DIR` | The directory where Mason itself is installed. Defaults to the current directory.
 `MASON_ROOT` | Absolute path the `mason_packages` directory. Example: `/Users/user/mason_packages`.
-`MASON_PLATFORM` | Platform of the current invocation. Currently one of `osx`, `ios` or `linux`.
+`MASON_PLATFORM` | Platform of the current invocation. Currently one of `osx`, `ios`, `android`, or `linux`.
 `MASON_PLATFORM_VERSION` | Version of the platform. It must include the architecture if the produced binaries are architecture-specific (e.g. on Linux). Example: `10.10`
 `MASON_NAME` | Name specified in the `script.sh` file. Example: `libuv`
 `MASON_VERSION` | Version specified in the `script.sh` file. Example: `0.11.29`

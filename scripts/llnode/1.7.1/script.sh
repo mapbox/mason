@@ -2,7 +2,7 @@
 
 MASON_NAME=llnode
 MASON_VERSION=1.7.1
-MASON_LIB_FILE=lib/llnode.${MASON_DYNLIB_SUFFIX}
+MASON_LIB_FILE=lib/plugin.${MASON_DYNLIB_SUFFIX}
 
 . ${MASON_DIR}/mason.sh
 
@@ -49,7 +49,7 @@ function mason_compile {
     echo "'lldb_lib_dir':'${LLVM_PATH}/lib'"  >> config.gypi
     echo '}' >> config.gypi
     ${NODE_PATH}/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js configure -- -Dlldb_lib_dir=${LLVM_PATH}/lib
-    V=1 ${NODE_PATH}/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js build
+    V=1 ${NODE_PATH}/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js build --clang
     ls build/Release/*
     mkdir -p ${MASON_PREFIX}/lib
     cp build/Release/plugin.* ${MASON_PREFIX}/lib/

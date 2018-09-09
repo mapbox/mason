@@ -48,8 +48,8 @@ function mason_compile {
     echo "'lldb_header_dir':'${LLVM_PATH}/include',"  >> config.gypi
     echo "'lldb_lib_dir':'${LLVM_PATH}/lib'"  >> config.gypi
     echo '}' >> config.gypi
-    ${NODE_PATH}/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js configure -- -Dlldb_lib_dir=${LLVM_PATH}/lib
-    V=1 ${NODE_PATH}/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js build --clang
+    ${NODE_PATH}/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js configure --clang=1 -- -Dlldb_lib_dir=${LLVM_PATH}/lib
+    V=1 ${NODE_PATH}/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js build --clang=1
     ls build/Release/*
     mkdir -p ${MASON_PREFIX}/lib
     cp build/Release/plugin.* ${MASON_PREFIX}/lib/

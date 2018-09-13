@@ -1,7 +1,5 @@
 language: generic
 
-dist: xenial
-
 matrix:
   include:
     - os: osx

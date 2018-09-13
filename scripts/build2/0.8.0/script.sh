@@ -28,7 +28,7 @@ function mason_compile {
     perl -i -p -e "s/=static/=static config.bin.exe.lib=static config.cxx.coptions=-stdlib=libc++ config.cxx.loptions='${LDFLAGS}' /g;" ./build.sh
     perl -i -p -e "s/suffix=-stage /suffix=-stage config.bin.lib=static config.bin.exe.lib=static config.cxx.coptions=-stdlib=libc++ config.cxx.loptions='${LDFLAGS}' /g;" ./build.sh
     perl -i -p -e "s/coptions=-O3 /coptions=-O3 config.bin.lib=static config.bin.exe.lib=static config.cxx.coptions=-stdlib=libc++ config.cxx.loptions='${LDFLAGS}' /g;" ./build.sh
-    ./build.sh --install-dir ${MASON_PREFIX} --sudo "" --trust yes ${CXX:-clang++}
+    ./build.sh --install-dir ${MASON_PREFIX} --verbose 3 --sudo "" --trust yes ${CXX:-clang++} -O3 -stdlib=libc++
 }
 
 function mason_cflags {

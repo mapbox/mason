@@ -1,0 +1,41 @@
+diff --git a/build.sh b/build.sh
+index a0c4f55..eac0c77 100755
+--- a/build.sh
++++ b/build.sh
+@@ -260,7 +260,7 @@ run build2/b-boot --version
+ 
+ # Bootstrap, stage 2.
+ #
+-run build2/b-boot $verbose config.cxx="$cxx" config.bin.lib=static build2/exe{b}
++run build2/b-boot $verbose config.cxx="$cxx" config.cc.coptions="$*" config.bin.lib=static config.bin.exe.lib=static config.cxx.loptions="${LDFLAGS}" build2/exe{b}
+ mv build2/b build2/b-boot
+ run build2/b-boot --version
+ 
+@@ -269,7 +269,7 @@ run build2/b-boot --version
+ run cd ..
+ 
+ run build2/build2/b-boot $verbose configure \
+-config.cxx="$cxx" \
++config.cxx="$cxx" config.cc.coptions="$*" config.bin.lib=static config.bin.exe.lib=static config.cxx.loptions="${LDFLAGS}" \
+ config.bin.suffix=-stage \
+ config.bin.rpath="$conf_rpath" \
+ config.install.root="$idir" \
+@@ -293,7 +293,7 @@ cdir="$(pwd)" # Save full path for later.
+ 
+ run bpkg-stage $verbose create \
+ cc \
+-config.cxx="$cxx" \
++config.cxx="$cxx" config.bin.lib=static config.bin.exe.lib=static config.cxx.loptions="${LDFLAGS}" \
+ config.cc.coptions="$*" \
+ config.bin.rpath="$conf_rpath" \
+ config.install.root="$idir" \
+diff --git a/build2/bootstrap.sh b/build2/bootstrap.sh
+index e6088c2..541b3be 100755
+--- a/build2/bootstrap.sh
++++ b/build2/bootstrap.sh
+@@ -136,4 +136,4 @@ src="$src $libbutl/libbutl/*.cxx"
+ # mode since 4.9 doesn't recognize c++1z.
+ #
+ set -x
+-"$cxx" "-I$libbutl" -I. -DBUILD2_BOOTSTRAP '-DBUILD2_HOST_TRIPLET="'"$host"'"' -std=c++1y "$@" -o build2/b-boot $src -lpthread
++"$cxx" "-I$libbutl" -I. -DBUILD2_BOOTSTRAP '-DBUILD2_HOST_TRIPLET="'"$host"'"' -std=c++1y "$@" -o build2/b-boot $src -lpthread -stdlib=libc++ ${LDFLAGS}

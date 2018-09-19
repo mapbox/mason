@@ -9,7 +9,7 @@ MASON_HEADER_ONLY=true
 function mason_load_source {
     mason_download \
         https://github.com/mapbox/supercluster.hpp/archive/v${MASON_VERSION}.tar.gz \
-        79635c42675b7bf95486f7ef159b0766771889e7
+        4e2e363d432e69ad106e2ffee7e2ff1c0f9e5f29
 
     mason_extract_tar_gz
 

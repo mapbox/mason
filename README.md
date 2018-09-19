@@ -325,7 +325,7 @@ These are just basic steps to help get you started. Depending on the complexity 
 
     - `mason_load_source`: you must call `mason_download` and update its parameters:
         - url (first parameter): set to the location of your source code archive, e.g. `https://github.com/mapbox/your-lib/archive/v${MASON_VERSION}.tar.gz`
-        - gitsha (second parameter): set to the gitsha of the archive tag, which you can retrieve using git's `ls-remote` command, e.g. `git ls-remote --tags https://github.com/mapbox/your-lib` (copy the gitsha corresponding to the version of your archive)
+        - checksum (second parameter): set to the checksum you get back after running a checksum function on the source code you want to download. The easiest way to get this checksum is to run `./mason build your-lib 0.1.0` (after setting the `mason_download` url) which will fail with an error message that will contain the correct checksum
     - `mason_compile`
         - for header-only see [geometry 0.9.2](https://github.com/mapbox/mason/blob/a7e35b0f632a8b2f0e338acc9dda0cff04d2f752/scripts/geometry/0.9.2/script.sh#L19) for an example
         - for code that needs to be compiled see [zlib 1.2.8](https://github.com/mapbox/mason/blob/a7e35b0f632a8b2f0e338acc9dda0cff04d2f752/scripts/zlib/1.2.8/script.sh#L20) for an example

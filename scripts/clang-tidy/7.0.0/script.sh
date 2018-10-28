@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# For context on this file see https://github.com/mapbox/mason/blob/master/scripts/llvm/base/README.md
+
 # dynamically determine the path to this package
 HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 

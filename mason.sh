@@ -314,44 +314,54 @@ function mason_clear_existing {
 
 
 function mason_download {
+    # if you need to download more than one thing give each a suffix
+    if [ ! -z ${3} ]; then
+        SLUG_SUFFIX="_${3}"
+    fi
+
     mkdir -p "${MASON_ROOT}/.cache"
     cd "${MASON_ROOT}/.cache"
-    if [ ! -f "${MASON_SLUG}" ] ; then
+    if [ ! -f "${MASON_SLUG}${SLUG_SUFFIX}" ] ; then
         mason_step "Downloading $1..."
         local CURL_RESULT=0
-        curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o "${MASON_SLUG}"  || CURL_RESULT=$?
+        curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o "${MASON_SLUG}${SLUG_SUFFIX}"  || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             mason_error "Failed to download ${1} (returncode: $CURL_RESULT)"
             exit $CURL_RESULT
         fi
     fi
 
-    MASON_HASH=$(git hash-object "${MASON_SLUG}")
+    MASON_HASH=$(git hash-object "${MASON_SLUG}${SLUG_SUFFIX}")
     if [ "$2" != "${MASON_HASH}" ] ; then
-        mason_error "Hash ${MASON_HASH} of file ${MASON_ROOT}/.cache/${MASON_SLUG} doesn't match $2"
+        mason_error "Hash ${MASON_HASH} of file ${MASON_ROOT}/.cache/${MASON_SLUG}${SLUG_SUFFIX} doesn't match $2"
         exit 1
     fi
 }
 
 function mason_setup_build_dir {
-    rm -rf "${MASON_ROOT}/.build/${MASON_SLUG}"
+    rm -rf "${MASON_ROOT}/.build/${MASON_SLUG}${SLUG_SUFFIX}"
     mkdir -p "${MASON_ROOT}/.build/"
     cd "${MASON_ROOT}/.build/"
 }
 
 function mason_extract_tar_gz {
-    mason_setup_build_dir
-    tar xzf "../.cache/${MASON_SLUG}" $@
+    mason_setup_build_dir 
+    tar xzf "../.cache/${MASON_SLUG}${SLUG_SUFFIX}" $@ 
 }
 
 function mason_extract_tar_bz2 {
     mason_setup_build_dir
-    tar xjf "../.cache/${MASON_SLUG}" $@
+    tar xjf "../.cache/${MASON_SLUG}${SLUG_SUFFIX}" $@
 }
 
 function mason_extract_tar_xz {
     mason_setup_build_dir
-    tar xJf "../.cache/${MASON_SLUG}" $@
+    tar xJf "../.cache/${MASON_SLUG}${SLUG_SUFFIX}" $@
+}
+
+function mason_extract_zip {
+    mason_setup_build_dir
+    unzip -aqo "../.cache/${MASON_SLUG}${SLUG_SUFFIX}" $@
 }
 
 function mason_prepare_compile {

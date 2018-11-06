@@ -254,7 +254,6 @@ MASON_NAME=${MASON_NAME:-nopackage}
 MASON_VERSION=${MASON_VERSION:-noversion}
 MASON_HEADER_ONLY=${MASON_HEADER_ONLY:-false}
 MASON_SLUG=${MASON_NAME}-${MASON_VERSION}
-MASON_SLUG_SUFFIX=
 if [[ ${MASON_HEADER_ONLY} == true ]]; then
     MASON_PLATFORM_ID=headers
 else
@@ -315,56 +314,44 @@ function mason_clear_existing {
 
 
 function mason_download {
-    # if you need to download more than one thing give each a suffix
-    if [ $# -gt 2 ]; then
-        MASON_SLUG_SUFFIX="_${3}"
-    else
-        MASON_SLUG_SUFFIX=
-    fi
-
     mkdir -p "${MASON_ROOT}/.cache"
     cd "${MASON_ROOT}/.cache"
-    if [ ! -f "${MASON_SLUG}${MASON_SLUG_SUFFIX}" ] ; then
+    if [ ! -f "${MASON_SLUG}" ] ; then
         mason_step "Downloading $1..."
         local CURL_RESULT=0
-        curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o "${MASON_SLUG}${MASON_SLUG_SUFFIX}"  || CURL_RESULT=$?
+        curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o "${MASON_SLUG}"  || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             mason_error "Failed to download ${1} (returncode: $CURL_RESULT)"
             exit $CURL_RESULT
         fi
     fi
 
-    MASON_HASH=$(git hash-object "${MASON_SLUG}${MASON_SLUG_SUFFIX}")
+    MASON_HASH=$(git hash-object "${MASON_SLUG}")
     if [ "$2" != "${MASON_HASH}" ] ; then
-        mason_error "Hash ${MASON_HASH} of file ${MASON_ROOT}/.cache/${MASON_SLUG}${MASON_SLUG_SUFFIX} doesn't match $2"
+        mason_error "Hash ${MASON_HASH} of file ${MASON_ROOT}/.cache/${MASON_SLUG} doesn't match $2"
         exit 1
     fi
 }
 
 function mason_setup_build_dir {
-    rm -rf "${MASON_ROOT}/.build/${MASON_SLUG}${MASON_SLUG_SUFFIX}"
+    rm -rf "${MASON_ROOT}/.build/${MASON_SLUG}"
     mkdir -p "${MASON_ROOT}/.build/"
     cd "${MASON_ROOT}/.build/"
 }
 
 function mason_extract_tar_gz {
-    mason_setup_build_dir 
-    tar xzf "../.cache/${MASON_SLUG}${MASON_SLUG_SUFFIX}" $@
+    mason_setup_build_dir
+    tar xzf "../.cache/${MASON_SLUG}" $@
 }
 
 function mason_extract_tar_bz2 {
     mason_setup_build_dir
-    tar xjf "../.cache/${MASON_SLUG}${MASON_SLUG_SUFFIX}" $@
+    tar xjf "../.cache/${MASON_SLUG}" $@
 }
 
 function mason_extract_tar_xz {
     mason_setup_build_dir
-    tar xJf "../.cache/${MASON_SLUG}${MASON_SLUG_SUFFIX}" $@
-}
-
-function mason_extract_zip {
-    mason_setup_build_dir
-    unzip -aqo "../.cache/${MASON_SLUG}${MASON_SLUG_SUFFIX}" $@
+    tar xJf "../.cache/${MASON_SLUG}" $@
 }
 
 function mason_prepare_compile {

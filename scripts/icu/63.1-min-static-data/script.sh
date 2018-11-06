@@ -63,17 +63,17 @@ function trim_data {
         # make a local version and remove the line continuations
         l=$(echo $f | sed -e "s/\(.*\)files.mk/\1local.mk/g")
         cp -rp $f $l
-        sed -i -e :a -e '/\\$/N; s/\\\n//; ta' $l
+        sed -i'' -e :a -e '/\\$/N; s/\\\n//; ta' $l
 
         # if its locale, unit or currency we use our supported lang list
         if [ "$(echo $l | grep -cE 'locales|unit|curr')" -eq 1 ]; then
-            sed -i -e '/^#/!s/SOURCE.*=.*txt/SOURCE = da.txt de.txt en.txt eo.txt es.txt fi.txt fr.txt he.txt id.txt it.txt ko.txt my.txt nl.txt pl.txt pt.txt pt_PT.txt ro.txt ru.txt sv.txt tr.txt uk.txt vi.txt zh.txt zh_Hans.txt/g' $l
+            sed -i'' -e '/^#/!s/SOURCE.*=.*txt/SOURCE = da.txt de.txt en.txt eo.txt es.txt fi.txt fr.txt he.txt id.txt it.txt ko.txt my.txt nl.txt pl.txt pt.txt pt_PT.txt ro.txt ru.txt sv.txt tr.txt uk.txt vi.txt zh.txt zh_Hans.txt/g' $l
         # if its misc we need a couple of things
         elif [ $(echo $l | grep -cF "misc") -eq 1 ]; then
-            sed -i -e '/^#/!s/SOURCE.*=.*txt/SOURCE = numberingSystems.txt icuver.txt icustd.txt/g' $l
+            sed -i'' -e '/^#/!s/SOURCE.*=.*txt/SOURCE = numberingSystems.txt icuver.txt icustd.txt/g' $l
         # otherwise the scuttle the whole thing
         else
-            sed -i -e '/^#/!s/SOURCE.*=.*txt/SOURCE = /g' $l
+            sed -i'' -e '/^#/!s/SOURCE.*=.*txt/SOURCE = /g' $l
         fi
     done
 }

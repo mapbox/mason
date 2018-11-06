@@ -62,8 +62,7 @@ function trim_data {
     for f in $(find data -path mappings -prune -o -name '*files.mk'); do
         # make a local version and remove the line continuations
         l=$(echo $f | sed -e "s/\(.*\)files.mk/\1local.mk/g")
-        cp -rp $f $l
-        sed -i'' -e :a -e '/\\$/N; s/\\\n//; ta' $l
+        sed -e :a -e '/\\$/N; s/\\\n//; ta' $f > $l
 
         # if its locale, unit or currency we use our supported lang list
         if [ "$(echo $l | grep -cE 'locales|unit|curr')" -eq 1 ]; then

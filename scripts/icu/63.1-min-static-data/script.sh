@@ -13,21 +13,11 @@ MASON_BUILD_DEBUG=0 # Enable to build library with debug symbols
 MASON_CROSS_BUILD=0
 
 function mason_load_source {
-    mason_download \
-        http://download.icu-project.org/files/icu4c/63.1/icu4c-63_1-src.tgz \
-        3e24e6839878321f5193a3c4aa6f02210052fb31 \
-        source
-
-    mason_extract_tar_gz
-
-    mason_download \
-        http://download.icu-project.org/files/icu4c/63.1/icu4c-63_1-data.zip \
-        a0eb02a525822ea5ab409e04cf280bacccbb5d4d \
-        data
-
-    mason_extract_zip -d ${MASON_NAME}/source
-
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}
+    # you can't get the data and the code together in one place except when you clone the repo
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
+    if [[ ! -d ${MASON_BUILD_PATH} ]]; then
+        git clone https://github.com/unicode-org/icu --depth=1 --branch release-63-1 ${MASON_BUILD_PATH}
+    fi
 }
 
 function mason_prepare_compile {
@@ -85,14 +75,14 @@ function mason_compile {
 }
 
 function mason_compile_base {
-    pushd  ${MASON_BUILD_PATH}/source
+    pushd  ${MASON_BUILD_PATH}/icu4c/source
     
     # trim out a bunch of the data so that the data static library is as small as possible
     trim_data
 
     # Using uint_least16_t instead of char16_t because Android Clang doesn't recognize char16_t
     # I'm being shady and telling users of the library to use char16_t, so there's an implicit raw cast
-    ICU_CORE_CPP_FLAGS="-DU_CHARSET_IS_UTF8=1 -DU_CHAR_TYPE=uint_least16_t"
+    ICU_CORE_CPP_FLAGS="-DU_CHARSET_IS_UTF8=1"
     ICU_MODULE_CPP_FLAGS="${ICU_CORE_CPP_FLAGS} -DUCONFIG_NO_LEGACY_CONVERSION=1 -DUCONFIG_NO_BREAK_ITERATION=1"
     
     CFLAGS="${CFLAGS:-} ${ICU_CORE_CPP_FLAGS} ${ICU_MODULE_CPP_FLAGS} -fvisibility=hidden $(icu_debug_cpp) -Os"
@@ -150,7 +140,7 @@ function cross_build_configure {
 }
 
 function mason_cflags {
-    echo "-I${MASON_PREFIX}/include -DUCHAR_TYPE=char16_t"
+    echo "-I${MASON_PREFIX}/include"
 }
 
 function mason_ldflags {

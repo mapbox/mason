@@ -33,7 +33,7 @@ function mason_prepare_compile {
         #  Also instead of using the regular build steps, we could use a dedicated built target that just builds the tools
         mason_substep "Moving host ICU build directory to ${MASON_ROOT}/.build/icu-host"
         rm -rf ${MASON_ROOT}/.build/icu-host
-        cp -R ${MASON_BUILD_PATH}/source ${MASON_ROOT}/.build/icu-host
+        cp -R ${MASON_BUILD_PATH}/icu4c/source ${MASON_ROOT}/.build/icu-host
     fi
 }
 

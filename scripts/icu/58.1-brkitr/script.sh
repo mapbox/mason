@@ -3,7 +3,7 @@
 # Build ICU common package (libicuuc.a) with data file separate and with support for legacy conversion and break iteration turned off in order to minimize size
 
 MASON_NAME=icu
-MASON_VERSION=58.1
+MASON_VERSION=58.1-brkitr
 MASON_LIB_FILE=lib/libicuuc.a
 #MASON_PKGCONFIG_FILE=lib/pkgconfig/icu-uc.pc
 
@@ -56,7 +56,6 @@ function mason_compile_base {
 
     CPPFLAGS="${CPPFLAGS:-} ${ICU_CORE_CPP_FLAGS} ${ICU_MODULE_CPP_FLAGS} -fvisibility=hidden $(icu_debug_cpp)"
     #CXXFLAGS="--std=c++0x"
-
     echo "Configuring with ${MASON_HOST_ARG}"
 
     ./configure ${MASON_HOST_ARG} --prefix=${MASON_PREFIX} \

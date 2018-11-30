@@ -30,7 +30,7 @@ function install() {
     ${MASON_DIR}/mason link $1 $2
 }
 
-ICU_VERSION="58.1-brkitr"
+ICU_VERSION="58.1"
 
 function mason_prepare_compile {
     install jpeg_turbo 1.5.1 libjpeg
@@ -39,7 +39,7 @@ function mason_prepare_compile {
     install libpq 9.6.2
     install sqlite 3.17.0 libsqlite3
     install expat 2.2.0 libexpat
-    install icu ${ICU_VERSION}
+    install icu ${ICU_VERSION}-brkitr
     install proj 4.9.3 libproj
     install pixman 0.34.0 libpixman-1
     install cairo 1.14.8 libcairo

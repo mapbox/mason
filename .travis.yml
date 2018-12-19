@@ -1,6 +1,6 @@
 language: generic
 
-dist: precise
+dist: xenial
 
 matrix:
   include:

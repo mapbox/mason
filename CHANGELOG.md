@@ -1,5 +1,24 @@
 # Mason releases
 
+## 0.20.0
+
+- Added
+  - boost 1.67.0
+  - boost_libregex_icu58 1.66.0
+  - icu 58.1-brkitr (+ BreakIterator), 63.1-min-static-data-1
+  - libosmium 2.15.0
+  - osmium-tool 1.10.0
+  - postgres 10.3 (with libedit support)
+  - swiftshader 2018-10-08-3b5e426
+  - tippecanoe 1.32.10
+  - vector-tile 1.0.3
+
+- Changed
+  - alpine linux install compatibility fixes [c7ea656](https://github.com/mapbox/mason/commit/c7ea6566e6503e4b6c5e19cb53af08445c931687) [f6ab273](https://github.com/mapbox/mason/commit/f6ab273d30f210147a3f44e185f7959e65640f8d)
+  - harfbuzz 1.4.4 - clear environment before building ragel [#393](https://github.com/mapbox/mason/pull/393) h/t @edkimmel
+
+Changes: https://github.com/mapbox/mason/compare/v0.19.0...v0.20.0
+
 ## 0.19.0
 
 - Added
@@ -15,7 +34,7 @@
   - crosstool-ng 1.23.0
   - geojson 0.4.3
   - geojsonvt 6.4.0, 6.5.0, 6.5.1, 6.6.0, 6.6.1, 6.6.2, 6.6.3
-  - geometry 0.9.3, 1.0.0 
+  - geometry 0.9.3, 1.0.0
   - glfw 2018-06-27-0be4f3f
   - gtest 1.8.0_1
   - gzip-hpp 0.1.0, a4cfa6a638de351d26834cf2fea373693cdaa927, bb80aac

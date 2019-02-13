@@ -3,6 +3,7 @@
 MASON_NAME=readline
 MASON_VERSION=8.0
 MASON_PKGCONFIG_FILE=lib/pkgconfig/readline.pc
+MASON_LIB_FILE=lib/libreadline.so
 
 . ${MASON_DIR}/mason.sh
 

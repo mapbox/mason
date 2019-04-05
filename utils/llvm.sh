@@ -30,7 +30,7 @@ function usage() {
     echo "See scripts/llvm/base/README.md for more details"
 }
 
-subpackages=(clang++ clang-tidy clang-format lldb llvm-cov include-what-you-use)
+subpackages=(clang++ clang-tidy clang-format lldb llvm-cov)
 
 function build() {
     local VERSION=$1

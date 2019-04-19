@@ -3,7 +3,7 @@
 MASON_NAME=protobuf
 MASON_VERSION=3.4.1
 
-if [ ${MASON_PLATFORM} == 'ios' ]; then
+if [[ ${MASON_PLATFORM} == 'ios' ]]; then
     MASON_LIB_FILE=lib-isim-i386/libprotobuf-lite.a
     MASON_PKGCONFIG_FILE=lib-isim-i386/pkgconfig/protobuf-lite.pc
 else
@@ -28,23 +28,23 @@ function mason_compile {
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
     export CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG"
 
-    if [ ${MASON_PLATFORM} == 'android' ]; then
+    if [[ ${MASON_PLATFORM} == 'android' ]]; then
         export LDFLAGS="${LDFLAGS} -llog"
     fi
 
-    if [ ${MASON_PLATFORM} == 'android' ] || [ ${MASON_PLATFORM} == 'ios' ]; then
+    if [[ ${MASON_PLATFORM} == 'android' ]] || [[ ${MASON_PLATFORM} == 'ios' ]]; then
         local PREFIX=$(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason prefix ${MASON_NAME} ${MASON_VERSION})
-        if [ ! -d ${PREFIX} ]; then
+        if [[ ! -d ${PREFIX} ]]; then
             $(MASON_PLATFORM= MASON_PLATFORM_VERSION= ${MASON_DIR}/mason install ${MASON_NAME} ${MASON_VERSION})
         fi
         export PROTOBUF_XC_ARG="--with-protoc=${PREFIX}/bin/protoc"
     fi
 
-    if [ ${MASON_PLATFORM} == 'ios' ]; then
+    if [[ ${MASON_PLATFORM} == 'ios' ]]; then
         export MACOSX_DEPLOYMENT_TARGET="10.8"
     fi
 
-    if [ -f Makefile ]; then
+    if [[ -f Makefile ]]; then
         make distclean
     fi
 
@@ -65,7 +65,7 @@ function mason_clean {
 }
 
 function mason_config_custom {
-    if [ ${MASON_PLATFORM} == 'android' ]; then
+    if [[ ${MASON_PLATFORM} == 'android' ]]; then
         MASON_CONFIG_LDFLAGS="${MASON_CONFIG_LDFLAGS} -llog"
     fi
 }

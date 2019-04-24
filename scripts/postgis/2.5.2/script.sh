@@ -37,7 +37,7 @@ function mason_prepare_compile {
     POSTGRES_VERSION="10.3"
     XML2_VERSION="2.9.4"
     GEOS_VERSION="3.6.2"
-    GDAL_VERSION="2.2.3"
+    GDAL_VERSION="2.4.1"
     SQLITE_VERSION="3.21.0"
     JSON_C_VERSION="0.12.1"
     PROTOBUF_VERSION="3.4.1" # must match the version compiled into protobuf C

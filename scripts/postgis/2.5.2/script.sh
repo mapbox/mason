@@ -38,6 +38,7 @@ function mason_prepare_compile {
     XML2_VERSION="2.9.4"
     GEOS_VERSION="3.6.2"
     GDAL_VERSION="2.2.3"
+    SQLITE_VERSION="3.21.0"
     JSON_C_VERSION="0.12.1"
     PROTOBUF_VERSION="3.4.1" # must match the version compiled into protobuf C
     PROTOBUF_C_VERSION="1.3.0"
@@ -80,6 +81,9 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install gdal ${GDAL_VERSION}
     MASON_GDAL=$(${MASON_DIR}/mason prefix gdal ${GDAL_VERSION})
     ln -sf ${MASON_GDAL}/include ${MASON_GDAL}/include/gdal
+    ${MASON_DIR}/mason install sqlite ${SQLITE_VERSION}
+    MASON_SQLITE=$(${MASON_DIR}/mason prefix sqlite ${SQLITE_VERSION})
+    perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_SQLITE}/lib/libsqlite3.la
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GDAL}/lib/libgdal.la
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_PROJ}/lib/libproj.la
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_XML2}/lib/libxml2.la
@@ -100,18 +104,19 @@ function mason_compile {
       -L${MASON_ZLIB}/lib -lz \
       -L${MASON_TIFF}/lib -ltiff \
       -L${MASON_JPEG}/lib -ljpeg \
+      -L${MASON_PROJ}/lib -lsqlite3 \
       -L${MASON_PROJ}/lib -lproj \
       -L${MASON_PNG}/lib -lpng \
       -L${MASON_JSON_C}/lib -ljson-c \
       -L${MASON_PROTOBUF_C}/lib -lprotobuf-c \
       -L${MASON_PROTOBUF}/lib -lprotobuf-lite \
       -L${MASON_EXPAT}/lib -lexpat \
-      -L${MASON_PROJ}/lib -lproj \
       -L${MASON_XML2}/lib -lxml2"
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG -I$(pwd)/liblwgeom/ \
       -I$(pwd)/raster/ -I$(pwd)/raster/rt_core/ \
       -I${MASON_TIFF}/include \
       -I${MASON_JPEG}/include \
+      -I${MASON_SQLITE}/include \
       -I${MASON_PROJ}/include \
       -I${MASON_PNG}/include \
       -I${MASON_EXPAT}/include \
@@ -121,7 +126,6 @@ function mason_compile {
       -I${MASON_PROTOBUF}/include \
       -I${MASON_POSTGRES}/include/server \
       -I${MASON_GEOS}/include \
-      -I${MASON_PROJ}/include \
       -I${MASON_XML2}/include/libxml2"
 
     if [[ $(uname -s) == 'Darwin' ]]; then

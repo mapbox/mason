@@ -9,7 +9,7 @@ MASON_LIB_FILE=bin/redis-server
 
 function mason_load_source {
     mason_download \
-        http://download.redis.io/releases/redis-${RAW_VERSION}.tar.gz \
+        https://download.redis.io/releases/redis-${RAW_VERSION}.tar.gz \
         6b2cc5a8223d235d1d2673fa8f806baf1847baa9
 
     mason_extract_tar_gz

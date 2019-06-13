@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/cairo.pc
 
 function mason_load_source {
     mason_download \
-        http://cairographics.org/releases/${MASON_NAME}-${MASON_VERSION}.tar.xz \
+        https://cairographics.org/releases/${MASON_NAME}-${MASON_VERSION}.tar.xz \
         34e29ec00864859cc26ac3e45a02d7b2cb65d1c8
 
     mason_extract_tar_xz

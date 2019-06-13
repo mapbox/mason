@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libzip.pc
 
 function mason_load_source {
     mason_download \
-        http://www.nih.at/libzip/libzip-${MASON_VERSION}.tar.gz \
+        https://www.nih.at/libzip/libzip-${MASON_VERSION}.tar.gz \
         4bc18317d0607d5a24b618a6a5c1c229dade48e8
 
     mason_extract_tar_gz

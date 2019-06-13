@@ -7,11 +7,11 @@ export MASON_ANDROID_NDK_API_LEVEL=${MASON_ANDROID_PLATFORM_VERSION##*-}
 function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then
         mason_download \
-            http://dl.google.com/android/repository/android-ndk-${MASON_ANDROID_NDK_VERSION}-darwin-x86_64.zip \
+            https://dl.google.com/android/repository/android-ndk-${MASON_ANDROID_NDK_VERSION}-darwin-x86_64.zip \
             63464a54737c506ba86a7bb534a927b66c425f2c
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         mason_download \
-            http://dl.google.com/android/repository/android-ndk-${MASON_ANDROID_NDK_VERSION}-linux-x86_64.zip \
+            https://dl.google.com/android/repository/android-ndk-${MASON_ANDROID_NDK_VERSION}-linux-x86_64.zip \
             73ac466861f1a8035ad0abe608be2219a212540f
     fi
 

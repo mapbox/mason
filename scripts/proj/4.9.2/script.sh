@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libproj.a
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/proj/proj-${MASON_VERSION}.tar.gz \
+        https://download.osgeo.org/proj/proj-${MASON_VERSION}.tar.gz \
         d9d35af05af0d43464c280d14e24bf3743494daf
 
     mason_extract_tar_gz
@@ -17,7 +17,7 @@ function mason_load_source {
 }
 
 function mason_compile {
-    curl --retry 3 -f -# -L http://download.osgeo.org/proj/proj-datumgrid-1.5.zip -o proj-datumgrid-1.5.zip
+    curl --retry 3 -f -# -L https://download.osgeo.org/proj/proj-datumgrid-1.5.zip -o proj-datumgrid-1.5.zip
     cd nad
     unzip -o ../proj-datumgrid-1.5.zip
     cd ../

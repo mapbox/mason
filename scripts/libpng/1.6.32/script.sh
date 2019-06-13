@@ -12,7 +12,7 @@ ZLIB_SHARED_VERSION=1.2.8
 
 function mason_load_source {
     mason_download \
-        http://downloads.sourceforge.net/project/libpng/libpng16/${MASON_VERSION}/libpng-${MASON_VERSION}.tar.gz \
+        https://downloads.sourceforge.net/project/libpng/libpng16/${MASON_VERSION}/libpng-${MASON_VERSION}.tar.gz \
         752b19285db1aab9d0b8f5ef2312390734f71e70
 
     mason_extract_tar_gz

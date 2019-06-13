@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libgdal.a
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/gdal/${MASON_VERSION}/gdal-${MASON_VERSION}.tar.gz \
+        https://download.osgeo.org/gdal/${MASON_VERSION}/gdal-${MASON_VERSION}.tar.gz \
         38758d9fa5083e8d8e4333c38e132e154da9f25f
 
     mason_extract_tar_gz
@@ -121,7 +121,7 @@ function mason_compile {
     export CXX="${MASON_CCACHE} ${CXX}"
 
     # note: we put ${STDLIB_CXXFLAGS} into CXX instead of LDFLAGS due to libtool oddity:
-    # http://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass
+    # https://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass
     if [[ $(uname -s) == 'Darwin' ]]; then
         export CXX="${CXX} -stdlib=libc++ -std=c++11"
     fi

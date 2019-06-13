@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/pixman-1.pc
 
 function mason_load_source {
     mason_download \
-        http://cairographics.org/releases/pixman-${MASON_VERSION}.tar.gz \
+        https://cairographics.org/releases/pixman-${MASON_VERSION}.tar.gz \
         022e9e5856f4c5a8c9bdea3996c6b199683fce78
 
     mason_extract_tar_gz

@@ -7,7 +7,7 @@ MASON_LIB_FILE=lib/libjace.a
 . ${MASON_DIR}/mason.sh
 
 function mason_load_source {
-    mason_download http://s3.amazonaws.com/geowave-rpms/release/TARBALL/geowave-0.8.7-c8ef40c-jace-source.tar.gz \
+    mason_download https://s3.amazonaws.com/geowave-rpms/release/TARBALL/geowave-0.8.7-c8ef40c-jace-source.tar.gz \
     80f7002a063c6b178366e7376597acc53859558b
 
     mason_extract_tar_gz

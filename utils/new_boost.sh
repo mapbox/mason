@@ -69,7 +69,7 @@ function create() {
     export CACHE_PATH="mason_packages/.cache"
     mkdir -p "${CACHE_PATH}"
     if [[ ! -f ${CACHE_PATH}/boost-${NEW_VERSION} ]]; then
-        curl --retry 3 -f -S -L http://downloads.sourceforge.net/project/boost/boost/${NEW_VERSION}/boost_${BOOST_VERSION}.tar.bz2 -o ${CACHE_PATH}/boost-${NEW_VERSION}
+        curl --retry 3 -f -S -L https://downloads.sourceforge.net/project/boost/boost/${NEW_VERSION}/boost_${BOOST_VERSION}.tar.bz2 -o ${CACHE_PATH}/boost-${NEW_VERSION}
     fi
 
     NEW_SHASUM=$(git hash-object ${CACHE_PATH}/boost-${NEW_VERSION})

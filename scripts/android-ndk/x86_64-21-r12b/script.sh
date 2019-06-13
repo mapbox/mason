@@ -9,11 +9,11 @@ MASON_LIB_FILE=
 function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then
         mason_download \
-            http://dl.google.com/android/repository/android-ndk-r12b-darwin-x86_64.zip \
+            https://dl.google.com/android/repository/android-ndk-r12b-darwin-x86_64.zip \
             1a3bbdde35a240086b022cdf13ddcf40c27caa6e
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         mason_download \
-            http://dl.google.com/android/repository/android-ndk-r12b-linux-x86_64.zip \
+            https://dl.google.com/android/repository/android-ndk-r12b-linux-x86_64.zip \
             c6286e131c233c25537a306eae0a29d50b352b91
     fi
 

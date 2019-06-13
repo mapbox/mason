@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libgeos.a
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/geos/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
+        https://download.osgeo.org/geos/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
         a641469449fc32b829fb885cb0ea5fdd3333ce62
 
     mason_extract_tar_bz2
@@ -23,7 +23,7 @@ function mason_compile {
     fi
 
     # note: we put ${STDLIB_CXXFLAGS} into CXX instead of LDFLAGS due to libtool oddity:
-    # http://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass
+    # https://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass
     if [[ $(uname -s) == 'Darwin' ]]; then
         CXX="${CXX} -stdlib=libc++ -std=c++11"
     fi

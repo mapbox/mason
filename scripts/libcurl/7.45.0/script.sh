@@ -12,7 +12,7 @@ OPENSSL_VERSION=1.0.1p
 
 function mason_load_source {
     mason_download \
-        http://curl.haxx.se/download/curl-${MASON_VERSION}.tar.gz \
+        https://curl.haxx.se/download/curl-${MASON_VERSION}.tar.gz \
         cf5b820a1ab30e49083784c46fe3ec9e6d2c84dc
 
     mason_extract_tar_gz

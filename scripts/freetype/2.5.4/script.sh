@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/freetype2.pc
 
 function mason_load_source {
     mason_download \
-        http://nongnu.askapache.com/freetype/freetype-${MASON_VERSION}.tar.bz2 \
+        https://nongnu.askapache.com/freetype/freetype-${MASON_VERSION}.tar.bz2 \
         0646f7e62a6191affe92270e2544e6011f5227e8
 
     mason_extract_tar_bz2

@@ -8,7 +8,7 @@ MASON_LIB_FILE=bin/wget
 
 function mason_load_source {
     mason_download \
-        http://ftp.gnu.org/gnu/${MASON_NAME}/${MASON_NAME}-${MASON_VERSION}.tar.gz \
+        https://ftp.gnu.org/gnu/${MASON_NAME}/${MASON_NAME}-${MASON_VERSION}.tar.gz \
         07a689125eaf3b050cd62fcb98662eeddc4982db
 
     mason_extract_tar_gz

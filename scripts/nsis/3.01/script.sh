@@ -18,7 +18,7 @@ function mason_load_source {
 
 function mason_compile {
     if [ ! -f scons-local-2.5.1.tar.gz ]; then
-        wget http://prdownloads.sourceforge.net/scons/scons-local-2.5.1.tar.gz
+        wget https://prdownloads.sourceforge.net/scons/scons-local-2.5.1.tar.gz
         tar xvf scons-local-2.5.1.tar.gz
     fi
     perl -i -p -e "s/'__attribute__\(\(__stdcall__\)\)'/'\"__attribute__\(\(__stdcall__\)\)\"'/g" SCons/Config/gnu

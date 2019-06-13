@@ -10,7 +10,7 @@ BOOST_ROOT=${MASON_PREFIX}
 
 function mason_load_source {
     mason_download \
-        http://downloads.sourceforge.net/project/boost/boost/1.60.0/boost_1_60_0.tar.bz2 \
+        https://downloads.sourceforge.net/project/boost/boost/1.60.0/boost_1_60_0.tar.bz2 \
         40a65135d34c3e3a3cdbe681f06745c086e5b941
 
     mason_extract_tar_bz2 boost_1_60_0/boost

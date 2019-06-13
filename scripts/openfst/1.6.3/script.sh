@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libfst.a
 
 function mason_load_source {
     mason_download \
-        http://www.openfst.org/twiki/pub/FST/FstDownload/${MASON_NAME}-${MASON_VERSION}.tar.gz \
+        https://www.openfst.org/twiki/pub/FST/FstDownload/${MASON_NAME}-${MASON_VERSION}.tar.gz \
         9e144c56ea477038d14583376b6414170f0e1b1d
 
     mason_extract_tar_gz

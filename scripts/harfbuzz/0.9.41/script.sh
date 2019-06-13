@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/harfbuzz.pc
 
 function mason_load_source {
     mason_download \
-        http://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${MASON_VERSION}.tar.bz2 \
+        https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-${MASON_VERSION}.tar.bz2 \
         a7d4c722f7d663dfa51503c0c857046b86495a69
 
     mason_extract_tar_bz2

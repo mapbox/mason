@@ -9,7 +9,7 @@ MASON_IGNORE_OSX_SDK=true
 
 function mason_load_source {
     mason_download \
-        http://valgrind.org/downloads/valgrind-${MASON_VERSION}.tar.bz2 \
+        https://valgrind.org/downloads/valgrind-${MASON_VERSION}.tar.bz2 \
         9d10673077704b02513d216672ecb64d3719f537
 
     mason_extract_tar_bz2

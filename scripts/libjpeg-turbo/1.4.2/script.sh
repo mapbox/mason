@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libjpeg.a
 
 function mason_load_source {
     mason_download \
-        http://downloads.sourceforge.net/project/libjpeg-turbo/1.4.2/libjpeg-turbo-1.4.2.tar.gz \
+        https://downloads.sourceforge.net/project/libjpeg-turbo/1.4.2/libjpeg-turbo-1.4.2.tar.gz \
         d4638b2261ac3c1c20a2a2e1f8e19fc1f11bf524
 
     mason_extract_tar_gz

@@ -10,7 +10,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libcurl.pc
 
 function mason_load_source {
     mason_download \
-        http://curl.haxx.se/download/curl-7.40.0.tar.gz \
+        https://curl.haxx.se/download/curl-7.40.0.tar.gz \
         c7c97e02f5fa4302f4c25c72486359f7b46f7d6d
 
     mason_extract_tar_gz

@@ -33,7 +33,7 @@ function mason_compile {
     # libtbb does not support -fvisibility=hidden
     CXXFLAGS="${CXXFLAGS//-fvisibility=hidden}"
     #patch -N -p1 <  ${PATCHES}/tbb_compiler_override.diff || true
-    # note: static linking not allowed: http://www.threadingbuildingblocks.org/faq/11
+    # note: static linking not allowed: https://www.threadingbuildingblocks.org/faq/11
     if [[ $(uname -s) == 'Darwin' ]]; then
       make -j${MASON_CONCURRENCY} tbb_build_prefix=BUILDPREFIX arch=intel64 cpp0x=1 stdlib=libc++ compiler=clang tbb_build_dir=$(pwd)/build
     else

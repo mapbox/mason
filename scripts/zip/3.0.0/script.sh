@@ -8,7 +8,7 @@ MASON_LIB_FILE=bin/zip
 
 function mason_load_source {
     mason_download \
-        http://sourceforge.net/projects/infozip/files/Zip%203.x%20%28latest%29/3.0/zip30.tar.gz/download \
+        https://sourceforge.net/projects/infozip/files/Zip%203.x%20%28latest%29/3.0/zip30.tar.gz/download \
         57f60be499bef90ccf84fe47d522d32504609e9b
 
     mason_extract_tar_gz

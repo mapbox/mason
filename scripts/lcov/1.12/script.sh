@@ -8,7 +8,7 @@ MASON_LIB_FILE=usr/bin/lcov
 
 function mason_load_source {
     mason_download \
-        http://downloads.sourceforge.net/ltp/lcov-1.12.tar.gz \
+        https://downloads.sourceforge.net/ltp/lcov-1.12.tar.gz \
         c7470ce9d89bb9c276ef7f461e9ab5b9c9935eff
 
     mason_extract_tar_gz

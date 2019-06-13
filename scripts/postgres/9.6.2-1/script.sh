@@ -10,7 +10,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libpq.pc
 
 function mason_load_source {
     mason_download \
-        http://ftp.postgresql.org/pub/source/v${MASON_VERSION2}/postgresql-${MASON_VERSION2}.tar.bz2 \
+        https://ftp.postgresql.org/pub/source/v${MASON_VERSION2}/postgresql-${MASON_VERSION2}.tar.bz2 \
         183f73527051430934a20bf08646b16373cddcca
 
     mason_extract_tar_bz2

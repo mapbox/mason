@@ -79,7 +79,7 @@ function mason_compile {
     fi
 
     # note: we put ${STDLIB_CXXFLAGS} into CXX instead of LDFLAGS due to libtool oddity:
-    # http://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass
+    # https://stackoverflow.com/questions/16248360/autotools-libtool-link-library-with-libstdc-despite-stdlib-libc-option-pass
     if [[ $(uname -s) == 'Darwin' ]]; then
         CXX="${CXX} -stdlib=libc++ -std=c++11"
     fi

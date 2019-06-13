@@ -9,7 +9,7 @@ MASON_LIB_FILE=lib/libmapnik.${MASON_DYNLIB_SUFFIX}
 function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/mapnik-v${MASON_VERSION}
      if [[ ! -d ${MASON_BUILD_PATH} ]]; then
-        git clone http://github.com/mapnik/mapnik ${MASON_BUILD_PATH}
+        git clone https://github.com/mapnik/mapnik ${MASON_BUILD_PATH}
         (cd ${MASON_BUILD_PATH} && git checkout ${MASON_VERSION} && git submodule update --init)
     fi
 }

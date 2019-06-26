@@ -6,8 +6,13 @@ matrix:
       osx_image: xcode8.2
       compiler: clang
     - os: linux
-      compiler: clang
       sudo: false
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - libstdc++-4.9-dev
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

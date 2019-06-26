@@ -23,7 +23,7 @@ esac
 
 case ${MASON_UNAME} in
     'Darwin')    MASON_CONCURRENCY=$(sysctl -n hw.ncpu) ;;
-    'Linux')        MASON_CONCURRENCY=$(nproc) ;;
+    'Linux')        MASON_CONCURRENCY=$(grep -c ^processor /proc/cpuinfo) ;;
     *)              MASON_CONCURRENCY=1 ;;
 esac
 

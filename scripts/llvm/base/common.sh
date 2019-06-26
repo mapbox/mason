@@ -172,8 +172,9 @@ function mason_compile {
     CMAKE_EXTRA_ARGS=""
 
     if [[ $(uname -s) == 'Darwin' ]]; then
-        # don't require codesigning for macOS
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLDB_CODESIGN_IDENTITY=''"
+        # don't require codesigning for macOS if LLDB_CODESIGN_IDENTITY='' however appears broken after https://reviews.llvm.org/D54476
+        # so we now just disable building the debugserver on OSX and use the system one with llvm > 8, keeping LLDB_CODESIGN_IDENTITY='' for llvm <= 7
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS}  -DLLDB_CODESIGN_IDENTITY='' -DLLDB_USE_SYSTEM_DEBUGSERVER=ON"
     fi
 
     if [[ ${MAJOR_MINOR} == "3.8" ]]; then
@@ -289,13 +290,16 @@ function mason_compile {
 
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -G Ninja -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja -DLLVM_ENABLE_ASSERTIONS=OFF -DCLANG_VENDOR=mapbox/mason -DCMAKE_CXX_COMPILER_LAUNCHER=${MASON_CCACHE}/bin/ccache"
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} -DCMAKE_BUILD_TYPE=MinSizeRel -DLLVM_INCLUDE_DOCS=OFF"
-    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_TARGETS_TO_BUILD=BPF;X86 -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly -DCLANG_REPOSITORY_STRING=https://github.com/mapbox/mason -DCLANG_VENDOR_UTI=org.mapbox.llvm"
+    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_TARGETS_TO_BUILD=BPF;X86;WebAssembly -DCLANG_REPOSITORY_STRING=https://github.com/mapbox/mason -DCLANG_VENDOR_UTI=org.mapbox.llvm"
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLDB_RELOCATABLE_PYTHON=1 -DLLDB_DISABLE_PYTHON=1 -DLLVM_ENABLE_TERMINFO=0"
     # look for curses and libedit on linux
     # note: python would need swig
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_PREFIX_PATH=${MASON_NCURSES};${MASON_LIBEDIT}"
 
     echo "running cmake configure for llvm+friends build"
+    echo
+    echo "All cmake options: '${CMAKE_EXTRA_ARGS}'"
+    echo
     if [[ $(uname -s) == 'Linux' ]]; then
         ${MASON_CMAKE}/bin/cmake ../ ${CMAKE_EXTRA_ARGS} \
         -DCMAKE_CXX_STANDARD_LIBRARIES="-L${MASON_LIBEDIT}/lib -L${MASON_NCURSES}/lib -L$(pwd)/lib -lc++ -lc++abi -lunwind -pthread -lc -ldl -lrt -rtlib=compiler-rt" \

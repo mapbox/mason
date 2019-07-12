@@ -1,0 +1,20 @@
+language: generic
+
+dist: xenial
+
+matrix:
+  include:
+    - os: linux
+      sudo: false
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - bison
+           - flex
+           - libstdc++-4.8-dev
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

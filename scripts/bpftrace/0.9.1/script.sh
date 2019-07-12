@@ -48,7 +48,7 @@ function mason_compile {
     echo "creating build directory"
     mkdir -p ./build
     cd ./build
-    LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
+    LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -lc++ -lrt -lc++abi -pthread -lc -lgcc_s"
     ${MASON_CMAKE}/bin/cmake ../ \
       -DCMAKE_PREFIX_PATH="${MASON_LLVM};${MASON_ELFUTILS}" \
       -DCMAKE_PROGRAM_PATH=${MASON_BISON}/bin \

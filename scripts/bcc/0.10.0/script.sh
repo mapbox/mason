@@ -21,6 +21,9 @@ function mason_prepare_compile {
     LLVM_VERSION=5.0.0
     ZLIB_VERSION=1.2.8
     ELF_VERSION=0.170
+    BISON_VERSION=3.1
+    ${MASON_DIR}/mason install bison ${BISON_VERSION}
+    MASON_BISON=$(${MASON_DIR}/mason prefix bison ${BISON_VERSION})
     ${MASON_DIR}/mason install llvm ${LLVM_VERSION}
     MASON_LLVM=$(${MASON_DIR}/mason prefix llvm ${LLVM_VERSION})
     export CXX=${MASON_LLVM}/bin/clang++
@@ -42,9 +45,10 @@ function mason_compile {
     echo "creating build directory"
     mkdir -p ./build
     cd ./build
-    LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
+    LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -lc++ -lc++abi -pthread -lrt -lc -lgcc_s"
     ${MASON_CMAKE}/bin/cmake ../ \
       -DCMAKE_PREFIX_PATH="${MASON_LLVM};${MASON_ELFUTILS}" \
+      -DCMAKE_PROGRAM_PATH=${MASON_BISON}/bin \
       -DLIBELF_LIBRARIES=${MASON_ELFUTILS}/lib/libelf.a \
       -DLIBELF_INCLUDE_DIRS=${MASON_ELFUTILS}/include \
       -G Ninja -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja \

@@ -13,7 +13,7 @@ matrix:
           packages:
            - bison
            - flex
-           - libstdc++-4.8-dev
+           - libstdc++-5-dev
            - libbpfcc-dev
 
 script:

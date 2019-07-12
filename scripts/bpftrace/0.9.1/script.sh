@@ -48,7 +48,7 @@ function mason_compile {
     echo "creating build directory"
     mkdir -p ./build
     cd ./build
-    LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -lc++ -lrt -lc++abi -pthread -lc -lgcc_s"
+    LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -L${MASON_BCC}/lib/ -lc++ -lrt -lc++abi -pthread -lc -lgcc_s"
     ${MASON_CMAKE}/bin/cmake ../ \
       -DCMAKE_PREFIX_PATH="${MASON_LLVM};${MASON_ELFUTILS}" \
       -DCMAKE_PROGRAM_PATH=${MASON_BISON}/bin \
@@ -65,6 +65,8 @@ function mason_compile {
       -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_CXX_FLAGS="${CXXFLAGS} -stdlib=libc++ -include sched.h -include errno.h"
+    cat CMakeFiles/CMakeError.log
+    cat CMakeFiles/CMakeOutput.log
     # TODO: remove -include: https://github.com/iovisor/bcc/pull/1573
     ${MASON_NINJA}/bin/ninja bpftrace -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja install

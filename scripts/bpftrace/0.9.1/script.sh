@@ -59,7 +59,8 @@ function mason_compile {
       -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DCMAKE_C_COMPILER="$CC" \
-      -DCMAKE_CXX_STANDARD_LIBRARIES="-L${MASON_BCC}/lib/" \
+      -DCMAKE_REQUIRED_FLAGS="-I${MASON_BCC}/include/bcc" \
+      -DCMAKE_REQUIRED_LINK_OPTIONS="-L${MASON_BCC}/lib/" \
       -DLIBBCC_LIBRARIES="${MASON_BCC}/lib/libbcc.so" \
       -DLIBBCC_INCLUDE_DIRS="${MASON_BCC}/include/bcc" \
       -DCMAKE_MODULE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \

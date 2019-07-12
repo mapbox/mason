@@ -60,7 +60,7 @@ function mason_compile {
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DCMAKE_C_COMPILER="$CC" \
       -DLIBBCC_LIBRARIES="${MASON_BCC}/lib/libbcc.so" \
-      -DLIBBCC_INCLUDE_DIRS="${MASON_BCC}/include/bcc/compat/linux" \
+      -DLIBBCC_INCLUDE_DIRS="${MASON_BCC}/include/bcc" \
       -DCMAKE_MODULE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \

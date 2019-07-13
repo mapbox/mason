@@ -18,7 +18,7 @@ function mason_prepare_compile {
     CCACHE_VERSION=3.3.4
     CMAKE_VERSION=3.8.2
     NINJA_VERSION=1.7.2
-    LLVM_VERSION=5.0.0
+    LLVM_VERSION=8.0.0
     ZLIB_VERSION=1.2.8
     ELF_VERSION=0.170
     BCC_VERSION=0.10.0
@@ -46,6 +46,7 @@ function mason_prepare_compile {
 
 function mason_compile {
     echo "creating build directory"
+    rm -rf ./build
     mkdir -p ./build
     cd ./build
     LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -L${MASON_BCC}/lib/ -lc++ -lrt -lc++abi -pthread -lc -lgcc_s"
@@ -59,7 +60,7 @@ function mason_compile {
       -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DCMAKE_C_COMPILER="$CC" \
-      -DCMAKE_REQUIRED_FLAGS="-I${MASON_BCC}/include/bcc -L${MASON_BCC}/lib/" \
+      -DCMAKE_REQUIRED_FLAGS="-I${MASON_ELFUTILS}/include -I${MASON_BCC}/include/bcc -L${MASON_BCC}/lib/ -L${MASON_ELFUTILS}/lib -lpthread" \
       -DLIBBCC_LIBRARIES="${MASON_BCC}/lib/libbcc.so" \
       -DLIBBCC_INCLUDE_DIRS="${MASON_BCC}/include/bcc" \
       -DCMAKE_MODULE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \

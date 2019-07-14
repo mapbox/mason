@@ -2,7 +2,7 @@
 
 MASON_NAME=bpftrace
 MASON_VERSION=0.9.1
-MASON_LIB_FILE=lib/libbcc.so
+MASON_LIB_FILE=bin/bpftrace
 
 . ${MASON_DIR}/mason.sh
 

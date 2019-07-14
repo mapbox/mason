@@ -1,25 +1,23 @@
-## bcc
+## bcctrace
 
-Learn more about this tool at https://github.com/iovisor/bcc
+Learn more about this tool at https://github.com/iovisor/bpftrace
 
 ## Supports
 
- - Ubuntu >= precise
- - Centos >= 7
- - Amazon linux (tested on `2017.09.d`)
+ - Ubuntu >= xenial
  - Running within docker
 
-## Not Supported
+Xenial is needed because with trusty or before the code will not compile:
 
-Does not support running within a linux docker on a mac. The scripts will not compile since:
-
- - bpf looks for `/lib/modules/$(uname -r)` which will not match what is installable via apt/yum
- - `linux/bpf_common.h` will not be found during compile
-
-Not yet tested:
-
- - alpine linux in docker from linux host (might or might not work?)
-
+```
+../src/list.h:19:35: error: use of undeclared identifier 'PERF_COUNT_SW_BPF_OUTPUT'; did you mean 'PERF_COUNT_SW_CPU_CLOCK'?
+  { "bpf-output",       "",       PERF_COUNT_SW_BPF_OUTPUT,          1 },
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~
+                                  PERF_COUNT_SW_CPU_CLOCK
+/usr/include/linux/perf_event.h:103:2: note: 'PERF_COUNT_SW_CPU_CLOCK' declared here
+        PERF_COUNT_SW_CPU_CLOCK                 = 0,
+        ^
+```
 
 ## Usage
 
@@ -32,56 +30,23 @@ sudo su
 Then setup debugfs:
 
 ```
-mount -t debugfs nodev /sys/kernel/debug
-```
-
-If you forget this you will see this error when trying to run one of the bcc tools:
-
-```
-open(/sys/kernel/debug/tracing/kprobe_events): No such file or directory
+mount -t debugfs debugfs /sys/kernel/debug/
 ```
 
 Then:
 
- - install bcc via mason
- - enable the bcc python modules via `PYTHONPATH`
- - setup `LD_LIBRARY_PATH` so that the python module's `ctypes` import can find `libbcc.so`:
- - put the bbc tools on `PATH`
+ - install bpftrace via mason
+ - setup `LD_LIBRARY_PATH` so that the bpftrace can find some shared libraries:
+ - put the bpftrace on `PATH`
 
 ```
-BCC_VERSION=e6c7568
-mason install bcc ${BCC_VERSION}
-BCC_PATH=$(mason prefix bcc ${BCC_VERSION})
-export PYTHONPATH=${BCC_PATH}/lib/python2.7/dist-packages
-export LD_LIBRARY_PATH=${BCC_PATH}/lib/
-export PATH=${BCC_PATH}/share/bcc/tools:${PATH}
+mason install bpftrace 0.9.1
+export LD_LIBRARY_PATH=$(mason prefix bpftrace 0.9.1)/lib/
+export PATH=$(mason prefix bpftrace 0.9.1)/bin:$PATH
 ```
 
-
-Then you should be able to run a command like
-
-```
-opensnoop -h
-```
-
-Which will display the help for `opensnoop`. Now try to use it to trace all failed reads for `node` binaries:
-
+Then you should be able to run:
 
 ```
-opensnoop -x -n node
+bpftrace -e 'BEGIN { printf("hello world\n"); }'
 ```
-
-
-Next confirm that in-kernel histograms are working by running:
-
-```
-biolatency
-```
-
-After a few seconds then hit `ctrl-c` to stop the program and it should display a histogram.
-
-Read more about `biolatency` at https://github.com/iovisor/bcc/blob/master/docs/tutorial.md#14-biolatency
-
-See all available tools you can run at https://github.com/iovisor/bcc#tools
-
-And follow the bcc tutorial at https://github.com/iovisor/bcc/blob/master/docs/tutorial.md#1-general-performance

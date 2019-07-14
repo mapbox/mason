@@ -66,10 +66,11 @@ function mason_compile {
       -DCMAKE_MODULE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
-      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -I${MASON_BCC}/include/bcc -I${MASON_BCC}/include/bcc/compat -stdlib=libc++"
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -I${MASON_BCC}/include/bcc -I${MASON_BCC}/include/bcc/compat -stdlib=libc++" \
+      -DBUILD_TESTING=OFF
     cat CMakeFiles/CMakeError.log
     cat CMakeFiles/CMakeOutput.log
-    ${MASON_NINJA}/bin/ninja bpftrace -j${MASON_CONCURRENCY}
+    ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja install
 }
 

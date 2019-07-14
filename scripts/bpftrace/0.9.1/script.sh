@@ -60,16 +60,15 @@ function mason_compile {
       -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DCMAKE_C_COMPILER="$CC" \
-      -DCMAKE_REQUIRED_FLAGS="-I${MASON_ELFUTILS}/include -I${MASON_BCC}/include/bcc -L${MASON_BCC}/lib/ -L${MASON_ELFUTILS}/lib -lpthread" \
+      -DCMAKE_REQUIRED_FLAGS="-I${MASON_ELFUTILS}/include -I${MASON_BCC}/include/bcc -I${MASON_BCC}/include/bcc/compat -L${MASON_BCC}/lib/ -L${MASON_ELFUTILS}/lib -lpthread" \
       -DLIBBCC_LIBRARIES="${MASON_BCC}/lib/libbcc.so" \
       -DLIBBCC_INCLUDE_DIRS="${MASON_BCC}/include/bcc" \
       -DCMAKE_MODULE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
-      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -I${MASON_BCC}/include/bcc -I${MASON_BCC}/include/bcc/compat -stdlib=libc++ -include sched.h -include errno.h"
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -I${MASON_BCC}/include/bcc -I${MASON_BCC}/include/bcc/compat -stdlib=libc++"
     cat CMakeFiles/CMakeError.log
     cat CMakeFiles/CMakeOutput.log
-    # TODO: remove -include: https://github.com/iovisor/bcc/pull/1573
     ${MASON_NINJA}/bin/ninja bpftrace -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja install
 }

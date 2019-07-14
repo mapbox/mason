@@ -72,6 +72,10 @@ function mason_compile {
     cat CMakeFiles/CMakeOutput.log
     ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja install
+    mkdir -p $MASON_PREFIX/lib
+    # vendor shared lib deps
+    cp -r ${MASON_LLVM}/lib/libclang.* $MASON_PREFIX/lib/
+    cp -r ${MASON_BCC}/lib/libbcc.* $MASON_PREFIX/lib/
 }
 
 function mason_cflags {

@@ -294,7 +294,8 @@ function mason_compile {
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLDB_RELOCATABLE_PYTHON=1 -DLLDB_DISABLE_PYTHON=1 -DLLVM_ENABLE_TERMINFO=0"
     # look for curses and libedit on linux
     # note: python would need swig
-    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_PREFIX_PATH=${MASON_NCURSES};${MASON_LIBEDIT}"
+
+    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLDB_DISABLE_LIBEDIT=1 -DLLDB_DISABLE_CURSES=1"
 
     echo "running cmake configure for llvm+friends build"
     echo

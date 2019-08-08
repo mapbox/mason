@@ -2,7 +2,7 @@
 
 MASON_NAME=bcc
 MASON_VERSION=0.10.0
-MASON_LIB_FILE=lib/libbcc.so
+MASON_LIB_FILE=lib/libbcc.a
 
 . ${MASON_DIR}/mason.sh
 
@@ -18,7 +18,7 @@ function mason_prepare_compile {
     CCACHE_VERSION=3.3.4
     CMAKE_VERSION=3.8.2
     NINJA_VERSION=1.7.2
-    LLVM_VERSION=5.0.0
+    LLVM_VERSION=8.0.0
     ZLIB_VERSION=1.2.8
     ELF_VERSION=0.170
     BISON_VERSION=3.1
@@ -43,6 +43,7 @@ function mason_prepare_compile {
 
 function mason_compile {
     echo "creating build directory"
+    rm -rf build
     mkdir -p ./build
     cd ./build
     LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -lc++ -lc++abi -pthread -lrt -lc -lgcc_s"
@@ -59,9 +60,8 @@ function mason_compile {
       -DCMAKE_MODULE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
-      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -stdlib=libc++ -include sched.h -include errno.h"
-    # TODO: remove -include: https://github.com/iovisor/bcc/pull/1573
-    ${MASON_NINJA}/bin/ninja libbcc.a -j${MASON_CONCURRENCY}
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -stdlib=libc++"
+    ${MASON_NINJA}/bin/ninja src/cc/libbcc.a -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja install
 }
 

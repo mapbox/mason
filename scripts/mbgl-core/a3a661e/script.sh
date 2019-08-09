@@ -30,6 +30,11 @@ function mason_compile {
     mkdir -p build
     rm -rf build/*
     cd build
+    # MBGL uses c++14
+    export CXXFLAGS="${CXXFLAGS//-std=c++11}"
+    # MBGL uses 10.11
+    export CXXFLAGS="${CXXFLAGS//-mmacosx-version-min=10.8}"
+    
     ${MASON_CMAKE}/bin/cmake ../ \
       -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} -DCMAKE_BUILD_TYPE=Release \
       -DWITH_NODEJS=OFF -DWITH_ERROR=OFF \
@@ -37,11 +42,12 @@ function mason_compile {
       -DCMAKE_CXX_COMPILER_LAUNCHER=${MASON_CCACHE}/bin/ccache \
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DCMAKE_C_COMPILER="$CC"
-    ${MASON_NINJA}/bin/ninja mbgl-core -j4
+    ${MASON_NINJA}/bin/ninja mbgl-core -j4 -v
     mkdir -p ${MASON_PREFIX}/include
     mkdir -p ${MASON_PREFIX}/share
     mkdir -p ${MASON_PREFIX}/lib
     cp libmbgl-core.a ${MASON_PREFIX}/lib/
+    cp libicu.a ${MASON_PREFIX}/lib/
     cp -r ../include ${MASON_PREFIX}/
     cp -r ../platform ${MASON_PREFIX}/include/mbgl/
     cp -r ../src ${MASON_PREFIX}/include/mbgl/

@@ -47,7 +47,10 @@ function mason_compile {
     mkdir -p ${MASON_PREFIX}/share
     mkdir -p ${MASON_PREFIX}/lib
     cp libmbgl-core.a ${MASON_PREFIX}/lib/
-    cp libicu.a ${MASON_PREFIX}/lib/
+    # linux does not vendor icu, but rather pulls from mason
+    if [ ${MASON_PLATFORM} != 'linux' ]; then
+      cp libicu.a ${MASON_PREFIX}/lib/
+    fi
     cp -r ../include ${MASON_PREFIX}/
     cp -r ../platform ${MASON_PREFIX}/include/mbgl/
     cp -r ../src ${MASON_PREFIX}/include/mbgl/

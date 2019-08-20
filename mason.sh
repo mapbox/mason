@@ -14,8 +14,8 @@ elif [ "${MASON_UNAME}" = 'Linux' ]; then
     MASON_PLATFORM=${MASON_PLATFORM:-linux}
 fi
 
-# In non-interactive environments like Travis CI, we can't use -s because it'll fill up the log
-# way too fast
+# In non-interactive environments like Travis CI, we use -s (--silent)
+# because otherwise it will quickly fill up the log
 case $- in
     *i*) MASON_CURL_ARGS=   ;; # interactive
     *)   MASON_CURL_ARGS=-s ;; # non-interative

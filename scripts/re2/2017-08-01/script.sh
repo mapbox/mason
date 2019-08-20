@@ -25,8 +25,8 @@ function mason_compile {
 
     make obj/libre2.a -j${MASON_CONCURRENCY}
     # re2's install script is janky (hardcoded - as far as I can tell - to /usr/local) and hardcoded
-    # to also install the shared library (we only what the static one) and simple enough to re-invent
-    # so install of calling `make install` we instead just manually install the library and headers
+    # to also install the shared library (we only want the static one) and simple enough to re-invent
+    # so instead of calling `make install` we just manually install the library and headers
     mkdir -p ${MASON_PREFIX}/lib/
     cp obj/libre2.a ${MASON_PREFIX}/lib/
     mkdir -p ${MASON_PREFIX}/include/re2/

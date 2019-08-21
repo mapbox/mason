@@ -23,13 +23,16 @@ if [ -z "${MASON_COMMAND}" ]; then
     exit 1
 fi
 
-ROOTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
-
-if test -L "$ROOTDIR/mason"; then
-    ROOTDIR="$(dirname "$(readlink "$ROOTDIR/mason")")"
+if [ -z "${MASON_DIR:+isset}" ]; then
+    MASON_DIR=$(
+        cd "$(dirname "${BASH_SOURCE}")" &&
+        if [ -L mason ]; then
+            possibly_relative_path=$(readlink mason) &&
+            cd "$(dirname "${possibly_relative_path}")"
+        fi &&
+        pwd
+    )
 fi
-
-MASON_DIR=${MASON_DIR:-$ROOTDIR}
 
 if [ "${MASON_COMMAND}" = "env" ]; then
     . ${MASON_DIR}/mason.sh > /dev/null

@@ -275,7 +275,9 @@ function mason_check_existing {
         fi
     elif [ "${MASON_SYSTEM_PACKAGE:-false}" = true ]; then
         if [ -f "${MASON_PREFIX}/version" ] ; then
-            mason_success "Using system-provided ${MASON_NAME} $(set -e;mason_system_version)"
+            local version # no assignment, local ignores exit status from $(...)
+            version=$(set -eu; mason_system_version)
+            mason_success "Using system-provided ${MASON_NAME} ${version}"
             exit 0
         fi
     else
@@ -729,7 +731,9 @@ function mason_run {
             mason_clear_existing
             mason_build
             mason_write_config
-            mason_success "Installed system-provided ${MASON_NAME} $(set -e;mason_system_version)"
+            local version # no assignment, local ignores exit status from $(...)
+            version=$(set -eu; mason_system_version)
+            mason_success "Installed system-provided ${MASON_NAME} ${version}"
         else
             mason_check_existing
             mason_clear_existing

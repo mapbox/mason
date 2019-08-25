@@ -551,7 +551,7 @@ function mason_try_binary {
         mason_step "Downloading binary package ${FULL_URL}"
         local CURL_RESULT=0
         local HTTP_RETURN=0
-        HTTP_RETURN=$(curl -w "%{http_code}" --retry 3 ${MASON_CURL_ARGS} -f -L ${FULL_URL} -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
+        HTTP_RETURN=$(curl -w "%{http_code}" --retry 3 ${MASON_CURL_ARGS} -f -L "${FULL_URL}" -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             if [[ ${HTTP_RETURN} == "403" ]]; then
                 mason_step "Binary not available for ${FULL_URL}"
@@ -566,7 +566,7 @@ function mason_try_binary {
         mason_step "Updating binary package ${MASON_BINARIES}..."
         local CURL_RESULT=0
         local HTTP_RETURN=0
-        HTTP_RETURN=$(curl -w "%{http_code}" --retry 3 ${MASON_CURL_ARGS} -f -L -z "${MASON_BINARIES_PATH}" -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
+        HTTP_RETURN=$(curl -w "%{http_code}" --retry 3 ${MASON_CURL_ARGS} -f -L -z "${MASON_BINARIES_PATH}" "${FULL_URL}" -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             if [ -f "${MASON_BINARIES_PATH}.tmp" ]; then
                 mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}"

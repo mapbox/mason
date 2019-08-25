@@ -262,6 +262,7 @@ fi
 MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}
 MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}.tar.gz
 MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
+MASON_BINARIES_URL="https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
 
 
 
@@ -315,13 +316,26 @@ function mason_clear_existing {
 }
 
 
+function mason_curl {
+    curl -f -L ${MASON_CURL_ARGS} "$@"
+    #
+    # -f, --fail
+    #       (HTTP) Fail silently (no output at all) on server errors.
+    #
+    # -L, --location
+    #       (HTTP) If the server reports that the requested page has
+    #       moved to a different location, this option will make curl
+    #       redo the request on the new place.
+}
+
+
 function mason_download {
     mkdir -p "${MASON_ROOT}/.cache"
     cd "${MASON_ROOT}/.cache"
     if [ ! -f "${MASON_SLUG}" ] ; then
         mason_step "Downloading $1..."
         local CURL_RESULT=0
-        curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o "${MASON_SLUG}"  || CURL_RESULT=$?
+        mason_curl -S --retry 3 "$1" -o "${MASON_SLUG}" || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             mason_error "Failed to download ${1} (returncode: $CURL_RESULT)"
             exit $CURL_RESULT
@@ -544,19 +558,18 @@ function mason_write_config {
 function mason_try_binary {
     MASON_BINARIES_DIR=$(dirname "${MASON_BINARIES}")
     mkdir -p "${MASON_ROOT}/.binaries/${MASON_BINARIES_DIR}"
-    local FULL_URL="https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
 
     # try downloading from S3
     if [ ! -f "${MASON_BINARIES_PATH}" ] ; then
-        mason_step "Downloading binary package ${FULL_URL}"
+        mason_step "Downloading binary package ${MASON_BINARIES_URL}"
         local CURL_RESULT=0
         local HTTP_RETURN=0
-        HTTP_RETURN=$(curl -w "%{http_code}" --retry 3 ${MASON_CURL_ARGS} -f -L "${FULL_URL}" -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
+        HTTP_RETURN=$(mason_curl -w "%{http_code}" --retry 3 "${MASON_BINARIES_URL}" -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             if [[ ${HTTP_RETURN} == "403" ]]; then
-                mason_step "Binary not available for ${FULL_URL}"
+                mason_step "Binary not available for ${MASON_BINARIES_URL}"
             else
-                mason_error "Failed to download ${FULL_URL} (returncode: ${CURL_RESULT})"
+                mason_error "Failed to download ${MASON_BINARIES_URL} (returncode: ${CURL_RESULT})"
                 exit $CURL_RESULT
             fi
         else
@@ -566,7 +579,7 @@ function mason_try_binary {
         mason_step "Updating binary package ${MASON_BINARIES}..."
         local CURL_RESULT=0
         local HTTP_RETURN=0
-        HTTP_RETURN=$(curl -w "%{http_code}" --retry 3 ${MASON_CURL_ARGS} -f -L -z "${MASON_BINARIES_PATH}" "${FULL_URL}" -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
+        HTTP_RETURN=$(mason_curl -w "%{http_code}" --retry 3 -z "${MASON_BINARIES_PATH}" "${MASON_BINARIES_URL}" -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             if [ -f "${MASON_BINARIES_PATH}.tmp" ]; then
                 mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}"
@@ -713,15 +726,15 @@ function mason_publish {
     MD5="$(openssl md5 -binary < "${MASON_BINARIES_PATH}" | base64)"
     SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\nx-amz-acl:public-read\n/${MASON_BUCKET}/${MASON_BINARIES}" | openssl sha1 -binary -hmac "$AWS_SECRET_ACCESS_KEY" | base64)"
 
-    curl -S -T "${MASON_BINARIES_PATH}" "https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}" \
+    curl -S -T "${MASON_BINARIES_PATH}" "${MASON_BINARIES_URL}" \
         -H "Date: $DATE" \
         -H "Authorization: AWS $AWS_ACCESS_KEY_ID:$SIGNATURE" \
         -H "Content-Type: $CONTENT_TYPE" \
         -H "Content-MD5: $MD5" \
         -H "x-amz-acl: public-read"
 
-    echo "https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
-    curl -f -I "https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
+    echo "${MASON_BINARIES_URL}"
+    curl -f -I "${MASON_BINARIES_URL}"
 }
 
 function mason_run {

@@ -28,7 +28,7 @@ case ${MASON_UNAME} in
 esac
 
 function mason_step    { >&2 printf "\033[1;36m%s\033[0m\n" "* $*"; }
-function mason_substep { >&2 printf "\033[1;36m%s\033[0m\n" "* $*"; }
+function mason_substep { >&2 printf "\033[0;36m%s\033[0m\n" "* $*"; }
 function mason_success { >&2 printf "\033[1;32m%s\033[0m\n" "* $*"; }
 function mason_error   { >&2 printf "\033[1;31m%s\033[0m\n" "$*"; }
 

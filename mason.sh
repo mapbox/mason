@@ -306,7 +306,7 @@ function mason_check_installed {
 
 
 function mason_clear_existing {
-    if [ -d "${MASON_PREFIX}" ]; then
+    if [ -e "${MASON_PREFIX}" ] || [ -h "${MASON_PREFIX}" ]; then
         mason_step "Removing existing package... ${MASON_PREFIX}"
         rm -rf "${MASON_PREFIX}"
     fi

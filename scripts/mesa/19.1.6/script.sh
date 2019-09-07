@@ -2,7 +2,7 @@
 
 MASON_NAME=mesa
 MASON_VERSION=19.1.6
-MASON_LIB_FILE=lib/libOSMesa.${MASON_DYNLIB_SUFFIX}
+MASON_LIB_FILE=lib/x86_64-linux-gnu/libOSMesa.so.8.0.0
 
 . ${MASON_DIR}/mason.sh
 

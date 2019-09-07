@@ -10,8 +10,8 @@ matrix:
            - ubuntu-toolchain-r-test
           packages:
            - libstdc++-5-dev
-           - llvm-6-dev
-           - llvm-6-tools
+           - llvm-8-dev
+           - llvm-8-tools
            - python3-pip
            - pkg-config
            - libdrm-dev

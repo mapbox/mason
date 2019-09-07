@@ -30,7 +30,7 @@ function mason_compile {
       -D dri-drivers=[] \
       -D vulkan-drivers=[] \
       -D glx=gallium-xlib \
-      -D gallium-drivers=swrast \
+      -D gallium-drivers=swrast,swr \
       -D prefix=${MASON_PREFIX}
     ninja -C builddir/
     ninja -C builddir/ install

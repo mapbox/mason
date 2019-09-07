@@ -6,8 +6,6 @@ matrix:
       dist: bionic
       addons:
         apt:
-          sources:
-           - ubuntu-toolchain-r-test
           packages:
            - libstdc++-5-dev
            - llvm-8-dev

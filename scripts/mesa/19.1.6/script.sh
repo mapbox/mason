@@ -11,7 +11,7 @@ function mason_load_source {
         https://mesa.freedesktop.org/archive/mesa-${MASON_VERSION}.tar.xz \
         9849dc6e3f2f6daa30a69dddefb2a1e25f1dfec7
 
-    mason_extract_tar_gz
+    mason_extract_tar_xz
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/mesa-${MASON_VERSION}
 }

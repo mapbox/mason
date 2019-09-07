@@ -32,7 +32,6 @@ function mason_compile {
       -D glx=gallium-xlib \
       -D gallium-drivers=swrast \
       -D prefix=${MASON_PREFIX}
-      --reconfigure
     ninja -C builddir/
     ninja -C builddir/ install
 }

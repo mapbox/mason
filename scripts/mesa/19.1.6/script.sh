@@ -17,7 +17,7 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    python3 -m pip install meson maco
+    python3 -m pip install meson mako
 }
 
 function mason_compile {

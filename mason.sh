@@ -537,6 +537,7 @@ function mason_config {
         echo "platform=${MASON_PLATFORM}"
         echo "platform_version=${MASON_PLATFORM_VERSION}"
     fi
+    echo "root=${MASON_ROOT}"
     mason_config_custom
     for name in include_dirs definitions options ldflags static_libs ; do
         eval value=\$MASON_CONFIG_$(echo ${name} | tr '[:lower:]' '[:upper:]')
@@ -600,14 +601,26 @@ function mason_try_binary {
         # to the current user using fakeroot if available
         $(which fakeroot) tar xzf "${MASON_BINARIES_PATH}"
 
-        if [ ! -z "${MASON_PKGCONFIG_FILE:-}" ] ; then
-            if [ -f "${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}" ] ; then
-            # Change the prefix
-                MASON_ESCAPED_PREFIX=$(echo "${MASON_PREFIX}" | sed -e 's/[\/&]/\\&/g')
-                sed -i.bak "s/prefix=.*/prefix=${MASON_ESCAPED_PREFIX}/" \
-                    "${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}"
-            fi
+        local bdist_root= match replace
+
+        if [ -f "${MASON_PREFIX}/mason.ini" ]; then
+            bdist_root=$(sed -ne 's|^root=||p' "${MASON_PREFIX}/mason.ini")
         fi
+
+        # fallback for packages without root=/path/to/mason_packages in mason.ini
+        case ${#bdist_root},${MASON_PLATFORM} in
+            0,ios| \
+            0,osx) bdist_root="/Users/travis/build/mapbox/mason/mason_packages" ;;
+            0,*  ) bdist_root="/home/travis/build/mapbox/mason/mason_packages" ;;
+        esac
+
+        match=$(sed 's:[][$*.^\\&]:\\&:g' <<< ${bdist_root})
+        replace=$(sed 's:[\\&]:\\&:g' <<< ${MASON_ROOT})
+
+        # fixup libtool .la and pkgconfig .pc files
+        find "${MASON_PREFIX}" -name include -prune -o -type f \
+            \( -name '*.la' -o -path '*/pkgconfig/*.pc' \) \
+            -exec sed -i.bak "s&${match}&${replace}&g" '{}' +
 
         mason_success "Installed binary package at ${MASON_PREFIX}"
         exit 0

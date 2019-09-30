@@ -10,8 +10,16 @@ matrix:
         compiler: clang
       - os: linux
         env: MASON_PLATFORM_VERSION=cortex_a9
+        addons:
+          apt:
+            packages:
+              - xutils-dev
       - os: linux
         env: MASON_PLATFORM_VERSION=i686
+        addons:
+          apt:
+            packages:
+              - xutils-dev
       - os: linux
         compiler: clang
         sudo: false

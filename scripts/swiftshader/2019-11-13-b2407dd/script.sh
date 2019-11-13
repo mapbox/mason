@@ -47,6 +47,8 @@ function mason_compile {
         -DBUILD_GLES_CM=NO \
         -DBUILD_TESTS=NO \
         -DBUILD_SAMPLES=NO \
+        -DBUILD_VULKAN=NO \
+        -DWARNINGS_AS_ERRORS=NO \
         -DREACTOR_BACKEND=LLVM
     make -C build -j${MASON_CONCURRENCY} libEGL libGLESv2
 

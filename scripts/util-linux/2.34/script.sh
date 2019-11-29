@@ -25,7 +25,8 @@ function mason_compile {
         --enable-static \
         --with-pic \
         --disable-shared \
-        --disable-dependency-tracking
+        --disable-dependency-tracking \
+        --without-python
 
     V=1 VERBOSE=1 make install -j${MASON_CONCURRENCY}
 }

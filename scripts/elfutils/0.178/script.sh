@@ -55,7 +55,8 @@ function mason_compile {
      --with-zlib=${MASON_ZLIB} \
      --without-biarch \
      --disable-shared \
-     --disable-dependency-tracking
+     --disable-dependency-tracking \
+     --disable-debuginfod
 
     make -j${MASON_CONCURRENCY} V=1
     make install

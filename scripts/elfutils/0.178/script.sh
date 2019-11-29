@@ -18,7 +18,7 @@ function mason_load_source {
 
 function mason_prepare_compile {
     ${MASON_DIR}/mason install xz 5.2.4
-    MASON_XZ=$(${MASON_DIR}/mason prefix xz 5.2.3)
+    MASON_XZ=$(${MASON_DIR}/mason prefix xz 5.2.4)
     ${MASON_DIR}/mason install bzip2 1.0.8
     MASON_BZIP2=$(${MASON_DIR}/mason prefix bzip2 1.0.8)
     ${MASON_DIR}/mason install zlib 1.2.11

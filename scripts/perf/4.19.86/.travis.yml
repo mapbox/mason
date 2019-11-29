@@ -1,0 +1,29 @@
+language: generic
+
+matrix:
+  include:
+    - os: linux
+      sudo: false
+      dist: trusty
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          # apt:
+          #  make systemtap-sdt-dev bison flex libperl-dev
+          # yum:
+          #  make flex bison elfutils-libelf-devel elfutils-devel libunwind-devel xz-devel numactl-devel openssl-devel slang-devel gtk2-devel perl-ExtUtils-Embed python-devel binutils-devel audit-libs-devel
+          packages:
+           - bison
+           - flex
+           - g++-4.9
+           - systemtap-sdt-dev
+
+# note: perf must be compiled with gcc (see script.sh)
+install:
+  - export CXX=g++-4.9
+  - export CC=gcc-4.9
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

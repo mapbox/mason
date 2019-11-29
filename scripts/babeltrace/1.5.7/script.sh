@@ -36,7 +36,7 @@ function mason_compile {
         --with-pic \
         --disable-shared \
         --disable-dependency-tracking \
-        --disable-debug-info
+        --disable-debug-info || cat config.log
 
     V=1 VERBOSE=1 make install -j${MASON_CONCURRENCY}
 }

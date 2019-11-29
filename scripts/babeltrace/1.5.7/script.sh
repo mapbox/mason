@@ -20,8 +20,8 @@ function mason_load_source {
 function mason_prepare_compile {
     ${MASON_DIR}/mason install popt 1.16
     MASON_POPT=$(${MASON_DIR}/mason prefix popt 1.16)
-    # ${MASON_DIR}/mason install elfutils 0.178
-    # MASON_ELFUTILS=$(${MASON_DIR}/mason prefix elfutils 0.178)
+    ${MASON_DIR}/mason install elfutils 0.178
+    MASON_ELFUTILS=$(${MASON_DIR}/mason prefix elfutils 0.178)
 }
 
 

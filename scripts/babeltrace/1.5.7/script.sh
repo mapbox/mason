@@ -27,7 +27,7 @@ function mason_prepare_compile {
 
 function mason_compile {
     export CFLAGS="${CFLAGS:-} -O3 -DNDEBUG -I${MASON_POPT}/include -I${MASON_ELFUTILS}/include"
-    export LDFLAGS="${LDFLAGS:-} -L${MASON_POPT}/lib -liconv -L${MASON_ELFUTILS}/lib"
+    export LDFLAGS="${LDFLAGS:-} -L${MASON_POPT}/lib -L${MASON_ELFUTILS}/lib"
 
     ./configure \
         --prefix=${MASON_PREFIX} \

@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/popt.pc
 
 function mason_load_source {
     mason_download \
-        ftp://anduin.linuxfromscratch.org/BLFS/popt/popt-${MASON_VERSION}.tar.gz \
+        https://fossies.org/linux/misc/popt-${MASON_VERSION}.tar.gz \
         598c52b4e1085e5e9e8323642ed73302b69cadc3
 
     mason_extract_tar_gz

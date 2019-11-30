@@ -16,8 +16,15 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/util-linux-${MASON_VERSION}
 }
 
+function mason_prepare_compile {
+    NCURSES_VERSION="6.1"
+    ${MASON_DIR}/mason install ncurses ${NCURSES_VERSION}
+    MASON_NCURSES=$(${MASON_DIR}/mason prefix ncurses ${NCURSES_VERSION})
+}
+
 function mason_compile {
-    export CFLAGS="${CFLAGS:-} -O3 -DNDEBUG"
+    export CFLAGS="${CFLAGS:-} -O3 -DNDEBUG -I${MASON_NCURSES}/include"
+    export LDFLAGS="${LDFLAGS:-} -L${MASON_NCURSES}/lib"
 
     ./configure \
         --prefix=${MASON_PREFIX} \

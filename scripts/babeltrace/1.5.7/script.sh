@@ -18,16 +18,20 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
+    ${MASON_DIR}/mason install util-linux 2.34
+    MASON_UTIL_LINUX=$(${MASON_DIR}/mason prefix util-linux 2.34)
     ${MASON_DIR}/mason install popt 1.16
     MASON_POPT=$(${MASON_DIR}/mason prefix popt 1.16)
     ${MASON_DIR}/mason install elfutils 0.178
     MASON_ELFUTILS=$(${MASON_DIR}/mason prefix elfutils 0.178)
+    ${MASON_DIR}/mason install zlib 1.2.11
+    MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib 1.2.11)
 }
 
 
 function mason_compile {
-    export CFLAGS="${CFLAGS:-} -O3 -DNDEBUG -I${MASON_POPT}/include -I${MASON_ELFUTILS}/include"
-    export LDFLAGS="${LDFLAGS:-} -L${MASON_POPT}/lib -L${MASON_ELFUTILS}/lib"
+    export CFLAGS="${CFLAGS:-} -O3 -DNDEBUG -I${MASON_POPT}/include -I${MASON_UTIL_LINUX}/include -I${MASON_ELFUTILS}/include"
+    export LDFLAGS="${LDFLAGS:-} -L${MASON_POPT}/lib -L${MASON_ELFUTILS}/lib -L${MASON_UTIL_LINUX}/lib -L${MASON_ZLIB}/lib -Wl,--start-group -lz"
 
     ./configure \
         --prefix=${MASON_PREFIX} \
@@ -36,19 +40,18 @@ function mason_compile {
         --with-pic \
         --disable-shared \
         --disable-dependency-tracking \
-        --disable-debug-info || cat config.log
+        --enable-debug-info
 
     V=1 VERBOSE=1 make install -j${MASON_CONCURRENCY}
 }
 
-function mason_strip_ldflags {
-    shift # -L...
-    shift # -lpng16
-    echo "$@"
+function mason_cflags {
+    :
 }
 
+
 function mason_ldflags {
-    mason_strip_ldflags $(`mason_pkgconfig` --static --libs)
+    :
 }
 
 function mason_clean {

@@ -7,6 +7,10 @@ matrix:
       compiler: clang
     - os: linux
       sudo: false
+      addons:
+        apt:
+          packages:
+           - libglib2.0-dev
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

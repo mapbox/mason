@@ -19,6 +19,11 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
+    CCACHE_VERSION=3.7.2
+    ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
+    MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
+    export CXX="${MASON_CCACHE}/bin/ccache ${CXX:-g++}"
+    export CC="${MASON_CCACHE}/bin/ccache ${CC:-gcc}"
     ${MASON_DIR}/mason install zlib 1.2.11
     MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib 1.2.11)
     ${MASON_DIR}/mason install xz 5.2.4
@@ -48,19 +53,20 @@ function mason_compile {
     rm -rf output-dir/*
     make \
       O=output-dir \
-      LIBDW_LDFLAGS="-L${MASON_ELFUTILS}/lib -Wl,--start-group -ldw -lelf -lebl -llzma -lz -lbz2 -ldl -L${MASON_BZIP2}/lib -L${MASON_XZ}/lib" \
+      FEATURES_DUMP=${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/FEATURE-DUMP \
+      LIBDW_LDFLAGS="-L${MASON_ZLIB}/lib -L${MASON_ELFUTILS}/lib -Wl,--start-group -ldw -lelf -lebl -llzma -lz -lbz2 -ldl -L${MASON_BZIP2}/lib -L${MASON_XZ}/lib" \
       LIBDW_CFLAGS="-I${MASON_ELFUTILS}/include/" \
       V=1 VF=1 \
       prefix=${MASON_PREFIX} \
       NO_LIBNUMA=1 \
       NO_LIBAUDIT=1 \
       NO_LIBUNWIND=1 \
-      NO_BIONIC=1 \
+      NO_LIBBIONIC=1 \
       NO_BACKTRACE=1 \
       NO_LIBCRYPTO=1 \
       NO_LIBPERL=1 \
       NO_GTK2=1 \
-      LDFLAGS="${EXTRA_LDFLAGS} -Wl,--start-group -L${MASON_BINUTILS}/lib -lbfd -lopcodes -lelf -lz" \
+      LDFLAGS="${EXTRA_LDFLAGS} -Wl,--start-group -L${MASON_BINUTILS}/lib -lbfd -lopcodes -lelf -liberty -lz" \
       NO_LIBPYTHON=1 \
       WERROR=0 \
       EXTRA_CFLAGS="${EXTRA_CFLAGS}" \

@@ -2,7 +2,7 @@
 
 MASON_NAME=elfutils
 MASON_VERSION=0.178
-MASON_LIB_FILE=lib/libelf.a
+MASON_LIB_FILE=lib/libebl.a
 
 . ${MASON_DIR}/mason.sh
 
@@ -17,6 +17,11 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
+    CCACHE_VERSION=3.7.2
+    ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
+    MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
+    export CXX="${MASON_CCACHE}/bin/ccache ${CXX:-g++}"
+    export CC="${MASON_CCACHE}/bin/ccache ${CC:-gcc}"
     ${MASON_DIR}/mason install xz 5.2.4
     MASON_XZ=$(${MASON_DIR}/mason prefix xz 5.2.4)
     ${MASON_DIR}/mason install bzip2 1.0.8
@@ -55,11 +60,17 @@ function mason_compile {
      --with-zlib=${MASON_ZLIB} \
      --without-biarch \
      --disable-shared \
+     --enable-static \
      --disable-dependency-tracking \
      --disable-debuginfod
-
-    make -j${MASON_CONCURRENCY} V=1
+    
+    make -j${MASON_CONCURRENCY} V=1 
     make install
+    # for some reason these libraries are not installed by default
+    cp ./libebl/*a ${MASON_PREFIX}/lib/
+    cp ./libdwfl/*a ${MASON_PREFIX}/lib/
+    cp ./libdwelf/*a ${MASON_PREFIX}/lib/
+    cp ./libdcpu/*a ${MASON_PREFIX}/lib/
     rm ${MASON_PREFIX}/lib/*so
 }
 

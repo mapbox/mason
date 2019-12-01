@@ -59,17 +59,16 @@ function mason_compile {
       LIBDW_CFLAGS="-I${MASON_ELFUTILS}/include/" \
       V=1 VF=1 \
       prefix=${MASON_PREFIX} \
+      HAVE_CPLUS_DEMANGLE_SUPPORT=1 \
       NO_LIBNUMA=1 \
-      NO_LIBAUDIT=1 \
       NO_LIBUNWIND=1 \
       NO_LIBBIONIC=1 \
-      NO_BACKTRACE=1 \
       NO_LIBCRYPTO=1 \
       NO_LIBPERL=1 \
-      NO_GTK2=1 \
-      LDFLAGS="${EXTRA_LDFLAGS} -Wl,--start-group -L${MASON_BINUTILS}/lib -lbfd -lopcodes -lelf -liberty -lz" \
       NO_LIBPYTHON=1 \
+      NO_GTK2=1 \
       WERROR=0 \
+      LDFLAGS="${EXTRA_LDFLAGS} -Wl,--start-group -L${MASON_BINUTILS}/lib -lbfd -lopcodes -lelf -liberty -lz" \
       EXTRA_CFLAGS="${EXTRA_CFLAGS} -DDISASM_FOUR_ARGS_SIGNATURE" \
       install
 }

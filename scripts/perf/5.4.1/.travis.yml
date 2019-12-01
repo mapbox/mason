@@ -22,8 +22,8 @@ matrix:
 
 # note: perf must be compiled with gcc (see script.sh)
 install:
-  - export CXX=g++-4.9
-  - export CC=gcc-4.9
+  - export CXX=g++-5
+  - export CC=gcc-5
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

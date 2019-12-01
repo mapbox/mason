@@ -69,7 +69,7 @@ function mason_compile {
       LDFLAGS="${EXTRA_LDFLAGS} -Wl,--start-group -L${MASON_BINUTILS}/lib -lbfd -lopcodes -lelf -liberty -lz" \
       NO_LIBPYTHON=1 \
       WERROR=0 \
-      EXTRA_CFLAGS="${EXTRA_CFLAGS}" \
+      EXTRA_CFLAGS="${EXTRA_CFLAGS} -DDISASM_FOUR_ARGS_SIGNATURE" \
       install
 }
 

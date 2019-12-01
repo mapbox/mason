@@ -47,6 +47,7 @@ function mason_prepare_compile {
 # see the readme.md in this directory for a log of what perf features are enabled
 function mason_compile {
     cd tools/perf
+    patch -N -p1 < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     # we set NO_LIBUNWIND since libdw is used from elfutils which is faster: https://lwn.net/Articles/579508/
     # note: LIBELF is needed for symbols + node --perf_basic_prof_only_functions
     mkdir -p output-dir

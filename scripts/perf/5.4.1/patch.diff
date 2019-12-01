@@ -1,0 +1,12 @@
+diff --git a/util/get_current_dir_name.c b/util/get_current_dir_name.c
+index b205d92..204793c 100644
+--- a/util/get_current_dir_name.c
++++ b/util/get_current_dir_name.c
+@@ -5,6 +5,7 @@
+ #include "get_current_dir_name.h"
+ #include <unistd.h>
+ #include <stdlib.h>
++#include <limits.h>
+ 
+ /* Android's 'bionic' library, for one, doesn't have this */
+ 

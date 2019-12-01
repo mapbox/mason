@@ -16,7 +16,8 @@ matrix:
           packages:
            - bison
            - flex
-           - g++-4.9
+           - g++-5
+           - libstdc++-5-dev
            - systemtap-sdt-dev
 
 # note: perf must be compiled with gcc (see script.sh)

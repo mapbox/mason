@@ -27,6 +27,9 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    # clean up config from any previous build
+    rm -f config.mk
+
     # https://github.com/nodejs/node/commit/1f143b8625c2985b4317a40f279232f562417077
     perl -i -p -e "s/Apple LLVM version/Apple \(\?:clang|LLVM\) version/g;" configure.py
     
@@ -53,7 +56,7 @@ function mason_compile {
     echo "making binary"
     # we use `make binary` to hook into PORTABLE=1
     # note, pass V=1 to see compile args (default off to avoid breaking the 4 GB log limit on travis)
-    PREFIX=${MASON_PREFIX}  make binary -j3
+    V= PREFIX=${MASON_PREFIX}  make binary -j3
     #${MASON_CONCURRENCY}
     ls
     echo "uncompressing binary"

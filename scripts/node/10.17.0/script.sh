@@ -53,7 +53,7 @@ function mason_compile {
     echo "making binary"
     # we use `make binary` to hook into PORTABLE=1
     # note, pass V=1 to see compile args (default off to avoid breaking the 4 GB log limit on travis)
-    V=1  PREFIX=${MASON_PREFIX}  make binary -j3
+    PREFIX=${MASON_PREFIX}  make binary -j3
     #${MASON_CONCURRENCY}
     ls
     echo "uncompressing binary"

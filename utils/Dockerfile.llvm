@@ -1,4 +1,4 @@
-FROM ubuntu:12.04
+FROM ubuntu:14.04
 
 # Used to build llvm and sub-packages
 # See https://github.com/mapbox/mason/blob/master/scripts/llvm/base/README.md for details

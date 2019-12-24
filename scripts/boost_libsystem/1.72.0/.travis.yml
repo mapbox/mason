@@ -3,7 +3,6 @@ language: generic
 matrix:
   include:
     - os: osx
-      osx_image: xcode8
       compiler: clang
     - os: linux
       sudo: false

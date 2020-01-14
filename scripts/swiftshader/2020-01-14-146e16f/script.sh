@@ -75,7 +75,7 @@ PATCH
         -DSWIFTSHADER_BUILD_VULKAN=NO \
         -DSWIFTSHADER_WARNINGS_AS_ERRORS=NO \
         -DSWIFTSHADER_BUILD_PVR=NO
-    ${MASON_NINJA}/bin/ninja -v -C build -j${MASON_CONCURRENCY}
+    ${MASON_NINJA}/bin/ninja -C build -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja install
     # rm -rf "${MASON_PREFIX}"
     # mkdir -p "${MASON_PREFIX}/lib"

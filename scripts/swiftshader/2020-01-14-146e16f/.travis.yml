@@ -2,18 +2,19 @@ language: cpp
 
 sudo: false
 
-compiler: clang
-
 matrix:
   exclude:
     - os: linux
   include:
     - os: osx
       osx_image: xcode11
-      env: MASON_PLATFORM=osx
     - os: linux
+      compiler: clang
       dist: trusty
-      env: MASON_PLATFORM=linux
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test' ]
+          packages: [ 'libstdc++-5-dev' ]
 
 install:
 

@@ -1,0 +1,24 @@
+language: cpp
+
+sudo: false
+
+compiler: clang
+
+matrix:
+  exclude:
+    - os: linux
+  include:
+    - os: osx
+      osx_image: xcode11
+      env: MASON_PLATFORM=osx
+    - os: linux
+      dist: trusty
+      env: MASON_PLATFORM=linux
+
+install:
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+
+after_success:
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

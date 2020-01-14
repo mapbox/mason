@@ -84,19 +84,19 @@ function get_llvm_project() {
 }
 
 function setup_base_tools() {
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/llvm-${MASON_BASE_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/cfe-${MASON_BASE_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/compiler-rt-${MASON_BASE_VERSION}.src.tar.xz"       ${MASON_BUILD_PATH}/projects/compiler-rt
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/llvm-${MASON_BASE_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/clang-${MASON_BASE_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/compiler-rt-${MASON_BASE_VERSION}.src.tar.xz"       ${MASON_BUILD_PATH}/projects/compiler-rt
     if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
-        get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/libcxx-${MASON_BASE_VERSION}.src.tar.xz"        ${MASON_BUILD_PATH}/projects/libcxx
-        get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/libcxxabi-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libcxxabi
-        get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/libunwind-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libunwind
+        get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/libcxx-${MASON_BASE_VERSION}.src.tar.xz"        ${MASON_BUILD_PATH}/projects/libcxx
+        get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/libcxxabi-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libcxxabi
+        get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/libunwind-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libunwind
     fi
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/openmp-${MASON_BASE_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/openmp
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/lld-${MASON_BASE_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/clang-tools-extra-${MASON_BASE_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/lldb-${MASON_BASE_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/polly-${MASON_BASE_VERSION}.src.tar.xz"             ${MASON_BUILD_PATH}/tools/polly
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/openmp-${MASON_BASE_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/openmp
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/lld-${MASON_BASE_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/clang-tools-extra-${MASON_BASE_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/lldb-${MASON_BASE_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/polly-${MASON_BASE_VERSION}.src.tar.xz"             ${MASON_BUILD_PATH}/tools/polly
     # The include-what-you-use project often lags behind llvm releases, causing compile problems when you try to build it within llvm (and I don't know how feasible it is to build separately)
     # Hence this is disabled by default and must be either enabled here or added to a `setup_release` function per package version
     # pulls from a tagged version:
@@ -255,7 +255,7 @@ function mason_compile {
     # https://blogs.gentoo.org/gsoc2016-native-clang/2016/05/31/build-gnu-free-executables-with-clang/
 
     if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_ASSERTIONS=OFF -DLIBUNWIND_ENABLE_ASSERTIONS=OFF -DLIBCXXABI_USE_COMPILER_RT=ON -DLIBCXX_USE_COMPILER_RT=ON -DLIBCXXABI_ENABLE_ASSERTIONS=OFF -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXX_ENABLE_STATIC=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON -DSANITIZER_USE_COMPILER_RT=ON -DLIBUNWIND_USE_COMPILER_RT=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBUNWIND_ENABLE_SHARED=OFF"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_ASSERTIONS=OFF -DLIBUNWIND_ENABLE_ASSERTIONS=OFF -DLIBCXXABI_USE_COMPILER_RT=ON -DLIBCXX_USE_COMPILER_RT=ON -DLIBCXXABI_ENABLE_ASSERTIONS=OFF -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXX_ENABLE_STATIC=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON -DLIBUNWIND_USE_COMPILER_RT=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBUNWIND_ENABLE_SHARED=OFF"
     fi
 
 

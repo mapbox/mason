@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=mapnik
-MASON_VERSION=b22d5d2fa
+MASON_VERSION="b22d5d2fa"
 MASON_LIB_FILE=lib/libmapnik.${MASON_DYNLIB_SUFFIX}
 
 . ${MASON_DIR}/mason.sh

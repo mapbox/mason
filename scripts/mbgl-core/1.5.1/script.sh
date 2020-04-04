@@ -28,6 +28,8 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    # remove -Werror due to https://github.com/mapbox/mapbox-gl-native/issues/16376
+    perl -i -p -e "s/-Werror/-Wall/g;" CMakeLists.txt
     mkdir -p build
     cd build
     ${MASON_CMAKE}/bin/cmake ../ \

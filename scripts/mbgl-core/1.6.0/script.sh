@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 MASON_NAME=mbgl-core
-MASON_VERSION=1.5.1
-SHA=c829ea7
+MASON_VERSION=1.6.0
+# used to target future release
+SHA=bf4c734
 MASON_LIB_FILE=lib/libmbgl-core.a
 
 . ${MASON_DIR}/mason.sh

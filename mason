@@ -71,6 +71,7 @@ RUBY
       \"request\": {
         \"message\": \"Building ${MASON_NAME} ${MASON_VERSION}\",
         \"branch\": \"$(git rev-parse --abbrev-ref HEAD)\",
+        \"merge_mode\": \"replace\",
         \"config\": ${config}
       }
     }"

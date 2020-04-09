@@ -65,6 +65,7 @@ function mason_compile {
         -DCMAKE_BUILD_TYPE=Release \
         -DSWIFTSHADER_BUILD_EGL=YES \
         -DSWIFTSHADER_BUILD_GLESv2=YES \
+        -DREACTOR_DEFAULT_OPT_LEVEL=Aggressive \
         -DSWIFTSHADER_BUILD_GLES_CM=NO \
         -DSWIFTSHADER_BUILD_PVR=NO \
         -DSWIFTSHADER_USE_GROUP_SOURCES=NO \
@@ -80,7 +81,7 @@ function mason_compile {
         -DCMAKE_CXX_COMPILER="${MASON_LLVM}/bin/clang++" \
         -DCMAKE_C_COMPILER="${MASON_LLVM}/bin/clang"
 
-    VERBOSE=1 make -j${MASON_CONCURRENCY} libEGL libGLESv2
+    make -j${MASON_CONCURRENCY} libEGL libGLESv2
     rm -rf "${MASON_PREFIX}"
     mkdir -p "${MASON_PREFIX}/lib"
     cp -av lib{EGL,GLESv2}.*${MASON_DYNLIB_SUFFIX}* "${MASON_PREFIX}/lib/"

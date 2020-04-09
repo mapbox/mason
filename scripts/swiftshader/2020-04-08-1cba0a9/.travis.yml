@@ -3,7 +3,7 @@ language: generic
 addons:
   apt:
     sources: [ 'ubuntu-toolchain-r-test' ]
-    packages: [ 'libstdc++-5-dev' ]
+    packages: [ 'libstdc++-4.9-dev' ]
 
 matrix:
   include:

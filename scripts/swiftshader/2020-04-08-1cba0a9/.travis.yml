@@ -1,16 +1,18 @@
 language: generic
 
-addons:
-  apt:
-    sources: [ 'ubuntu-toolchain-r-test' ]
-    packages: [ 'libstdc++-4.9-dev' ]
-
 matrix:
+  exclude:
+    - os: linux
+    - os: osx
   include:
     - os: osx
       osx_image: xcode11
     - os: linux
       sudo: false
+      dist: bionic
+      addons:
+        apt:
+          packages: [ 'libstdc++-7-dev' ]
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

@@ -76,7 +76,7 @@ function mason_compile {
         -DWARNINGS_AS_ERRORS=NO \
         -DREACTOR_BACKEND=LLVM \
         -DREACTOR_EMIT_DEBUG_INFO=OFF \
-        -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+        -DCMAKE_CXX_FLAGS="${CXXFLAGS} -D__STDC_FORMAT_MACROS --include cinttypes" \
         -DCMAKE_CXX_COMPILER_LAUNCHER=${MASON_CCACHE}/bin/ccache \
         -DCMAKE_CXX_COMPILER="${MASON_LLVM}/bin/clang++" \
         -DCMAKE_C_COMPILER="${MASON_LLVM}/bin/clang"

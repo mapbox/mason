@@ -81,7 +81,7 @@ function mason_compile {
         -DCMAKE_CXX_COMPILER="${MASON_LLVM}/bin/clang++" \
         -DCMAKE_C_COMPILER="${MASON_LLVM}/bin/clang"
 
-    make -j${MASON_CONCURRENCY} libEGL libGLESv2
+    VERBOSE=1 make -j${MASON_CONCURRENCY} libEGL libGLESv2
     rm -rf "${MASON_PREFIX}"
     mkdir -p "${MASON_PREFIX}/lib"
     cp -av lib{EGL,GLESv2}.*${MASON_DYNLIB_SUFFIX}* "${MASON_PREFIX}/lib/"

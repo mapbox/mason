@@ -111,10 +111,10 @@ function trigger() {
     NEW_VERSION=${1}
     ./mason trigger boost ${NEW_VERSION}
     for lib in $(find scripts/ -maxdepth 1 -type d -name 'boost_lib*' -print); do
-        if [[ -d $lib/${LAST_VERSION} ]]; then
+        if [[ -d $lib/${NEW_VERSION} ]]; then
             ./mason trigger $(basename $lib) ${NEW_VERSION}
         else
-            echo "skipping creating package for $lib/${LAST_VERSION}"
+            echo "skipping creating package for $lib/${NEW_VERSION}"
         fi
     done
 }

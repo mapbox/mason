@@ -4,10 +4,6 @@ language: generic
 
 dist: precise
 
-os:
-  - linux
-  - osx
-
 install:
  - source utils/toolchain.sh
 

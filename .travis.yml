@@ -7,9 +7,9 @@ dist: precise
 matrix:
   include:
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode11
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode11
       env: SYMLINK_INSTALL=true
     - os: linux
       sudo: false

@@ -69,7 +69,7 @@ function create() {
     export CACHE_PATH="mason_packages/.cache"
     mkdir -p "${CACHE_PATH}"
     if [[ ! -f ${CACHE_PATH}/boost-${NEW_VERSION} ]]; then
-        curl --retry 3 -f -S -L https://downloads.sourceforge.net/project/boost/boost/${NEW_VERSION}/boost_${BOOST_VERSION}.tar.bz2 -o ${CACHE_PATH}/boost-${NEW_VERSION}
+        curl --retry 3 -f -S -L https://dl.bintray.com/boostorg/release/${NEW_VERSION}/source/boost_${BOOST_VERSION}.tar.bz2 -o ${CACHE_PATH}/boost-${NEW_VERSION}
     fi
 
     NEW_SHASUM=$(git hash-object ${CACHE_PATH}/boost-${NEW_VERSION})
@@ -82,9 +82,10 @@ function create() {
                 rm -rf $lib/${NEW_VERSION}
             fi
             mkdir $lib/${NEW_VERSION}
+            echo "creating $lib/${NEW_VERSION}/"
             cp -r $lib/${LAST_VERSION}/. $lib/${NEW_VERSION}/
         else
-            echo "skipping creating package for $lib"
+            echo "skipping creating package for $lib/${LAST_VERSION}"
         fi
     done
 }
@@ -110,7 +111,11 @@ function trigger() {
     NEW_VERSION=${1}
     ./mason trigger boost ${NEW_VERSION}
     for lib in $(find scripts/ -maxdepth 1 -type d -name 'boost_lib*' -print); do
-        ./mason trigger $(basename $lib) ${NEW_VERSION}
+        if [[ -d $lib/${LAST_VERSION} ]]; then
+            ./mason trigger $(basename $lib) ${NEW_VERSION}
+        else
+            echo "skipping creating package for $lib/${LAST_VERSION}"
+        fi
     done
 }
 

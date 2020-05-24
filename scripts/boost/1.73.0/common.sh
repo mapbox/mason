@@ -2,7 +2,7 @@
 
 function mason_load_source {
     mason_download \
-        http://downloads.sourceforge.net/project/boost/boost/${MASON_VERSION}/boost_${BOOST_VERSION}.tar.bz2 \
+        https://dl.bintray.com/boostorg/release/${MASON_VERSION}/source/boost_${BOOST_VERSION}.tar.bz2 \
         ${BOOST_SHASUM}
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/boost_${BOOST_VERSION}

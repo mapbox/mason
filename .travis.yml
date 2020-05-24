@@ -2,8 +2,6 @@ version: ~> 1.0
 
 language: generic
 
-dist: precise
-
 matrix:
   include:
     - os: osx
@@ -12,10 +10,10 @@ matrix:
       osx_image: xcode11
       env: SYMLINK_INSTALL=true
     - os: linux
-      sudo: false
+      dist: precise
     - os: linux
-      sudo: false
       env: SYMLINK_INSTALL=true
+      dist: precise
 
 install:
 - |

@@ -60,6 +60,7 @@ if [ "${MASON_COMMAND}" = "trigger" ]; then
     require 'yaml'
     require 'json'
     config = YAML.load_file("scripts/${MASON_NAME}/${MASON_VERSION}/.travis.yml")
+    config["merge_mode"] = "merge"
     config["env"] ||= {}
     config["env"]["global"] ||= []
     config["env"]["global"] << "MASON_NAME=${MASON_NAME}" << "MASON_VERSION=${MASON_VERSION}"
@@ -74,7 +75,7 @@ RUBY
         \"config\": ${config}
       }
     }"
-
+    
     curl -s -X POST https://api.travis-ci.org/repo/mapbox%2Fmason/requests \
         -H "Content-Type: application/json" \
         -H "Accept: application/json" \

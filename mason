@@ -65,7 +65,6 @@ if [ "${MASON_COMMAND}" = "trigger" ]; then
     config["env"] ||= {}
     config["env"]["global"] ||= []
     config["env"]["global"] << "MASON_NAME=${MASON_NAME}" << "MASON_VERSION=${MASON_VERSION}"
-    config["install"] = [ "source utils/toolchain.sh" ]
     puts JSON.pretty_generate(config)
 RUBY
     )

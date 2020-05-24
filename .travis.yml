@@ -8,4 +8,4 @@ install:
  - source utils/toolchain.sh
 
 script:
- - ./test/all.sh
+ - if [ ! ${MASON_NAME:-} ]; then ./test/all.sh; fi;

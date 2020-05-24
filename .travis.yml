@@ -2,7 +2,7 @@ version: ~> 1.0
 
 language: generic
 
-matrix:
+jobs:
   include:
     - os: osx
       osx_image: xcode11

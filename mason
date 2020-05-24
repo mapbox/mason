@@ -60,10 +60,12 @@ if [ "${MASON_COMMAND}" = "trigger" ]; then
     require 'yaml'
     require 'json'
     config = YAML.load_file("scripts/${MASON_NAME}/${MASON_VERSION}/.travis.yml")
-    config["merge_mode"] = "merge"
+    config["merge_mode"] = "replace"
+    config["version"] = "~> 1.0"
     config["env"] ||= {}
     config["env"]["global"] ||= []
     config["env"]["global"] << "MASON_NAME=${MASON_NAME}" << "MASON_VERSION=${MASON_VERSION}"
+    config["install"] = [ "source utils/toolchain.sh" ]
     puts JSON.pretty_generate(config)
 RUBY
     )

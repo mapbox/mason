@@ -1,9 +1,6 @@
-language: generic
-
-matrix:
+jobs:
   include:
     - os: linux
-      sudo: false
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

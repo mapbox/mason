@@ -1,5 +1,14 @@
 # Mason releases
 
+## 0.21.0
+
+  - Binaries now compiled with clang++ 10.0.0
+  - Fixes for curl downloads
+  - http -> https fixes
+  - Lots of new packages, too many to list here anymore.
+
+Changes: https://github.com/mapbox/mason/compare/v0.20.0...v0.21.0
+
 ## 0.20.0
 
 - Added

@@ -51,7 +51,7 @@ To install mason locally:
 
 ```sh
 mkdir ./mason
-curl -sSfL https://github.com/mapbox/mason/archive/v0.21.0.tar.gz | tar -z --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=./mason
+curl -sSfL https://github.com/mapbox/mason/archive/v0.22.0.tar.gz | tar -z --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=./mason
 ```
 
 Then you can use the `mason` command like: `./mason/mason install <package> <version>`
@@ -59,7 +59,7 @@ Then you can use the `mason` command like: `./mason/mason install <package> <ver
 To install mason globally (to /tmp):
 
 ```sh
-curl -sSfL https://github.com/mapbox/mason/archive/v0.21.0.tar.gz | tar -z --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=/tmp
+curl -sSfL https://github.com/mapbox/mason/archive/v0.22.0.tar.gz | tar -z --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=/tmp
 ```
 
 Then you can use the `mason` command like: `/tmp/mason install <package> <version>`

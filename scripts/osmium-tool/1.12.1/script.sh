@@ -9,7 +9,7 @@ MASON_LIB_FILE=bin/osmium
 function mason_load_source {
     mason_download \
         https://github.com/osmcode/${MASON_NAME}/archive/v${MASON_VERSION}.tar.gz \
-        3c981c4350eece38fcbaf161829c66f969368cc9
+        9e2c4f564ba677bfc386ecf65154bf4531afe1c0
 
     mason_extract_tar_gz
 

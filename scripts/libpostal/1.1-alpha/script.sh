@@ -9,7 +9,7 @@ MASON_LIB_FILE=bin/libpostal
 function mason_load_source {
     mason_download \
         https://github.com/openvenues/${MASON_NAME}/archive/v${MASON_VERSION}.tar.gz \
-        4a04fb727b0b157b55953132e4ab7c7413dcad03
+        b9a4972d0f2fcdc8b24ef91adf4a7749865f4865
 
     mason_extract_tar_gz
 
@@ -23,7 +23,7 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install cmake 3.15.2
     ${MASON_DIR}/mason link cmake 3.15.2
 
-    yum install -y curl autoconf automake libtool python-devel pkgconfig geos geos-devel jq
+    # brew install curl autoconf automake libtool python-devel pkgconfig geos geos-devel jq
 }
 
 function mason_compile {
@@ -31,6 +31,7 @@ function mason_compile {
     mkdir -p build
     cd build
     CMAKE_PREFIX_PATH=${MASON_ROOT}/.link \
+
     ${MASON_ROOT}/.link/bin/cmake \
         -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
         -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
@@ -38,6 +39,8 @@ function mason_compile {
         -DBoost_NO_SYSTEM_PATHS=ON \
         -DBoost_USE_STATIC_LIBS=ON \
         ..
+
+    echo "THIS IS SUCCESSFULL"
     # limit concurrency on travis to avoid heavy jobs being killed
     if [[ ${TRAVIS_OS_NAME:-} ]]; then
         make VERBOSE=1 -j4

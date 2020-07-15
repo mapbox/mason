@@ -9,7 +9,7 @@ MASON_LIB_FILE=bin/libpostal
 function mason_load_source {
     mason_download \
         https://github.com/openvenues/${MASON_NAME}/archive/v${MASON_VERSION}.tar.gz \
-        43795a3d903991d3864926393af10c3ec31a161c
+        4a04fb727b0b157b55953132e4ab7c7413dcad03
 
     mason_extract_tar_gz
 

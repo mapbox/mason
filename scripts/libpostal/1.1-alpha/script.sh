@@ -40,7 +40,6 @@ function mason_compile {
         -DBoost_USE_STATIC_LIBS=ON \
         ..
 
-    echo "THIS IS SUCCESSFULL"
     # limit concurrency on travis to avoid heavy jobs being killed
     if [[ ${TRAVIS_OS_NAME:-} ]]; then
         make VERBOSE=1 -j4

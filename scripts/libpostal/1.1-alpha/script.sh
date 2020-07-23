@@ -25,8 +25,6 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install cmake 3.15.2
     ${MASON_DIR}/mason link cmake 3.15.2
 
-    # yum install curl autoconf automake libtool python-devel pkgconfig geos geos-devel jq
-
 }
 
 function mason_compile {

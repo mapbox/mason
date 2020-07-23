@@ -14,9 +14,14 @@ matrix:
           packages:
            - libstdc++-4.8-dev
            - pandoc
+           - curl
+           - autoconf
+           - automake
+           - libtool
+           - pkgconfig
 
 script:
-- if [[ $(uname -s) == 'Darwin' ]]; then brew install pandoc || true; fi;
+- if [[ $(uname -s) == 'Darwin' ]]; then brew install curl autoconf automake libtool pkg-config || true; fi;
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
-- nm $(./mason prefix ${MASON_NAME} ${MASON_VERSION})/bin/osmium | grep "GLIBC" | c++filt  || true
+- nm $(./mason prefix ${MASON_NAME} ${MASON_VERSION})/bin/libpostal | grep "GLIBC" | c++filt  || true
 - ./mason publish ${MASON_NAME} ${MASON_VERSION}

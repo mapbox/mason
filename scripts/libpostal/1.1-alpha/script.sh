@@ -17,36 +17,23 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    CCACHE_VERSION=3.3.4
-    ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
-    MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
-    ${MASON_DIR}/mason install cmake 3.15.2
-    MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
-    ${MASON_DIR}/mason install cmake 3.15.2
-    ${MASON_DIR}/mason link cmake 3.15.2
 
-    ./bootstrap.sh
-    ./configure --datadir=$MASON_ROOT/libpostal-data/
+    # installation instructions from https://github.com/openvenues/libpostal
+
+    if [[ $(uname -s) == 'Linux' ]]
+    then
+        yum install curl autoconf automake libtool pkgconfig
+    elif [[ $(uname -s) == 'Darwin' ]]
+    then
+        brew install curl autoconf automake libtool pkg-config
+    fi
 
 }
 
 function mason_compile {
-    echo "LOG"
-    echo "mason prefix : " $MASON_PREFIX
-    echo "mason root : " $MASON_ROOT
-    echo "mason cache : " $MASON_CCACHE
+    ./bootstrap.sh
+    ./configure --datadir=${MASON_ROOT}/libpostal-data/
 
-    # installation instructions from https://github.com/openvenues/libpostal
-
-    CMAKE_PREFIX_PATH=${MASON_ROOT}/.link \
-    ${MASON_ROOT}/.link/bin/cmake \
-        -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} \
-        -DCMAKE_CXX_COMPILER_LAUNCHER="${MASON_CCACHE}/bin/ccache" \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DBoost_NO_SYSTEM_PATHS=ON \
-        -DBoost_USE_STATIC_LIBS=ON \
-        ..
-    # limit concurrency on travis to avoid heavy jobs being killed
     if [[ ${TRAVIS_OS_NAME:-} ]]; then
         make VERBOSE=1 -j4
     else
@@ -55,9 +42,11 @@ function mason_compile {
 
     make install
 
-    if [[ $(uname -s) != 'Darwin' ]]; then
+    if [[ $(uname -s) == 'Linux' ]]
+    then
         ldconfig
     fi
+
 }
 
 function mason_cflags {

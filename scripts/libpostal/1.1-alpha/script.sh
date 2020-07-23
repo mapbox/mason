@@ -25,6 +25,9 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install cmake 3.15.2
     ${MASON_DIR}/mason link cmake 3.15.2
 
+    ./bootstrap.sh
+    ./configure --datadir=$MASON_ROOT/libpostal-data/
+
 }
 
 function mason_compile {
@@ -32,6 +35,8 @@ function mason_compile {
     echo "mason prefix : " $MASON_PREFIX
     echo "mason root : " $MASON_ROOT
     echo "mason cache : " $MASON_CCACHE
+
+    # installation instructions from https://github.com/openvenues/libpostal
 
     CMAKE_PREFIX_PATH=${MASON_ROOT}/.link \
     ${MASON_ROOT}/.link/bin/cmake \
@@ -47,7 +52,12 @@ function mason_compile {
     else
         make VERBOSE=1 -j${MASON_CONCURRENCY}
     fi
+
     make install
+
+    if [[ $(uname -s) != 'Darwin' ]]; then
+        ldconfig
+    fi
 }
 
 function mason_cflags {

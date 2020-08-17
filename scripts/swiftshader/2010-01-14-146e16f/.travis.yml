@@ -1,0 +1,25 @@
+language: cpp
+
+sudo: false
+
+matrix:
+  exclude:
+    - os: linux
+  include:
+    - os: osx
+      osx_image: xcode11
+    - os: linux
+      compiler: clang
+      dist: trusty
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test' ]
+          packages: [ 'libstdc++-5-dev' ]
+
+install:
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+
+after_success:
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

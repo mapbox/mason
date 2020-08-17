@@ -1,0 +1,15 @@
+language: generic
+
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode11
+    - os: linux
+      dist: bionic
+      addons:
+        apt:
+          packages: [ 'libstdc++-7-dev' ]
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

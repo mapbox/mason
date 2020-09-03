@@ -17,7 +17,7 @@ matrix:
            - autoconf
            - automake
            - libtool
-           - pkgconfig
+           - pkg-config
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

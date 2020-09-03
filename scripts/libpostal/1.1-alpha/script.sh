@@ -18,9 +18,12 @@ function mason_load_source {
 
 function mason_compile {
     ./bootstrap.sh
-    ./configure ${MASON_HOST_ARG} --datadir=/tmp/ --prefix=${MASON_PREFIX}
+    ./configure ${MASON_HOST_ARG} --datadir=${MASON_ROOT}/data --prefix=${MASON_PREFIX}
     make VERBOSE=1 -j${MASON_CONCURRENCY}
     make install
+    cp src/libpostal ${MASON_PREFIX}/bin/
+    cp src/address_parser ${MASON_PREFIX}/bin/
+    cp src/language_classifier ${MASON_PREFIX}/bin/
 }
 
 function mason_cflags {

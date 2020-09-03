@@ -21,5 +21,4 @@ matrix:
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
-- nm $(./mason prefix ${MASON_NAME} ${MASON_VERSION})/bin/libpostal | grep "GLIBC" | c++filt  || true
 - ./mason publish ${MASON_NAME} ${MASON_VERSION}

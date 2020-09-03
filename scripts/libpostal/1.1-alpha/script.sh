@@ -18,10 +18,9 @@ function mason_load_source {
 
 function mason_compile {
     ./bootstrap.sh
-    ./configure --datadir=/tmp/
+    ./configure ${MASON_HOST_ARG} --datadir=/tmp/ --prefix=${MASON_PREFIX}
     make VERBOSE=1 -j${MASON_CONCURRENCY}
     make install
-
 }
 
 function mason_cflags {

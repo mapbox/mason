@@ -14,6 +14,10 @@ matrix:
           packages:
            - libstdc++-4.8-dev
            - pandoc
+           - autoconf
+           - automake
+           - libtool
+           - pkgconfig
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

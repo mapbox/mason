@@ -16,36 +16,11 @@ function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
 }
 
-function mason_prepare_compile {
-
-    # installation instructions from https://github.com/openvenues/libpostal
-
-    if [[ $(uname -s) == 'Linux' ]]
-    then
-        yum install curl autoconf automake libtool pkgconfig
-    elif [[ $(uname -s) == 'Darwin' ]]
-    then
-        brew install curl autoconf automake libtool pkg-config
-    fi
-
-}
-
 function mason_compile {
     ./bootstrap.sh
-    ./configure --datadir=${MASON_ROOT}/libpostal-data/
-
-    if [[ ${TRAVIS_OS_NAME:-} ]]; then
-        make VERBOSE=1 -j4
-    else
-        make VERBOSE=1 -j${MASON_CONCURRENCY}
-    fi
-
+    ./configure --datadir=/tmp/
+    make VERBOSE=1 -j${MASON_CONCURRENCY}
     make install
-
-    if [[ $(uname -s) == 'Linux' ]]
-    then
-        ldconfig
-    fi
 
 }
 

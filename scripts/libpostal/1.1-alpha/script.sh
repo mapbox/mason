@@ -2,7 +2,7 @@
 
 MASON_NAME=libpostal
 MASON_VERSION=1.1-alpha
-MASON_LIB_FILE=bin/libpostal
+MASON_LIB_FILE=bin/libpostal_data
 
 . ${MASON_DIR}/mason.sh
 

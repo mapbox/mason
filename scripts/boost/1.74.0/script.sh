@@ -28,6 +28,7 @@ function mason_load_source {
 
 # override default "compile" target for just the header install
 function mason_compile {
+    patch -N -p1  < ${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/patch.diff
     mkdir -p ${MASON_PREFIX}/include
     cp -r ${MASON_ROOT}/.build/boost_${BOOST_VERSION}/boost ${MASON_PREFIX}/include
 }

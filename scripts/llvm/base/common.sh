@@ -360,7 +360,7 @@ function mason_compile {
         -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/asan" -DLLVM_USE_SANITIZER="Address;Undefined" \
         -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
         ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
-        ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
+        ${MASON_NINJA}/bin/ninja install-cxx install-cxxabi -j${MASON_CONCURRENCY}
 
     # MemoryWithOrigins
     if [[ $(uname -s) == 'Darwin' ]]; then
@@ -372,7 +372,7 @@ function mason_compile {
             -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/msan" -DLLVM_USE_SANITIZER="MemoryWithOrigins" \
             -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
             ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
-            ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
+            ${MASON_NINJA}/bin/ninja install-cxx install-cxxabi -j${MASON_CONCURRENCY}
     fi
 
     # Thread
@@ -382,7 +382,7 @@ function mason_compile {
         -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/tsan" -DLLVM_USE_SANITIZER="Thread" \
         -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
         ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
-        ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
+        ${MASON_NINJA}/bin/ninja install-cxx install-cxxabi -j${MASON_CONCURRENCY}
 
 }
 

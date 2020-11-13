@@ -189,28 +189,31 @@ function mason_compile {
            - The `:` separated `C_INCLUDE_DIRS` are added to the include paths
            - If `C_INCLUDE_DIRS` is present `InitHeaderSearch::AddDefaultCIncludePaths` returns early
              - Without that early return `/usr/include` would be added by default on OS X
-           - If `-isysroot` is passed then absolute `C_INCLUDE_DIRS` are appended to the sysroot
-             - So if sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/ and
-               C_INCLUDE_DIRS=/usr/include the actual path searched would be:
-               /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
-           - Relative `C_INCLUDE_DIRS` seem pointless because they are not appended to the sysroot and so will not be portable
+           - Relative `C_INCLUDE_DIRS` are appended to the sysroot:
+             - For example this input:
+                 DEFAULT_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+                 C_INCLUDE_DIRS=usr/include
+             - Would give this output:
+                 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
+           - Absolute `C_INCLUDE_DIRS` are added to the header search paths without prepending the sysroot and therefore are not as portable.
            - clang++ finds C++ headers relative to itself at https://github.com/llvm-mirror/clang/blob/master/lib/Frontend/InitHeaderSearch.cpp#L469-L470
-           - So, given on OS X we want to use the XCode/Apple provided libc++ and c++ headers we symlink the relative location to /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++
+           - So, if the the XCode/Apple provided libc++ and c++ headers are desired then symlinking is used below to provide the relative location to /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++
              - The alternative would be to symlink to the command line tools location (/Library/Developer/CommandLineTools/usr/include/c++/v1/)
 
         Another viable sysroot would be the command line tools at /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 
-        Generally each SDK/Platform version has its own C headers inside SDK_PATH/usr/include while all platforms share the C++ headers which
-        are at /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/
+        Generally each SDK/Platform version has its own C headers inside ${SDK_PATH}/usr/include while all platforms share the C++ headers which are at /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/
 
         NOTE: show search paths with: `clang -x c -v -E /dev/null` || `cpp -v` && `clang -Xlinker -v`
         '
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DC_INCLUDE_DIRS=/usr/include"
+        # https://reviews.llvm.org/D69221
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DC_INCLUDE_DIRS=usr/include"
         # setting the default sysroot to an explicit SDK avoids clang++ adding `/usr/local/include` to the paths by default at https://github.com/llvm-mirror/clang/blob/91d69c3c9c62946245a0fe6526d5ec226dfe7408/lib/Frontend/InitHeaderSearch.cpp#L226
         # because that value will be appended to the sysroot, not exist, and then get thrown out. If the sysroot were / then it would be added
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+        # This sysroot value was taken from `xcrun --show-sdk-path`
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCLANG_DEFAULT_CXX_STDLIB=libc++"
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_CREATE_XCODE_TOOLCHAIN=OFF -DLLVM_EXTERNALIZE_DEBUGINFO=ON"
     fi
     if [[ $(uname -s) == 'Linux' ]]; then

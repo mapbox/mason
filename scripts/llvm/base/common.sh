@@ -207,11 +207,11 @@ function mason_compile {
         NOTE: show search paths with: `clang -x c -v -E /dev/null` || `cpp -v` && `clang -Xlinker -v`
         '
         # https://reviews.llvm.org/D69221
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DC_INCLUDE_DIRS=usr/include"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DC_INCLUDE_DIRS=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
         # setting the default sysroot to an explicit SDK avoids clang++ adding `/usr/local/include` to the paths by default at https://github.com/llvm-mirror/clang/blob/91d69c3c9c62946245a0fe6526d5ec226dfe7408/lib/Frontend/InitHeaderSearch.cpp#L226
         # because that value will be appended to the sysroot, not exist, and then get thrown out. If the sysroot were / then it would be added
         # This sysroot value was taken from `xcrun --show-sdk-path`
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCLANG_DEFAULT_CXX_STDLIB=libc++"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_CREATE_XCODE_TOOLCHAIN=OFF -DLLVM_EXTERNALIZE_DEBUGINFO=ON"

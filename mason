@@ -76,15 +76,15 @@ RUBY
         \"config\": ${config}
       }
     }"
-    
-    curl -s -X POST https://api.travis-ci.org/repo/mapbox%2Fmason/requests \
+
+    curl -s -X POST https://api.travis-ci.com/repo/mapbox%2Fmason/requests \
         -H "Content-Type: application/json" \
         -H "Accept: application/json" \
         -H "Travis-API-Version: 3" \
         -H "Authorization: token ${MASON_TRAVIS_TOKEN}" \
         -d "$body"
 
-    echo "Now go to https://travis-ci.org/mapbox/mason/builds to view build status"
+    echo "Now go to https://travis-ci.com/mapbox/mason/builds to view build status"
 
     exit
 fi

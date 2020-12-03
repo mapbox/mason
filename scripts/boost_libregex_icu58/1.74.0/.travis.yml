@@ -5,13 +5,12 @@ matrix:
     - os: osx
       osx_image: xcode11
     - os: linux
-      sudo: false
       addons:
         apt:
           sources:
            - ubuntu-toolchain-r-test
           packages:
-           - libstdc++-6-dev
+           - libstdc++-4.8-dev
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

@@ -12,13 +12,13 @@ Mason is unlike:
 
  * all of the above...
 
-    Mason is a collection of bash scripts and does not depend on any specific runtime language, such as python, node.js, or ruby. It can build and publish a single set of binaries (>= OS X 10.8 and >= Ubuntu Precise), publish header-only files, and install packages. Mason has integrations with [Travis CI](https://travis-ci.org) and [Amazon S3](https://aws.amazon.com/s3) for automated build and deployment.
+    Mason is a collection of bash scripts and does not depend on any specific runtime language, such as python, node.js, or ruby. It can build and publish a single set of binaries (>= OS X 10.8 and >= Ubuntu Precise), publish header-only files, and install packages. Mason has integrations with [Travis CI](https://travis-ci.com) and [Amazon S3](https://aws.amazon.com/s3) for automated build and deployment.
 
     Mason strongly prefers static libraries over shared libraries and has zero understanding of dependency trees: it leaves complete control to the developer for how packages relate.
 
 Mason works on both **OS X** and **Linux**.
 
-[![Build Status](https://travis-ci.org/mapbox/mason.svg?branch=master)](https://travis-ci.org/mapbox/mason)
+[![Build Status](https://travis-ci.com/mapbox/mason.svg?branch=master)](https://travis-ci.com/mapbox/mason)
 
 # Table of Contents
 
@@ -245,11 +245,11 @@ Then set that in your environment and run:
 ```sh
 GITHUB_TOKEN=<github token>
 
-curl -s -i https://api.travis-ci.org/auth/github \
+curl -s -i https://api.travis-ci.com/auth/github \
     -H "User-Agent: Travis/1.0" \
     -H "Content-Type: application/json" \
     -H "Accept: application/vnd.travis-ci.2+json" \
-    -H "Host: api.travis-ci.org" \
+    -H "Host: api.travis-ci.com" \
     -d "{\"github_token\": \"${GITHUB_TOKEN}\"}"
 ```
 

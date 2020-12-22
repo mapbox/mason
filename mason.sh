@@ -458,7 +458,7 @@ function mason_build {
 
         SIMULATOR_TARGETS="i386 x86_64"
         DEVICE_TARGETS="armv7 arm64"
-        LIB_FOLDERS=
+        local LIB_FOLDERS=
 
         for ARCH in ${SIMULATOR_TARGETS} ; do
             mason_substep "Building for iOS Simulator ${ARCH}..."
@@ -469,7 +469,7 @@ function mason_build {
             cd "${MASON_PREFIX}"
             mv lib "lib-isim-${ARCH}"
             for i in lib-isim-${ARCH}/*.a ; do lipo -info "$i" ; done
-            LIB_FOLDERS="${LIB_FOLDERS} lib-isim-${ARCH}"
+            LIB_FOLDERS+=" lib-isim-${ARCH}"
         done
 
         for ARCH in ${DEVICE_TARGETS} ; do
@@ -481,20 +481,20 @@ function mason_build {
             cd "${MASON_PREFIX}"
             mv lib lib-ios-${ARCH}
             for i in lib-ios-${ARCH}/*.a ; do lipo -info $i ; done
-            LIB_FOLDERS="${LIB_FOLDERS} lib-ios-${ARCH}"
+            LIB_FOLDERS+=" lib-ios-${ARCH}"
         done
 
         # Create universal binary
         mason_substep "Creating Universal Binary..."
         cd "${MASON_PREFIX}"
         mkdir -p lib
-        for LIB in $(find ${LIB_FOLDERS} -name "*.a" | xargs basename | sort | uniq) ; do
-            lipo -create $(find ${LIB_FOLDERS} -name "${LIB}") -output lib/${LIB}
+        for LIB in $(find ${LIB_FOLDERS} -name "*.a" | sed 's:.*/::' | sort -u); do
+            lipo -create $(find ${LIB_FOLDERS} -name ${LIB}) -output lib/${LIB}
             lipo -info "lib/${LIB}"
         done
 
         cd "${MASON_PREFIX}"
-        rm -rf "${LIB_FOLDERS}"
+        rm -rf -- ${LIB_FOLDERS}
     elif [ ${MASON_PLATFORM} = 'android' ]; then
         cd "${MASON_BUILD_PATH}"
         mason_compile

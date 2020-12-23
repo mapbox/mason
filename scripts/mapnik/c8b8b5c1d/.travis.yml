@@ -11,7 +11,7 @@ matrix:
           sources:
            - ubuntu-toolchain-r-test
           packages:
-           - libstdc++-4.9-dev
+           - libstdc++-5-dev
            - xutils-dev
 
 script:

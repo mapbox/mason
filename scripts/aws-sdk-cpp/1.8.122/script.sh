@@ -19,7 +19,7 @@ function mason_load_source {
 function mason_prepare_compile {
     CCACHE_VERSION=3.7.2
     CMAKE_VERSION=3.15.2
-    LLVM_VERSION=11.0.0
+    LLVM_VERSION=10.0.0
     ${MASON_DIR}/mason install clang++ ${LLVM_VERSION}
     MASON_LLVM=$(${MASON_DIR}/mason prefix clang++ ${LLVM_VERSION})
     ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}

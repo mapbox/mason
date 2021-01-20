@@ -4,6 +4,7 @@ MASON_NAME=proj
 MASON_VERSION=7.2.1
 MASON_LIB_FILE=lib/libproj.a
 GRID_VERSION="1.8"
+SQLITE_VERSION=3.34.0
 
 . ${MASON_DIR}/mason.sh
 
@@ -18,15 +19,15 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR}/mason install sqlite 3.21.0
-    MASON_SQLITE=$(${MASON_DIR}/mason prefix sqlite 3.21.0)
+    ${MASON_DIR}/mason install sqlite ${SQLITE_VERSION}
+    MASON_SQLITE=$(${MASON_DIR}/mason prefix sqlite ${SQLITE_VERSION})
 }
 
 function mason_compile {
-    #curl --retry 3 -f -# -L https://download.osgeo.org/proj/proj-datumgrid-${GRID_VERSION}.zip -o proj-datumgrid-${GRID_VERSION}.zip
-    #cd data
-    #unzip -o ../proj-datumgrid-${GRID_VERSION}.zip
-    #cd ../
+    curl --retry 3 -f -# -L https://download.osgeo.org/proj/proj-datumgrid-${GRID_VERSION}.zip -o proj-datumgrid-${GRID_VERSION}.zip
+    cd data
+    unzip -o ../proj-datumgrid-${GRID_VERSION}.zip
+    cd ../
     export PATH="${MASON_ROOT}/.link/bin:${PATH}"
     export PKG_CONFIG_PATH="${MASON_SQLITE}/lib/pkgconfig"
     export CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG"

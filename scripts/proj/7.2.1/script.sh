@@ -40,7 +40,8 @@ function mason_compile {
     ${MASON_HOST_ARG} \
     --enable-static \
     --disable-shared \
-    --disable-dependency-tracking
+    --disable-dependency-tracking \
+    --without-curl
 
     make -j${MASON_CONCURRENCY}
     make install

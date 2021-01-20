@@ -7,6 +7,13 @@ matrix:
       compiler: clang
     - os: linux
       sudo: false
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - libstdc++-4.9-dev
+           - xutils-dev
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

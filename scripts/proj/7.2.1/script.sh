@@ -22,6 +22,7 @@ function mason_load_source {
 
 function mason_prepare_compile {
     ${MASON_DIR}/mason install sqlite ${SQLITE_VERSION}
+    ${MASON_DIR}/mason link sqlite ${SQLITE_VERSION}
     MASON_SQLITE=$(${MASON_DIR}/mason prefix sqlite ${SQLITE_VERSION})
     ${MASON_DIR}/mason install libtiff ${LIBTIFF_VERSION}
     MASON_LIBTIFF=$(${MASON_DIR}/mason prefix libtiff ${LIBTIFF_VERSION})

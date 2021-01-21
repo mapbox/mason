@@ -29,10 +29,6 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    curl --retry 3 -f -# -L https://download.osgeo.org/proj/proj-datumgrid-${GRID_VERSION}.zip -o proj-datumgrid-${GRID_VERSION}.zip
-    cd data
-    unzip -o ../proj-datumgrid-${GRID_VERSION}.zip
-    cd ../
     export PATH="${MASON_ROOT}/.link/bin:${PATH}"
     export PKG_CONFIG_PATH="${MASON_SQLITE}/lib/pkgconfig:${MASON_LIBTIFF}/lib/pkgconfig"
     export CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG"

@@ -3,7 +3,7 @@
 MASON_NAME=proj
 MASON_VERSION=7.2.1
 MASON_LIB_FILE=lib/libproj.a
-GRID_VERSION="1.8"
+PROJ_DATA_VERSION="1.4"
 SQLITE_VERSION=3.34.0
 LIBTIFF_VERSION=4.0.7
 JPEG_TURBO_VERSION=1.5.1
@@ -29,6 +29,7 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
+    #curl --retry 3 -f -# -L https://download.osgeo.org/proj/proj-data-${PROJ_DATA_VERSION}.tar.gz -o proj-data-${PROJ_DATA_VERSION}.tar.gz
     export PATH="${MASON_ROOT}/.link/bin:${PATH}"
     export PKG_CONFIG_PATH="${MASON_SQLITE}/lib/pkgconfig:${MASON_LIBTIFF}/lib/pkgconfig"
     export CXXFLAGS="${CXXFLAGS} -O3 -DNDEBUG"
@@ -38,9 +39,11 @@ function mason_compile {
     --disable-shared \
     --disable-dependency-tracking \
     --without-curl
-
+    echo `sqlite3 --version`
     make -j${MASON_CONCURRENCY}
     make install
+    #cd ${MASON_PREFIX}/share/proj
+    #tar xvfz proj-data-${PROJ_DATA_VERSION}.tar.gz
 }
 
 function mason_cflags {

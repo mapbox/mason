@@ -1,5 +1,9 @@
 # Mason releases
 
+## 0.23.0
+ - LLVM 11 now available
+ - Boost 1.75.0 now available
+
 ## 0.22.0
 
   - Binaries now compiled with clang++ 10.0.0

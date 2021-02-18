@@ -30,7 +30,8 @@ function install() {
     ${MASON_DIR}/mason link $1 $2
 }
 
-ICU_VERSION="57.1"
+ICU_VERSION="58.1"
+BOOST_VERSION="1.75.0"
 
 function mason_prepare_compile {
     install jpeg_turbo 1.5.1 libjpeg
@@ -45,11 +46,11 @@ function mason_prepare_compile {
     install cairo 1.14.8 libcairo
     install webp 0.6.0 libwebp
     install libgdal 2.1.3 libgdal
-    install boost 1.74.0
-    install boost_libsystem 1.74.0
-    install boost_libfilesystem 1.74.0
-    install boost_libprogram_options 1.74.0
-    install boost_libregex_icu57 1.74.0
+    install boost ${BOOST_VERSION}
+    install boost_libsystem ${BOOST_VERSION}
+    install boost_libfilesystem ${BOOST_VERSION}
+    install boost_libprogram_options ${BOOST_VERSION}
+    install boost_libregex_icu58 ${BOOST_VERSION}
     install freetype 2.7.1 libfreetype
     install harfbuzz 1.4.2-ft libharfbuzz
 }

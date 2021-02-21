@@ -2,7 +2,7 @@
 
 MASON_NAME=bcc
 MASON_VERSION=e6c7568
-MASON_LIB_FILE=lib/libbcc.so
+MASON_LIB_FILE=lib64/libbcc.a
 
 . ${MASON_DIR}/mason.sh
 

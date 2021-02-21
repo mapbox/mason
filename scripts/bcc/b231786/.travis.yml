@@ -15,7 +15,9 @@ matrix:
 
 script:
 - CMAKE_URL="https://github.com/Kitware/CMake/releases/download/v3.19.5/cmake-3.19.5-Linux-x86_64.tar.gz"
-- mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-- export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+- mkdir cmake && travis_retry wget --no-check-certificate -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+- export PATH=$(pwd)/cmake/bin:${PATH}
+- cmake --version
+- which cmake
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 - ./mason publish ${MASON_NAME} ${MASON_VERSION}

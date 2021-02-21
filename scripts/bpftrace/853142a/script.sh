@@ -46,7 +46,7 @@ function mason_compile {
     echo "creating build directory"
     mkdir -p ./build
     cd ./build
-    LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -lc++ -lc++abi -pthread -lc -lgcc_s -std=c++14"
+    LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
     cmake ../ \
       -DCMAKE_PREFIX_PATH="${MASON_LLVM};${MASON_ELFUTILS}" \
       -DLIBELF_LIBRARIES=${MASON_ELFUTILS}/lib/libelf.a \
@@ -61,7 +61,7 @@ function mason_compile {
       -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DLIBBCC_LIBRARIES="${MASON_BCC}/lib64/libbcc.a" \
       -DLIBBCC_INCLUDE_DIRS="${MASON_BCC}/include" \
-      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -I${LLVM_BINUTILS_INCDIR} -stdlib=libc++ -std=c++14"
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -I${LLVM_BINUTILS_INCDIR} -stdlib=libc++"
     ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja install
 }

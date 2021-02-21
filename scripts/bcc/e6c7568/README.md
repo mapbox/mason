@@ -6,7 +6,7 @@ Learn more about this tool at https://github.com/iovisor/bcc
 
  - Ubuntu >= precise
  - Centos >= 7
- - Amazon linux (tested on `2017.09.d`)
+ - Amazon linux (tested on `2017.09.d`) (needs `yum install kernel-devel`)
  - Running within docker
 
 ## Not Supported

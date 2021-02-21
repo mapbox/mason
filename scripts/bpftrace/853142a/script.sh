@@ -59,7 +59,7 @@ function mason_compile {
       -DCMAKE_MODULE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
-      -DLIBBCC_LIBRARIES="${MASON_BCC}/lib64/libbcc.a" \
+      -DLIBBCC_LIBRARIES="${MASON_BCC}/lib/libbcc.a" \
       -DLIBBCC_INCLUDE_DIRS="${MASON_BCC}/include" \
       -DCMAKE_CXX_FLAGS="${CXXFLAGS} -I${LLVM_BINUTILS_INCDIR} -stdlib=libc++"
     ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}

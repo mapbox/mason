@@ -51,7 +51,7 @@ function mason_compile {
     cd ./build
     export PATH=${MASON_FLEX}/bin:${PATH}
     which flex
-    perl -i -p -e "s/stdc\+\+fs/c\+\+fs/g;" ../src/CMakeLists.txt
+    perl -i -p -e "s/stdc\+\+fs//g;" ../src/CMakeLists.txt
     LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -lelf -lz -L${MASON_LLVM}/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
     cmake ../ \
       -DCMAKE_PREFIX_PATH="${MASON_LLVM};${MASON_ELFUTILS}" \

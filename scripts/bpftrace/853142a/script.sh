@@ -66,6 +66,8 @@ function mason_compile {
       -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DLIBBCC_LIBRARIES="${MASON_BCC}/lib/libbcc.a" \
       -DLIBBCC_INCLUDE_DIRS="${MASON_BCC}/include" \
+      -DLIBBPF_LIBRARIES="${MASON_BCC}/lib/libbcc_bpf.a" \
+      -DLIBBPF_INCLUDE_DIRS="${MASON_BCC}/include" \
       -DCMAKE_CXX_FLAGS="${CXXFLAGS} -I${LLVM_BINUTILS_INCDIR} -stdlib=libc++"
     ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja install

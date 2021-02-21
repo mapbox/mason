@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=bcc
-MASON_VERSION=e6c7568
+MASON_VERSION=b231786
 MASON_LIB_FILE=lib64/libbcc.a
 
 . ${MASON_DIR}/mason.sh

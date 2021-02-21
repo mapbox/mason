@@ -33,7 +33,7 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install zlib ${ZLIB_VERSION}
     MASON_ZLIB=$(${MASON_DIR}/mason prefix zlib ${ZLIB_VERSION})
     ${MASON_DIR}/mason install bcc ${BCC_VERSION}
-    MASON_BCC_INCDIR=$(${MASON_DIR}/mason prefix bcc ${BCC_VERSION})/include
+    MASON_BCC=$(${MASON_DIR}/mason prefix bcc ${BCC_VERSION})
     ${MASON_DIR}/mason install binutils ${BINUTILS_VERSION}
     LLVM_BINUTILS_INCDIR=$(${MASON_DIR}/mason prefix binutils ${BINUTILS_VERSION})/include
 }
@@ -59,7 +59,9 @@ function mason_compile {
       -DCMAKE_MODULE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
       -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} ${LINKER_FLAGS}" \
-      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -I${LLVM_BINUTILS_INCDIR} -I${MASON_BCC_INCDIR} -stdlib=libc++ -std=c++14"
+      -DLIBBCC_LIBRARIES="${MASON_BCC}/lib/libbcc.a" \
+      -DLIBBCC_INCLUDE_DIRS="${MASON_BCC}/include" \
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -I${LLVM_BINUTILS_INCDIR} -stdlib=libc++ -std=c++14"
     ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja install
 }

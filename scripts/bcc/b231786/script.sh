@@ -16,7 +16,7 @@ function mason_load_source {
 
 function mason_prepare_compile {
     CCACHE_VERSION=4.0
-    CMAKE_VERSION=3.18.1
+    # CMAKE_VERSION=3.18.1
     NINJA_VERSION=1.10.1
     LLVM_VERSION=11.0.0
     ZLIB_VERSION=1.2.8
@@ -26,7 +26,7 @@ function mason_prepare_compile {
     ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
     MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
     ${MASON_DIR}/mason install cmake ${CMAKE_VERSION}
-    MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake ${CMAKE_VERSION})
+    # MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake ${CMAKE_VERSION})
     ${MASON_DIR}/mason install ninja ${NINJA_VERSION}
     MASON_NINJA=$(${MASON_DIR}/mason prefix ninja ${NINJA_VERSION})
     ${MASON_DIR}/mason install elfutils ${ELF_VERSION}
@@ -45,7 +45,8 @@ function mason_compile {
     mkdir -p ./build
     cd ./build
     LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
-    ${MASON_CMAKE}/bin/cmake ../ \
+    # ${MASON_CMAKE}/bin/cmake ../ \
+    cmake ../ \
       -DCMAKE_PREFIX_PATH="${MASON_LLVM};${MASON_ELFUTILS}" \
       -DLIBELF_LIBRARIES=${MASON_ELFUTILS}/lib/libelf.a \
       -DLIBELF_INCLUDE_DIRS=${MASON_ELFUTILS}/include \

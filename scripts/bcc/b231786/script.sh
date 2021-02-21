@@ -9,9 +9,9 @@ MASON_LIB_FILE=lib/libbcc.so
 function mason_load_source {
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/${MASON_NAME}-${MASON_VERSION}
     if [[ ! -d ${MASON_BUILD_PATH} ]]; then
-        git clone https://github.com/iovisor/bcc.git ${MASON_BUILD_PATH}
+        git clone https://github.com/springmeyer/bcc.git ${MASON_BUILD_PATH}
     fi
-    (cd ${MASON_BUILD_PATH} && git checkout ${MASON_VERSION})
+    (cd ${MASON_BUILD_PATH} && git checkout beaee5e7c)
 }
 
 function mason_prepare_compile {

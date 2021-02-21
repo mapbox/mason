@@ -22,6 +22,9 @@ function mason_prepare_compile {
     ELF_VERSION=0.170
     BCC_VERSION=b231786
     BINUTILS_VERSION=2.35
+    FLEX_VERSION=2.6.4
+    ${MASON_DIR}/mason install flex ${FLEX_VERSION}
+    MASON_FLEX=$(${MASON_DIR}/mason prefix flex ${FLEX_VERSION})
     ${MASON_DIR}/mason install llvm ${LLVM_VERSION}
     MASON_LLVM=$(${MASON_DIR}/mason prefix llvm ${LLVM_VERSION})
     ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
@@ -46,6 +49,8 @@ function mason_compile {
     echo "creating build directory"
     mkdir -p ./build
     cd ./build
+    export PATH=${MASON_FLEX}/bin:${PATH}
+    which flex
     LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
     cmake ../ \
       -DCMAKE_PREFIX_PATH="${MASON_LLVM};${MASON_ELFUTILS}" \

@@ -51,7 +51,7 @@ function mason_compile {
     cd ./build
     export PATH=${MASON_FLEX}/bin:${PATH}
     which flex
-    LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -L${MASON_LLVM}/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
+    LINKER_FLAGS="-Wl,--start-group -L${MASON_ELFUTILS}/lib -lelf -lz -L${MASON_LLVM}/lib -lc++ -lc++abi -pthread -lc -lgcc_s"
     cmake ../ \
       -DCMAKE_PREFIX_PATH="${MASON_LLVM};${MASON_ELFUTILS}" \
       -DLIBELF_LIBRARIES=${MASON_ELFUTILS}/lib/libelf.a \
@@ -69,7 +69,7 @@ function mason_compile {
       -DLIBBPF_LIBRARIES="${MASON_BCC}/lib/libbcc_bpf.a" \
       -DLIBBPF_INCLUDE_DIRS="${MASON_BCC}/include" \
       -DCMAKE_CXX_FLAGS="${CXXFLAGS} -I${LLVM_BINUTILS_INCDIR} -stdlib=libc++"
-    ${MASON_NINJA}/bin/ninja -j${MASON_CONCURRENCY}
+    ${MASON_NINJA}/bin/ninja bpftrace -j${MASON_CONCURRENCY}
     ${MASON_NINJA}/bin/ninja install
 }
 

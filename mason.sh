@@ -63,9 +63,9 @@ if [ "${MASON_PLATFORM}" = 'osx' ]; then
         MIN_SDK_VERSION_FLAG="-mmacosx-version-min=10.8"
         SYSROOT_FLAGS="-isysroot ${MASON_SDK_PATH} -arch x86_64 ${MIN_SDK_VERSION_FLAG}"
         export CFLAGS="${SYSROOT_FLAGS}"
-        export CXXFLAGS="${CFLAGS} -fvisibility-inlines-hidden -stdlib=libc++ -std=c++11"
-        # NOTE: OSX needs '-stdlib=libc++ -std=c++11' in both CXXFLAGS and LDFLAGS
-        # to correctly target c++11 for build systems that don't know about it yet (like libgeos 3.4.2)
+        export CXXFLAGS="${CFLAGS} -fvisibility-inlines-hidden -stdlib=libc++"
+        # NOTE: OSX needs '-stdlib=libc++' in both CXXFLAGS and LDFLAGS
+        # to correctly target c++11 or c++14 for build systems that don't know about it yet (like libgeos 3.4.2)
         # But because LDFLAGS is also for C libs we can only put these flags into LDFLAGS per package
         export LDFLAGS="-Wl,-search_paths_first ${SYSROOT_FLAGS}"
         export CXX="/usr/bin/clang++"
@@ -113,7 +113,7 @@ elif [ "${MASON_PLATFORM}" = 'linux' ]; then
 
     export CFLAGS="-fPIC"
     export LDFLAGS=""
-    export CXXFLAGS="${CFLAGS} -std=c++11"
+    export CXXFLAGS="${CFLAGS}"
 
     if [ "$(uname -m)" != "${MASON_PLATFORM_VERSION}" ] ; then
         # Install the cross compiler

@@ -218,6 +218,8 @@ function mason_compile {
     fi
     if [[ $(uname -s) == 'Linux' ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_BINUTILS_INCDIR=${LLVM_BINUTILS_INCDIR}"
+        # to enable bpftrace linking https://github.com/iovisor/bpftrace/issues/1156
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_ENABLE_RTTI=ON"
     fi
 
     # Strip this since we set CMAKE_OSX_DEPLOYMENT_TARGET above. We assume that we'd only upgrade to use this compiler on recent OS X systems and we want the potential performance benefit of targeting a more recent version

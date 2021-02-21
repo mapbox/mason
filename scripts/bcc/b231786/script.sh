@@ -25,7 +25,7 @@ function mason_prepare_compile {
     MASON_LLVM=$(${MASON_DIR}/mason prefix llvm ${LLVM_VERSION})
     ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
     MASON_CCACHE=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})
-    ${MASON_DIR}/mason install cmake ${CMAKE_VERSION}
+    # ${MASON_DIR}/mason install cmake ${CMAKE_VERSION}
     # MASON_CMAKE=$(${MASON_DIR}/mason prefix cmake ${CMAKE_VERSION})
     ${MASON_DIR}/mason install ninja ${NINJA_VERSION}
     MASON_NINJA=$(${MASON_DIR}/mason prefix ninja ${NINJA_VERSION})

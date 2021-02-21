@@ -3,7 +3,6 @@ language: generic
 matrix:
   include:
     - os: linux
-      sudo: false
       addons:
         apt:
           sources:
@@ -11,7 +10,8 @@ matrix:
           packages:
            - bison
            - flex
-           - libstdc++-4.8-dev
+           - libstdc++-5-dev
+           - linux-headers-$(uname -r)
 
 script:
 - CMAKE_URL="https://github.com/Kitware/CMake/releases/download/v3.19.5/cmake-3.19.5-Linux-x86_64.tar.gz"

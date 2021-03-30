@@ -11,7 +11,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/expat.pc
 function mason_load_source {
     mason_download \
         https://github.com/libexpat/libexpat/archive/${MASON_VERSION2}.tar.gz \
-        85b5111f2d07cb09a94c2307bfaac080b23fe111
+        b1a5faaad5f4801d550df43baeba127ddc6233d4
     mason_extract_tar_gz
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/libexpat-${MASON_VERSION2}

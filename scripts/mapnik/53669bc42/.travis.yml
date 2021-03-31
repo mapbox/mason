@@ -17,7 +17,6 @@ matrix:
           packages:
            - libstdc++-6-dev
            - xutils-dev
-           - postgresql-9.5-postgis-2.4
 
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}

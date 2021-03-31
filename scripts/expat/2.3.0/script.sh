@@ -14,7 +14,7 @@ function mason_load_source {
         f6d07e2b059f7c17a0d16257d972268f66c4aec3
     mason_extract_tar_gz
 
-    export MASON_BUILD_PATH=${MASON_ROOT}/.build/libexpat-${MASON_VERSION2}
+    export MASON_BUILD_PATH=${MASON_ROOT}/.build/expat-${MASON_VERSION}
 }
 
 function mason_compile {

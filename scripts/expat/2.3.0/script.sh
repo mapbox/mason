@@ -10,8 +10,8 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/expat.pc
 
 function mason_load_source {
     mason_download \
-        https://github.com/libexpat/libexpat/archive/${MASON_VERSION2}.tar.gz \
-        85b5111f2d07cb09a94c2307bfaac080b23fe111
+        https://github.com/libexpat/libexpat/releases/download/${MASON_VERSION2}/expat-${MASON_VERSION}.tar.gz \
+        f6d07e2b059f7c17a0d16257d972268f66c4aec3
     mason_extract_tar_gz
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/libexpat-${MASON_VERSION2}
@@ -19,7 +19,6 @@ function mason_load_source {
 
 function mason_compile {
     cd expat
-    ./buildconf.sh
     # Add optimization flags since CFLAGS overrides the default (-g -O2)
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
     ./configure \

@@ -1,5 +1,8 @@
 language: generic
 
+env:
+  global:
+    - PYTHON=python3
 matrix:
   include:
     - os: osx

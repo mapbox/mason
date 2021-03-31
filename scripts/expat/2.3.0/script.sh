@@ -18,7 +18,6 @@ function mason_load_source {
 }
 
 function mason_compile {
-    cd expat
     # Add optimization flags since CFLAGS overrides the default (-g -O2)
     export CFLAGS="${CFLAGS} -O3 -DNDEBUG"
     ./configure \

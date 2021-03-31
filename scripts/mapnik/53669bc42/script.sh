@@ -40,7 +40,7 @@ function mason_prepare_compile {
     install libpq 9.6.5
     install sqlite 3.34.0 libsqlite3
     install icu ${ICU_VERSION}
-    install proj 7.2.1 libproj
+    install proj 8.0.0 libproj
     install pixman 0.34.0 libpixman-1
     install cairo 1.14.8 libcairo
     install webp 0.6.0 libwebp

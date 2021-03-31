@@ -15,5 +15,5 @@ matrix:
            - libstdc++-6-dev
 
 script:
-  - ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
 - ./mason publish ${MASON_NAME} ${MASON_VERSION}

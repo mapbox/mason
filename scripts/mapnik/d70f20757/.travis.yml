@@ -3,7 +3,7 @@ language: generic
 matrix:
   include:
     - os: osx
-      osx_image: xcode11.3
+      osx_image: xcode12.2
     - os: linux
       sudo: false
       addons:
@@ -11,7 +11,7 @@ matrix:
           sources:
            - ubuntu-toolchain-r-test
           packages:
-           - libstdc++-4.9-dev
+           - libstdc++-6-dev
            - xutils-dev
 
 script:

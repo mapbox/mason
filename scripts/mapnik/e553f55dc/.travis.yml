@@ -1,0 +1,18 @@
+language: generic
+
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode12.2
+    - os: linux
+      addons:
+        apt:
+          sources:
+           - ubuntu-toolchain-r-test
+          packages:
+           - libstdc++-6-dev
+           - xutils-dev
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

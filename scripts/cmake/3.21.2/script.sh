@@ -9,7 +9,7 @@ MASON_LIB_FILE=bin/cmake
 function mason_load_source {
     mason_download \
         https://github.com/Kitware/CMake/releases/download/v${MASON_VERSION}/cmake-${MASON_VERSION}.tar.gz \
-        332c23cdda5f4acb8e1ea4bbc5bfaf599d6adc23
+        e41de8fab437ea46c8c8668a2920a5cf53f2915d
 
     mason_extract_tar_gz
 

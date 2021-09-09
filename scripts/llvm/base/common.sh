@@ -182,6 +182,7 @@ function mason_compile {
 
     if [[ $(uname -s) == 'Darwin' ]]; then
         : '
+        https://andreasfertig.blog/2021/02/clang-and-gcc-on-macos-catalina-finding-the-include-paths/
         Note: C_INCLUDE_DIRS and DEFAULT_SYSROOT are critical options to understand to ensure C and C++ headers are predictably found.
 
         The way things work in clang++ on OS X (inside http://clang.llvm.org/doxygen/InitHeaderSearch_8cpp.html) is:
@@ -280,7 +281,7 @@ function mason_compile {
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -G Ninja -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja -DLLVM_ENABLE_ASSERTIONS=OFF -DCLANG_VENDOR=mapbox/mason -DCMAKE_CXX_COMPILER_LAUNCHER=${MASON_CCACHE}/bin/ccache"
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} -DCMAKE_BUILD_TYPE=MinSizeRel -DLLVM_INCLUDE_DOCS=OFF"
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_TARGETS_TO_BUILD=BPF;X86;WebAssembly -DCLANG_REPOSITORY_STRING=https://github.com/mapbox/mason -DCLANG_VENDOR_UTI=org.mapbox.llvm"
-    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_ENABLE_TERMINFO=0"
+    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_ENABLE_TERMINFO=0 -DLLVM_INCLUDE_EXAMPLES=OFF -DLLVM_ENABLE_UNWIND_TABLES=OFF -DLLVM_ENABLE_EH=ON -DLLVM_ENABLE_RTTI=ON"
     # look for curses and libedit on linux
     # note: python would need swig
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_PREFIX_PATH=${MASON_NCURSES};${MASON_LIBEDIT}"

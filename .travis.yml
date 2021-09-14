@@ -2,6 +2,10 @@ version: ~> 1.0
 
 language: generic
 
+before_script:
+- if ! [ -x "$(command -v aws)" ]; then curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" ; unzip awscliv2.zip ; sudo ./aws/install ; fi
+- aws sts get-caller-identity
+
 dist: precise
 
 install:

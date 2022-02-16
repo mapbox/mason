@@ -1,0 +1,18 @@
+language: generic
+
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode11
+    - os: linux
+      dist: bionic
+      compiler: clang
+
+before_script:
+ - if [[ ${MASON_PLATFORM} == "linux" && ${CXX} == "clang++" ]]; then export CXX="clang++-6" CC="clang-6" ; fi
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+
+after_success:
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

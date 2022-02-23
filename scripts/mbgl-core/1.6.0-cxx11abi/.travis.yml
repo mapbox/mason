@@ -3,7 +3,7 @@ language: generic
 matrix:
   include:
     - os: osx
-      osx_image: xcode12u
+      osx_image: xcode14
     - os: linux
       dist: bionic
       compiler: clang

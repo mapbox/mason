@@ -36,7 +36,7 @@ function mason_compile {
       -G Ninja -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja \
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DCMAKE_C_COMPILER="$CC" \
-      -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+      -DCMAKE_OSX_ARCHITECTURES="arm64"
     ${MASON_NINJA}/bin/ninja mbgl-core -j4
     echo "making directories at ${MASON_PREFIX}/"
     mkdir -p ${MASON_PREFIX}/include

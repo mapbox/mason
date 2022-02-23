@@ -4,6 +4,8 @@ matrix:
   include:
     - os: osx
       osx_image: xcode11
+    - os: osx
+      osx_image: xcode13
     - os: linux
       dist: bionic
       compiler: clang
@@ -14,5 +16,5 @@ before_script:
 script:
 - ./mason build ${MASON_NAME} ${MASON_VERSION}
 
-after_success:
-- ./mason publish ${MASON_NAME} ${MASON_VERSION}
+#after_success:
+#- ./mason publish ${MASON_NAME} ${MASON_VERSION}

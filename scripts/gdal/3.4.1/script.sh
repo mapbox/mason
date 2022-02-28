@@ -43,7 +43,7 @@ function mason_prepare_compile {
     SQLITE_VERSION="3.21.0"
     CCACHE_VERSION="3.3.1"
     GEOS_VERSION="3.6.2"
-    LIBCURL_VERSION="7.50.2"
+    LIBCURL_VERSION="7.81.0"
     ${MASON_DIR}/mason install geos ${GEOS_VERSION}
     MASON_GEOS=$(${MASON_DIR}/mason prefix geos ${GEOS_VERSION})
     perl -i -p -e "s/${FIND}/${REPLACE}/g;" ${MASON_GEOS}/lib/libgeos.la
@@ -157,7 +157,7 @@ function mason_compile {
         --with-jpeg=${MASON_JPEG} \
         --with-png=${MASON_PNG} \
         --with-pg=yes \
-        --with-proj=$(brew --prefix proj) \
+        --with-proj=${MASON_PROJ} \
         --with-sqlite3=${MASON_SQLITE} \
         --with-geos=${MASON_GEOS}/bin/geos-config \
         --with-spatialite=no \

@@ -2,7 +2,7 @@ version: ~> 1.0
 
 language: generic
 
-dist: precise
+dist: xenial
 
 install:
  - source utils/toolchain.sh

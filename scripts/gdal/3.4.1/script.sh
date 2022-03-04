@@ -166,7 +166,6 @@ function mason_compile {
         --with-pcidsk=no \
         --with-jasper=no \
         --with-gif=no \
-        --with-grib=no \
         --with-freexl=no \
         --with-avx=no \
         --with-sse=no \

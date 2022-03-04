@@ -4,10 +4,6 @@ MASON_NAME=gdal
 MASON_VERSION=3.4.1
 MASON_LIB_FILE=lib/libgdal.a
 
-CXX=/home/linuxbrew/.linuxbrew/bin/clang++
-CC=/home/linuxbrew/.linuxbrew/bin/clang
-# CXX=/usr/bin/clang++
-# CC=/usr/bin/clang
 . ${MASON_DIR}/mason.sh
 
 function mason_load_source {

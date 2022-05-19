@@ -1,5 +1,7 @@
 # Mason
 
+❌ **UNMAINTAINED: this project is no longer maintained and no additional development is planned. Nor is any kind of deprecation planned. Rather this code is now frozen. If you are depending on this module in any of your applications, it is recommended you remove the dependency and/or find a replacement solution**
+
 Mason is a cross-platform, command-line package manager for C/C++ applications.
 
 Mason is like:

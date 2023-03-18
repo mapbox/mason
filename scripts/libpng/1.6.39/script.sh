@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=libpng
-MASON_VERSION=1.6.32
+MASON_VERSION=1.6.39
 MASON_LIB_FILE=lib/libpng.a
 MASON_PKGCONFIG_FILE=lib/pkgconfig/libpng.pc
 
@@ -12,8 +12,8 @@ ZLIB_SHARED_VERSION=1.2.8
 
 function mason_load_source {
     mason_download \
-        https://downloads.sourceforge.net/project/libpng/libpng16/older-releases/${MASON_VERSION}/libpng-${MASON_VERSION}.tar.gz \
-        752b19285db1aab9d0b8f5ef2312390734f71e70
+        https://downloads.sourceforge.net/project/libpng/libpng16/${MASON_VERSION}/libpng-${MASON_VERSION}.tar.gz \
+        d7381b740d41de6ca31eec5143205c1a75b0f445
 
     mason_extract_tar_gz
 

@@ -1,0 +1,19 @@
+language: cpp
+
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode11
+      compiler: clang
+    - os: linux
+      dist: bionic
+      compiler: clang
+      sudo: false
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test' ]
+          packages: [ 'zlib1g-dev', 'cmake', 'libssl-dev', 'libcurl4-openssl-dev' ]
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

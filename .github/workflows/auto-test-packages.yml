@@ -10,6 +10,18 @@ on:
       - main
     paths:
       - 'scripts/**'
+  workflow_dispatch:
+    inputs:
+      package_filter:
+        description: 'Filter packages to test (regex, e.g., "boost|cmake|llvm")'
+        required: false
+        type: string
+        default: ''
+      max_packages:
+        description: 'Maximum number of packages to test'
+        required: false
+        type: string
+        default: '5'
 
 jobs:
   detect-changes:
@@ -26,14 +38,21 @@ jobs:
       - name: Detect changed packages
         id: detect
         run: |
+          MAX_PACKAGES="${{ inputs.max_packages || '5' }}"
+          PACKAGE_FILTER="${{ inputs.package_filter || '' }}"
+
           # Get the base branch for comparison
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             BASE="${{ github.event.pull_request.base.sha }}"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BASE="origin/master"
           else
             BASE="origin/master"
           fi
 
           echo "Comparing against: $BASE"
+          echo "Max packages to test: $MAX_PACKAGES"
+          echo "Package filter: ${PACKAGE_FILTER:-none}"
 
           # Find changed package directories
           CHANGED_DIRS=$(git diff --name-only $BASE HEAD | grep '^scripts/' | cut -d'/' -f1-3 | sort -u)
@@ -51,10 +70,25 @@ jobs:
           # Convert to JSON array of {name, version} objects
           PACKAGES="["
           FIRST=true
+          COUNT=0
           while IFS= read -r dir; do
             if [ -d "$dir" ] && [ -f "$dir/script.sh" ]; then
               PACKAGE_NAME=$(echo "$dir" | cut -d'/' -f2)
               PACKAGE_VERSION=$(echo "$dir" | cut -d'/' -f3)
+
+              # Apply filter if provided
+              if [ -n "$PACKAGE_FILTER" ]; then
+                if ! echo "$PACKAGE_NAME" | grep -E "$PACKAGE_FILTER" > /dev/null; then
+                  echo "Skipping $PACKAGE_NAME (doesn't match filter)"
+                  continue
+                fi
+              fi
+
+              # Check max packages limit
+              if [ "$COUNT" -ge "$MAX_PACKAGES" ]; then
+                echo "Reached max packages limit ($MAX_PACKAGES), stopping"
+                break
+              fi
 
               if [ "$FIRST" = true ]; then
                 FIRST=false
@@ -63,12 +97,15 @@ jobs:
               fi
 
               PACKAGES="${PACKAGES}{\"name\":\"${PACKAGE_NAME}\",\"version\":\"${PACKAGE_VERSION}\"}"
+              COUNT=$((COUNT + 1))
+              echo "Will test: $PACKAGE_NAME $PACKAGE_VERSION"
             fi
           done <<< "$CHANGED_DIRS"
           PACKAGES="${PACKAGES}]"
 
           echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
-          echo "Packages to test: $PACKAGES"
+          echo "Total packages to test: $COUNT"
+          echo "Packages JSON: $PACKAGES"
 
   test-linux:
     needs: detect-changes

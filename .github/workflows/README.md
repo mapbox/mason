@@ -4,7 +4,45 @@ This directory contains GitHub Actions workflows for Mason package management.
 
 ## Workflows
 
-### `package-builder.yml`
+### Automatic Workflows (Run on PR/Push)
+
+#### `auto-test-packages.yml` ⚡ NEW!
+Automatically detects and tests changed packages on PRs and feature branch pushes.
+
+**Triggers:**
+- Pull requests that modify files in `scripts/**`
+- Pushes to non-main branches that modify `scripts/**`
+
+**What it does:**
+1. Detects which package directories changed (e.g., `scripts/boost/1.86.0/`)
+2. Extracts package name and version from the path
+3. Builds each changed package on both Linux and macOS
+4. Reports results directly on the PR
+
+**Example:**
+```
+You modify: scripts/boost/1.86.0/script.sh
+
+CI automatically:
+✓ Detects boost 1.86.0 changed
+✓ Runs: ./mason build boost 1.86.0
+✓ Tests on Linux and macOS in parallel
+✓ Shows ✅ or ❌ on your PR
+```
+
+**Benefits:**
+- No manual workflow triggering needed
+- Works on feature branches automatically
+- Fast feedback on PRs
+- Can't forget to test
+
+#### `smoke-test.yml`
+
+### Manual Workflows (workflow_dispatch)
+
+⚠️ **Note:** Manual workflows can only be triggered from the `main` branch after the workflow files are merged. See [WORKFLOW_STRATEGY.md](../WORKFLOW_STRATEGY.md) for details.
+
+#### `package-builder.yml`
 Builds and publishes Mason packages to S3. This replaces the previous Travis CI-based build system.
 
 **Usage:**

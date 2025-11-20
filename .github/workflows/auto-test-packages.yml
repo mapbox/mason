@@ -1,0 +1,202 @@
+name: Auto Test Changed Packages
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/**'
+  push:
+    branches-ignore:
+      - master
+      - main
+    paths:
+      - 'scripts/**'
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-22.04
+    outputs:
+      packages: ${{ steps.detect.outputs.packages }}
+      has_changes: ${{ steps.detect.outputs.has_changes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed packages
+        id: detect
+        run: |
+          # Get the base branch for comparison
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE="origin/master"
+          fi
+
+          echo "Comparing against: $BASE"
+
+          # Find changed package directories
+          CHANGED_DIRS=$(git diff --name-only $BASE HEAD | grep '^scripts/' | cut -d'/' -f1-3 | sort -u)
+
+          if [ -z "$CHANGED_DIRS" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No package changes detected"
+            exit 0
+          fi
+
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "Changed directories:"
+          echo "$CHANGED_DIRS"
+
+          # Convert to JSON array of {name, version} objects
+          PACKAGES="["
+          FIRST=true
+          while IFS= read -r dir; do
+            if [ -d "$dir" ] && [ -f "$dir/script.sh" ]; then
+              PACKAGE_NAME=$(echo "$dir" | cut -d'/' -f2)
+              PACKAGE_VERSION=$(echo "$dir" | cut -d'/' -f3)
+
+              if [ "$FIRST" = true ]; then
+                FIRST=false
+              else
+                PACKAGES="${PACKAGES},"
+              fi
+
+              PACKAGES="${PACKAGES}{\"name\":\"${PACKAGE_NAME}\",\"version\":\"${PACKAGE_VERSION}\"}"
+            fi
+          done <<< "$CHANGED_DIRS"
+          PACKAGES="${PACKAGES}]"
+
+          echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
+          echo "Packages to test: $PACKAGES"
+
+  test-linux:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.detect-changes.outputs.packages) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl git wget
+
+      - name: Display build info
+        run: |
+          echo "Building package: ${{ matrix.package.name }} ${{ matrix.package.version }}"
+          echo "Package path: scripts/${{ matrix.package.name }}/${{ matrix.package.version }}"
+
+      - name: Verify package directory exists
+        run: |
+          if [ ! -d "scripts/${{ matrix.package.name }}/${{ matrix.package.version }}" ]; then
+            echo "Error: Package directory does not exist"
+            exit 1
+          fi
+          ls -la "scripts/${{ matrix.package.name }}/${{ matrix.package.version }}/"
+
+      - name: Build package
+        run: |
+          chmod +x ./mason
+          ./mason build ${{ matrix.package.name }} ${{ matrix.package.version }}
+        continue-on-error: true
+        id: build
+
+      - name: Check build result
+        if: always()
+        run: |
+          MASON_PREFIX=$(./mason prefix ${{ matrix.package.name }} ${{ matrix.package.version }})
+          echo "Expected installation path: $MASON_PREFIX"
+
+          if [ -d "$MASON_PREFIX" ]; then
+            echo "✅ Package built successfully"
+            echo "Contents:"
+            ls -laR "$MASON_PREFIX" | head -50
+            exit 0
+          else
+            echo "❌ Package build failed - installation directory not found"
+            exit 1
+          fi
+
+      - name: Upload build artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ matrix.package.name }}-${{ matrix.package.version }}-linux
+          path: |
+            mason_packages/.build/
+            mason_packages/.cache/
+          retention-days: 7
+
+  test-macos:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true'
+    runs-on: macos-13
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.detect-changes.outputs.packages) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          brew install curl git wget || true
+          xcode-select --print-path
+
+      - name: Display build info
+        run: |
+          echo "Building package: ${{ matrix.package.name }} ${{ matrix.package.version }}"
+
+      - name: Build package
+        run: |
+          chmod +x ./mason
+          ./mason build ${{ matrix.package.name }} ${{ matrix.package.version }}
+        continue-on-error: true
+
+      - name: Check build result
+        if: always()
+        run: |
+          MASON_PREFIX=$(./mason prefix ${{ matrix.package.name }} ${{ matrix.package.version }})
+
+          if [ -d "$MASON_PREFIX" ]; then
+            echo "✅ Package built successfully"
+            ls -la "$MASON_PREFIX" | head -20
+            exit 0
+          else
+            echo "❌ Package build failed"
+            exit 1
+          fi
+
+      - name: Upload build artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ matrix.package.name }}-${{ matrix.package.version }}-macos
+          path: |
+            mason_packages/.build/
+            mason_packages/.cache/
+          retention-days: 7
+
+  summary:
+    needs: [detect-changes, test-linux, test-macos]
+    if: always() && needs.detect-changes.outputs.has_changes == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Build summary
+        run: |
+          echo "## Package Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tested packages from this PR/push" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "See individual job results above for details." >> $GITHUB_STEP_SUMMARY

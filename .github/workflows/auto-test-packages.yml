@@ -54,8 +54,21 @@ jobs:
           echo "Max packages to test: $MAX_PACKAGES"
           echo "Package filter: ${PACKAGE_FILTER:-none}"
 
-          # Find changed package directories
-          CHANGED_DIRS=$(git diff --name-only $BASE HEAD | grep '^scripts/' | cut -d'/' -f1-3 | sort -u)
+          # Find changed package script.sh files (added or modified, not deleted)
+          # Only look for script.sh, base.sh, common.sh changes - ignore .travis.yml, .md, etc.
+          CHANGED_FILES=$(git diff --name-only --diff-filter=AM $BASE HEAD | grep '^scripts/' | grep -E '(script\.sh|base\.sh|common\.sh)$')
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No package script changes detected (only deleted files or docs)"
+            exit 0
+          fi
+
+          echo "Changed package scripts:"
+          echo "$CHANGED_FILES"
+
+          # Extract unique package directories from the changed files
+          CHANGED_DIRS=$(echo "$CHANGED_FILES" | cut -d'/' -f1-3 | sort -u)
 
           if [ -z "$CHANGED_DIRS" ]; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
@@ -64,7 +77,7 @@ jobs:
           fi
 
           echo "has_changes=true" >> $GITHUB_OUTPUT
-          echo "Changed directories:"
+          echo "Package directories to test:"
           echo "$CHANGED_DIRS"
 
           # Convert to JSON array of {name, version} objects

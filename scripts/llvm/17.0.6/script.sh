@@ -137,7 +137,10 @@ function mason_compile {
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_ENABLE_LIBCXX=ON"
         if [[ $(uname -s) == 'Linux' ]]; then
             CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_ENABLE_LLD=ON"
-            export PATH=${MASON_LLVM}/bin:${PATH}
+            # Only add MASON_LLVM to path if it's set (when using bootstrap LLVM)
+            if [[ -n "${MASON_LLVM:-}" ]]; then
+                export PATH=${MASON_LLVM}/bin:${PATH}
+            fi
         fi
     fi
 

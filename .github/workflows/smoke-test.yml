@@ -38,21 +38,30 @@ jobs:
           git --version
           curl --version
 
+      - name: Make mason executable
+        run: |
+          chmod +x ./mason
+          chmod +x ./test/*.sh
+
       - name: Run unit tests
         run: |
+          export PATH=$(pwd):${PATH}
           ./test/unit.sh
 
       - name: Test basic package install
         run: |
+          export PATH=$(pwd):${PATH}
           ./mason install zlib 1.2.8
           ./mason prefix zlib 1.2.8
 
       - name: Test header-only package install
         run: |
+          export PATH=$(pwd):${PATH}
           ./mason install variant 1.1.0
           ./mason prefix variant 1.1.0
 
       - name: Verify mason commands
         run: |
+          export PATH=$(pwd):${PATH}
           ./mason --version
           ./mason env MASON_DIR

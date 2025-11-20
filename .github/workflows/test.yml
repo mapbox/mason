@@ -42,9 +42,19 @@ jobs:
           git --version
           curl --version
 
+      - name: Make scripts executable
+        run: |
+          chmod +x ./mason
+          chmod +x ./test/*.sh
+
       - name: Run test suite
         run: |
           set -x
+          # Ensure we're in the right directory
+          cd $GITHUB_WORKSPACE
+          pwd
+          ls -la mason
+          # Run tests
           ./test/all.sh
         env:
           MASON_BUCKET: mason-binaries

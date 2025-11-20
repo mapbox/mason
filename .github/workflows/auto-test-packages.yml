@@ -170,9 +170,18 @@ jobs:
       - name: Build package
         run: |
           chmod +x ./mason
+          # Set custom compiler for LLVM packages (they require a bootstrap compiler)
+          if [[ "${{ matrix.package.name }}" == "llvm" ]]; then
+            export CUSTOM_CC=/usr/bin/clang
+            export CUSTOM_CXX=/usr/bin/clang++
+            echo "Using system compiler for LLVM: CC=$CUSTOM_CC CXX=$CUSTOM_CXX"
+          fi
           ./mason build ${{ matrix.package.name }} ${{ matrix.package.version }}
         continue-on-error: true
         id: build
+        env:
+          CUSTOM_CC: ${{ matrix.package.name == 'llvm' && '/usr/bin/clang' || '' }}
+          CUSTOM_CXX: ${{ matrix.package.name == 'llvm' && '/usr/bin/clang++' || '' }}
 
       - name: Check build result
         if: always()
@@ -226,8 +235,17 @@ jobs:
       - name: Build package
         run: |
           chmod +x ./mason
+          # Set custom compiler for LLVM packages (they require a bootstrap compiler)
+          if [[ "${{ matrix.package.name }}" == "llvm" ]]; then
+            export CUSTOM_CC=/usr/bin/clang
+            export CUSTOM_CXX=/usr/bin/clang++
+            echo "Using system compiler for LLVM: CC=$CUSTOM_CC CXX=$CUSTOM_CXX"
+          fi
           ./mason build ${{ matrix.package.name }} ${{ matrix.package.version }}
         continue-on-error: true
+        env:
+          CUSTOM_CC: ${{ matrix.package.name == 'llvm' && '/usr/bin/clang' || '' }}
+          CUSTOM_CXX: ${{ matrix.package.name == 'llvm' && '/usr/bin/clang++' || '' }}
 
       - name: Check build result
         if: always()

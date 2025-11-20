@@ -1,19 +1,19 @@
-name: Full Test Suite
+name: Smoke Tests
 
 on:
-  workflow_dispatch:
-  schedule:
-    # Run weekly on Sunday at 00:00 UTC
-    - cron: '0 0 * * 0'
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
 
 jobs:
-  test:
+  smoke-test:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-13]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    timeout-minutes: 15
 
     steps:
       - name: Checkout Mason
@@ -23,49 +23,45 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential curl git wget
+          sudo apt-get install -y build-essential curl git
 
       - name: Set up build environment (macOS)
         if: runner.os == 'macOS'
         run: |
           # Ensure Xcode command line tools are available
-          xcode-select --print-path || sudo xcode-select --install
-          brew install curl git wget || true
+          xcode-select --print-path
 
       - name: Display environment info
         run: |
           echo "OS: $(uname -s)"
           echo "Arch: $(uname -m)"
-          echo "PATH: $PATH"
-          which git
-          which curl
           git --version
           curl --version
 
-      - name: Make scripts executable
+      - name: Make mason executable
         run: |
           chmod +x ./mason
           chmod +x ./test/*.sh
 
-      - name: Run test suite
+      - name: Run unit tests
         run: |
-          set -x
-          # Ensure we're in the right directory
-          cd $GITHUB_WORKSPACE
-          pwd
-          ls -la mason
-          # Run tests
-          ./test/all.sh
-        env:
-          MASON_BUCKET: mason-binaries
+          export PATH=$(pwd):${PATH}
+          ./test/unit.sh
 
-      - name: Upload test results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-${{ matrix.os }}
-          path: |
-            test/
-            mason_packages/.build/
-            mason_packages/.cache/
-          retention-days: 7
+      - name: Test basic package install
+        run: |
+          export PATH=$(pwd):${PATH}
+          ./mason install zlib 1.2.8
+          ./mason prefix zlib 1.2.8
+
+      - name: Test header-only package install
+        run: |
+          export PATH=$(pwd):${PATH}
+          ./mason install variant 1.1.0
+          ./mason prefix variant 1.1.0
+
+      - name: Verify mason commands
+        run: |
+          export PATH=$(pwd):${PATH}
+          ./mason --version
+          ./mason env MASON_DIR

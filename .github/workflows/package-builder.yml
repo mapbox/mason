@@ -47,6 +47,7 @@ jobs:
 
       - name: Build package
         run: |
+          # Use build (not install) to force rebuild for official publishing
           ./mason build ${MASON_NAME} ${MASON_VERSION}
 
       - name: Publish package to S3
@@ -86,6 +87,7 @@ jobs:
 
       - name: Build package
         run: |
+          # Use build (not install) to force rebuild for official publishing
           ./mason build ${MASON_NAME} ${MASON_VERSION}
 
       - name: Publish package to S3

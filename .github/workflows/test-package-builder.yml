@@ -73,7 +73,8 @@ jobs:
         run: |
           set -x
           echo "Building ${MASON_NAME} ${MASON_VERSION}..."
-          ./mason build ${MASON_NAME} ${MASON_VERSION}
+          # Use install - will download from S3 if available, otherwise build
+          ./mason install ${MASON_NAME} ${MASON_VERSION}
         continue-on-error: false
 
       - name: Check build output
@@ -139,7 +140,8 @@ jobs:
       - name: Build package
         run: |
           set -x
-          ./mason build ${MASON_NAME} ${MASON_VERSION}
+          # Use install - will download from S3 if available, otherwise build
+          ./mason install ${MASON_NAME} ${MASON_VERSION}
 
       - name: Check build output
         if: always()

@@ -81,6 +81,9 @@ jobs:
           echo "$CHANGED_DIRS"
 
           # Convert to JSON array of {name, version} objects
+          # Skip derived LLVM packages (they're built with the main llvm package)
+          DERIVED_LLVM_PACKAGES="clang\+\+|clang-format|clang-tidy|llvm-cov"
+
           PACKAGES="["
           FIRST=true
           COUNT=0
@@ -88,6 +91,12 @@ jobs:
             if [ -d "$dir" ] && [ -f "$dir/script.sh" ]; then
               PACKAGE_NAME=$(echo "$dir" | cut -d'/' -f2)
               PACKAGE_VERSION=$(echo "$dir" | cut -d'/' -f3)
+
+              # Skip derived LLVM packages - they're built together with llvm
+              if echo "$PACKAGE_NAME" | grep -E "^($DERIVED_LLVM_PACKAGES)$" > /dev/null; then
+                echo "Skipping $PACKAGE_NAME (derived from llvm, build llvm instead)"
+                continue
+              fi
 
               # Apply filter if provided
               if [ -n "$PACKAGE_FILTER" ]; then
@@ -115,6 +124,12 @@ jobs:
             fi
           done <<< "$CHANGED_DIRS"
           PACKAGES="${PACKAGES}]"
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No testable packages after filtering"
+            exit 0
+          fi
 
           echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
           echo "Total packages to test: $COUNT"

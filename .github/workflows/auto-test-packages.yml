@@ -1,0 +1,278 @@
+name: Auto Test Changed Packages
+
+on:
+  push:
+    branches-ignore:
+      - master
+      - main
+    paths:
+      - 'scripts/**'
+  workflow_dispatch:
+    inputs:
+      package_filter:
+        description: 'Filter packages to test (regex, e.g., "boost|cmake|llvm")'
+        required: false
+        type: string
+        default: ''
+      max_packages:
+        description: 'Maximum number of packages to test'
+        required: false
+        type: string
+        default: '5'
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-22.04
+    outputs:
+      packages: ${{ steps.detect.outputs.packages }}
+      has_changes: ${{ steps.detect.outputs.has_changes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed packages
+        id: detect
+        run: |
+          MAX_PACKAGES="${{ inputs.max_packages || '5' }}"
+          PACKAGE_FILTER="${{ inputs.package_filter || '' }}"
+
+          # Get the base branch for comparison
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BASE="origin/master"
+          else
+            BASE="origin/master"
+          fi
+
+          echo "Comparing against: $BASE"
+          echo "Max packages to test: $MAX_PACKAGES"
+          echo "Package filter: ${PACKAGE_FILTER:-none}"
+
+          # Find changed package script.sh files (added or modified, not deleted)
+          # Only look for script.sh, base.sh, common.sh changes - ignore .travis.yml, .md, etc.
+          CHANGED_FILES=$(git diff --name-only --diff-filter=AM $BASE HEAD | grep '^scripts/' | grep -E '(script\.sh|base\.sh|common\.sh)$')
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No package script changes detected (only deleted files or docs)"
+            exit 0
+          fi
+
+          echo "Changed package scripts:"
+          echo "$CHANGED_FILES"
+
+          # Extract unique package directories from the changed files
+          CHANGED_DIRS=$(echo "$CHANGED_FILES" | cut -d'/' -f1-3 | sort -u)
+
+          if [ -z "$CHANGED_DIRS" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No package changes detected"
+            exit 0
+          fi
+
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+          echo "Package directories to test:"
+          echo "$CHANGED_DIRS"
+
+          # Convert to JSON array of {name, version} objects
+          # Skip derived LLVM packages (they're built with the main llvm package)
+          DERIVED_LLVM_PACKAGES="clang\+\+|clang-format|clang-tidy|llvm-cov"
+
+          PACKAGES="["
+          FIRST=true
+          COUNT=0
+          while IFS= read -r dir; do
+            if [ -d "$dir" ] && [ -f "$dir/script.sh" ]; then
+              PACKAGE_NAME=$(echo "$dir" | cut -d'/' -f2)
+              PACKAGE_VERSION=$(echo "$dir" | cut -d'/' -f3)
+
+              # Skip derived LLVM packages - they're built together with llvm
+              if echo "$PACKAGE_NAME" | grep -E "^($DERIVED_LLVM_PACKAGES)$" > /dev/null; then
+                echo "Skipping $PACKAGE_NAME (derived from llvm, build llvm instead)"
+                continue
+              fi
+
+              # Apply filter if provided
+              if [ -n "$PACKAGE_FILTER" ]; then
+                if ! echo "$PACKAGE_NAME" | grep -E "$PACKAGE_FILTER" > /dev/null; then
+                  echo "Skipping $PACKAGE_NAME (doesn't match filter)"
+                  continue
+                fi
+              fi
+
+              # Check max packages limit
+              if [ "$COUNT" -ge "$MAX_PACKAGES" ]; then
+                echo "Reached max packages limit ($MAX_PACKAGES), stopping"
+                break
+              fi
+
+              if [ "$FIRST" = true ]; then
+                FIRST=false
+              else
+                PACKAGES="${PACKAGES},"
+              fi
+
+              PACKAGES="${PACKAGES}{\"name\":\"${PACKAGE_NAME}\",\"version\":\"${PACKAGE_VERSION}\"}"
+              COUNT=$((COUNT + 1))
+              echo "Will test: $PACKAGE_NAME $PACKAGE_VERSION"
+            fi
+          done <<< "$CHANGED_DIRS"
+          PACKAGES="${PACKAGES}]"
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No testable packages after filtering"
+            exit 0
+          fi
+
+          echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
+          echo "Total packages to test: $COUNT"
+          echo "Packages JSON: $PACKAGES"
+
+  test-linux:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.detect-changes.outputs.packages) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl git wget
+
+      - name: Display build info
+        run: |
+          echo "Building package: ${{ matrix.package.name }} ${{ matrix.package.version }}"
+          echo "Package path: scripts/${{ matrix.package.name }}/${{ matrix.package.version }}"
+
+      - name: Verify package directory exists
+        run: |
+          if [ ! -d "scripts/${{ matrix.package.name }}/${{ matrix.package.version }}" ]; then
+            echo "Error: Package directory does not exist"
+            exit 1
+          fi
+          ls -la "scripts/${{ matrix.package.name }}/${{ matrix.package.version }}/"
+
+      - name: Build package
+        run: |
+          chmod +x ./mason
+          # Set custom compiler for LLVM packages (they require a bootstrap compiler)
+          if [[ "${{ matrix.package.name }}" == "llvm" ]]; then
+            export CUSTOM_CC=/usr/bin/clang
+            export CUSTOM_CXX=/usr/bin/clang++
+            echo "Using system compiler for LLVM: CC=$CUSTOM_CC CXX=$CUSTOM_CXX"
+          fi
+          ./mason build ${{ matrix.package.name }} ${{ matrix.package.version }}
+        continue-on-error: true
+        id: build
+        env:
+          CUSTOM_CC: ${{ matrix.package.name == 'llvm' && '/usr/bin/clang' || '' }}
+          CUSTOM_CXX: ${{ matrix.package.name == 'llvm' && '/usr/bin/clang++' || '' }}
+
+      - name: Check build result
+        if: always()
+        run: |
+          MASON_PREFIX=$(./mason prefix ${{ matrix.package.name }} ${{ matrix.package.version }})
+          echo "Expected installation path: $MASON_PREFIX"
+
+          if [ -d "$MASON_PREFIX" ]; then
+            echo "✅ Package built successfully"
+            echo "Contents:"
+            ls -laR "$MASON_PREFIX" | head -50
+            exit 0
+          else
+            echo "❌ Package build failed - installation directory not found"
+            exit 1
+          fi
+
+      - name: Upload build artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ matrix.package.name }}-${{ matrix.package.version }}-linux
+          path: |
+            mason_packages/.build/
+            mason_packages/.cache/
+          retention-days: 7
+
+  test-macos:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true'
+    runs-on: macos-13
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.detect-changes.outputs.packages) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          brew install curl git wget || true
+          xcode-select --print-path
+
+      - name: Display build info
+        run: |
+          echo "Building package: ${{ matrix.package.name }} ${{ matrix.package.version }}"
+
+      - name: Install/Build package
+        run: |
+          chmod +x ./mason
+          # Use install - downloads from S3 if available, builds from source if not
+          ./mason install ${{ matrix.package.name }} ${{ matrix.package.version }}
+        continue-on-error: true
+        env:
+          # Set custom compiler for LLVM packages (they require a bootstrap compiler)
+          CUSTOM_CC: ${{ matrix.package.name == 'llvm' && '/usr/bin/clang' || '' }}
+          CUSTOM_CXX: ${{ matrix.package.name == 'llvm' && '/usr/bin/clang++' || '' }}
+
+      - name: Check build result
+        if: always()
+        run: |
+          MASON_PREFIX=$(./mason prefix ${{ matrix.package.name }} ${{ matrix.package.version }})
+
+          if [ -d "$MASON_PREFIX" ]; then
+            echo "✅ Package built successfully"
+            ls -la "$MASON_PREFIX" | head -20
+            exit 0
+          else
+            echo "❌ Package build failed"
+            exit 1
+          fi
+
+      - name: Upload build artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ matrix.package.name }}-${{ matrix.package.version }}-macos
+          path: |
+            mason_packages/.build/
+            mason_packages/.cache/
+          retention-days: 7
+
+  summary:
+    needs: [detect-changes, test-linux, test-macos]
+    if: always() && needs.detect-changes.outputs.has_changes == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Build summary
+        run: |
+          echo "## Package Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tested packages from this PR/push" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "See individual job results above for details." >> $GITHUB_STEP_SUMMARY

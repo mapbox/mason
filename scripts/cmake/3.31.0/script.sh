@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MASON_NAME=cmake
-MASON_VERSION=3.21.2
+MASON_VERSION=3.31.0
 MASON_LIB_FILE=bin/cmake
 
 . ${MASON_DIR}/mason.sh
@@ -9,7 +9,7 @@ MASON_LIB_FILE=bin/cmake
 function mason_load_source {
     mason_download \
         https://github.com/Kitware/CMake/releases/download/v${MASON_VERSION}/cmake-${MASON_VERSION}.tar.gz \
-        e41de8fab437ea46c8c8668a2920a5cf53f2915d
+        a0ab67b5ed1cafbde4cb6faa924e114382881fad
 
     mason_extract_tar_gz
 
@@ -17,8 +17,8 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    ${MASON_DIR}/mason install ccache 3.7.2
-    export PATH=$(${MASON_DIR}/mason prefix ccache 3.7.2)/bin:${PATH}
+    ${MASON_DIR}/mason install ccache 4.0
+    export PATH=$(${MASON_DIR}/mason prefix ccache 4.0)/bin:${PATH}
 }
 
 function mason_compile {

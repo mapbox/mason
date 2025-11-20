@@ -1,17 +1,19 @@
-name: Test Suite
+name: Full Test Suite
 
 on:
-  push:
-    branches: [ master, main ]
-  pull_request:
-    branches: [ master, main ]
+  workflow_dispatch:
+  schedule:
+    # Run weekly on Sunday at 00:00 UTC
+    - cron: '0 0 * * 0'
 
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-13]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
 
     steps:
       - name: Checkout Mason
@@ -21,22 +23,39 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential curl git
+          sudo apt-get install -y build-essential curl git wget
 
       - name: Set up build environment (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install curl git
+          # Ensure Xcode command line tools are available
+          xcode-select --print-path || sudo xcode-select --install
+          brew install curl git wget || true
+
+      - name: Display environment info
+        run: |
+          echo "OS: $(uname -s)"
+          echo "Arch: $(uname -m)"
+          echo "PATH: $PATH"
+          which git
+          which curl
+          git --version
+          curl --version
 
       - name: Run test suite
         run: |
-          cd test
-          ./all.sh
+          set -x
+          ./test/all.sh
+        env:
+          MASON_BUCKET: mason-binaries
 
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.os }}
-          path: test/
+          path: |
+            test/
+            mason_packages/.build/
+            mason_packages/.cache/
           retention-days: 7

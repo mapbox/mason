@@ -20,16 +20,46 @@ Builds and publishes Mason packages to S3. This replaces the previous Travis CI-
 - Repository secrets must be configured with `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
 - Package scripts must exist at `scripts/{package_name}/{package_version}/`
 
-### `test.yml`
-Runs the Mason test suite on push and pull requests.
+### `smoke-test.yml`
+Runs quick smoke tests to verify basic Mason functionality.
 
 **Triggers:**
 - Push to `master` or `main` branch
 - Pull requests to `master` or `main` branch
 
+**Tests:**
+- Unit tests (mason commands)
+- Basic package installation (binary packages)
+- Header-only package installation
+
+**Duration:** ~5-10 minutes
+
 **Platforms:**
 - Ubuntu 22.04
 - macOS 13
+
+### `test.yml`
+Runs the comprehensive Mason test suite including building packages from source.
+
+**Triggers:**
+- Manual trigger via `workflow_dispatch`
+- Weekly schedule (Sunday at 00:00 UTC)
+
+**Tests:**
+- All smoke tests
+- Building packages from source (C and C++ packages)
+- Cross-compilation tests
+- Android build tests (Linux only)
+- LLVM installation tests
+- Package linking tests
+
+**Duration:** ~30-60 minutes
+
+**Platforms:**
+- Ubuntu 22.04
+- macOS 13
+
+**Note:** This comprehensive test suite is run on-demand or weekly to avoid consuming excessive CI minutes on every push.
 
 ## Migration from Travis CI
 

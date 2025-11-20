@@ -20,6 +20,34 @@ Builds and publishes Mason packages to S3. This replaces the previous Travis CI-
 - Repository secrets must be configured with `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
 - Package scripts must exist at `scripts/{package_name}/{package_version}/`
 
+**⚠️ Important:** This publishes to S3! For testing builds without publishing, use `test-package-builder.yml` instead.
+
+### `test-package-builder.yml`
+Test version of package-builder that builds packages WITHOUT publishing to S3.
+
+**Usage:**
+1. Go to the Actions tab in GitHub
+2. Select "Test Package Builder (Dry Run)"
+3. Click "Run workflow"
+4. Enter package name and version (defaults: zlib 1.2.8)
+5. Select platform
+6. Click "Run workflow"
+
+**Features:**
+- ✅ Tests package build process
+- ✅ Verifies package scripts exist
+- ✅ Uploads build artifacts
+- ✅ No AWS credentials needed
+- ✅ No S3 publishing
+
+**When to use:**
+- Testing new package versions before publishing
+- Debugging build issues
+- Verifying checksums are correct
+- Testing workflow changes
+
+See [TESTING_PACKAGE_BUILDER.md](../TESTING_PACKAGE_BUILDER.md) for detailed guide.
+
 ### `smoke-test.yml`
 Runs quick smoke tests to verify basic Mason functionality.
 

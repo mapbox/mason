@@ -7,6 +7,6 @@ export BOOST_VERSION=${MASON_VERSION//./_}
 export BOOST_TOOLSET=$(CC=${CC#ccache }; basename -- ${CC%% *})
 export BOOST_TOOLSET_CXX=$(CXX=${CXX#ccache }; basename -- ${CXX%% *})
 export BOOST_ARCH="x86"
-export BOOST_SHASUM=UPDATEME
+export BOOST_SHASUM=435d6aea945c7fe7fce0c31247c720ccd1c2b11f
 # special override to ensure each library shares the cached download
 export MASON_DOWNLOAD_SLUG="boost-${MASON_VERSION}"

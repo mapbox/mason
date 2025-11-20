@@ -1,0 +1,160 @@
+name: Test Package Builder (Dry Run)
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: 'Package name (e.g., zlib, variant)'
+        required: true
+        type: string
+        default: 'zlib'
+      package_version:
+        description: 'Package version'
+        required: true
+        type: string
+        default: '1.2.8'
+      platform:
+        description: 'Platform to build for'
+        required: false
+        type: choice
+        options:
+          - all
+          - linux
+          - macos
+        default: linux
+
+env:
+  MASON_NAME: ${{ inputs.package_name }}
+  MASON_VERSION: ${{ inputs.package_version }}
+
+jobs:
+  test-build-linux:
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'linux' }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Mason
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl git wget
+
+      - name: Verify package exists
+        run: |
+          if [ ! -d "scripts/${MASON_NAME}/${MASON_VERSION}" ]; then
+            echo "Error: Package scripts/${MASON_NAME}/${MASON_VERSION} does not exist"
+            echo "Available packages:"
+            ls -la scripts/ | head -20
+            exit 1
+          fi
+          echo "✓ Package directory found: scripts/${MASON_NAME}/${MASON_VERSION}"
+          echo "Contents:"
+          ls -la "scripts/${MASON_NAME}/${MASON_VERSION}/"
+
+      - name: Check script.sh exists
+        run: |
+          if [ ! -f "scripts/${MASON_NAME}/${MASON_VERSION}/script.sh" ]; then
+            echo "Error: script.sh not found"
+            exit 1
+          fi
+          echo "✓ script.sh found"
+          echo "First 20 lines:"
+          head -20 "scripts/${MASON_NAME}/${MASON_VERSION}/script.sh"
+
+      - name: Test mason prefix (without building)
+        run: |
+          ./mason prefix ${MASON_NAME} ${MASON_VERSION} || true
+          echo "Expected prefix path: $(./mason prefix ${MASON_NAME} ${MASON_VERSION} || echo 'N/A')"
+
+      - name: Build package (DRY RUN - will fail at publish)
+        run: |
+          set -x
+          echo "Building ${MASON_NAME} ${MASON_VERSION}..."
+          ./mason build ${MASON_NAME} ${MASON_VERSION}
+        continue-on-error: false
+
+      - name: Check build output
+        if: always()
+        run: |
+          echo "=== Build directory contents ==="
+          ls -la mason_packages/.build/ 2>/dev/null || echo "No .build directory"
+
+          echo ""
+          echo "=== Prefix directory contents ==="
+          MASON_PREFIX=$(./mason prefix ${MASON_NAME} ${MASON_VERSION})
+          if [ -d "$MASON_PREFIX" ]; then
+            echo "Package installed at: $MASON_PREFIX"
+            ls -laR "$MASON_PREFIX" | head -50
+          else
+            echo "Package not installed at expected location: $MASON_PREFIX"
+          fi
+
+      - name: Test publish (DRY RUN - will skip actual upload)
+        run: |
+          echo "=== Testing publish command (without AWS credentials) ==="
+          echo "Would publish: ${MASON_NAME} ${MASON_VERSION}"
+          echo "Binary would be uploaded to S3"
+          echo ""
+          echo "To actually publish, run the 'Build and Publish Package' workflow with AWS credentials configured"
+        continue-on-error: true
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-build-linux-${{ inputs.package_name }}-${{ inputs.package_version }}
+          path: |
+            mason_packages/.build/
+            mason_packages/.cache/
+            mason_packages/*/
+          retention-days: 7
+
+  test-build-macos:
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'macos' }}
+    runs-on: macos-13
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Mason
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          brew install curl git wget || true
+          xcode-select --print-path
+
+      - name: Verify package exists
+        run: |
+          if [ ! -d "scripts/${MASON_NAME}/${MASON_VERSION}" ]; then
+            echo "Error: Package scripts/${MASON_NAME}/${MASON_VERSION} does not exist"
+            echo "Available packages:"
+            ls -la scripts/ | head -20
+            exit 1
+          fi
+          echo "✓ Package directory found: scripts/${MASON_NAME}/${MASON_VERSION}"
+
+      - name: Build package
+        run: |
+          set -x
+          ./mason build ${MASON_NAME} ${MASON_VERSION}
+
+      - name: Check build output
+        if: always()
+        run: |
+          MASON_PREFIX=$(./mason prefix ${MASON_NAME} ${MASON_VERSION})
+          echo "Package installed at: $MASON_PREFIX"
+          ls -laR "$MASON_PREFIX" 2>/dev/null | head -50 || echo "Not installed"
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-build-macos-${{ inputs.package_name }}-${{ inputs.package_version }}
+          path: |
+            mason_packages/.build/
+            mason_packages/.cache/
+            mason_packages/*/
+          retention-days: 7

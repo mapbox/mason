@@ -18,7 +18,7 @@ source ${HERE}/common.sh
 # override default unpacking to just unpack headers
 function mason_load_source {
     mason_download \
-        https://boostorg.jfrog.io/artifactory/main/release/${MASON_VERSION}/source/boost_${BOOST_VERSION}.tar.bz2 \
+        https://archives.boost.io/release/${MASON_VERSION}/source/boost_${BOOST_VERSION}.tar.bz2 \
         ${BOOST_SHASUM}
 
     mason_extract_tar_bz2 boost_${BOOST_VERSION}/boost

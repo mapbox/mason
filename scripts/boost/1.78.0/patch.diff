@@ -1,0 +1,371 @@
+diff --git a/boost/property_tree/detail/ptree_implementation.hpp b/boost/property_tree/detail/ptree_implementation.hpp
+index dd9fd37..71ce6b5 100644
+--- a/boost/property_tree/detail/ptree_implementation.hpp
++++ b/boost/property_tree/detail/ptree_implementation.hpp
+@@ -15,6 +15,7 @@
+ #include <boost/iterator/reverse_iterator.hpp>
+ #include <boost/assert.hpp>
+ #include <boost/utility/swap.hpp>
++#include <boost/type_index.hpp>
+ #include <memory>
+ 
+ #if (defined(BOOST_MSVC) && \
+@@ -669,7 +670,8 @@ namespace boost { namespace property_tree
+         }
+         BOOST_PROPERTY_TREE_THROW(ptree_bad_data(
+             std::string("conversion of data to type \"") +
+-            typeid(Type).name() + "\" failed", data()));
++            boost::typeindex::type_id<Type>().pretty_name() + 
++            "\" failed", data()));
+     }
+ 
+     template<class K, class D, class C>
+@@ -824,7 +826,8 @@ namespace boost { namespace property_tree
+             data() = *o;
+         } else {
+             BOOST_PROPERTY_TREE_THROW(ptree_bad_data(
+-                std::string("conversion of type \"") + typeid(Type).name() +
++                std::string("conversion of type \"") + 
++                boost::typeindex::type_id<Type>().pretty_name() +
+                 "\" to data failed", boost::any()));
+         }
+     }
+diff --git a/boost/property_tree/detail/info_parser_read.hpp b/boost/property_tree/detail/info_parser_read.hpp
+index 87ef2cd..c3446b4 100644
+--- a/boost/property_tree/detail/info_parser_read.hpp
++++ b/boost/property_tree/detail/info_parser_read.hpp
+@@ -13,6 +13,8 @@
+ #include "boost/property_tree/ptree.hpp"
+ #include "boost/property_tree/detail/info_parser_error.hpp"
+ #include "boost/property_tree/detail/info_parser_utils.hpp"
++#include "boost/core/ignore_unused.hpp"
++#include "boost/core/no_exceptions_support.hpp"
+ #include <iterator>
+ #include <string>
+ #include <stack>
+@@ -210,7 +212,13 @@ namespace boost { namespace property_tree { namespace info_parser
+         std::stack<Ptree *> stack;
+         stack.push(&pt);                // Push root ptree on stack initially
+ 
+-        try {
++        // When compiling without exception support there is no formal
++        // parameter "e" in the catch handler.  Declaring a local variable
++        // here does not hurt and will be "used" to make the code in the
++        // handler  compilable although the code will never be executed.
++        info_parser_error e("", "", 0); ignore_unused(e);
++
++        BOOST_TRY {
+             // While there are characters in the stream
+             while (stream.good()) {
+                 // Read one line from stream
+@@ -372,7 +380,7 @@ namespace boost { namespace property_tree { namespace info_parser
+                 BOOST_PROPERTY_TREE_THROW(info_parser_error("unmatched {", "", 0));
+ 
+         }
+-        catch (info_parser_error &e)
++        BOOST_CATCH (info_parser_error &e)
+         {
+             // If line undefined rethrow error with correct filename and line
+             if (e.line() == 0)
+@@ -383,6 +391,7 @@ namespace boost { namespace property_tree { namespace info_parser
+                 BOOST_PROPERTY_TREE_THROW(e);
+ 
+         }
++        BOOST_CATCH_END
+ 
+     }
+ 
+diff --git a/boost/property_tree/detail/rapidxml.hpp b/boost/property_tree/detail/rapidxml.hpp
+index 9e3d76a..e890feb 100644
+--- a/boost/property_tree/detail/rapidxml.hpp
++++ b/boost/property_tree/detail/rapidxml.hpp
+@@ -28,7 +28,7 @@
+     
+ #include <exception>    // For std::exception
+ 
+-#define BOOST_PROPERTY_TREE_RAPIDXML_PARSE_ERROR(what, where) throw parse_error(what, where)
++#define BOOST_PROPERTY_TREE_RAPIDXML_PARSE_ERROR(what, where) boost::throw_exception(parse_error(what, where))
+ 
+ namespace boost { namespace property_tree { namespace detail {namespace rapidxml
+ {
+diff --git a/boost/property_tree/detail/xml_parser_read_rapidxml.hpp b/boost/property_tree/detail/xml_parser_read_rapidxml.hpp
+index 9c04219..a6b005a 100644
+--- a/boost/property_tree/detail/xml_parser_read_rapidxml.hpp
++++ b/boost/property_tree/detail/xml_parser_read_rapidxml.hpp
+@@ -15,6 +15,8 @@
+ #include <boost/property_tree/detail/xml_parser_flags.hpp>
+ #include <boost/property_tree/detail/xml_parser_utils.hpp>
+ #include <boost/property_tree/detail/rapidxml.hpp>
++#include <boost/core/ignore_unused.hpp>
++#include <boost/core/no_exceptions_support.hpp>
+ #include <vector>
+ 
+ namespace boost { namespace property_tree { namespace xml_parser
+@@ -101,7 +103,13 @@ namespace boost { namespace property_tree { namespace xml_parser
+                 xml_parser_error("read error", filename, 0));
+         v.push_back(0); // zero-terminate
+ 
+-        try {
++        // When compiling without exception support there is no formal
++        // parameter "e" in the catch handler.  Declaring a local variable
++        // here does not hurt and will be "used" to make the code in the
++        // handler compilable although the code will never be executed.
++        parse_error e(NULL, NULL); ignore_unused(e);
++        
++        BOOST_TRY {
+             // Parse using appropriate flags
+             const int f_tws = parse_normalize_whitespace
+                             | parse_trim_whitespace;
+@@ -131,12 +139,13 @@ namespace boost { namespace property_tree { namespace xml_parser
+ 
+             // Swap local and result ptrees
+             pt.swap(local);
+-        } catch (parse_error &e) {
++        } BOOST_CATCH (parse_error &e) {
+             long line = static_cast<long>(
+                 std::count(&v.front(), e.where<Ch>(), Ch('\n')) + 1);
+             BOOST_PROPERTY_TREE_THROW(
+                 xml_parser_error(e.what(), filename, line));  
+         }
++        BOOST_CATCH_END
+     }
+ 
+ } } }
+diff --git a/boost/property_tree/info_parser.hpp b/boost/property_tree/info_parser.hpp
+index 683ddad..abdc8a3 100644
+--- a/boost/property_tree/info_parser.hpp
++++ b/boost/property_tree/info_parser.hpp
+@@ -15,6 +15,7 @@
+ #include <boost/property_tree/detail/info_parser_writer_settings.hpp>
+ #include <boost/property_tree/detail/info_parser_read.hpp>
+ #include <boost/property_tree/detail/info_parser_write.hpp>
++#include <boost/core/no_exceptions_support.hpp>
+ #include <istream>
+ 
+ namespace boost { namespace property_tree { namespace info_parser
+@@ -43,11 +44,12 @@ namespace boost { namespace property_tree { namespace info_parser
+     void read_info(std::basic_istream<Ch> &stream, Ptree &pt,
+                    const Ptree &default_ptree)
+     {
+-        try {
++        BOOST_TRY {
+             read_info(stream, pt);
+-        } catch(file_parser_error &) {
++        } BOOST_CATCH(file_parser_error &) {
+             pt = default_ptree;
+         }
++        BOOST_CATCH_END
+     }
+ 
+     /**
+@@ -87,11 +89,12 @@ namespace boost { namespace property_tree { namespace info_parser
+                    const Ptree &default_ptree,
+                    const std::locale &loc = std::locale())
+     {
+-        try {
++        BOOST_TRY {
+             read_info(filename, pt, loc);
+-        } catch(file_parser_error &) {
++        } BOOST_CATCH(file_parser_error &) {
+             pt = default_ptree;
+         }
++        BOOST_CATCH_END
+     }
+ 
+     /**
+diff --git a/boost/property_tree/ini_parser.hpp b/boost/property_tree/ini_parser.hpp
+index 50d3c97..5142dbf 100644
+--- a/boost/property_tree/ini_parser.hpp
++++ b/boost/property_tree/ini_parser.hpp
+@@ -14,6 +14,8 @@
+ #include <boost/property_tree/ptree.hpp>
+ #include <boost/property_tree/detail/ptree_utils.hpp>
+ #include <boost/property_tree/detail/file_parser_error.hpp>
++#include <boost/core/ignore_unused.hpp>
++#include <boost/core/no_exceptions_support.hpp>
+ #include <fstream>
+ #include <string>
+ #include <sstream>
+@@ -165,13 +167,21 @@ namespace boost { namespace property_tree { namespace ini_parser
+             BOOST_PROPERTY_TREE_THROW(ini_parser_error(
+                 "cannot open file", filename, 0));
+         stream.imbue(loc);
+-        try {
++
++        // When compiling without exception support there is no formal
++        // parameter "e" in the catch handler.  Declaring a local variable
++        // here does not hurt and will be "used" to make the code in the
++        // handler compilable although the code will never be executed.
++        ini_parser_error e("", "", 0); ignore_unused(e);
++
++        BOOST_TRY {
+             read_ini(stream, pt);
+         }
+-        catch (ini_parser_error &e) {
++        BOOST_CATCH (ini_parser_error &e) {
+             BOOST_PROPERTY_TREE_THROW(ini_parser_error(
+                 e.message(), filename, e.line()));
+         }
++        BOOST_CATCH_END
+     }
+ 
+     namespace detail
+@@ -313,13 +323,21 @@ namespace boost { namespace property_tree { namespace ini_parser
+             BOOST_PROPERTY_TREE_THROW(ini_parser_error(
+                 "cannot open file", filename, 0));
+         stream.imbue(loc);
+-        try {
++
++        // When compiling without exception support there is no formal
++        // parameter "e" in the catch handler.  Declaring a local variable
++        // here does not hurt and will be "used" to make the code in the
++        // handler  compilable although the code will never be executed.
++        ini_parser_error e("", "", 0); ignore_unused(e);
++
++        BOOST_TRY {
+             write_ini(stream, pt, flags);
+         }
+-        catch (ini_parser_error &e) {
++        BOOST_CATCH (ini_parser_error &e) {
+             BOOST_PROPERTY_TREE_THROW(ini_parser_error(
+                 e.message(), filename, e.line()));
+         }
++        BOOST_CATCH_END
+     }
+ 
+ } } }
+
+diff --git a/boost/property_tree/detail/info_parser_read.hpp b/boost/property_tree/detail/info_parser_read.hpp
+index c3446b4..b46643a 100644
+--- a/boost/property_tree/detail/info_parser_read.hpp
++++ b/boost/property_tree/detail/info_parser_read.hpp
+@@ -13,7 +13,6 @@
+ #include "boost/property_tree/ptree.hpp"
+ #include "boost/property_tree/detail/info_parser_error.hpp"
+ #include "boost/property_tree/detail/info_parser_utils.hpp"
+-#include "boost/core/ignore_unused.hpp"
+ #include "boost/core/no_exceptions_support.hpp"
+ #include <iterator>
+ #include <string>
+@@ -212,12 +211,6 @@ namespace boost { namespace property_tree { namespace info_parser
+         std::stack<Ptree *> stack;
+         stack.push(&pt);                // Push root ptree on stack initially
+ 
+-        // When compiling without exception support there is no formal
+-        // parameter "e" in the catch handler.  Declaring a local variable
+-        // here does not hurt and will be "used" to make the code in the
+-        // handler  compilable although the code will never be executed.
+-        info_parser_error e("", "", 0); ignore_unused(e);
+-
+         BOOST_TRY {
+             // While there are characters in the stream
+             while (stream.good()) {
+@@ -382,6 +375,7 @@ namespace boost { namespace property_tree { namespace info_parser
+         }
+         BOOST_CATCH (info_parser_error &e)
+         {
++    #ifndef BOOST_NO_EXCEPTIONS
+             // If line undefined rethrow error with correct filename and line
+             if (e.line() == 0)
+             {
+@@ -389,7 +383,7 @@ namespace boost { namespace property_tree { namespace info_parser
+             }
+             else
+                 BOOST_PROPERTY_TREE_THROW(e);
+-
++    #endif
+         }
+         BOOST_CATCH_END
+ 
+diff --git a/boost/property_tree/detail/xml_parser_read_rapidxml.hpp b/boost/property_tree/detail/xml_parser_read_rapidxml.hpp
+index a6b005a..b6f5820 100644
+--- a/boost/property_tree/detail/xml_parser_read_rapidxml.hpp
++++ b/boost/property_tree/detail/xml_parser_read_rapidxml.hpp
+@@ -15,7 +15,6 @@
+ #include <boost/property_tree/detail/xml_parser_flags.hpp>
+ #include <boost/property_tree/detail/xml_parser_utils.hpp>
+ #include <boost/property_tree/detail/rapidxml.hpp>
+-#include <boost/core/ignore_unused.hpp>
+ #include <boost/core/no_exceptions_support.hpp>
+ #include <vector>
+ 
+@@ -103,12 +102,6 @@ namespace boost { namespace property_tree { namespace xml_parser
+                 xml_parser_error("read error", filename, 0));
+         v.push_back(0); // zero-terminate
+ 
+-        // When compiling without exception support there is no formal
+-        // parameter "e" in the catch handler.  Declaring a local variable
+-        // here does not hurt and will be "used" to make the code in the
+-        // handler compilable although the code will never be executed.
+-        parse_error e(NULL, NULL); ignore_unused(e);
+-        
+         BOOST_TRY {
+             // Parse using appropriate flags
+             const int f_tws = parse_normalize_whitespace
+@@ -140,10 +133,12 @@ namespace boost { namespace property_tree { namespace xml_parser
+             // Swap local and result ptrees
+             pt.swap(local);
+         } BOOST_CATCH (parse_error &e) {
++    #ifndef BOOST_NO_EXCEPTIONS
+             long line = static_cast<long>(
+                 std::count(&v.front(), e.where<Ch>(), Ch('\n')) + 1);
+             BOOST_PROPERTY_TREE_THROW(
+                 xml_parser_error(e.what(), filename, line));  
++    #endif
+         }
+         BOOST_CATCH_END
+     }
+diff --git a/boost/property_tree/ini_parser.hpp b/boost/property_tree/ini_parser.hpp
+index 5142dbf..cb63fcc 100644
+--- a/boost/property_tree/ini_parser.hpp
++++ b/boost/property_tree/ini_parser.hpp
+@@ -14,7 +14,6 @@
+ #include <boost/property_tree/ptree.hpp>
+ #include <boost/property_tree/detail/ptree_utils.hpp>
+ #include <boost/property_tree/detail/file_parser_error.hpp>
+-#include <boost/core/ignore_unused.hpp>
+ #include <boost/core/no_exceptions_support.hpp>
+ #include <fstream>
+ #include <string>
+@@ -168,18 +167,14 @@ namespace boost { namespace property_tree { namespace ini_parser
+                 "cannot open file", filename, 0));
+         stream.imbue(loc);
+ 
+-        // When compiling without exception support there is no formal
+-        // parameter "e" in the catch handler.  Declaring a local variable
+-        // here does not hurt and will be "used" to make the code in the
+-        // handler compilable although the code will never be executed.
+-        ini_parser_error e("", "", 0); ignore_unused(e);
+-
+         BOOST_TRY {
+             read_ini(stream, pt);
+         }
+         BOOST_CATCH (ini_parser_error &e) {
++    #ifndef BOOST_NO_EXCEPTIONS
+             BOOST_PROPERTY_TREE_THROW(ini_parser_error(
+                 e.message(), filename, e.line()));
++    #endif
+         }
+         BOOST_CATCH_END
+     }
+@@ -324,18 +319,14 @@ namespace boost { namespace property_tree { namespace ini_parser
+                 "cannot open file", filename, 0));
+         stream.imbue(loc);
+ 
+-        // When compiling without exception support there is no formal
+-        // parameter "e" in the catch handler.  Declaring a local variable
+-        // here does not hurt and will be "used" to make the code in the
+-        // handler  compilable although the code will never be executed.
+-        ini_parser_error e("", "", 0); ignore_unused(e);
+-
+         BOOST_TRY {
+             write_ini(stream, pt, flags);
+         }
+         BOOST_CATCH (ini_parser_error &e) {
++    #ifndef BOOST_NO_EXCEPTIONS
+             BOOST_PROPERTY_TREE_THROW(ini_parser_error(
+                 e.message(), filename, e.line()));
++    #endif
+         }
+         BOOST_CATCH_END
+     }

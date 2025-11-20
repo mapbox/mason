@@ -1,0 +1,106 @@
+name: Build and Publish Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: 'Package name (e.g., llvm, boost, cmake)'
+        required: true
+        type: string
+      package_version:
+        description: 'Package version (e.g., 11.0.0, 1.75.0)'
+        required: true
+        type: string
+      platform:
+        description: 'Platform to build for'
+        required: false
+        type: choice
+        options:
+          - all
+          - linux
+          - macos
+        default: all
+
+env:
+  MASON_NAME: ${{ inputs.package_name }}
+  MASON_VERSION: ${{ inputs.package_version }}
+
+jobs:
+  build-linux:
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'linux' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Mason
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl git
+
+      - name: Verify package exists
+        run: |
+          if [ ! -d "scripts/${MASON_NAME}/${MASON_VERSION}" ]; then
+            echo "Error: Package scripts/${MASON_NAME}/${MASON_VERSION} does not exist"
+            exit 1
+          fi
+
+      - name: Build package
+        run: |
+          ./mason build ${MASON_NAME} ${MASON_VERSION}
+
+      - name: Publish package to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          ./mason publish ${MASON_NAME} ${MASON_VERSION}
+
+      - name: Upload build artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-linux-${{ inputs.package_name }}-${{ inputs.package_version }}
+          path: |
+            mason_packages/.build/
+            mason_packages/.cache/
+          retention-days: 7
+
+  build-macos:
+    if: ${{ inputs.platform == 'all' || inputs.platform == 'macos' }}
+    runs-on: macos-13
+    steps:
+      - name: Checkout Mason
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          brew install curl git
+
+      - name: Verify package exists
+        run: |
+          if [ ! -d "scripts/${MASON_NAME}/${MASON_VERSION}" ]; then
+            echo "Error: Package scripts/${MASON_NAME}/${MASON_VERSION} does not exist"
+            exit 1
+          fi
+
+      - name: Build package
+        run: |
+          ./mason build ${MASON_NAME} ${MASON_VERSION}
+
+      - name: Publish package to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          ./mason publish ${MASON_NAME} ${MASON_VERSION}
+
+      - name: Upload build artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-macos-${{ inputs.package_name }}-${{ inputs.package_version }}
+          path: |
+            mason_packages/.build/
+            mason_packages/.cache/
+          retention-days: 7

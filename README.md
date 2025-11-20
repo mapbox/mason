@@ -1,6 +1,11 @@
 # Mason
 
-❌ **UNMAINTAINED: this project is no longer maintained and no additional development is planned. Nor is any kind of deprecation planned. Rather this code is now frozen. If you are depending on this module in any of your applications, it is recommended you remove the dependency and/or find a replacement solution**
+❌ **UNMAINTAINED: this project is no longer officially maintained by Mapbox. However, this fork has been updated with:**
+- **GitHub Actions** support (migrated from Travis CI)
+- **Updated package versions** for LLVM/Clang (12.x-17.x), CMake (3.22-3.31), and Boost (1.76-1.86)
+- **Modernized CI/CD** infrastructure
+
+See [MIGRATION.md](MIGRATION.md) for details on changes.
 
 Mason is a cross-platform, command-line package manager for C/C++ applications.
 
@@ -14,13 +19,11 @@ Mason is unlike:
 
  * all of the above...
 
-    Mason is a collection of bash scripts and does not depend on any specific runtime language, such as python, node.js, or ruby. It can build and publish a single set of binaries (>= OS X 10.8 and >= Ubuntu Precise), publish header-only files, and install packages. Mason has integrations with [Travis CI](https://travis-ci.com) and [Amazon S3](https://aws.amazon.com/s3) for automated build and deployment.
+    Mason is a collection of bash scripts and does not depend on any specific runtime language, such as python, node.js, or ruby. It can build and publish a single set of binaries (>= macOS 10.15 and >= Ubuntu 22.04), publish header-only files, and install packages. Mason has integrations with [GitHub Actions](https://github.com/features/actions) and [Amazon S3](https://aws.amazon.com/s3) for automated build and deployment.
 
     Mason strongly prefers static libraries over shared libraries and has zero understanding of dependency trees: it leaves complete control to the developer for how packages relate.
 
-Mason works on both **OS X** and **Linux**.
-
-[![Build Status](https://travis-ci.com/mapbox/mason.svg?branch=master)](https://travis-ci.com/mapbox/mason)
+Mason works on both **macOS** and **Linux**.
 
 # Table of Contents
 
@@ -224,40 +227,44 @@ Prints the linker flags that are required to link against this library.
 
 This command only works if the package has already been installed. When run it symlinks the versioned `lib`, `include`, `share`, and `bin` folders of the package into a shared structure that is unversioned. For example if `mason prefix libuv 0.11.29` was `./mason_packages/osx-10.10/libuv/0.11.29` then the library would become available at `./mason_packages/.link/lib/libuv.a`
 
-#### trigger
+#### trigger (GitHub Actions)
 
-In order to ensure that all pre-built binaries are consistent and reproducible, we perform the final build and publish operation on Travis CI.
+In order to ensure that all pre-built binaries are consistent and reproducible, we perform the final build and publish operation on GitHub Actions.
 
-First set the `MASON_TRAVIS_TOKEN` environment variable. You can do this either by installing the `travis` gem and running `travis token` or by using `curl` to hit the Travis api directly. See details on this below. **WARNING: be careful to keep this token safe. Cycling it requires emailing support@travis-ci.com. Giving someone an access token is like giving them full access to your Travis account.**
+**Method 1: GitHub Actions UI (Recommended)**
 
-Once you are set up with your `MASON_TRAVIS_TOKEN` then use the `trigger` command to kick off a build:
+1. Go to the Actions tab in your Mason repository
+2. Select "Build and Publish Package"
+3. Click "Run workflow"
+4. Fill in the package name, version, and platform
+5. Click "Run workflow"
+
+**Method 2: GitHub CLI**
 
 ```bash
-./mason trigger <package name> <package version>
+gh workflow run package-builder.yml \
+  -f package_name=<package-name> \
+  -f package_version=<package-version> \
+  -f platform=all
 ```
 
-Run this command from the root of a local mason repository checkout. It makes a request to the Travis API to build and publish the specified version of the package, using the Travis configuration in `./scripts/${MASON_NAME}/${MASON_VERSION}/.travis.yml`.
+**Method 3: GitHub API**
 
-1) Using curl and travis api to generate MASON_TRAVIS_TOKEN
-
-First generate a github personal access token that has `repo` scope by going to https://github.com/settings/tokens. More details at https://help.github.com/articles/creating-an-access-token-for-command-line-use/.
-
-Then set that in your environment and run:
-
-```sh
-GITHUB_TOKEN=<github token>
-
-curl -s -i https://api.travis-ci.com/auth/github \
-    -H "User-Agent: Travis/1.0" \
-    -H "Content-Type: application/json" \
-    -H "Accept: application/vnd.travis-ci.2+json" \
-    -H "Host: api.travis-ci.com" \
-    -d "{\"github_token\": \"${GITHUB_TOKEN}\"}"
+```bash
+curl -X POST \
+  -H "Accept: application/vnd.github.v3+json" \
+  -H "Authorization: token YOUR_GITHUB_TOKEN" \
+  https://api.github.com/repos/YOUR_ORG/mason/actions/workflows/package-builder.yml/dispatches \
+  -d '{"ref":"master","inputs":{"package_name":"<package-name>","package_version":"<package-version>","platform":"all"}}'
 ```
 
-2) Use the travis command
+**Required Setup:**
 
-For details see https://docs.travis-ci.com/user/triggering-builds and https://github.com/travis-ci/travis.rb#readme
+Configure repository secrets in Settings → Secrets and variables → Actions:
+- `AWS_ACCESS_KEY_ID`: Your AWS access key for S3 uploads
+- `AWS_SECRET_ACCESS_KEY`: Your AWS secret key for S3 uploads
+
+For more details, see [MIGRATION.md](MIGRATION.md)
 
 ## Creating a package
 
@@ -296,7 +303,7 @@ These are just basic steps to help get you started. Depending on the complexity 
 
 2. Add scripts for building and publishing your package.
 
-    Each package must have the following two files: `script.sh` and `.travis.yml`. Copy these two files from a previous version of your package.
+    Each package requires a `script.sh` file. Copy this file from a previous version of your package. (Note: `.travis.yml` files are no longer needed with GitHub Actions.)
 
     If no previous version of your package exists, it is recommended to copy a simple package that has mostly boiler plate code:
 

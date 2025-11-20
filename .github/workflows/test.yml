@@ -1,0 +1,42 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-13]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout Mason
+        uses: actions/checkout@v4
+
+      - name: Set up build environment (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl git
+
+      - name: Set up build environment (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install curl git
+
+      - name: Run test suite
+        run: |
+          cd test
+          ./all.sh
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          path: test/
+          retention-days: 7

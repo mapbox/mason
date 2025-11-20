@@ -1,9 +1,6 @@
 name: Auto Test Changed Packages
 
 on:
-  pull_request:
-    paths:
-      - 'scripts/**'
   push:
     branches-ignore:
       - master

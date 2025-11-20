@@ -48,7 +48,7 @@ function mason_load_source {
 
 function mason_prepare_compile {
     CCACHE_VERSION=4.0
-    CMAKE_VERSION=3.21.2
+    CMAKE_VERSION=3.31.0
     NINJA_VERSION=1.10.1
     LIBEDIT_VERSION=3.1
     NCURSES_VERSION=6.1

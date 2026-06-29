@@ -1,0 +1,29 @@
+language: cpp
+
+sudo: false
+
+compiler: clang
+
+addons:
+  apt:
+    update: true
+    sources:  [ 'george-edison55-precise-backports' ]
+    packages: [ 'cmake', 'cmake-data' ]
+
+matrix:
+  exclude:
+    - os: linux
+  include:
+    - os: osx
+      osx_image: xcode9.3
+      env: MASON_PLATFORM=osx
+    - os: linux
+      dist: trusty
+      env: MASON_PLATFORM=linux
+
+script:
+- if [[ ${MASON_PLATFORM} == "linux" ]]; then sudo perl -i -p -e "s/# define _GLIBCXX_USE_DUAL_ABI 0/# define _GLIBCXX_USE_DUAL_ABI 1/g;" /usr/include/x86_64-linux-gnu/c++/5/bits/c++config.h ; fi
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+
+after_success:
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

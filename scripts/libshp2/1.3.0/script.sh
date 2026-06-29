@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libshp.a
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/shapelib/shapelib-${MASON_VERSION}.tar.gz \
+        https://download.osgeo.org/shapelib/shapelib-${MASON_VERSION}.tar.gz \
         4b3cc10fd5ac228d749ab0a19d485b475b7d5fb5
 
     mason_extract_tar_gz

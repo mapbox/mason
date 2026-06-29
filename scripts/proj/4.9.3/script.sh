@@ -9,7 +9,7 @@ GRID_VERSION="1.6"
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/proj/proj-${MASON_VERSION}.tar.gz \
+        https://download.osgeo.org/proj/proj-${MASON_VERSION}.tar.gz \
         e3426c86eb2b834de78bf6535eff60d2ff521120
 
     mason_extract_tar_gz
@@ -18,7 +18,7 @@ function mason_load_source {
 }
 
 function mason_compile {
-    curl --retry 3 -f -# -L http://download.osgeo.org/proj/proj-datumgrid-${GRID_VERSION}.zip -o proj-datumgrid-${GRID_VERSION}.zip
+    curl --retry 3 -f -# -L https://download.osgeo.org/proj/proj-datumgrid-${GRID_VERSION}.zip -o proj-datumgrid-${GRID_VERSION}.zip
     cd nad
     unzip -o ../proj-datumgrid-${GRID_VERSION}.zip
     cd ../

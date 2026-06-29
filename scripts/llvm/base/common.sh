@@ -12,7 +12,7 @@ if [[ $(uname -s) == 'Darwin' ]]; then
     export BUILD_AND_LINK_LIBCXX=true
 
     # not installing libcxx avoids this kind of problem with include-what-you-use
-    export INSTALL_LIBCXX=false
+    export INSTALL_LIBCXX=true
     # because iwyu hardcodes at https://github.com/include-what-you-use/include-what-you-use/blob/da5c9b17fec571e6b2bbca29145463d7eaa3582e/iwyu_driver.cc#L219
     : '
     /Library/Developer/CommandLineTools/usr/include/c++/v1/cstdlib:167:44: error: declaration conflicts with target of using declaration already in scope
@@ -84,19 +84,19 @@ function get_llvm_project() {
 }
 
 function setup_base_tools() {
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/llvm-${MASON_BASE_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/cfe-${MASON_BASE_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/compiler-rt-${MASON_BASE_VERSION}.src.tar.xz"       ${MASON_BUILD_PATH}/projects/compiler-rt
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/llvm-${MASON_BASE_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/clang-${MASON_BASE_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/clang
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/compiler-rt-${MASON_BASE_VERSION}.src.tar.xz"       ${MASON_BUILD_PATH}/projects/compiler-rt
     if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
-        get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/libcxx-${MASON_BASE_VERSION}.src.tar.xz"        ${MASON_BUILD_PATH}/projects/libcxx
-        get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/libcxxabi-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libcxxabi
-        get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/libunwind-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libunwind
+        get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/libcxx-${MASON_BASE_VERSION}.src.tar.xz"        ${MASON_BUILD_PATH}/projects/libcxx
+        get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/libcxxabi-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libcxxabi
+        get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/libunwind-${MASON_BASE_VERSION}.src.tar.xz"     ${MASON_BUILD_PATH}/projects/libunwind
     fi
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/openmp-${MASON_BASE_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/openmp
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/lld-${MASON_BASE_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/clang-tools-extra-${MASON_BASE_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/lldb-${MASON_BASE_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb
-    get_llvm_project "http://llvm.org/releases/${MASON_BASE_VERSION}/polly-${MASON_BASE_VERSION}.src.tar.xz"             ${MASON_BUILD_PATH}/tools/polly
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/openmp-${MASON_BASE_VERSION}.src.tar.xz"            ${MASON_BUILD_PATH}/projects/openmp
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/lld-${MASON_BASE_VERSION}.src.tar.xz"               ${MASON_BUILD_PATH}/tools/lld
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/clang-tools-extra-${MASON_BASE_VERSION}.src.tar.xz" ${MASON_BUILD_PATH}/tools/clang/tools/extra
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/lldb-${MASON_BASE_VERSION}.src.tar.xz"              ${MASON_BUILD_PATH}/tools/lldb
+    get_llvm_project "https://github.com/llvm/llvm-project/releases/download/llvmorg-${MASON_BASE_VERSION}/polly-${MASON_BASE_VERSION}.src.tar.xz"             ${MASON_BUILD_PATH}/tools/polly
     # The include-what-you-use project often lags behind llvm releases, causing compile problems when you try to build it within llvm (and I don't know how feasible it is to build separately)
     # Hence this is disabled by default and must be either enabled here or added to a `setup_release` function per package version
     # pulls from a tagged version:
@@ -126,12 +126,12 @@ function mason_load_source {
 }
 
 function mason_prepare_compile {
-    CCACHE_VERSION=3.3.4
-    CMAKE_VERSION=3.8.2
-    NINJA_VERSION=1.7.2
-    CLANG_VERSION=5.0.0
+    CCACHE_VERSION=4.0
+    CMAKE_VERSION=3.18.1
+    NINJA_VERSION=1.10.1
+    CLANG_VERSION=9.0.1
     LIBEDIT_VERSION=3.1
-    BINUTILS_VERSION=2.30
+    BINUTILS_VERSION=2.35
     NCURSES_VERSION=6.1
 
     ${MASON_DIR}/mason install clang++ ${CLANG_VERSION}
@@ -156,22 +156,6 @@ function mason_prepare_compile {
 }
 
 function mason_compile {
-    if [[ $(uname -s) == 'Darwin' ]]; then
-        # ensure codesigning is working before starting
-        # this logic borrowed from homebrew llvm.rb formula
-        TMPDIR=$(mktemp -d)
-        (cd $TMPDIR && \
-            cp /usr/bin/false  llvm_check && \
-            RESULT=0 &&
-            /usr/bin/codesign -f -s lldb_codesign --dryrun llvm_check || RESULT=$? &&
-            if [[ ${RESULT} != 0 ]]; then
-              echo "lldb_codesign identity must be available to build with LLDB."
-              echo "See: https://llvm.org/svn/llvm-project/lldb/trunk/docs/code-signing.txt"
-              exit 1
-            fi
-        )
-    fi
-
     export CXX="${CUSTOM_CXX:-${MASON_CLANG}/bin/clang++}"
     export CC="${CUSTOM_CC:-${MASON_CLANG}/bin/clang}"
     echo "using CXX=${CXX}"
@@ -187,12 +171,9 @@ function mason_compile {
 
     CMAKE_EXTRA_ARGS=""
 
-    if [[ ${MAJOR_MINOR} == "3.8" ]]; then
-        # workaround https://llvm.org/bugs/show_bug.cgi?id=25565
-        perl -i -p -e "s/set\(codegen_deps intrinsics_gen\)/set\(codegen_deps intrinsics_gen attributes_inc\)/g;" lib/CodeGen/CMakeLists.txt
-
-        # note: LIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON is only needed with llvm < 3.9.0 to avoid libcxx(abi) build breaking when only a static libc++ exists
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON"
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        # Disable building the debugserver on OSX and use the system one with llvm > 8
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLDB_USE_SYSTEM_DEBUGSERVER=ON"
     fi
 
     if [[ -d tools/clang/tools/include-what-you-use ]]; then
@@ -201,6 +182,7 @@ function mason_compile {
 
     if [[ $(uname -s) == 'Darwin' ]]; then
         : '
+        https://andreasfertig.blog/2021/02/clang-and-gcc-on-macos-catalina-finding-the-include-paths/
         Note: C_INCLUDE_DIRS and DEFAULT_SYSROOT are critical options to understand to ensure C and C++ headers are predictably found.
 
         The way things work in clang++ on OS X (inside http://clang.llvm.org/doxygen/InitHeaderSearch_8cpp.html) is:
@@ -208,36 +190,35 @@ function mason_compile {
            - The `:` separated `C_INCLUDE_DIRS` are added to the include paths
            - If `C_INCLUDE_DIRS` is present `InitHeaderSearch::AddDefaultCIncludePaths` returns early
              - Without that early return `/usr/include` would be added by default on OS X
-           - If `-isysroot` is passed then absolute `C_INCLUDE_DIRS` are appended to the sysroot
-             - So if sysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/ and
-               C_INCLUDE_DIRS=/usr/include the actual path searched would be:
-               /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
-           - Relative `C_INCLUDE_DIRS` seem pointless because they are not appended to the sysroot and so will not be portable
+           - Relative `C_INCLUDE_DIRS` are appended to the sysroot:
+             - For example this input:
+                 DEFAULT_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+                 C_INCLUDE_DIRS=usr/include
+             - Would give this output:
+                 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
+           - Absolute `C_INCLUDE_DIRS` are added to the header search paths without prepending the sysroot and therefore are not as portable.
            - clang++ finds C++ headers relative to itself at https://github.com/llvm-mirror/clang/blob/master/lib/Frontend/InitHeaderSearch.cpp#L469-L470
-           - So, given on OS X we want to use the XCode/Apple provided libc++ and c++ headers we symlink the relative location to /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++
+           - So, if the the XCode/Apple provided libc++ and c++ headers are desired then symlinking is used below to provide the relative location to /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++
              - The alternative would be to symlink to the command line tools location (/Library/Developer/CommandLineTools/usr/include/c++/v1/)
 
         Another viable sysroot would be the command line tools at /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 
-        Generally each SDK/Platform version has its own C headers inside SDK_PATH/usr/include while all platforms share the C++ headers which
-        are at /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/
+        Generally each SDK/Platform version has its own C headers inside ${SDK_PATH}/usr/include while all platforms share the C++ headers which are at /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/
 
         NOTE: show search paths with: `clang -x c -v -E /dev/null` || `cpp -v` && `clang -Xlinker -v`
         '
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DC_INCLUDE_DIRS=/usr/include"
+        # https://reviews.llvm.org/D69221
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DC_INCLUDE_DIRS=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
         # setting the default sysroot to an explicit SDK avoids clang++ adding `/usr/local/include` to the paths by default at https://github.com/llvm-mirror/clang/blob/91d69c3c9c62946245a0fe6526d5ec226dfe7408/lib/Frontend/InitHeaderSearch.cpp#L226
         # because that value will be appended to the sysroot, not exist, and then get thrown out. If the sysroot were / then it would be added
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+        # This sysroot value was taken from `xcrun --show-sdk-path`
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCLANG_DEFAULT_CXX_STDLIB=libc++"
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15"
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_CREATE_XCODE_TOOLCHAIN=OFF -DLLVM_EXTERNALIZE_DEBUGINFO=ON"
     fi
     if [[ $(uname -s) == 'Linux' ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_BINUTILS_INCDIR=${LLVM_BINUTILS_INCDIR}"
-        if [[ ${MAJOR_MINOR} == "3.8" ]] && [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
-            # note: LIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON is only needed with llvm < 3.9.0 to avoid libcxx(abi) build breaking when only a static libc++ exists
-            CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON"
-        fi
     fi
 
     # Strip this since we set CMAKE_OSX_DEPLOYMENT_TARGET above. We assume that we'd only upgrade to use this compiler on recent OS X systems and we want the potential performance benefit of targeting a more recent version
@@ -265,9 +246,8 @@ function mason_compile {
     # https://blogs.gentoo.org/gsoc2016-native-clang/2016/05/31/build-gnu-free-executables-with-clang/
 
     if [[ ${BUILD_AND_LINK_LIBCXX} == true ]]; then
-        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_ASSERTIONS=OFF -DLIBUNWIND_ENABLE_ASSERTIONS=OFF -DLIBCXXABI_USE_COMPILER_RT=ON -DLIBCXX_USE_COMPILER_RT=ON -DLIBCXXABI_ENABLE_ASSERTIONS=OFF -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXX_ENABLE_STATIC=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON -DSANITIZER_USE_COMPILER_RT=ON -DLIBUNWIND_USE_COMPILER_RT=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBUNWIND_ENABLE_SHARED=OFF"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLIBCXX_ENABLE_ASSERTIONS=OFF -DLIBUNWIND_ENABLE_ASSERTIONS=OFF -DLIBCXXABI_USE_COMPILER_RT=ON -DLIBCXX_USE_COMPILER_RT=ON -DLIBCXXABI_ENABLE_ASSERTIONS=OFF -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXX_ENABLE_STATIC=ON -DLIBCXXABI_ENABLE_SHARED=OFF -DLIBCXXABI_USE_LLVM_UNWINDER=ON -DLIBCXXABI_ENABLE_STATIC_UNWINDER=ON -DLIBUNWIND_USE_COMPILER_RT=ON -DLIBUNWIND_ENABLE_STATIC=ON -DLIBUNWIND_ENABLE_SHARED=OFF"
     fi
-
 
     if [[ $(uname -s) == 'Linux' ]]; then
         echo "fixing editline"
@@ -299,14 +279,17 @@ function mason_compile {
     cd ./build
 
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -G Ninja -DCMAKE_MAKE_PROGRAM=${MASON_NINJA}/bin/ninja -DLLVM_ENABLE_ASSERTIONS=OFF -DCLANG_VENDOR=mapbox/mason -DCMAKE_CXX_COMPILER_LAUNCHER=${MASON_CCACHE}/bin/ccache"
-    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} -DCMAKE_BUILD_TYPE=Release -DLLVM_INCLUDE_DOCS=OFF"
-    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_TARGETS_TO_BUILD=BPF;X86 -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly -DCLANG_REPOSITORY_STRING=https://github.com/mapbox/mason -DCLANG_VENDOR_UTI=org.mapbox.llvm"
-    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLDB_RELOCATABLE_PYTHON=1 -DLLDB_DISABLE_PYTHON=1 -DLLVM_ENABLE_TERMINFO=0"
+    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_INSTALL_PREFIX=${MASON_PREFIX} -DCMAKE_BUILD_TYPE=MinSizeRel -DLLVM_INCLUDE_DOCS=OFF"
+    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_TARGETS_TO_BUILD=BPF;X86;WebAssembly -DCLANG_REPOSITORY_STRING=https://github.com/mapbox/mason -DCLANG_VENDOR_UTI=org.mapbox.llvm"
+    export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DLLVM_ENABLE_TERMINFO=0 -DLLVM_INCLUDE_EXAMPLES=OFF -DLLVM_ENABLE_UNWIND_TABLES=OFF -DLLVM_ENABLE_EH=ON -DLLVM_ENABLE_RTTI=ON"
     # look for curses and libedit on linux
     # note: python would need swig
     export CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_PREFIX_PATH=${MASON_NCURSES};${MASON_LIBEDIT}"
 
     echo "running cmake configure for llvm+friends build"
+    echo
+    echo "All cmake options: '${CMAKE_EXTRA_ARGS}'"
+    echo
     if [[ $(uname -s) == 'Linux' ]]; then
         ${MASON_CMAKE}/bin/cmake ../ ${CMAKE_EXTRA_ARGS} \
         -DCMAKE_CXX_STANDARD_LIBRARIES="-L${MASON_LIBEDIT}/lib -L${MASON_NCURSES}/lib -L$(pwd)/lib -lc++ -lc++abi -lunwind -pthread -lc -ldl -lrt -rtlib=compiler-rt" \
@@ -367,7 +350,7 @@ function mason_compile {
         -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/asan" -DLLVM_USE_SANITIZER="Address;Undefined" \
         -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
         ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
-        ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
+        ${MASON_NINJA}/bin/ninja install-cxx install-cxxabi -j${MASON_CONCURRENCY}
 
     # MemoryWithOrigins
     if [[ $(uname -s) == 'Darwin' ]]; then
@@ -379,7 +362,7 @@ function mason_compile {
             -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/msan" -DLLVM_USE_SANITIZER="MemoryWithOrigins" \
             -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
             ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
-            ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
+            ${MASON_NINJA}/bin/ninja install-cxx install-cxxabi -j${MASON_CONCURRENCY}
     fi
 
     # Thread
@@ -389,7 +372,7 @@ function mason_compile {
         -DCMAKE_INSTALL_PREFIX="${MASON_PREFIX}/tsan" -DLLVM_USE_SANITIZER="Thread" \
         -DLIBCXX_INSTALL_LIBRARY=ON -DLIBCXX_INSTALL_HEADERS=ON
         ${MASON_NINJA}/bin/ninja cxx cxxabi -j${MASON_CONCURRENCY}
-        ${MASON_NINJA}/bin/ninja install-cxx install-libcxxabi -j${MASON_CONCURRENCY}
+        ${MASON_NINJA}/bin/ninja install-cxx install-cxxabi -j${MASON_CONCURRENCY}
 
 }
 

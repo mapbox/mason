@@ -8,7 +8,7 @@ MASON_LIB_FILE=bin/afl-fuzz
 
 function mason_load_source {
     mason_download \
-        http://lcamtuf.coredump.cx/afl/releases/afl-2.19b.tgz \
+        https://lcamtuf.coredump.cx/afl/releases/afl-2.19b.tgz \
         6627c7b7c873e26fb7fbb6fd574c93676442d8b2
 
     mason_extract_tar_gz

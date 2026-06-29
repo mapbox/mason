@@ -8,7 +8,7 @@ MASON_LIB_FILE=bin/cmake
 
 function mason_load_source {
     mason_download \
-        http://www.cmake.org/files/v3.7/cmake-${MASON_VERSION}.tar.gz \
+        https://www.cmake.org/files/v3.7/cmake-${MASON_VERSION}.tar.gz \
         35e73aad419b0dca4d5f8e8ba483e29ff54b7f05
 
     mason_extract_tar_gz

@@ -9,7 +9,7 @@ MASON_LIB_FILE=bin/shp2pgsql
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/postgis/source/postgis-${MASON_VERSION2}.tar.gz \
+        https://download.osgeo.org/postgis/source/postgis-${MASON_VERSION2}.tar.gz \
         1afe92b14c9329f5ce5cc6a5dbe42575449d508e
 
     mason_extract_tar_gz

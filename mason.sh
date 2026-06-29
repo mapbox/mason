@@ -14,8 +14,8 @@ elif [ "${MASON_UNAME}" = 'Linux' ]; then
     MASON_PLATFORM=${MASON_PLATFORM:-linux}
 fi
 
-# In non-interactive environments like Travis CI, we can't use -s because it'll fill up the log
-# way too fast
+# In non-interactive environments like Travis CI, we use -s (--silent)
+# because otherwise it will quickly fill up the log
 case $- in
     *i*) MASON_CURL_ARGS=   ;; # interactive
     *)   MASON_CURL_ARGS=-s ;; # non-interative
@@ -23,14 +23,14 @@ esac
 
 case ${MASON_UNAME} in
     'Darwin')    MASON_CONCURRENCY=$(sysctl -n hw.ncpu) ;;
-    'Linux')        MASON_CONCURRENCY=$(lscpu -p | egrep -v '^#' | wc -l) ;;
+    'Linux')        MASON_CONCURRENCY=$(grep -c ^processor /proc/cpuinfo) ;;
     *)              MASON_CONCURRENCY=1 ;;
 esac
 
-function mason_step    { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }
-function mason_substep { >&2 echo -e "\033[1m\033[36m* $1\033[0m"; }
-function mason_success { >&2 echo -e "\033[1m\033[32m* $1\033[0m"; }
-function mason_error   { >&2 echo -e "\033[1m\033[31m$1\033[0m"; }
+function mason_step    { >&2 printf "\033[1;36m%s\033[0m\n" "* $*"; }
+function mason_substep { >&2 printf "\033[0;36m%s\033[0m\n" "* $*"; }
+function mason_success { >&2 printf "\033[1;32m%s\033[0m\n" "* $*"; }
+function mason_error   { >&2 printf "\033[1;31m%s\033[0m\n" "$*"; }
 
 
 case ${MASON_ROOT} in
@@ -262,6 +262,7 @@ fi
 MASON_PREFIX=${MASON_ROOT}/${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}
 MASON_BINARIES=${MASON_PLATFORM_ID}/${MASON_NAME}/${MASON_VERSION}.tar.gz
 MASON_BINARIES_PATH=${MASON_ROOT}/.binaries/${MASON_BINARIES}
+MASON_BINARIES_URL="https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
 
 
 
@@ -275,7 +276,9 @@ function mason_check_existing {
         fi
     elif [ "${MASON_SYSTEM_PACKAGE:-false}" = true ]; then
         if [ -f "${MASON_PREFIX}/version" ] ; then
-            mason_success "Using system-provided ${MASON_NAME} $(set -e;mason_system_version)"
+            local version # no assignment, local ignores exit status from $(...)
+            version=$(set -eu; mason_system_version)
+            mason_success "Using system-provided ${MASON_NAME} ${version}"
             exit 0
         fi
     else
@@ -306,10 +309,23 @@ function mason_check_installed {
 
 
 function mason_clear_existing {
-    if [ -d "${MASON_PREFIX}" ]; then
+    if [ -e "${MASON_PREFIX}" ] || [ -h "${MASON_PREFIX}" ]; then
         mason_step "Removing existing package... ${MASON_PREFIX}"
         rm -rf "${MASON_PREFIX}"
     fi
+}
+
+
+function mason_curl {
+    curl -f -L ${MASON_CURL_ARGS} "$@"
+    #
+    # -f, --fail
+    #       (HTTP) Fail silently (no output at all) on server errors.
+    #
+    # -L, --location
+    #       (HTTP) If the server reports that the requested page has
+    #       moved to a different location, this option will make curl
+    #       redo the request on the new place.
 }
 
 
@@ -319,7 +335,7 @@ function mason_download {
     if [ ! -f "${MASON_SLUG}" ] ; then
         mason_step "Downloading $1..."
         local CURL_RESULT=0
-        curl --retry 3 ${MASON_CURL_ARGS} -f -S -L "$1" -o "${MASON_SLUG}"  || CURL_RESULT=$?
+        mason_curl -S --retry 3 "$1" -o "${MASON_SLUG}" || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             mason_error "Failed to download ${1} (returncode: $CURL_RESULT)"
             exit $CURL_RESULT
@@ -368,24 +384,34 @@ function mason_clean {
 }
 
 function bash_lndir() {
-    oldifs=$IFS
-    IFS='
-    '
-    src=$(cd "$1" ; pwd)
-    dst=$(cd "$2" ; pwd)
-    find "$src" -type d |
-    while read -r dir; do
-            mkdir -p "$dst${dir#$src}"
-    done
+    local src dst
+    src=$(cd -- "$1" && pwd)
+    dst=$(cd -- "$2" && pwd)
 
-    find "$src" -type f -o -type l |
-    while read -r src_f; do
-            dst_f="$dst${src_f#$src}"
-            if [[ ! -e $dst_f ]]; then
-                ln -s "$src_f" "$dst_f"
-            fi
-    done
-    IFS=$oldifs
+    find "$src" -mindepth 1 -type d -exec \
+        /usr/bin/env src="$src" dst="$dst" bash -c \
+        '
+            mkdir -p -- "${@/#"$src"/$dst}"
+            for src_dir
+            do
+                dst_dir="${src_dir/#"$src"/$dst}"
+                export dst_dir
+
+                # OSX ln does not support -t (--target-directory),
+                # that is why -exec sh -c "ln -sf -- files... dir"
+                # is used instead of -exec ln -sft dir files...
+
+                find "$src_dir" -maxdepth 1 \
+                    \( -type f -o -type l \) \
+                    \! -name "*~" \
+                    -exec /bin/sh -c \
+                    "
+                        ln -sf -- \"\$@\" \"\$dst_dir/\"
+
+                    " sh_lnfiles "{""}" +
+            done
+
+        ' bash_lndir '{}' +
 }
 
 
@@ -394,11 +420,17 @@ function run_lndir() {
     #/bin/cp -R -n ${MASON_PREFIX}/* ${TARGET_SUBDIR}
     mason_step "Linking ${MASON_PREFIX}"
     mason_step "Links will be inside ${TARGET_SUBDIR}"
-    if hash lndir 2>/dev/null; then
-        mason_substep "Using $(which lndir) for symlinking"
-        lndir -silent "${MASON_PREFIX}/" "${TARGET_SUBDIR}" 2>/dev/null
+    local cp_help=$(cp --help 2>/dev/null)
+    if [[ $cp_help =~ [[:space:]]--symbolic-link[[:space:]] &&
+          $cp_help =~ [[:space:]]--target-directory= ]]
+    then
+        mason_substep "Using 'cp' for symlinking"
+        find "${MASON_PREFIX}" -mindepth 1 -type d -prune -exec \
+            cp -RPfp --symbolic-link \
+                --target-directory="${TARGET_SUBDIR}" \
+                -- '{}' +
     else
-        mason_substep "Using bash fallback for symlinking (install lndir for faster symlinking)"
+        mason_substep "Using bash fallback for symlinking (GNU cp needed for faster symlinking)"
         bash_lndir "${MASON_PREFIX}/" "${TARGET_SUBDIR}"
     fi
     mason_step "Done linking ${MASON_PREFIX}"
@@ -505,6 +537,7 @@ function mason_config {
         echo "platform=${MASON_PLATFORM}"
         echo "platform_version=${MASON_PLATFORM_VERSION}"
     fi
+    echo "root=${MASON_ROOT}"
     mason_config_custom
     for name in include_dirs definitions options ldflags static_libs ; do
         eval value=\$MASON_CONFIG_$(echo ${name} | tr '[:lower:]' '[:upper:]')
@@ -526,19 +559,18 @@ function mason_write_config {
 function mason_try_binary {
     MASON_BINARIES_DIR=$(dirname "${MASON_BINARIES}")
     mkdir -p "${MASON_ROOT}/.binaries/${MASON_BINARIES_DIR}"
-    local FULL_URL="https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
 
     # try downloading from S3
     if [ ! -f "${MASON_BINARIES_PATH}" ] ; then
-        mason_step "Downloading binary package ${FULL_URL}"
+        mason_step "Downloading binary package ${MASON_BINARIES_URL}"
         local CURL_RESULT=0
         local HTTP_RETURN=0
-        HTTP_RETURN=$(curl -w "%{http_code}" --retry 3 ${MASON_CURL_ARGS} -f -L ${FULL_URL} -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
+        HTTP_RETURN=$(mason_curl -w "%{http_code}" --retry 3 "${MASON_BINARIES_URL}" -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             if [[ ${HTTP_RETURN} == "403" ]]; then
-                mason_step "Binary not available for ${FULL_URL}"
+                mason_step "Binary not available for ${MASON_BINARIES_URL}"
             else
-                mason_error "Failed to download ${FULL_URL} (returncode: ${CURL_RESULT})"
+                mason_error "Failed to download ${MASON_BINARIES_URL} (returncode: ${CURL_RESULT})"
                 exit $CURL_RESULT
             fi
         else
@@ -548,7 +580,7 @@ function mason_try_binary {
         mason_step "Updating binary package ${MASON_BINARIES}..."
         local CURL_RESULT=0
         local HTTP_RETURN=0
-        HTTP_RETURN=$(curl -w "%{http_code}" --retry 3 ${MASON_CURL_ARGS} -f -L -z "${MASON_BINARIES_PATH}" -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
+        HTTP_RETURN=$(mason_curl -w "%{http_code}" --retry 3 -z "${MASON_BINARIES_PATH}" "${MASON_BINARIES_URL}" -o "${MASON_BINARIES_PATH}.tmp") || CURL_RESULT=$?
         if [[ ${CURL_RESULT} != 0 ]]; then
             if [ -f "${MASON_BINARIES_PATH}.tmp" ]; then
                 mv "${MASON_BINARIES_PATH}.tmp" "${MASON_BINARIES_PATH}"
@@ -569,14 +601,26 @@ function mason_try_binary {
         # to the current user using fakeroot if available
         $(which fakeroot) tar xzf "${MASON_BINARIES_PATH}"
 
-        if [ ! -z "${MASON_PKGCONFIG_FILE:-}" ] ; then
-            if [ -f "${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}" ] ; then
-            # Change the prefix
-                MASON_ESCAPED_PREFIX=$(echo "${MASON_PREFIX}" | sed -e 's/[\/&]/\\&/g')
-                sed -i.bak "s/prefix=.*/prefix=${MASON_ESCAPED_PREFIX}/" \
-                    "${MASON_PREFIX}/${MASON_PKGCONFIG_FILE}"
-            fi
+        local bdist_root= match replace
+
+        if [ -f "${MASON_PREFIX}/mason.ini" ]; then
+            bdist_root=$(sed -ne 's|^root=||p' "${MASON_PREFIX}/mason.ini")
         fi
+
+        # fallback for packages without root=/path/to/mason_packages in mason.ini
+        case ${#bdist_root},${MASON_PLATFORM} in
+            0,ios| \
+            0,osx) bdist_root="/Users/travis/build/mapbox/mason/mason_packages" ;;
+            0,*  ) bdist_root="/home/travis/build/mapbox/mason/mason_packages" ;;
+        esac
+
+        match=$(sed 's:[][$*.^\\&]:\\&:g' <<< ${bdist_root})
+        replace=$(sed 's:[\\&]:\\&:g' <<< ${MASON_ROOT})
+
+        # fixup libtool .la and pkgconfig .pc files
+        find "${MASON_PREFIX}" -name include -prune -o -type f \
+            \( -name '*.la' -o -path '*/pkgconfig/*.pc' \) \
+            -exec sed -i.bak "s&${match}&${replace}&g" '{}' +
 
         mason_success "Installed binary package at ${MASON_PREFIX}"
         exit 0
@@ -695,15 +739,15 @@ function mason_publish {
     MD5="$(openssl md5 -binary < "${MASON_BINARIES_PATH}" | base64)"
     SIGNATURE="$(printf "PUT\n$MD5\n$CONTENT_TYPE\n$DATE\nx-amz-acl:public-read\n/${MASON_BUCKET}/${MASON_BINARIES}" | openssl sha1 -binary -hmac "$AWS_SECRET_ACCESS_KEY" | base64)"
 
-    curl -S -T "${MASON_BINARIES_PATH}" "https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}" \
+    curl -S -T "${MASON_BINARIES_PATH}" "${MASON_BINARIES_URL}" \
         -H "Date: $DATE" \
         -H "Authorization: AWS $AWS_ACCESS_KEY_ID:$SIGNATURE" \
         -H "Content-Type: $CONTENT_TYPE" \
         -H "Content-MD5: $MD5" \
         -H "x-amz-acl: public-read"
 
-    echo "https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
-    curl -f -I "https://${MASON_BUCKET}.s3.amazonaws.com/${MASON_BINARIES}"
+    echo "${MASON_BINARIES_URL}"
+    curl -f -I "${MASON_BINARIES_URL}"
 }
 
 function mason_run {
@@ -713,7 +757,9 @@ function mason_run {
             mason_clear_existing
             mason_build
             mason_write_config
-            mason_success "Installed system-provided ${MASON_NAME} $(set -e;mason_system_version)"
+            local version # no assignment, local ignores exit status from $(...)
+            version=$(set -eu; mason_system_version)
+            mason_success "Installed system-provided ${MASON_NAME} ${version}"
         else
             mason_check_existing
             mason_clear_existing

@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libslang.a
 
 function mason_load_source {
     mason_download \
-        http://www.jedsoft.org/releases/slang/slang-${MASON_VERSION}.tar.bz2 \
+        https://www.jedsoft.org/releases/slang/slang-${MASON_VERSION}.tar.bz2 \
         8617d4745d1be3e086adb2fb8ca349a64711afc7
 
     mason_extract_tar_bz2

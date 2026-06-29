@@ -9,7 +9,7 @@ MASON_LIB_FILE=bin/ct-ng
 
 function mason_load_source {
     mason_download \
-        http://crosstool-ng.org/download/crosstool-ng/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
+        https://crosstool-ng.org/download/crosstool-ng/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
         1b69890d021b5b50a96b70be0fad3bd6e64a6e9e
 
     mason_extract_tar_bz2

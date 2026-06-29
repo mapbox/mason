@@ -8,7 +8,7 @@ MASON_LIB_FILE=bin/parallel
 
 function mason_load_source {
     mason_download \
-        http://ftp.gnu.org/gnu/${MASON_NAME}/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
+        https://ftp.gnu.org/gnu/${MASON_NAME}/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
         032c35aaecc65aa1298b33c48f0a4418041771e4
 
     mason_extract_tar_bz2

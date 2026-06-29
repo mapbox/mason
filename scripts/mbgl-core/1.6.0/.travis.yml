@@ -1,0 +1,17 @@
+language: generic
+
+addons:
+  apt:
+    sources: [ 'ubuntu-toolchain-r-test' ]
+    packages: [ 'libstdc++-5-dev' ]
+
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode11
+    - os: linux
+      sudo: false
+
+script:
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

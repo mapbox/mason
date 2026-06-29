@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libjpeg.a
 
 function mason_load_source {
     mason_download \
-        http://www.ijg.org/files/jpegsrc.v9a.tar.gz \
+        https://www.ijg.org/files/jpegsrc.v9a.tar.gz \
         fc3b1eefda3d8a193f9f92a16a1b0c9f56304b6d
 
     mason_extract_tar_gz

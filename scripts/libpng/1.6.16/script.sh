@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libpng.pc
 
 function mason_load_source {
     mason_download \
-        http://prdownloads.sourceforge.net/libpng/libpng-1.6.16.tar.gz?download \
+        https://prdownloads.sourceforge.net/libpng/libpng-1.6.16.tar.gz?download \
         b0449a7d05447842f3f19642c2104e0a57db13a8
 
     mason_extract_tar_gz

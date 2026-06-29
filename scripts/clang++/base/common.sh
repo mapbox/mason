@@ -5,15 +5,17 @@ function mason_build {
     CLANG_PREFIX=$(${MASON_DIR}/mason prefix llvm ${MASON_VERSION})
 
     MAJOR_MINOR=$(echo $MASON_VERSION | cut -d '.' -f1-2)
+    MAJOR=$(echo $MASON_VERSION | cut -d '.' -f1)
 
     # copy bin
     mkdir -p "${MASON_PREFIX}/bin"
     cp -a "${CLANG_PREFIX}/bin/${MASON_NAME}" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/${MASON_NAME}-${MAJOR_MINOR}" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/clang" "${MASON_PREFIX}/bin/"
-    cp -a "${CLANG_PREFIX}/bin/clang-${MAJOR_MINOR}" "${MASON_PREFIX}/bin/"
+    cp -a "${CLANG_PREFIX}/bin/clang-${MAJOR}" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/llvm-symbolizer" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/llvm-ar" "${MASON_PREFIX}/bin/"
+    cp -a "${CLANG_PREFIX}/bin/llvm-nm" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/llvm-ranlib" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/asan_symbolize" "${MASON_PREFIX}/bin/"
     cp -a "${CLANG_PREFIX}/bin/asan_symbolize.py" "${MASON_PREFIX}/bin/"

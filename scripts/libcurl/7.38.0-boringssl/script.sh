@@ -12,7 +12,7 @@ MASON_PWD=`pwd`
 
 function mason_load_source {
     mason_download \
-        http://curl.haxx.se/download/curl-7.38.0.tar.gz \
+        https://curl.haxx.se/download/curl-7.38.0.tar.gz \
         5463f1b9dc807e4ae8be2ef4ed57e67f677f4426
 
     mason_extract_tar_gz

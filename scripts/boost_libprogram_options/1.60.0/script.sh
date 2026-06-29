@@ -14,7 +14,7 @@ MASON_LIB_FILE=lib/libboost_${BOOST_LIBRARY}.a
 
 function mason_load_source {
     mason_download \
-        http://downloads.sourceforge.net/project/boost/boost/${BOOST_VERSION1}/boost_${BOOST_VERSION2}.tar.bz2 \
+        https://downloads.sourceforge.net/project/boost/boost/${BOOST_VERSION1}/boost_${BOOST_VERSION2}.tar.bz2 \
         40a65135d34c3e3a3cdbe681f06745c086e5b941
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/boost_${BOOST_VERSION2}

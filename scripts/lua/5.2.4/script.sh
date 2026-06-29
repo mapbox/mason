@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/liblua.a
 
 function mason_load_source {
     mason_download \
-        http://www.lua.org/ftp/lua-${MASON_VERSION}.tar.gz \
+        https://www.lua.org/ftp/lua-${MASON_VERSION}.tar.gz \
         6dd4526fdae5a7f76e44febf4d3066614920c43e
 
     mason_extract_tar_gz

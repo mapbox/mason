@@ -8,7 +8,7 @@ MASON_LIB_FILE=lib/libbfd.a
 
 function mason_load_source {
     mason_download \
-        http://ftp.gnu.org/gnu/binutils/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
+        https://ftp.gnu.org/gnu/binutils/${MASON_NAME}-${MASON_VERSION}.tar.bz2 \
         7e62c56ea660080882af2c8644d566765a77a0b8
 
     mason_extract_tar_bz2

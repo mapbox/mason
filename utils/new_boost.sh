@@ -1,7 +1,7 @@
 set -eu
 set -o pipefail
 
-: ' 
+: '
 
 manual intervention:
 
@@ -64,27 +64,28 @@ function create() {
 
     mkdir -p scripts/boost/${NEW_VERSION}
     cp -r scripts/boost/${LAST_VERSION}/. scripts/boost/${NEW_VERSION}/
-    perl -i -p -e "s/MASON_VERSION=${LAST_VERSION}/MASON_VERSION=${NEW_VERSION}/g;" scripts/boost/${NEW_VERSION}/base.sh 
+    perl -i -p -e "s/MASON_VERSION=${LAST_VERSION}/MASON_VERSION=${NEW_VERSION}/g;" scripts/boost/${NEW_VERSION}/base.sh
     export BOOST_VERSION=${NEW_VERSION//./_}
     export CACHE_PATH="mason_packages/.cache"
     mkdir -p "${CACHE_PATH}"
     if [[ ! -f ${CACHE_PATH}/boost-${NEW_VERSION} ]]; then
-        curl --retry 3 -f -S -L http://downloads.sourceforge.net/project/boost/boost/${NEW_VERSION}/boost_${BOOST_VERSION}.tar.bz2 -o ${CACHE_PATH}/boost-${NEW_VERSION}
+        curl --retry 3 -f -S -L https://dl.bintray.com/boostorg/release/${NEW_VERSION}/source/boost_${BOOST_VERSION}.tar.bz2 -o ${CACHE_PATH}/boost-${NEW_VERSION}
     fi
 
     NEW_SHASUM=$(git hash-object ${CACHE_PATH}/boost-${NEW_VERSION})
 
-    perl -i -p -e "s/BOOST_SHASUM=(.*)/BOOST_SHASUM=${NEW_SHASUM}/g;" scripts/boost/${NEW_VERSION}/base.sh 
+    perl -i -p -e "s/BOOST_SHASUM=(.*)/BOOST_SHASUM=${NEW_SHASUM}/g;" scripts/boost/${NEW_VERSION}/base.sh
 
-    for lib in $(find scripts/ -maxdepth 1 -type dir -name 'boost_lib*' -print); do
+    for lib in $(find scripts/ -maxdepth 1 -type d -name 'boost_lib*' -print); do
         if [[ -d $lib/${LAST_VERSION} ]]; then
             if [[ ${CLEAN} ]]; then
                 rm -rf $lib/${NEW_VERSION}
             fi
             mkdir $lib/${NEW_VERSION}
+            echo "creating $lib/${NEW_VERSION}/"
             cp -r $lib/${LAST_VERSION}/. $lib/${NEW_VERSION}/
         else
-            echo "skipping creating package for $lib"
+            echo "skipping creating package for $lib/${LAST_VERSION}"
         fi
     done
 }
@@ -109,8 +110,12 @@ function trigger() {
     fi
     NEW_VERSION=${1}
     ./mason trigger boost ${NEW_VERSION}
-    for lib in $(find scripts/ -maxdepth 1 -type dir -name 'boost_lib*' -print); do
-        ./mason trigger $(basename $lib) ${NEW_VERSION}
+    for lib in $(find scripts/ -maxdepth 1 -type d -name 'boost_lib*' -print); do
+        if [[ -d $lib/${NEW_VERSION} ]]; then
+            ./mason trigger $(basename $lib) ${NEW_VERSION}
+        else
+            echo "skipping creating package for $lib/${NEW_VERSION}"
+        fi
     done
 }
 
@@ -125,5 +130,3 @@ else
     usage
     exit 1
 fi
-
-

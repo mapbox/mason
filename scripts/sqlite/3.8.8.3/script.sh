@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/sqlite3.pc
 
 function mason_load_source {
     mason_download \
-        http://sqlite.org/2015/sqlite-autoconf-3080803.tar.gz \
+        https://sqlite.org/2015/sqlite-autoconf-3080803.tar.gz \
         55d0c095e5bf76ed7b450265261b367228bbd0ba
 
     mason_extract_tar_gz

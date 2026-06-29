@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libtiff-4.pc
 
 function mason_load_source {
     mason_download \
-        http://download.osgeo.org/libtiff/tiff-${MASON_VERSION}.tar.gz \
+        https://download.osgeo.org/libtiff/tiff-${MASON_VERSION}.tar.gz \
         a6c275bb0a444f9b43f5cd3f15e0400599dc5ffc
 
     mason_extract_tar_gz

@@ -9,7 +9,7 @@ MASON_LIB_FILE=lib/libicuuc.a
 
 function mason_load_source {
     mason_download \
-        http://download.icu-project.org/files/icu4c/54.1/icu4c-54_1-src.tgz \
+        https://download.icu-project.org/files/icu4c/54.1/icu4c-54_1-src.tgz \
         d0f79be346f75862ccef8fd641e429d9c129ac14
 
     mason_extract_tar_gz
@@ -19,7 +19,7 @@ function mason_load_source {
 
 function mason_compile {
     # note: -DUCONFIG_NO_BREAK_ITERATION=1 is desired by mapnik (for toTitle)
-    # http://www.icu-project.org/apiref/icu4c/uconfig_8h_source.html
+    # https://www.icu-project.org/apiref/icu4c/uconfig_8h_source.html
     export ICU_CORE_CPP_FLAGS="-DU_CHARSET_IS_UTF8=1"
     # disabled due to breakage with node-mapnik on OS X: https://github.com/mapnik/mapnik-packaging/issues/98
     # -DU_USING_ICU_NAMESPACE=0 -DU_STATIC_IMPLEMENTATION=1 -DU_TIMEZONE=0 -DUCONFIG_NO_LEGACY_CONVERSION=1 -DUCONFIG_NO_FORMATTING=1 -DUCONFIG_NO_TRANSLITERATION=1 -DUCONFIG_NO_REGULAR_EXPRESSIONS=1"

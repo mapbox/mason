@@ -8,7 +8,7 @@ MASON_LIB_FILE=bin/psql
 
 function mason_load_source {
     mason_download \
-        http://ftp.postgresql.org/pub/source/v${MASON_VERSION}/postgresql-${MASON_VERSION}.tar.bz2 \
+        https://ftp.postgresql.org/pub/source/v${MASON_VERSION}/postgresql-${MASON_VERSION}.tar.bz2 \
         9c7bd5c1c601075ff6d5ea7615f9461d5b1f4c88
 
     mason_extract_tar_bz2

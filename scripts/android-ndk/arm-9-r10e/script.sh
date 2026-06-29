@@ -9,11 +9,11 @@ MASON_LIB_FILE=
 function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then
         mason_download \
-            http://dl.google.com/android/ndk/android-ndk-r10e-darwin-x86_64.bin \
+            https://dl.google.com/android/ndk/android-ndk-r10e-darwin-x86_64.bin \
             dea2dd3939eea3289cab075804abb153014b78d3
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         mason_download \
-            http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin \
+            https://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin \
             285606ba6882d27d99ed469fc5533cc3c93967f5
     fi
 

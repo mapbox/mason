@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libpng.pc
 
 function mason_load_source {
     mason_download \
-        http://superb-sea2.dl.sourceforge.net/project/${MASON_NAME}/${MASON_NAME}16/${MASON_VERSION}/${MASON_NAME}-${MASON_VERSION}.tar.gz \
+        https://superb-sea2.dl.sourceforge.net/project/${MASON_NAME}/${MASON_NAME}16/${MASON_VERSION}/${MASON_NAME}-${MASON_VERSION}.tar.gz \
         ea724d11c25753ebad23ca0f63518b7f17c46a6a
 
     mason_extract_tar_gz

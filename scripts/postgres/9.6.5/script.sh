@@ -10,12 +10,18 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libpq.pc
 
 function mason_load_source {
     mason_download \
-        http://ftp.postgresql.org/pub/source/v${MASON_VERSION2}/postgresql-${MASON_VERSION2}.tar.bz2 \
+        https://ftp.postgresql.org/pub/source/v${MASON_VERSION2}/postgresql-${MASON_VERSION2}.tar.bz2 \
         de4007bbb8a5869cc3f193ae34b2fbd9e4b876c4
 
     mason_extract_tar_bz2
 
     export MASON_BUILD_PATH=${MASON_ROOT}/.build/postgresql-${MASON_VERSION2}
+}
+
+function mason_prepare_compile {
+    LIBEDIT_VERSION="3.1"
+    ${MASON_DIR}/mason install libedit ${LIBEDIT_VERSION}
+    MASON_LIBEDIT=$(${MASON_DIR}/mason prefix libedit ${LIBEDIT_VERSION})
 }
 
 function mason_compile {
@@ -38,7 +44,8 @@ function mason_compile {
         --without-pam \
         --without-gssapi \
         --without-ossp-uuid \
-        --without-readline \
+        --with-readline \
+        --with-libedit-preferred \
         --without-ldap \
         --without-libxml \
         --without-libxslt \

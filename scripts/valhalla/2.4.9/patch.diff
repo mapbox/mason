@@ -1,0 +1,152 @@
+diff --git a/configure.ac b/configure.ac
+index a633803c..a36a75e8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -50,8 +50,8 @@ AC_SUBST(RAPIDJSON_CPPFLAGS, "$RAPIDJSON_CPPFLAGS -DRAPIDJSON_HAS_STDSTRING")
+ 
+ # Note - because libz4 changed it's versioning scheme, we need to check for both >131, and if
+ #        that fails, try >= 1.7.3
+-PKG_CHECK_MODULES([DEPS], [protobuf >= 2.4.0 libcurl >= 7.35.0 zlib >= 1.2.8 liblz4 >= 131],, [
+-  PKG_CHECK_MODULES([DEPS], [protobuf >= 2.4.0 libcurl >= 7.35.0 zlib >= 1.2.8 liblz4 >= 1.7.3])
++PKG_CHECK_MODULES([DEPS], [protobuf >= 2.4.0 libcurl >= 7.35.0 zlib >= 1.2.3 liblz4 >= 131],, [
++  PKG_CHECK_MODULES([DEPS], [protobuf >= 2.4.0 libcurl >= 7.35.0 zlib >= 1.2.3 liblz4 >= 1.7.3])
+ ])
+ 
+ # if we wanted services
+diff --git a/src/baldr/graphreader.cc b/src/baldr/graphreader.cc
+index 520469c0..56b0408f 100644
+--- a/src/baldr/graphreader.cc
++++ b/src/baldr/graphreader.cc
+@@ -247,22 +247,7 @@ const GraphTile* GraphReader::GetGraphTile(const GraphId& graphid) {
+     return inserted;
+   }// Try getting it from flat file
+   else {
+-    // This reads the tile from disk
+-    GraphTile tile(tile_dir_, base);
+-    if (!tile.header()) {
+-      if(tile_url_.empty() || _404s.find(base) != _404s.end())
+-        return nullptr;
+-      tile = GraphTile(tile_url_, base, curler);
+-      if(!tile.header()) {
+-        _404s.insert(base);
+-        return nullptr;
+-      }
+-    }
+-
+-    // Keep a copy in the cache and return it
+-    size_t size = tile.header()->end_offset();
+-    auto inserted = cache_->Put(base, tile, size);
+-    return inserted;
++    return nullptr;
+   }
+ }
+ 
+diff --git a/src/baldr/graphtile.cc b/src/baldr/graphtile.cc
+index 94b3af7e..8a153a26 100644
+--- a/src/baldr/graphtile.cc
++++ b/src/baldr/graphtile.cc
+@@ -123,24 +123,6 @@ GraphTile::GraphTile(const GraphId& graphid, char* ptr, size_t size)
+   Initialize(graphid, ptr, size);
+ }
+ 
+-GraphTile::GraphTile(const std::string& tile_url, const GraphId& graphid, curler_t& curler) {
+-  // Don't bother with invalid ids
+-  if (!graphid.Is_Valid() || graphid.level() > TileHierarchy::get_max_level())
+-    return;
+-
+-  // Get the response returned from curl
+-  std::string uri = tile_url + filesystem::path_separator + FileSuffix(graphid.Tile_Base());
+-  long http_code;
+-  auto tile_data = curler(uri, http_code);
+-
+-  // If its good try to use it
+-  if(http_code == 200) {
+-    graphtile_ = std::make_shared<std::vector<char> >(std::move(tile_data));
+-    Initialize(graphid, &(*graphtile_)[0], graphtile_->size());
+-    //TODO: optionally write the tile to disk?
+-  }
+-}
+-
+ GraphTile::~GraphTile() {
+ }
+ 
+diff --git a/src/thor/matrix_action.cc b/src/thor/matrix_action.cc
+index a6c79c03..ff142240 100644
+--- a/src/thor/matrix_action.cc
++++ b/src/thor/matrix_action.cc
+@@ -1,3 +1,4 @@
++#include "midgard/logging.h"
+ #include "thor/worker.h"
+ #include "sif/autocost.h"
+ #include "sif/bicyclecost.h"
+diff --git a/src/thor/trace_route_action.cc b/src/thor/trace_route_action.cc
+index 346c85d8..2ee0e99f 100644
+--- a/src/thor/trace_route_action.cc
++++ b/src/thor/trace_route_action.cc
+@@ -8,6 +8,7 @@
+ 
+ #include "exception.h"
+ #include "meili/map_matcher.h"
++#include <valhalla/midgard/logging.h>
+ 
+ #include "thor/route_matcher.h"
+ #include "thor/map_matcher.h"
+diff --git a/src/tyr/locate_serializer.cc b/src/tyr/locate_serializer.cc
+index 1760a9ea..84a7f833 100644
+--- a/src/tyr/locate_serializer.cc
++++ b/src/tyr/locate_serializer.cc
+@@ -1,6 +1,7 @@
+ #include <cstdint>
+ #include "baldr/json.h"
+ #include "tyr/serializers.h"
++#include "midgard/logging.h"
+ 
+ using namespace valhalla;
+ using namespace valhalla::baldr;
+diff --git a/valhalla/baldr/graphreader.h b/valhalla/baldr/graphreader.h
+index dfe1b1fe..d9fe0935 100644
+--- a/valhalla/baldr/graphreader.h
++++ b/valhalla/baldr/graphreader.h
+@@ -6,7 +6,6 @@
+ #include <unordered_map>
+ #include <mutex>
+ 
+-#include <valhalla/baldr/curler.h>
+ #include <valhalla/baldr/graphid.h>
+ #include <valhalla/baldr/graphtile.h>
+ #include <valhalla/baldr/tilehierarchy.h>
+@@ -562,7 +561,6 @@ class GraphReader {
+   static std::shared_ptr<const GraphReader::tile_extract_t> get_extract_instance(const boost::property_tree::ptree& pt);
+ 
+   // Stuff for getting at remote tiles
+-  curler_t curler;
+   std::string tile_url_;
+   std::unordered_set<GraphId> _404s;
+   // Information about where the tiles are kept
+diff --git a/valhalla/baldr/graphtile.h b/valhalla/baldr/graphtile.h
+index 7e80e549..03c16378 100644
+--- a/valhalla/baldr/graphtile.h
++++ b/valhalla/baldr/graphtile.h
+@@ -19,7 +19,6 @@
+ #include <valhalla/baldr/sign.h>
+ #include <valhalla/baldr/edgeinfo.h>
+ #include <valhalla/baldr/admininfo.h>
+-#include <valhalla/baldr/curler.h>
+ 
+ #include <valhalla/midgard/util.h>
+ #include <valhalla/midgard/aabb2.h>
+@@ -60,14 +59,6 @@ class GraphTile {
+    */
+   GraphTile(const GraphId& graphid, char* ptr, size_t size);
+ 
+-  /**
+-   * Constructor given the graph Id, in memory tile data
+-   * @param  tile_url URL of tile
+-   * @param  graphid Tile Id
+-   * @param  curler curler that will handle tile downloading
+-   */
+-  GraphTile(const std::string& tile_url, const GraphId& graphid, curler_t& curler);
+-
+   /**
+    * Destructor
+    */

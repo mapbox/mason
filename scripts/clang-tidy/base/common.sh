@@ -27,6 +27,9 @@ function mason_build {
     cp -r "${CLANG_PREFIX}/share/clang/run-clang-tidy.py" "${MASON_PREFIX}/share/"
     cp -r "${CLANG_PREFIX}/share/clang/clang-tidy-diff.py" "${MASON_PREFIX}/share/"
     cp -r "${CLANG_PREFIX}/share/clang/run-find-all-symbols.py" "${MASON_PREFIX}/share/"
+    if [[ -d "${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/yaml" ]]; then
+        cp -r "${MASON_DIR}/scripts/${MASON_NAME}/${MASON_VERSION}/yaml" "${MASON_PREFIX}/share/"
+    fi
 
 }
 

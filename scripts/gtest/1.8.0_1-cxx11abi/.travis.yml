@@ -1,0 +1,20 @@
+language: cpp
+
+sudo: false
+
+compiler: clang
+
+matrix:
+  exclude:
+    - os: linux
+  include:
+    - os: linux
+      dist: trusty
+      env: MASON_PLATFORM=linux
+
+script:
+- sudo perl -i -p -e "s/# define _GLIBCXX_USE_DUAL_ABI 0/# define _GLIBCXX_USE_DUAL_ABI 1/g;" /usr/include/x86_64-linux-gnu/c++/5/bits/c++config.h
+- ./mason build ${MASON_NAME} ${MASON_VERSION}
+
+after_success:
+- ./mason publish ${MASON_NAME} ${MASON_VERSION}

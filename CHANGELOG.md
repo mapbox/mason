@@ -1,5 +1,113 @@
 # Mason releases
 
+## 0.23.0
+ - LLVM 11 now available
+ - Boost 1.75.0 now available
+
+## 0.22.0
+
+  - Binaries now compiled with clang++ 10.0.0
+  - Lots of new packages, too many to list here anymore.
+
+Changes: https://github.com/mapbox/mason/compare/v0.21.0...v0.22.0
+
+## 0.21.0
+
+  - Fixes for curl downloads
+  - http -> https fixes
+  - Lots of new packages, too many to list here anymore.
+
+Changes: https://github.com/mapbox/mason/compare/v0.20.0...v0.21.0
+
+## 0.20.0
+
+- Added
+  - boost 1.67.0
+  - boost_libregex_icu58 1.66.0
+  - icu 58.1-brkitr (+ BreakIterator), 63.1-min-static-data-1
+  - libosmium 2.15.0
+  - osmium-tool 1.10.0
+  - postgres 10.3 (with libedit support)
+  - swiftshader 2018-10-08-3b5e426
+  - tippecanoe 1.32.10
+  - vector-tile 1.0.3
+
+- Changed
+  - alpine linux install compatibility fixes [c7ea656](https://github.com/mapbox/mason/commit/c7ea6566e6503e4b6c5e19cb53af08445c931687) [f6ab273](https://github.com/mapbox/mason/commit/f6ab273d30f210147a3f44e185f7959e65640f8d)
+  - harfbuzz 1.4.4 - clear environment before building ragel [#393](https://github.com/mapbox/mason/pull/393) h/t @edkimmel
+
+Changes: https://github.com/mapbox/mason/compare/v0.19.0...v0.20.0
+
+## 0.19.0
+
+- Added
+  - LICENSE.md
+  - apitrace 2018-05-16-7fadfba
+  - benchmark 1.4.1
+  - binutils 2.31
+  - build2 0.8.0
+  - catch 2.4.0
+  - clang++ 6.0.1
+  - clang-format 6.0.1
+  - clang-tidy 6.0.0, 6.0.1, 7.0.0
+  - crosstool-ng 1.23.0
+  - geojson 0.4.3
+  - geojsonvt 6.4.0, 6.5.0, 6.5.1, 6.6.0, 6.6.1, 6.6.2, 6.6.3
+  - geometry 0.9.3, 1.0.0
+  - glfw 2018-06-27-0be4f3f
+  - gtest 1.8.0_1
+  - gzip-hpp 0.1.0, a4cfa6a638de351d26834cf2fea373693cdaa927, bb80aac
+  - icu 63.1-min-static-data
+  - include-what-you-use 6.0.1
+  - jemalloc 39b1b20, 5.1.0
+  - jni.hpp 4.0.0, 4.0.1
+  - kcov 34, 894e98b
+  - kdbush 0.1.3
+  - libdeflate 1.0, e9d1014
+  - libosmium 2.14.0, 2.14.1, 2.14.2
+  - lldb 6.0.1
+  - llnode 1.7.1
+  - llvm-cov 6.0.1
+  - llvm 6.0.1
+  - lz4 1.8.2
+  - mapnik 3.0.19, 3.0.20, 3.0.21, 434511c, da69fdf66
+  - mbgl-core 20f880e
+  - node 6.14.3, 8.11.3
+  - nunicode 1.8
+  - osmium-tool 1.9.0, 1.9.1, 336eb45
+  - perf 4.15.15, 4.16
+  - protobuf 3.5.0, 3.5.1
+  - protozero 1.6.2, 1.6.3, 1.6.4
+  - sqlite 3.24.0-min-size
+  - supercluster 0.3.0, 0.3.2
+  - swiftshader 2018-05-31, 2018-06-29-539468c, 60f8662
+  - tippecanoe 1.27.14, 1.27.7, 1.27.9, 1.31.0
+  - valhalla 2.4.9
+  - vector-tile 1.0.2
+  - vtzero 088ec09, 1.0.0, 1.0.1, 1.0.2, 1.0.3, 2915725
+  - zlib-cloudflare e55212b
+  - zlib-ng 013b23b
+
+- Changed
+  - bzip2 1.0.6
+  - clang++ 6.0.0
+  - clang++ 7.0.0
+  - clang-format 6.0.0
+  - clang-format 7.0.0
+  - clang-tidy 6.0.0
+  - clang-tidy 7.0.0
+  - include-what-you-use 6.0.0
+  - include-what-you-use 7.0.0
+  - lldb 6.0.0
+  - lldb 7.0.0
+  - llvm-cov 6.0.0
+  - llvm-cov 7.0.0
+  - llvm 6.0.0
+  - llvm 7.0.0
+  - openssl 1.0.2d
+
+Changes: https://github.com/mapbox/mason/compare/v0.18.0...v0.19.0
+
 ## 0.18.0
 
 - Added

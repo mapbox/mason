@@ -9,11 +9,11 @@ MASON_LIB_FILE=
 function mason_load_source {
     if [ ${MASON_PLATFORM} = 'osx' ]; then
         mason_download \
-            http://dl.google.com/android/repository/android-ndk-r11c-darwin-x86_64.zip \
+            https://dl.google.com/android/repository/android-ndk-r11c-darwin-x86_64.zip \
             0c6fa2017dd5237f6270887c85feedc4aafb3aef
     elif [ ${MASON_PLATFORM} = 'linux' ]; then
         mason_download \
-            http://dl.google.com/android/repository/android-ndk-r11c-linux-x86_64.zip \
+            https://dl.google.com/android/repository/android-ndk-r11c-linux-x86_64.zip \
             0c646e2fceb3ef853e1832f4aa3a0dc4c16d2229
     fi
 

@@ -8,7 +8,7 @@ MASON_LIB_FILE=bin/ragel
 
 function mason_load_source {
     mason_download \
-        http://www.colm.net/files/ragel/ragel-${MASON_VERSION}.tar.gz \
+        https://www.colm.net/files/ragel/ragel-${MASON_VERSION}.tar.gz \
         adf45ba5bb04359e6a0f8d5a98bfc10e6388bf21
 
     mason_extract_tar_gz

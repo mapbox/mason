@@ -26,7 +26,7 @@ function mason_compile {
     git clone --depth 1 https://chromium.googlesource.com/external/gyp.git tools/gyp
     # ../src/llv8.cc:256:43: error: expected ')'
      #snprintf(tmp, sizeof(tmp), " fn=0x%016" PRIx64, fn.raw());
-    # need to define STDC macros since libc++ adheres to spec: http://en.cppreference.com/w/cpp/types/integer
+    # need to define STDC macros since libc++ adheres to spec: https://en.cppreference.com/w/cpp/types/integer
     export CXXFLAGS="-stdlib=libc++ ${CXXFLAGS} -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS"
     export LDFLAGS="-stdlib=libc++ ${LDFLAGS}"
     # per the llvm package, on linux we statically link libc++ for full portability

@@ -9,7 +9,7 @@ MASON_PKGCONFIG_FILE=lib/pkgconfig/libwebp.pc
 
 function mason_load_source {
     mason_download \
-        http://downloads.webmproject.org/releases/webp/libwebp-0.4.2.tar.gz \
+        https://downloads.webmproject.org/releases/webp/libwebp-0.4.2.tar.gz \
         fdc496dcbcb03c9f26c2d9ce771545fa557a40c8
 
     mason_extract_tar_gz
